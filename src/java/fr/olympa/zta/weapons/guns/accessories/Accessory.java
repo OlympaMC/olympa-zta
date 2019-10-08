@@ -2,9 +2,9 @@ package fr.olympa.zta.weapons.guns.accessories;
 
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.OlympaItemBuild;
 import fr.olympa.zta.weapons.ItemStackable;
 import fr.olympa.zta.weapons.guns.Gun;
-import fr.tristiisch.olympa.api.item.OlympaItemBuild;
 
 public abstract class Accessory implements ItemStackable{
 	

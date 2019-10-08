@@ -6,8 +6,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.OlympaItemBuild;
 import fr.olympa.zta.weapons.Weapon;
-import fr.tristiisch.olympa.api.item.OlympaItemBuild;
 
 public abstract class Knife extends Weapon{
 	

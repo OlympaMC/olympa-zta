@@ -8,6 +8,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.olympa.api.objects.OlympaPlugin;
+import fr.olympa.api.task.TaskManager;
+import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.zta.weapons.WeaponsRegistry;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunCobra;
@@ -15,9 +18,6 @@ import fr.olympa.zta.weapons.guns.GunM16;
 import fr.olympa.zta.weapons.guns.GunM1897;
 import fr.olympa.zta.weapons.guns.GunM1911;
 import fr.olympa.zta.weapons.guns.GunUZI;
-import fr.tristiisch.olympa.api.objects.OlympaPlugin;
-import fr.tristiisch.olympa.api.task.TaskManager;
-import fr.tristiisch.olympa.api.utils.SpigotUtils;
 
 public class OlympaZTA extends JavaPlugin implements OlympaPlugin{
 	protected static OlympaZTA instance;

@@ -15,13 +15,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.item.OlympaItemBuild;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.accessories.Accessory;
 import fr.olympa.zta.weapons.guns.accessories.Scope;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
-import fr.tristiisch.olympa.api.item.OlympaItemBuild;
 
 public abstract class Gun extends Weapon{
 	
