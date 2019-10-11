@@ -10,9 +10,10 @@ public abstract class Weapon implements ItemStackable{
 	
 	// Système de cassage d'arme etc. ?
 	
-	public final Integer id = new Random().nextInt();
-	
-	public abstract String getInternalName();
+	public final int id = new Random().nextInt();
+	public int getID(){
+		return id;
+	}
 	
 	public abstract void onInteract(PlayerInteractEvent e);
 	

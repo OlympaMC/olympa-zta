@@ -45,7 +45,7 @@ public abstract class Bullet{
 			public void run(){
 				if (projectile.isValid()) {
 					Vector velocity = projectile.getVelocity();
-					world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null);
+					world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
 				}else cancel();
 			}
 		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 0, 4);

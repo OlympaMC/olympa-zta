@@ -11,10 +11,6 @@ import fr.olympa.zta.weapons.Weapon;
 
 public abstract class Knife extends Weapon{
 	
-	public String getInternalName(){
-		return getClass().getSimpleName().substring(5); // nom de classe sans "Knife"
-	}
-	
 	public ItemStack createItemStack(){
 		return new OlympaItemBuild(getItemMaterial(), getName()).lore(
 				"Dégâts aux joueurs: " + getPlayerDamage(),

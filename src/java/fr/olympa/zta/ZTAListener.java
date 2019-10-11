@@ -8,6 +8,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -19,8 +21,8 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
+import fr.olympa.zta.weapons.Registrable;
 import fr.olympa.zta.weapons.Weapon;
-import fr.olympa.zta.weapons.WeaponsRegistry;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
@@ -46,8 +48,8 @@ public class ZTAListener implements Listener{
 	public void onPlayerInteract(PlayerInteractEvent e){
 		if (e.getItem() == null || e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
 		
-		Weapon weapon = WeaponsRegistry.getWeapon(e.getItem());
-		if (weapon != null) weapon.onInteract(e);
+		Registrable object = ZTARegistry.getItemStackable(e.getItem());
+		if (object != null && object instanceof Weapon) ((Weapon) object).onInteract(e);
 	}
 	
 	public static boolean cancelDamageEvent = false; // dommage causé par le contact d'une balle
@@ -63,8 +65,8 @@ public class ZTAListener implements Listener{
 		ItemStack item = damager.getInventory().getItemInMainHand();
 		if (item == null) return;
 		
-		Weapon weapon = WeaponsRegistry.getWeapon(item);
-		if (weapon != null) weapon.onEntityHit(e);
+		Registrable object = ZTARegistry.getItemStackable(item);
+		if (object != null && object instanceof Weapon) ((Weapon) object).onEntityHit(e);
 	}
 	
 	@EventHandler
@@ -74,14 +76,14 @@ public class ZTAListener implements Listener{
 		
 		ItemStack item = inv.getItem(e.getPreviousSlot());
 		if (item != null) {
-			Weapon weapon = WeaponsRegistry.getWeapon(item);
-			if (weapon instanceof Gun) ((Gun) weapon).itemNoLongerHeld(p, item);
+			Registrable object = ZTARegistry.getItemStackable(item);
+			if (object instanceof Gun) ((Gun) object).itemNoLongerHeld(p, item);
 		}
 		
 		item = inv.getItem(e.getNewSlot());
 		if (item != null) {
-			Weapon weapon = WeaponsRegistry.getWeapon(item);
-			if (weapon instanceof Gun) ((Gun) weapon).itemHeld(p, item);
+			Registrable object = ZTARegistry.getItemStackable(item);
+			if (object instanceof Gun) ((Gun) object).itemHeld(p, item);
 		}
 	}
 	
@@ -89,8 +91,23 @@ public class ZTAListener implements Listener{
 	public void onDrop(PlayerDropItemEvent e){
 		ItemStack item = e.getItemDrop().getItemStack();
 		
-		Weapon weapon = WeaponsRegistry.getWeapon(item);
-		if (weapon != null) weapon.onDrop(e);
+		Registrable object = ZTARegistry.getItemStackable(item);
+		if (object != null && object instanceof Weapon) ((Weapon) object).onDrop(e);
+	}
+	
+	@EventHandler
+	public void onClick(InventoryClickEvent e){
+		if (e.getClick() != ClickType.MIDDLE) return;
+		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
+		
+		ItemStack item = e.getCurrentItem();
+		if (item == null) return;
+		
+		Registrable object = ZTARegistry.getItemStackable(item);
+		if (object instanceof Gun) {
+			((Gun) object).itemClick((Player) e.getWhoClicked());
+			e.setCancelled(true);
+		}
 	}
 	
 }

@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 
-import fr.olympa.zta.weapons.Weapon;
-import fr.olympa.zta.weapons.WeaponsRegistry;
+import fr.olympa.zta.weapons.ItemStackable;
+import fr.olympa.zta.weapons.Registrable;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class GunCommand implements CommandExecutor{
@@ -26,11 +26,12 @@ public class GunCommand implements CommandExecutor{
 			for (AmmoType ammo : AmmoType.values()) {
 				ammo.give(p, 50, true);
 			}
-			for (Class<? extends Weapon> clazz : WeaponsRegistry.weaponsTypes) {
+			for (Class<? extends Registrable> clazz : ZTARegistry.registrable.values()) {
 				try {
-					WeaponsRegistry.giveWeapon(p, clazz.newInstance());
+					if (clazz.isAssignableFrom(ItemStackable.class)) ZTARegistry.giveItem(p, ((Class<? extends ItemStackable>) clazz).newInstance());
 				}catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
+					continue;
 				}
 			}
 		}

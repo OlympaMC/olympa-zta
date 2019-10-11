@@ -29,6 +29,7 @@ public class Attribute{
 	}
 	
 	public float getValue(){
+		if (modifiers.isEmpty()) return baseValue;
 		float value = baseValue;
 		float multiplicator = 1;
 		for (AttributeModifier modifier : modifiers) {

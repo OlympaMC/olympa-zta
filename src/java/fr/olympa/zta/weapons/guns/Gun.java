@@ -49,11 +49,7 @@ public abstract class Gun extends Weapon{
 	 * <li> Stock (crosse)
 	 * </ol>
 	 */
-	protected Accessory[] accessories = new Accessory[3];
-	
-	public String getInternalName(){
-		return getClass().getSimpleName().substring(3); // nom de classe sans "Gun"
-	}
+	public final Accessory[] accessories = new Accessory[3];
 	
 	public ItemStack createItemStack(){
 		ItemStack item = new OlympaItemBuild(getItemMaterial(), getName())
@@ -66,7 +62,10 @@ public abstract class Gun extends Weapon{
 						"Mode de tir: " + getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()),
 						"",
 						"Arme immatriculée:",
-						"[" + id + "]")
+						"[I" + id + "]",
+						"",
+						"Accessoires: [" + getCurrentMode() + "/" + getAllowedAccessoriesAmount() + "]",
+						"Clic central pour attacher des accessoires")
 				.build();
 		setItemName(item);
 		return item;
@@ -110,7 +109,7 @@ public abstract class Gun extends Weapon{
 						ready = true;
 						setItemName(item);
 						playReadySound(p);
-					}, getFireRate());
+					}, (int) fireRate.getValue());
 				}
 			}
 		}else { // clic gauche : zoom
@@ -127,6 +126,10 @@ public abstract class Gun extends Weapon{
 		}
 	}
 	
+	public void itemClick(Player p){
+		new AccessoriesGUI(this).create(p);
+	}
+	
 	private void fire(Player p){
 		Bullet bullet = getFiredBullet(p);
 		launchBullet(bullet, p); // première balle
@@ -137,10 +140,10 @@ public abstract class Gun extends Weapon{
 			Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
 				launchBullet(bullet, p);
 				ammos--;
-			}, getFireRate() / GunMode.AUTOMATIC_BULLETS_AMOUNT);
+			}, (int) fireRate.getValue() / GunMode.AUTOMATIC_BULLETS_AMOUNT);
 			break;
 		case BLAST:
-			int time = (getFireRate() / 2) / (GunMode.BLAST_BULLETS_AMOUNT - 1);
+			int time = (int) ((fireRate.getValue() / 2) / (GunMode.BLAST_BULLETS_AMOUNT - 1));
 			new BukkitRunnable(){
 				int amount = GunMode.BLAST_BULLETS_AMOUNT - 1;
 				public void run(){
@@ -155,7 +158,7 @@ public abstract class Gun extends Weapon{
 	}
 	
 	private void reload(Player p, ItemStack item){
-		int toCharge = Math.min(getMaxAmmos(), getAmmoType().getAmmos(p));
+		int toCharge = Math.min((int) maxAmmos.getValue(), getAmmoType().getAmmos(p));
 		if (toCharge == 0) return;
 		
 		reloading = OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
@@ -164,7 +167,7 @@ public abstract class Gun extends Weapon{
 			if (ammos != 0) ready = true;
 			setItemName(item);
 			playChargeCompleteSound(p);
-		}, getChargeTime());
+		}, (int) chargeTime.getValue());
 		
 		setItemName(item);
 		playChargeSound(p);
@@ -292,6 +295,22 @@ public abstract class Gun extends Weapon{
 	 */
 	public boolean isStockAllowed(){
 		return false;
+	}
+	
+	public int getAccessoriesAmount(){
+		int i = 0;
+		for (Accessory access : accessories) {
+			if (access != null) i++;
+		}
+		return i;
+	}
+	
+	public int getAllowedAccessoriesAmount(){
+		int i = 0;
+		if (isScopeAllowed()) i++;
+		if (isCannonAllowed()) i++;
+		if (isStockAllowed()) i++;
+		return i;
 	}
 	
 	/**
