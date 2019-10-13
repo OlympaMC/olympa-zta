@@ -10,43 +10,40 @@ import org.bukkit.potion.PotionEffectType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
-/**
- * Barrett M109, sniper, munitions lourdes
- */
-public class GunBarrett extends Gun{
+public class GunDragunov extends Gun{
 	
-	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -3, Operation.ADD_SCALAR);
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
+	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -1, Operation.ADD_SCALAR);
+	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 20, 1);
 	
 	public String getName(){
-		return "Barrett M109";
+		return "Dragunov";
 	}
 	
 	public Material getItemMaterial(){
-		return Material.IRON_HOE;
+		return Material.GOLDEN_HOE;
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HEAVY;
+		return AmmoType.HANDWORKED;
 	}
 	
-	public int getMaxAmmos(){
+	protected int getMaxAmmos(){
 		return 1;
 	}
 	
-	public int getFireRate(){
-		return -1; // 1 seule munition = pas de fire rate
+	protected int getFireRate(){
+		return -1;
 	}
 	
-	public int getChargeTime(){
-		return 80;
+	protected int getChargeTime(){
+		return 60;
 	}
 	
-	public float getKnockback(){
+	protected float getKnockback(){
 		return CommonGunConstants.KNOCKBACK_HIGH;
 	}
 	
-	public float getBulletSpeed(){
+	protected float getBulletSpeed(){
 		return CommonGunConstants.BULLET_SPEED_HIGH;
 	}
 	
@@ -54,16 +51,16 @@ public class GunBarrett extends Gun{
 		return GunAccuracy.EXTREME;
 	}
 	
-	public AttributeModifier getZoomModifier(){
-		return zoomModifier;
-	}
-	
 	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 9, 10, effect);
+		return new BulletEffect(this, 10, 7, effect);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.SINGLE;
+	}
+	
+	public AttributeModifier getZoomModifier(){
+		return zoomModifier;
 	}
 	
 	public boolean isCannonAllowed(){

@@ -6,37 +6,37 @@ import org.bukkit.entity.Player;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunUZI extends Gun{
+public class GunSkorpion extends Gun{
 	
 	public String getName(){
-		return "UZI";
+		return "Skorpion VZ64";
 	}
 	
 	public Material getItemMaterial(){
-		return Material.SLIME_BALL;
+		return Material.MAGMA_CREAM;
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.LIGHT;
+		return AmmoType.HANDWORKED;
 	}
 	
-	public int getMaxAmmos(){
-		return 25;
+	protected int getMaxAmmos(){
+		return 24;
 	}
 	
-	public int getFireRate(){
+	protected int getFireRate(){
 		return 4;
 	}
 	
-	public int getChargeTime(){
+	protected int getChargeTime(){
 		return 50;
 	}
 	
-	public float getKnockback(){
+	protected float getKnockback(){
 		return 0;
 	}
 	
-	public float getBulletSpeed(){
+	protected float getBulletSpeed(){
 		return CommonGunConstants.BULLET_SPEED_LOW;
 	}
 	
@@ -45,7 +45,7 @@ public class GunUZI extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 3, 2);
+		return new BulletSimple(this, 4, 1);
 	}
 	
 	public GunMode getPrimaryMode(){

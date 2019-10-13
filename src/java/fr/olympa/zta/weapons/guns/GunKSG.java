@@ -8,43 +8,39 @@ import org.bukkit.potion.PotionEffectType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
-public class GunM1897 extends Gun{
+public class GunKSG extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
 	
 	public String getName(){
-		return "M1897";
+		return "KSG";
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_SHOVEL;
+		return Material.IRON_SHOVEL;
 	}
 	
 	public AmmoType getAmmoType(){
 		return AmmoType.CARTRIDGE;
 	}
 	
-	public int getMaxAmmos(){
-		return 5;
+	protected int getMaxAmmos(){
+		return 10;
 	}
 	
-	public int getFireRate(){
+	protected int getFireRate(){
 		return 30;
 	}
 	
-	public int getChargeTime(){
-		return 15;
+	protected int getChargeTime(){
+		return 50;
 	}
 	
-	protected boolean isOneByOneCharge(){
-		return true;
+	protected float getKnockback(){
+		return CommonGunConstants.KNOCKBACK_LOW;
 	}
 	
-	public float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_MEDIUM;
-	}
-	
-	public float getBulletSpeed(){
+	protected float getBulletSpeed(){
 		return CommonGunConstants.BULLET_SPEED_LOW;
 	}
 	
@@ -53,11 +49,11 @@ public class GunM1897 extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 7, 10, effect);
+		return new BulletEffect(this, 3, 6, effect);
 	}
 	
 	public GunMode getPrimaryMode(){
-		return GunMode.SINGLE;
+		return GunMode.SEMI_AUTOMATIC;
 	}
 	
 	public boolean isStockAllowed(){

@@ -10,7 +10,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -31,6 +30,7 @@ public class ZTAListener implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.REMOVE_SNOWBALLS);
+		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
 	}
 	
 	@EventHandler
@@ -41,7 +41,9 @@ public class ZTAListener implements Listener{
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent e){
 		if (!e.getEntity().hasMetadata("bullet")) return;
-		((Bullet) e.getEntity().getMetadata("bullet").get(0).value()).hit(e);
+		try {
+			((Bullet) e.getEntity().getMetadata("bullet").get(0).value()).hit(e);
+		}catch (ClassCastException ex) {} // ça arrive quand des balles étaient présentes dans des chunks qui ont été unloadé pendant le runtime
 	}
 	
 	@EventHandler
@@ -87,17 +89,17 @@ public class ZTAListener implements Listener{
 		}
 	}
 	
-	@EventHandler
+	/*@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
 		ItemStack item = e.getItemDrop().getItemStack();
 		
 		Registrable object = ZTARegistry.getItemStackable(item);
 		if (object != null && object instanceof Weapon) ((Weapon) object).onDrop(e);
-	}
+	}*/
 	
 	@EventHandler
 	public void onClick(InventoryClickEvent e){
-		if (e.getClick() != ClickType.MIDDLE) return;
+		if (e.getClick() != ClickType.RIGHT) return;
 		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
 		
 		ItemStack item = e.getCurrentItem();
@@ -105,7 +107,7 @@ public class ZTAListener implements Listener{
 		
 		Registrable object = ZTARegistry.getItemStackable(item);
 		if (object instanceof Gun) {
-			((Gun) object).itemClick((Player) e.getWhoClicked());
+			((Gun) object).itemClick((Player) e.getWhoClicked(), item);
 			e.setCancelled(true);
 		}
 	}

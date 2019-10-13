@@ -2,7 +2,7 @@ package fr.olympa.zta.weapons.knives;
 
 import org.bukkit.Material;
 
-public class KnifeBat extends Knife{
+public class KnifeBatte extends Knife{
 	
 	public String getName(){
 		return "Batte";

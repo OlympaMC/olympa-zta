@@ -33,15 +33,15 @@ public class Gun870 extends Gun{
 	}
 	
 	public float getKnockback(){
-		return 0.05f;
+		return CommonGunConstants.KNOCKBACK_LOW;
 	}
 	
 	public float getBulletSpeed(){
-		return Bullet.SPEED_LOW;
+		return CommonGunConstants.BULLET_SPEED_LOW;
 	}
 	
-	protected float getBulletSpread(){
-		return 0.2f;
+	protected GunAccuracy getAccuracy(){
+		return GunAccuracy.MEDIUM;
 	}
 	
 	public Bullet getFiredBullet(Player p){

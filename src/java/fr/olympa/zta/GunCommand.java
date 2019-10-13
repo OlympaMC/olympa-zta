@@ -28,7 +28,7 @@ public class GunCommand implements CommandExecutor{
 			}
 			for (Class<? extends Registrable> clazz : ZTARegistry.registrable.values()) {
 				try {
-					if (clazz.isAssignableFrom(ItemStackable.class)) ZTARegistry.giveItem(p, ((Class<? extends ItemStackable>) clazz).newInstance());
+					if (ItemStackable.class.isAssignableFrom(clazz)) ZTARegistry.giveItem(p, ((Class<? extends ItemStackable>) clazz).newInstance());
 				}catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 					continue;

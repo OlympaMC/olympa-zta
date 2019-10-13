@@ -10,7 +10,7 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunCobra extends Gun{
 	
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 20, 1);
+	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
 	
 	public String getName(){
 		return "King Cobra";
@@ -37,15 +37,15 @@ public class GunCobra extends Gun{
 	}
 	
 	public float getKnockback(){
-		return 0.05f;
+		return CommonGunConstants.KNOCKBACK_LOW;
 	}
 	
 	public float getBulletSpeed(){
-		return Bullet.SPEED_HIGH;
+		return CommonGunConstants.BULLET_SPEED_HIGH;
 	}
 	
-	protected float getBulletSpread(){
-		return 0;
+	protected GunAccuracy getAccuracy(){
+		return GunAccuracy.EXTREME;
 	}
 	
 	public Bullet getFiredBullet(Player p){

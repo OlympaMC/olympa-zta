@@ -6,37 +6,37 @@ import org.bukkit.entity.Player;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunM16 extends Gun{
+public class GunAK extends Gun{
 	
 	public String getName(){
-		return "M16";
+		return "AK-20";
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_PICKAXE;
+		return Material.GOLDEN_PICKAXE;
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HEAVY;
+		return AmmoType.HANDWORKED;
 	}
 	
-	public int getMaxAmmos(){
+	protected int getMaxAmmos(){
 		return 20;
 	}
 	
-	public int getFireRate(){
-		return 10;
+	protected int getFireRate(){
+		return 15;
 	}
 	
-	public int getChargeTime(){
-		return 60;
+	protected int getChargeTime(){
+		return 70;
 	}
 	
-	public float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_MEDIUM;
+	protected float getKnockback(){
+		return CommonGunConstants.KNOCKBACK_LOW;
 	}
 	
-	public float getBulletSpeed(){
+	protected float getBulletSpeed(){
 		return CommonGunConstants.BULLET_SPEED_HIGH;
 	}
 	
@@ -45,15 +45,15 @@ public class GunM16 extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 5);
+		return new BulletSimple(this, 6, 3);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.AUTOMATIC;
 	}
 	
-	public GunMode getSecondaryMode(){
-		return GunMode.BLAST;
+	public boolean isScopeAllowed(){
+		return true;
 	}
 	
 	public boolean isCannonAllowed(){

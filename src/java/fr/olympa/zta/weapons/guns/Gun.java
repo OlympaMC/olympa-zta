@@ -1,5 +1,9 @@
 package fr.olympa.zta.weapons.guns;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -7,15 +11,13 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.item.OlympaItemBuild;
+import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.weapons.Weapon;
@@ -36,7 +38,7 @@ public abstract class Gun extends Weapon{
 	public final Attribute maxAmmos = new Attribute(getMaxAmmos());
 	public final Attribute chargeTime = new Attribute(getChargeTime());
 	public final Attribute bulletSpeed = new Attribute(getBulletSpeed());
-	public final Attribute bulletSpread = new Attribute(getBulletSpread());
+	public final Attribute bulletSpread = new Attribute(getAccuracy().getBulletSpread());
 	public final Attribute knockback = new Attribute(getKnockback());
 	public final Attribute fireRate = new Attribute(getFireRate());
 	public final Attribute fireVolume = new Attribute(getFireVolume());
@@ -52,25 +54,42 @@ public abstract class Gun extends Weapon{
 	public final Accessory[] accessories = new Accessory[3];
 	
 	public ItemStack createItemStack(){
-		ItemStack item = new OlympaItemBuild(getItemMaterial(), getName())
-				.unbreakable()
-				.flag(ItemFlag.values())
-				.lore("Cadence de tir: " + getFireRate() / 20 + "s",
-						"Temps de recharge: " + getChargeTime() / 20 + "s",
-						"Recul de l'arme: " + getKnockback(),
-						"Munitions: " + getAmmoType().getName(),
-						"Mode de tir: " + getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()),
-						"",
-						"Arme immatriculée:",
-						"[I" + id + "]",
-						"",
-						"Accessoires: [" + getCurrentMode() + "/" + getAllowedAccessoriesAmount() + "]",
-						"Clic central pour attacher des accessoires")
-				.build();
-		setItemName(item);
+		return createItemStack(true);
+	}
+	
+	public ItemStack createItemStack(boolean accessories){
+		ItemStack item = ItemUtils.item(getItemMaterial(), getName());
+		updateItemName(item);
+		updateItemLore(item, accessories);
 		return item;
 	}
 	
+	public void updateItemName(ItemStack item){
+		ItemMeta im = item.getItemMeta();
+		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + getMaxAmmos() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		item.setItemMeta(im);
+	}
+	
+	public void updateItemLore(ItemStack item, boolean accessories){
+		ItemMeta im = item.getItemMeta();
+		List<String> lore = new ArrayList<>(Arrays.asList("Cadence de tir: " + getFireRate() / 20 + "s",
+				"Temps de recharge: " + getChargeTime() / 20 + "s",
+				"Recul de l'arme: " + getKnockback(),
+				"Munitions: " + getAmmoType().getName(),
+				"Mode de tir: " + getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()),
+				"",
+				"Arme immatriculée:",
+				"[I" + id + "]"));
+		if (accessories) {
+			lore.addAll(Arrays.asList("",
+					"Accessoires: [" + getAccessoriesAmount() + "/" + getAllowedAccessoriesAmount() + "]",
+					"Clic droit pour attacher des accessoires"));
+		}
+		im.setLore(lore);
+		item.setItemMeta(im);
+	}
+	
+
 	public void onEntityHit(EntityDamageByEntityEvent e){
 		e.setDamage(getHitDamage());
 	}
@@ -82,13 +101,13 @@ public abstract class Gun extends Weapon{
 		if (reloading != null) {
 			reloading.cancel();
 			reloading = null;
-			setItemName(item);
+			updateItemName(item);
 		}
 	}
 	
-	public void onDrop(PlayerDropItemEvent e){
-		reload(e.getPlayer(), e.getItemDrop().getItemStack());
-		e.setCancelled(true);
+	public boolean drop(Player p, ItemStack item){
+		reload(p, item);
+		return true;
 	}
 	
 	public void onInteract(PlayerInteractEvent e){
@@ -102,12 +121,12 @@ public abstract class Gun extends Weapon{
 			}else if (ready) {
 				fire(p);
 				ready = false;
-				setItemName(item);
+				updateItemName(item);
 				
 				if (ammos > 0) { // si encore des balles dans le barillet
 					OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
 						ready = true;
-						setItemName(item);
+						updateItemName(item);
 						playReadySound(p);
 					}, (int) fireRate.getValue());
 				}
@@ -117,7 +136,7 @@ public abstract class Gun extends Weapon{
 			switch (getLeftClickAction()){
 			case CHANGE_MODE:
 				secondaryMode = !secondaryMode;
-				setItemName(item);
+				updateItemName(item);
 				break;
 			case ZOOM:
 				toggleZoom(p);
@@ -126,8 +145,8 @@ public abstract class Gun extends Weapon{
 		}
 	}
 	
-	public void itemClick(Player p){
-		new AccessoriesGUI(this).create(p);
+	public void itemClick(Player p, ItemStack item){
+		new AccessoriesGUI(this, item).create(p);
 	}
 	
 	private void fire(Player p){
@@ -158,18 +177,28 @@ public abstract class Gun extends Weapon{
 	}
 	
 	private void reload(Player p, ItemStack item){
-		int toCharge = Math.min((int) maxAmmos.getValue(), getAmmoType().getAmmos(p));
+		if (reloading != null) return;
+		
+		int max = (int) maxAmmos.getValue();
+		int toCharge;
+		if (max == ammos) { // déjà le max de munitions
+			toCharge = 0;
+		}else if (isOneByOneCharge()) {
+			toCharge = Math.min(1, getAmmoType().getAmmos(p));
+		}else toCharge = Math.min(max - ammos, getAmmoType().getAmmos(p));
 		if (toCharge == 0) return;
 		
 		reloading = OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
-			ammos = getAmmoType().removeAmmos(p, toCharge);
 			reloading = null;
+			ammos += getAmmoType().removeAmmos(p, toCharge);
 			if (ammos != 0) ready = true;
-			setItemName(item);
+			updateItemName(item);
 			playChargeCompleteSound(p);
+			
+			if (isOneByOneCharge()) reload(p, item); // relancer une charge
 		}, (int) chargeTime.getValue());
 		
-		setItemName(item);
+		updateItemName(item);
 		playChargeSound(p);
 	}
 	
@@ -190,12 +219,6 @@ public abstract class Gun extends Weapon{
 		float knockback = this.knockback.getValue();
 		if (p.isSneaking()) knockback /= 2;
 		p.setVelocity(p.getLocation().getDirection().multiply(-knockback));
-	}
-	
-	private void setItemName(ItemStack item){
-		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + getMaxAmmos() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
-		item.setItemMeta(im);
 	}
 	
 	/**
@@ -219,6 +242,13 @@ public abstract class Gun extends Weapon{
 	protected abstract int getChargeTime();
 	
 	/**
+	 * @return <tt>true</tt> si la charge se fait munition par munition
+	 */
+	protected boolean isOneByOneCharge(){
+		return false;
+	}
+	
+	/**
 	 * @return Puissance de recul en m/s
 	 */
 	protected abstract float getKnockback();
@@ -231,7 +261,7 @@ public abstract class Gun extends Weapon{
 	/**
 	 * @return Rayon du dispersement des balles (en m)
 	 */
-	protected abstract float getBulletSpread();
+	protected abstract GunAccuracy getAccuracy();
 	
 	/**
 	 * @param p Player qui tire la balle
@@ -314,17 +344,6 @@ public abstract class Gun extends Weapon{
 	}
 	
 	/**
-	 * Mettre un accessoire sur un item. Cette méthode ne vérifie pas si l'accessoire est accepté par l'arme.
-	 * @param index Index de l'accessoire, précisions ici: {@link Gun#accessories}
-	 * @param accessory Accessoire à mettre. Peut être <i>null</i>.
-	 */
-	public void setAccessory(byte index, Accessory accessory){
-		if (accessories[index] != null) accessories[index].remove(this);
-		accessories[index] = accessory;
-		accessory.apply(this);
-	}
-	
-	/**
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
 	protected float getFireVolume(){
@@ -397,6 +416,27 @@ public abstract class Gun extends Weapon{
 		public String getName(){
 			return name;
 		}
+	}
+	
+	public enum GunAccuracy{
+		EXTREME("Exrême", 0), HIGH("Bonne", 0.05f), MEDIUM("Moyenne", 0.2f), LOW("Faible", 0.7f);
+		
+		private String name;
+		private float spread;
+		
+		private GunAccuracy(String name, float spread){
+			this.name = name;
+			this.spread = spread;
+		}
+		
+		public String getName(){
+			return name;
+		}
+		
+		public float getBulletSpread(){
+			return spread;
+		}
+		
 	}
 	
 }

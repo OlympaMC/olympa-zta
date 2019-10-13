@@ -13,7 +13,7 @@ public class PacketInjector{
 		try {
 			ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
 			if (pipeline.get("PacketInjector") != null) pipeline.remove("PacketInjector");
-			pipeline.addBefore("packet_handler", "PacketInjector", handler);
+			pipeline.addBefore("packet_handler", handler.getClass().getSimpleName(), handler);
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}

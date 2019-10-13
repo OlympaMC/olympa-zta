@@ -40,11 +40,11 @@ public class GunM1911 extends Gun{
 	}
 	
 	public float getBulletSpeed(){
-		return Bullet.SPEED_MEDIUM;
+		return CommonGunConstants.BULLET_SPEED_MEDIUM;
 	}
 	
-	protected float getBulletSpread(){
-		return 0.1f;
+	protected GunAccuracy getAccuracy(){
+		return GunAccuracy.HIGH;
 	}
 	
 	public Bullet getFiredBullet(Player p){

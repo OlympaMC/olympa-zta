@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
@@ -37,14 +38,18 @@ public abstract class Accessory implements ItemStackable{
 	
 	public enum AccessoryType{
 		
-		SCOPE("Lunette", 22), CANNON("Canon", 29), STOCK("Crosse", 42);
+		SCOPE("Lunette", 13), CANNON("Canon", 20), STOCK("Crosse", 33);
 		
 		private String name;
 		private int slot;
+		private ItemStack available;
+		private ItemStack unavailable;
 		
 		private AccessoryType(String name, int slot){
 			this.name = name;
 			this.slot = slot;
+			this.available = ItemUtils.item(Material.LIME_STAINED_GLASS_PANE, "§aEmplacement disponible : " + name);
+			this.unavailable = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§cEmplacement indisponible : " + name);
 		}
 		
 		public String getName(){
@@ -53,6 +58,14 @@ public abstract class Accessory implements ItemStackable{
 		
 		public int getSlot(){
 			return slot;
+		}
+		
+		public ItemStack getAvailableItemSlot(){
+			return available;
+		}
+		
+		public ItemStack getUnavailableItemSlot(){
+			return unavailable;
 		}
 		
 		public boolean isEnabled(Gun gun){
@@ -67,14 +80,17 @@ public abstract class Accessory implements ItemStackable{
 			return false;
 		}
 		
-		public Accessory get(Gun gun){
-			return gun.accessories[this.ordinal()];
-		}
-		
 		public static AccessoryType getFromSlot(int slot){
 			for (AccessoryType type : values()) {
 				if (type.slot == slot) return type;
 			}
+			return null;
+		}
+		
+		public static AccessoryType getFromAccessory(Accessory accessory){
+			if (accessory instanceof Scope) return SCOPE;
+			if (accessory instanceof Cannon) return CANNON;
+			if (accessory instanceof Stock) return STOCK;
 			return null;
 		}
 	}

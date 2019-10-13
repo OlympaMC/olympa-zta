@@ -40,6 +40,7 @@ public class ZTARegistry{
 	public static ItemStackable getItemStackable(ItemStack is){
 		if (!is.hasItemMeta()) return null;
 		ItemMeta im = is.getItemMeta();
+		if (!im.hasLore()) return null;
 		
 		for (String s : im.getLore()) {
 			if (s.contains("[I")) {
