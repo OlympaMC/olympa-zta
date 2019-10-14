@@ -20,13 +20,11 @@ public abstract class Accessory implements ItemStackable{
 	
 	public ItemStack createItemStack(){
 		List<String> lore = new ArrayList<>();
-		lore.add(getEffectsDescription().length < 2 ? "Effet :" : "Effets :");
+		lore.add("§6§l" + (getEffectsDescription().length < 2 ? "Effet" : "Effets") + " §r§6:");
 		for (int i = 0; i < getEffectsDescription().length; i++) {
-			lore.add("- " + getEffectsDescription()[i]);
+			lore.add("§e- " + getEffectsDescription()[i]);
 		}
-		lore.add("");
-		lore.add("Accessoire immatriculé:");
-		lore.add("[I" + getID() + "]");
+		lore.addAll(getIDLoreLines());
 		return ItemUtils.item(getItemMaterial(), "§a" + getName(), lore.toArray(new String[0]));
 	}
 	

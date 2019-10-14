@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.AttributeModifier;
@@ -72,18 +73,17 @@ public abstract class Gun extends Weapon{
 	
 	public void updateItemLore(ItemStack item, boolean accessories){
 		ItemMeta im = item.getItemMeta();
-		List<String> lore = new ArrayList<>(Arrays.asList("Cadence de tir: " + getFireRate() / 20 + "s",
-				"Temps de recharge: " + getChargeTime() / 20 + "s",
-				"Recul de l'arme: " + getKnockback(),
-				"Munitions: " + getAmmoType().getName(),
-				"Mode de tir: " + getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()),
-				"",
-				"Arme immatriculée:",
-				"[I" + id + "]"));
+		List<String> lore = new ArrayList<>(Arrays.asList(
+				getFeatureLoreLine("Cadence de tir", getFireRate() / 20 + "s"),
+				getFeatureLoreLine("Temps de recharge", getChargeTime() / 20 + "s"),
+				getFeatureLoreLine("Munitions", getAmmoType().getName()),
+				getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
+		lore.addAll(getIDLoreLines());
 		if (accessories) {
-			lore.addAll(Arrays.asList("",
-					"Accessoires: [" + getAccessoriesAmount() + "/" + getAllowedAccessoriesAmount() + "]",
-					"Clic droit pour attacher des accessoires"));
+			lore.addAll(Arrays.asList(
+					"",
+					"§6§lAccessoires §r§6: §e[§n" + getAccessoriesAmount() + "§r§e/" + getAllowedAccessoriesAmount() + "]",
+					"§e§oClic droit pour attacher des accessoires"));
 		}
 		im.setLore(lore);
 		item.setItemMeta(im);
@@ -127,7 +127,7 @@ public abstract class Gun extends Weapon{
 					OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
 						ready = true;
 						updateItemName(item);
-						playReadySound(p);
+						playReadySound(p.getLocation());
 					}, (int) fireRate.getValue());
 				}
 			}
@@ -193,13 +193,13 @@ public abstract class Gun extends Weapon{
 			ammos += getAmmoType().removeAmmos(p, toCharge);
 			if (ammos != 0) ready = true;
 			updateItemName(item);
-			playChargeCompleteSound(p);
+			playChargeCompleteSound(p.getLocation());
 			
 			if (isOneByOneCharge()) reload(p, item); // relancer une charge
 		}, (int) chargeTime.getValue());
 		
 		updateItemName(item);
-		playChargeSound(p);
+		playChargeSound(p.getLocation());
 	}
 	
 	private void toggleZoom(Player p){
@@ -214,7 +214,7 @@ public abstract class Gun extends Weapon{
 	
 	private void launchBullet(Bullet bullet, Player p){
 		bullet.launchProjectile(p);
-		playFireSound(p);
+		playFireSound(p.getLocation());
 		
 		float knockback = this.knockback.getValue();
 		if (p.isSneaking()) knockback /= 2;
@@ -352,34 +352,34 @@ public abstract class Gun extends Weapon{
 	
 	/**
 	 * Jouer le son de tir
-	 * @param p joueur
+	 * @param lc location où est jouée le son
 	 */
-	public void playFireSound(Player p){
-		p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, fireVolume.getValue(), 1);
+	public void playFireSound(Location lc){
+		lc.getWorld().playSound(lc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, fireVolume.getValue(), 1);
 	}
 	
 	/**
 	 * Jouer le son de recharge
-	 * @param p joueur
+	 * @param lc location où est jouée le son
 	 */
-	public void playChargeSound(Player p){
-		p.playSound(p.getLocation(), Sound.BLOCK_PISTON_EXTEND, SoundCategory.PLAYERS, 1, 1);
+	public void playChargeSound(Location lc){
+		lc.getWorld().playSound(lc, Sound.BLOCK_PISTON_EXTEND, SoundCategory.PLAYERS, 1, 1);
 	}
 	
 	/**
 	 * Jouer le son de recharge complète
-	 * @param p joueur
+	 * @param lc location où est jouée le son
 	 */
-	public void playChargeCompleteSound(Player p){
-		p.playSound(p.getLocation(), Sound.BLOCK_PISTON_CONTRACT, SoundCategory.PLAYERS, 1, 1);
+	public void playChargeCompleteSound(Location lc){
+		lc.getWorld().playSound(lc, Sound.BLOCK_PISTON_CONTRACT, SoundCategory.PLAYERS, 1, 1);
 	}
 	
 	/**
 	 * Jouer le son de paré au tir
-	 * @param p joueur
+	 * @param lc location où est jouée le son
 	 */
-	public void playReadySound(Player p){
-		p.playSound(p.getLocation(), Sound.BLOCK_STONE_HIT, SoundCategory.PLAYERS, 1, 1);
+	public void playReadySound(Location lc){
+		lc.getWorld().playSound(lc, Sound.BLOCK_STONE_HIT, SoundCategory.PLAYERS, 1, 1);
 	}
 	
 	public enum GunAction{

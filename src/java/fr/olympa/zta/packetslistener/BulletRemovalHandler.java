@@ -15,9 +15,9 @@ public class BulletRemovalHandler extends ChannelDuplexHandler{
 	public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception{
 		if (msg instanceof PacketPlayOutSpawnEntity) {
 			PacketPlayOutSpawnEntity packet = (PacketPlayOutSpawnEntity) msg;
-			Field k = PacketPlayOutSpawnEntity.class.getDeclaredField("k");
+			Field k = PacketPlayOutSpawnEntity.class.getDeclaredField("k"); // field qui contient le type d'entité
 			k.setAccessible(true);
-			if (k.getInt(packet) == 61) return;
+			if (k.getInt(packet) == 61) return; // 61=snowball : return pour ne pas call write (annule le packet)
 		}
 		super.write(ctx, msg, promise);
 	};
