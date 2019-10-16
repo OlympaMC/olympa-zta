@@ -124,7 +124,7 @@ public abstract class Gun extends Weapon{
 				updateItemName(item);
 				
 				if (ammos > 0) { // si encore des balles dans le barillet
-					OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
+					OlympaZTA.getInstance().getTask().runTaskLater(() -> {
 						ready = true;
 						updateItemName(item);
 						playReadySound(p.getLocation());
@@ -188,7 +188,7 @@ public abstract class Gun extends Weapon{
 		}else toCharge = Math.min(max - ammos, getAmmoType().getAmmos(p));
 		if (toCharge == 0) return;
 		
-		reloading = OlympaZTA.getInstance().getTaskManager().runTaskLater(() -> {
+		reloading = OlympaZTA.getInstance().getTask().runTaskLater(() -> {
 			reloading = null;
 			ammos += getAmmoType().removeAmmos(p, toCharge);
 			if (ammos != 0) ready = true;

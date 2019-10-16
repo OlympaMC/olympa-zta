@@ -6,12 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.objects.OlympaPlugin;
-import fr.olympa.api.task.TaskManager;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunAK;
 import fr.olympa.zta.weapons.guns.GunBarrett;
@@ -41,24 +38,12 @@ import fr.olympa.zta.weapons.knives.KnifeBatte;
 import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
 
-public class OlympaZTA extends JavaPlugin implements OlympaPlugin{
-	protected static OlympaZTA instance;
+public class OlympaZTA extends OlympaPlugin{
 	
-	private TaskManager taskManager = new TaskManager(this);
 	private ZTAListener listener = new ZTAListener();
-	
-	public static OlympaZTA getInstance() {
-		return instance;
-	}
-
-	private String getPrefixConsole() {
-		return "&f[&6" + this.getDescription().getName() + "&f] &e";
-	}
 
 	@Override
 	public void onEnable() {
-		instance = this;
-
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(listener, this);
 		pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
@@ -86,11 +71,8 @@ public class OlympaZTA extends JavaPlugin implements OlympaPlugin{
 		}
 	}
 	
-	public void sendMessage(final String message) {
-		this.getServer().getConsoleSender().sendMessage(SpigotUtils.color(this.getPrefixConsole() + message));
+	public static OlympaZTA getInstance(){
+		return (OlympaZTA) instance;
 	}
 	
-	public TaskManager getTaskManager(){
-		return taskManager;
-	}
 }
