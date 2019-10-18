@@ -7,6 +7,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.zta.registry.ItemStackable;
+
 public abstract class Weapon implements ItemStackable{
 	
 	// Système de cassage d'arme etc. ?

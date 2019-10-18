@@ -3,8 +3,8 @@ package fr.olympa.zta.packetslistener;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.ZTARegistry;
-import fr.olympa.zta.weapons.ItemStackable;
+import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.Weapon;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;

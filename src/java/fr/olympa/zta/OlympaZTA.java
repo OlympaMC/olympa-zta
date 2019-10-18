@@ -8,7 +8,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.gui.Inventories;
+import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaPlugin;
+import fr.olympa.zta.lootchests.ChestCommand;
+import fr.olympa.zta.lootchests.ChestsListener;
+import fr.olympa.zta.registry.ZTARegistry;
+import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunAK;
 import fr.olympa.zta.weapons.guns.GunBarrett;
@@ -40,15 +45,20 @@ import fr.olympa.zta.weapons.knives.KnifeSurin;
 
 public class OlympaZTA extends OlympaPlugin{
 	
-	private ZTAListener listener = new ZTAListener();
+	private WeaponsListener weaponListener = new WeaponsListener();
+	private ChestsListener chestsListener = new ChestsListener();
 
 	@Override
 	public void onEnable() {
+		OlympaPermission.registerPermissions(ZTAPermissions.class);
+		
 		PluginManager pluginManager = this.getServer().getPluginManager();
-		pluginManager.registerEvents(listener, this);
+		pluginManager.registerEvents(weaponListener, this);
+		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
 		getCommand("gun").setExecutor(new GunCommand());
+		new ChestCommand().register();
 		
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 		
@@ -58,7 +68,7 @@ public class OlympaZTA extends OlympaPlugin{
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach((x) -> ZTARegistry.registerObjectType(x));
 		
 		for (Player p : getServer().getOnlinePlayers()) {
-			listener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
+			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 	}
 
@@ -67,7 +77,7 @@ public class OlympaZTA extends OlympaPlugin{
 		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 		
 		for (Player p : getServer().getOnlinePlayers()) {
-			listener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
+			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
 		}
 	}
 	

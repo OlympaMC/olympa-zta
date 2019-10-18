@@ -11,8 +11,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.olympa.api.gui.CustomInventory;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.ZTARegistry;
-import fr.olympa.zta.weapons.ItemStackable;
+import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.accessories.Accessory;
 import fr.olympa.zta.weapons.guns.accessories.Accessory.AccessoryType;
 

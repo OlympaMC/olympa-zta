@@ -6,8 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 
-import fr.olympa.zta.weapons.ItemStackable;
-import fr.olympa.zta.weapons.Registrable;
+import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.Registrable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class GunCommand implements CommandExecutor{

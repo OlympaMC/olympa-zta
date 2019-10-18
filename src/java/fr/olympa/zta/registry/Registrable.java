@@ -1,4 +1,4 @@
-package fr.olympa.zta.weapons;
+package fr.olympa.zta.registry;
 
 /**
  * Représente un objet qui peut être inséré dans le registre

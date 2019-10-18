@@ -1,4 +1,4 @@
-package fr.olympa.zta;
+package fr.olympa.zta.registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,9 +6,6 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import fr.olympa.zta.weapons.ItemStackable;
-import fr.olympa.zta.weapons.Registrable;
 
 public class ZTARegistry{
 	
@@ -26,12 +23,23 @@ public class ZTARegistry{
 	/**
 	 * Enregistrer dans le registre l'objet spécifié, dont les caractéristiques seront sauvegardées dans la BDD
 	 * @param object Objet à enregistrer
+	 * @return ID de l'objet enregistré (renvoie {@link Registrable#getID()})
 	 */
-	public static void registerObject(Registrable object){
+	public static int registerObject(Registrable object) {
 		if (!registrable.containsValue(object.getClass())) throw new IllegalArgumentException("Registrable object \"" + object.getClass().getName() + "\" has not been registered!");
 		registry.put(object.getID(), object);
+		return object.getID();
 	}
 	
+	/**
+	 * Chercher dans le registre l'objet correspondant à l'ID
+	 * @param id ID de l'objet
+	 * @return objet correspondant à l'ID spécifié
+	 */
+	public static Registrable getObject(int id) {
+		return registry.get(id);
+	}
+
 	/**
 	 * Chercher dans le registre l'objet correspondant à l'item
 	 * @param is Item pour lequel récupérer l'objet. Doit contenir une ligne de lore <code>[Ixxxxxx]</code>

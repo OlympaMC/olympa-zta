@@ -1,4 +1,4 @@
-package fr.olympa.zta;
+package fr.olympa.zta.weapons;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,12 +20,12 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
-import fr.olympa.zta.weapons.Registrable;
-import fr.olympa.zta.weapons.Weapon;
+import fr.olympa.zta.registry.Registrable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
-public class ZTAListener implements Listener{
+public class WeaponsListener implements Listener{
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
@@ -88,14 +88,6 @@ public class ZTAListener implements Listener{
 			if (object instanceof Gun) ((Gun) object).itemHeld(p, item);
 		}
 	}
-	
-	/*@EventHandler
-	public void onDrop(PlayerDropItemEvent e){
-		ItemStack item = e.getItemDrop().getItemStack();
-		
-		Registrable object = ZTARegistry.getItemStackable(item);
-		if (object != null && object instanceof Weapon) ((Weapon) object).onDrop(e);
-	}*/
 	
 	@EventHandler
 	public void onClick(InventoryClickEvent e){

@@ -4,7 +4,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-import fr.olympa.zta.ZTAListener;
+import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class BulletSimple extends Bullet{
@@ -21,7 +21,7 @@ public class BulletSimple extends Bullet{
 		Player shooter = (Player) e.getEntity().getShooter();
 		if (e.getHitEntity() != null) {
 			if (e.getHitEntity() instanceof Player) {
-				ZTAListener.cancelDamageEvent = true;
+				WeaponsListener.cancelDamageEvent = true;
 				damage((Player) e.getHitEntity(), shooter, playerDamage + gun.damageAdded);
 			}else if (e.getHitEntity() instanceof LivingEntity) {
 				damage((LivingEntity) e.getHitEntity(), shooter, entityDamage + gun.damageAdded);

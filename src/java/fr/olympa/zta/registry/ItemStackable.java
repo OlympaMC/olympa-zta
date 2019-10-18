@@ -1,4 +1,4 @@
-package fr.olympa.zta.weapons;
+package fr.olympa.zta.registry;
 
 import java.util.Arrays;
 import java.util.List;
