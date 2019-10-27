@@ -46,7 +46,7 @@
 				<version>3.2.1</version>
 				<configuration>
 					<minimizeJar>true</minimizeJar>
-					<finalName>OlympaZta</finalName>
+					<finalName>OlympaZTA</finalName>
 					<outputDirectory>target</outputDirectory>
 				</configuration>
 				<executions>
