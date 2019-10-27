@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 
-import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.zta.lootchests.ChestCommand;
@@ -47,18 +46,26 @@ import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
 
 public class OlympaZTA extends OlympaPlugin{
+
+	private static OlympaZTA instance;
+
+	public static OlympaZTA getInstance() {
+		return (OlympaZTA) instance;
+	}
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
 	private ChestsListener chestsListener = new ChestsListener();
 
 	@Override
 	public void onEnable() {
+		instance = this;
+		super.onEnable();
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
 		pluginManager.registerEvents(chestsListener, this);
-		pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
+		//pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
 		getCommand("gun").setExecutor(new GunCommand());
 		new ChestCommand().register();
@@ -97,10 +104,6 @@ public class OlympaZTA extends OlympaPlugin{
 		}catch (ReflectiveOperationException ex) {}
 
 		ZTARegistry.registerObjectType(clazz);
-	}
-
-	public static OlympaZTA getInstance(){
-		return (OlympaZTA) instance;
 	}
 	
 }

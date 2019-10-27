@@ -1,14 +1,12 @@
 package fr.olympa.zta.weapons.guns;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.gui.CustomInventory;
+import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ItemStackable;
@@ -16,20 +14,17 @@ import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.accessories.Accessory;
 import fr.olympa.zta.weapons.guns.accessories.Accessory.AccessoryType;
 
-public class AccessoriesGUI implements CustomInventory{
+public class AccessoriesGUI extends OlympaGUI{
 	
 	private static final ItemStack separator = ItemUtils.item(Material.GRAY_STAINED_GLASS_PANE, "§7");
 	
 	private Gun gun;
 	private ItemStack editedItem;
 	
-	public AccessoriesGUI(Gun gun, ItemStack item){
+	public AccessoriesGUI(Gun gun, ItemStack editedItem) {
+		super("Modifier son arme", 5);
 		this.gun = gun;
-		this.editedItem = item;
-	}
-	
-	public Inventory open(Player p){
-		Inventory inv = Bukkit.createInventory(null, 45, "Modifier son arme");
+		this.editedItem = editedItem;
 		
 		for (int i = 0; i < 45; i++) inv.setItem(i, separator);
 		inv.setItem(22, gun.createItemStack(false));
@@ -43,16 +38,14 @@ public class AccessoriesGUI implements CustomInventory{
 			}else item = type.getUnavailableItemSlot();
 			inv.setItem(type.getSlot(), item);
 		}
-		
-		return p.openInventory(inv).getTopInventory();
 	}
 	
-	public boolean onClose(Player p, Inventory inv){
+	public boolean onClose(Player p) {
 		gun.updateItemLore(editedItem, true);
 		return true;
 	}
 	
-	public boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click){ // clic avec rien dans la main
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) { // clic avec rien dans la main
 		AccessoryType accessoryType = AccessoryType.getFromSlot(slot);
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
 		
@@ -71,7 +64,7 @@ public class AccessoriesGUI implements CustomInventory{
 		return false; // laisse le joueur prendre l'item
 	}
 	
-	public boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){ // clic avec quelque chose dans la main
+	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) { // clic avec quelque chose dans la main
 		AccessoryType accessoryType = AccessoryType.getFromSlot(slot);
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
 		if (current.getType() == Material.RED_STAINED_GLASS_PANE) return true; // si le slot est indisponible : cancel
