@@ -82,4 +82,8 @@ public enum AmmoType{
 		p.getInventory().addItem(new ItemStack(filled ? fill : empty, amount));
 	}
 	
+	public static void givePowder(Player p, int amount) {
+		p.getInventory().addItem(new ItemStack(Material.BONE_MEAL, amount));
+	}
+
 }

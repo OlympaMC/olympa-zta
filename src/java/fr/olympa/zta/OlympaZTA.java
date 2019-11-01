@@ -12,8 +12,6 @@ import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
-import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun870;
@@ -76,8 +74,9 @@ public class OlympaZTA extends OlympaPlugin{
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class,
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class,
-				LootChest.class).forEach(this::registerObjectCreator);
+				LootChest.class).forEach(ZTARegistry::registerObjectType);
 		
+
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
@@ -90,20 +89,6 @@ public class OlympaZTA extends OlympaPlugin{
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
 		}
-	}
-	
-	public void registerObjectCreator(Class<? extends Registrable> clazz) {
-		try {
-			Class<?> subClass = Class.forName(clazz.getName() + "$Creator");
-			if (LootCreator.class.isAssignableFrom(subClass)) {
-				LootChest.addLootCreator((LootCreator) subClass.getDeclaredConstructor().newInstance());
-				System.out.println("added creator " + subClass.getName()); // debug (TODO remove)
-			}
-		}catch (NoSuchMethodException ex) {
-			sendMessage("§cNo valid constructor found for the creator class of " + clazz.getSimpleName());
-		}catch (ReflectiveOperationException ex) {}
-
-		ZTARegistry.registerObjectType(clazz);
 	}
 	
 }
