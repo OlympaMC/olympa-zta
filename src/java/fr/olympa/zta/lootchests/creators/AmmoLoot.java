@@ -31,7 +31,7 @@ public class AmmoLoot implements LootCreator {
 	}
 
 	public void give(Player p, Random random) {
-		int amount = random.nextInt(max - min) + min;
+		int amount = random.nextInt(max - min + 1) + min;
 		if (type == null) {
 			AmmoType.givePowder(p, amount);
 		}else type.give(p, amount, filled);

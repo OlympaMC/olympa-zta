@@ -17,10 +17,12 @@ public class ChestsListener implements Listener{
 		if (e.getHand() != EquipmentSlot.HAND) return;
 		
 		Block block = e.getClickedBlock();
-		if (!block.hasMetadata("lootchest")) return;
 
-		LootChest chest = (LootChest) ZTARegistry.getObject(block.getMetadata("lootchest").get(0).asInt());
+		LootChest chest = (LootChest) ZTARegistry.getObject(block);
+		if (chest == null) return;
+
 		chest.click(e.getPlayer());
+		e.setCancelled(true);
 	}
 	
 }

@@ -1,14 +1,22 @@
 package fr.olympa.zta.registry;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.Metadatable;
+
+import fr.olympa.zta.OlympaZTA;
 
 public class ZTARegistry{
 	
+	public static final String METADATA_KEY = "67182_registry_key";
+
 	private static final Map<Integer, Registrable> registry = new HashMap<>(); // TODO: à sauvegarder dans une bdd ou un fichier YAML
 	public static final Map<String, Class<? extends Registrable>> registrable = new HashMap<>();
 	
@@ -17,7 +25,7 @@ public class ZTARegistry{
 	 * @param objectClass Classe de l'objet à enregistrer
 	 */
 	public static void registerObjectType(Class<? extends Registrable> objectClass){
-		registrable.put(objectClass.getName(), objectClass);
+		registrable.put(objectClass.getSimpleName(), objectClass);
 	}
 	
 	/**
@@ -32,12 +40,41 @@ public class ZTARegistry{
 	}
 	
 	/**
+	 * Enregistrer dans le registre l'objet spécifié, dont les caractéristiques seront sauvegardées dans la BDD
+	 * @param object Objet à enregistrer
+	 * @return ID de l'objet enregistré (renvoie {@link Registrable#getID()})
+	 */
+	public static int registerObject(Metadatable metadatable, Registrable object) {
+		if (!registrable.containsValue(object.getClass())) throw new IllegalArgumentException("Registrable object \"" + object.getClass().getName() + "\" has not been registered!");
+		metadatable.setMetadata(METADATA_KEY, new FixedMetadataValue(OlympaZTA.getInstance(), object.getID()));
+		registry.put(object.getID(), object);
+		return object.getID();
+	}
+
+	/**
 	 * Chercher dans le registre l'objet correspondant à l'ID
 	 * @param id ID de l'objet
 	 * @return objet correspondant à l'ID spécifié
 	 */
 	public static Registrable getObject(int id) {
 		return registry.get(id);
+	}
+
+	/**
+	 * Chercher dans le registre l'objet correspondant à la metadata
+	 * @param metadatable entité, bloc, etc. dans lequel chercher l'ID
+	 * @return objet correspondant au metadatable spécifié
+	 */
+	public static Registrable getObject(Metadatable metadatable) {
+		List<MetadataValue> list = metadatable.getMetadata(METADATA_KEY);
+		if (list == null || list.isEmpty()) return null;
+		for (MetadataValue value : list) {
+			int id = value.asInt();
+			if (id == 0) continue;
+			Registrable object = registry.get(id);
+			if (object != null) return object;
+		}
+		return null;
 	}
 
 	/**

@@ -13,6 +13,7 @@ import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.registry.ZTARegistry;
+import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunAK;
@@ -65,8 +66,8 @@ public class OlympaZTA extends OlympaPlugin{
 		pluginManager.registerEvents(chestsListener, this);
 		//pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
-		getCommand("gun").setExecutor(new GunCommand());
 		new ChestCommand().register();
+		new WeaponsCommand().register();
 		
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 		

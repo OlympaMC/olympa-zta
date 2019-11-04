@@ -27,6 +27,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		nextOpen = time + minutesToWait * 60000;
 
 		for (LootCreator creator : pick()) {
+			System.out.println(creator.getClass().getName() + " " + creator.getChance());
 			creator.give(p, super.random);
 		}
 	}

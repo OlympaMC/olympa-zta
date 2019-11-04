@@ -4,6 +4,3 @@ api-version: 1.13
 depend: [OlympaCore]
 authors: [SkytAsul]
 main: fr.olympa.zta.OlympaZTA
-commands:
-  gun:
-    description: Commande de debug

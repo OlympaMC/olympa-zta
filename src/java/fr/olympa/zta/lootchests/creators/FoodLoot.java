@@ -31,7 +31,7 @@ public class FoodLoot implements LootCreator {
 	}
 
 	public void give(Player p, Random random) {
-		type.give(p, random.nextInt(max - min) + min);
+		type.give(p, random.nextInt(max - min + 1) + min);
 	}
 
 	public enum Food {
@@ -41,7 +41,7 @@ public class FoodLoot implements LootCreator {
 		COOKED_RABBIT("Viande de lapin cuite"),
 		COOKED_COD("Morue cuite"),
 		COOKED_BEEF("Steak cuit"),
-		SOUP("Soupe"),
+		MUSHROOM_STEW("Soupe"),
 		GOLDEN_CARROT("Carotte dorée"),
 		COOKIE("Cookie"),
 		COOKED_PORKCHOP("Viande de porc cuite"),
