@@ -2,12 +2,15 @@ package fr.olympa.zta.lootchests;
 
 import java.util.List;
 
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.registry.Registrable;
+import fr.olympa.zta.registry.ZTARegistry;
 
 public class LootChest extends AbstractRandomizedPicker<LootCreator> implements Registrable {
 
@@ -32,6 +35,10 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		}
 	}
 
+	public void resetTimer() {
+		this.nextOpen = 0;
+	}
+
 	public int getID() {
 		return id;
 	}
@@ -50,6 +57,16 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 
 	public List<LootCreator> getAlwaysObjectList() {
 		return type.getCreatorsAlways();
+	}
+
+	public static LootChest getLootChest(Chest chest) {
+		ItemStack item = chest.getInventory().getItem(0);
+		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return null;
+		try {
+			return (LootChest) ZTARegistry.getObject(Integer.parseInt(item.getItemMeta().getDisplayName()));
+		}catch (NumberFormatException ex) {
+			return null;
+		}
 	}
 
 }
