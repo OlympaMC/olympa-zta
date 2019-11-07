@@ -74,16 +74,16 @@ public enum AmmoType{
 	}
 	
 	/**
-	 * @param p Player à qui donner les munitions
-	 * @param amount Quantité de munitions à donner
-	 * @param filled true si les munitions sont pleines
+	 * @param amount Quantité de munitions
+	 * @param filled <tt>true</tt> si les munitions sont pleines
+	 * @return Item correspondant aux paramètres des munitions
 	 */
-	public void give(Player p, int amount, boolean filled){
-		p.getInventory().addItem(new ItemStack(filled ? fill : empty, amount));
+	public ItemStack getAmmo(int amount, boolean filled) {
+		return new ItemStack(filled ? fill : empty, amount);
 	}
 	
-	public static void givePowder(Player p, int amount) {
-		p.getInventory().addItem(new ItemStack(Material.BONE_MEAL, amount));
+	public static ItemStack getPowder(int amount) {
+		return new ItemStack(Material.BONE_MEAL, amount);
 	}
 
 }

@@ -25,7 +25,7 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 		try {
 			if (ItemStackable.class.isAssignableFrom(clazz)) {
-				ZTARegistry.giveItem(cmd.player, ((Class<? extends ItemStackable>) clazz).newInstance());
+				cmd.player.getInventory().addItem(ZTARegistry.createItem(((Class<? extends ItemStackable>) clazz).newInstance()));
 				sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
 			}else {
 				sendError("L'objet spécifié ne correspond pas à une arme.");
@@ -41,7 +41,7 @@ public class WeaponsCommand extends ComplexCommand {
 		try {
 			int amount = Integer.parseInt((String) cmd.args[2]);
 			boolean filled = Boolean.parseBoolean((String) cmd.args[1]);
-			AmmoType.valueOf(((String) cmd.args[0]).toUpperCase()).give(cmd.player, amount, filled);
+			cmd.player.getInventory().addItem(AmmoType.valueOf(((String) cmd.args[0]).toUpperCase()).getAmmo(amount, filled));
 		}catch (NumberFormatException ex) {
 			sendError(cmd.args[2] + " n'est pas un nombre valide.");
 		}catch (IllegalArgumentException ex) {

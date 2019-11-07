@@ -3,7 +3,6 @@ package fr.olympa.zta.registry;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -60,15 +59,15 @@ public class ZTARegistry{
 	}
 	
 	/**
-	 * Donner l'item découlant d'un objet ItemStackable à un joueur et enregistrer cet objet dans le registre
+	 * Créer l'item découlant d'un objet ItemStackable et enregistrer cet objet dans le registre
 	 * @param <T> Objet de type {@link ItemStackable}
-	 * @param p Joueur à qui donner l'item
 	 * @param object Objet pour lequel sera créé l'item et qui sera enregistré dans le registre.
+	 * @return Item créé
 	 */
-	public static <T extends ItemStackable> void giveItem(Player p, T object){
+	public static <T extends ItemStackable> ItemStack createItem(T object) {
 		ItemStack is = object.createItemStack();
 		ZTARegistry.registerObject(object);
-		p.getInventory().addItem(is);
+		return is;
 	}
 	
 }

@@ -1,10 +1,10 @@
 package fr.olympa.zta.lootchests.creators;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ItemStackable;
@@ -28,12 +28,13 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 		return chance;
 	}
 
-	public void give(Player p, Random random) {
+	public ItemStack create(Player p, Random random) {
 		try {
-			ZTARegistry.giveItem(p, constructor.newInstance());
-		}catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			return ZTARegistry.createItem(constructor.newInstance());
+		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

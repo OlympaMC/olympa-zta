@@ -1,7 +1,7 @@
 package fr.olympa.zta.weapons;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 
@@ -39,8 +39,8 @@ public enum ArmorType {
 		return "error";
 	}
 
-	public void give(Player p, ArmorSlot slot) {
-		p.getInventory().addItem(ItemUtils.item(Material.valueOf(type + "_" + slot.name()), "§b" + getSlotName(slot)));
+	public ItemStack get(ArmorSlot slot) {
+		return ItemUtils.item(Material.valueOf(type + "_" + slot.name()), "§b" + getSlotName(slot));
 	}
 
 	public enum ArmorSlot {

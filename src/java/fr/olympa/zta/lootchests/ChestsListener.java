@@ -6,8 +6,10 @@ import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 
 public class ChestsListener implements Listener{
 	
@@ -26,4 +28,13 @@ public class ChestsListener implements Listener{
 		chest.click(e.getPlayer());
 	}
 	
+	@EventHandler
+	public void onClose(InventoryCloseEvent e) {
+		Inventory inv = e.getInventory();
+		if (!(inv.getHolder() instanceof LootChest)) return;
+
+		LootChest chest = (LootChest) inv.getHolder();
+		chest.updateChestState();
+	}
+
 }

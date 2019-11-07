@@ -3,6 +3,7 @@ package fr.olympa.zta.lootchests.creators;
 import java.util.Random;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.weapons.guns.AmmoType;
 
@@ -30,11 +31,9 @@ public class AmmoLoot implements LootCreator {
 		return chance;
 	}
 
-	public void give(Player p, Random random) {
+	public ItemStack create(Player p, Random random) {
 		int amount = random.nextInt(max - min + 1) + min;
-		if (type == null) {
-			AmmoType.givePowder(p, amount);
-		}else type.give(p, amount, filled);
+		return type == null ? AmmoType.getPowder(amount) : type.getAmmo(amount, filled);
 	}
 
 }

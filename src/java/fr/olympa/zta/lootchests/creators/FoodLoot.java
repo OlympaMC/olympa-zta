@@ -30,8 +30,8 @@ public class FoodLoot implements LootCreator {
 		return chance;
 	}
 
-	public void give(Player p, Random random) {
-		type.give(p, random.nextInt(max - min + 1) + min);
+	public ItemStack create(Player p, Random random) {
+		return type.get(random.nextInt(max - min + 1) + min);
 	}
 
 	public enum Food {
@@ -55,10 +55,10 @@ public class FoodLoot implements LootCreator {
 			this.type = Material.valueOf(name());
 		}
 
-		public void give(Player p, int amount) {
+		public ItemStack get(int amount) {
 			ItemStack item = ItemUtils.item(type, "§a" + name);
 			item.setAmount(amount);
-			p.getInventory().addItem(item);
+			return item;
 		}
 
 	}
