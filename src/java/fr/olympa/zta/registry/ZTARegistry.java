@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ZTARegistry{
 
-	private static final Map<Integer, Registrable> registry = new HashMap<>(); // TODO: à sauvegarder dans une bdd ou un fichier YAML
+	private static final Map<Integer, Registrable> registry = new HashMap<>(200); // TODO: à sauvegarder dans une bdd ou un fichier YAML
 	public static final Map<String, Class<? extends Registrable>> registrable = new HashMap<>();
 	
 	/**
@@ -37,6 +37,10 @@ public class ZTARegistry{
 	 */
 	public static Registrable getObject(int id) {
 		return registry.get(id);
+	}
+
+	public static int getRegistrySize() {
+		return registry.size();
 	}
 
 	/**

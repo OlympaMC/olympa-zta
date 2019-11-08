@@ -36,11 +36,11 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
-	@Cmd (player = true, min = 2, args = { "LIGHT|HEAVY|HANDWORKED|CARTRIDGE", "true|false", "1|2|3|..." })
+	@Cmd (player = true, min = 3, args = { "LIGHT|HEAVY|HANDWORKED|CARTRIDGE", "true|false", "1|2|3|..." })
 	public void giveAmmo(CommandContext cmd) {
 		try {
-			int amount = Integer.parseInt((String) cmd.args[2]);
 			boolean filled = Boolean.parseBoolean((String) cmd.args[1]);
+			int amount = Integer.parseInt((String) cmd.args[2]);
 			cmd.player.getInventory().addItem(AmmoType.valueOf(((String) cmd.args[0]).toUpperCase()).getAmmo(amount, filled));
 		}catch (NumberFormatException ex) {
 			sendError(cmd.args[2] + " n'est pas un nombre valide.");

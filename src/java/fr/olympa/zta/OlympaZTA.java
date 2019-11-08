@@ -2,6 +2,7 @@ package fr.olympa.zta;
 
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -12,6 +13,8 @@ import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
+import fr.olympa.zta.mobs.MobSpawning;
+import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
@@ -55,6 +58,8 @@ public class OlympaZTA extends OlympaPlugin{
 	private WeaponsListener weaponListener = new WeaponsListener();
 	private ChestsListener chestsListener = new ChestsListener();
 
+	public MobSpawning spawn;
+
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -68,6 +73,7 @@ public class OlympaZTA extends OlympaPlugin{
 
 		new ChestCommand().register();
 		new WeaponsCommand().register();
+		new MobsCommand().register();
 		
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 		
@@ -77,7 +83,9 @@ public class OlympaZTA extends OlympaPlugin{
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class,
 				LootChest.class).forEach(ZTARegistry::registerObjectType);
 		
-
+		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
+		spawn.start();
+		
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
@@ -85,11 +93,13 @@ public class OlympaZTA extends OlympaPlugin{
 
 	@Override
 	public void onDisable(){
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
+		spawn.end();
 		
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
 		}
+
+		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 	
 }
