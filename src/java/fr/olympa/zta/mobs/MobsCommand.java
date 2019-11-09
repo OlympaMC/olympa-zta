@@ -17,6 +17,7 @@ public class MobsCommand extends ComplexCommand {
 	@Cmd
 	public void info(CommandContext cmd) {
 		sendMessage(Prefix.INFO, "Nombre de mobs moyen dans la queue de spawn : " + Utils.formatDouble(OlympaZTA.getInstance().spawn.getAverageQueueSize(), 2));
+		sendMessage(Prefix.INFO, "Taille du tableau des inventaires : " + MobsListener.inventories.size());
 	}
 
 	@Cmd (player = true)

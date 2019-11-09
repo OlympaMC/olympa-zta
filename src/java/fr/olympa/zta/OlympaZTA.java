@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
@@ -15,6 +16,7 @@ import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobsCommand;
+import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
@@ -57,6 +59,7 @@ public class OlympaZTA extends OlympaPlugin{
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
 	private ChestsListener chestsListener = new ChestsListener();
+	private MobsListener mobsListener = new MobsListener();
 
 	public MobSpawning spawn;
 
@@ -69,6 +72,7 @@ public class OlympaZTA extends OlympaPlugin{
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
 		pluginManager.registerEvents(chestsListener, this);
+		pluginManager.registerEvents(mobsListener, this);
 		//pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
 		new ChestCommand().register();
@@ -93,6 +97,7 @@ public class OlympaZTA extends OlympaPlugin{
 
 	@Override
 	public void onDisable(){
+		HandlerList.unregisterAll(this);
 		spawn.end();
 		
 		for (Player p : getServer().getOnlinePlayers()) {
