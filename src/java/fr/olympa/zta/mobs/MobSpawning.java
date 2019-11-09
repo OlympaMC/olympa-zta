@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -42,17 +43,20 @@ public class MobSpawning {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				synchronized (spawnQueue) {
+					List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
 					for (Chunk chunk : getActiveChunks()) {
-						if (chunk.getEntities().length > 10) continue;
 						for (int dx = 0; dx < 8; dx++) {
 							int x = dx * 2;
 							for (int dz = 0; dz < 8; dz++) {
 								int z = dz * 2;
 								Block prev = chunk.getBlock(x, 0, z);
-								for (int y = 1; y < 140; y++) {
+								y: for (int y = 1; y < 140; y++) {
 									if (!UNSPAWNABLE_ON.contains(prev.getType()) && (prev = chunk.getBlock(x, y, z)).getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
 										if (random.nextFloat() < 0.01) { // 1 chance sur 100
 											Block block = chunk.getBlock(x, y, z);
+											for (Location loc : entities) {
+												if (loc.distanceSquared(block.getLocation()) < 100) continue y; // distance aux autres entités obligatoirement > à 10 blocs
+											}
 											if (block.getLightLevel() < 8) spawnQueue.add(block.getLocation());
 										}
 									}

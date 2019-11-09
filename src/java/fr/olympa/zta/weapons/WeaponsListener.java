@@ -49,8 +49,6 @@ public class WeaponsListener implements Listener{
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e){
 		if (e.getItem() == null || e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
-		
-		System.out.println("WeaponsListener.onPlayerInteract() " + ZTARegistry.getRegistrySize());
 
 		Registrable object = ZTARegistry.getItemStackable(e.getItem());
 		if (object != null && object instanceof Weapon) ((Weapon) object).onInteract(e);

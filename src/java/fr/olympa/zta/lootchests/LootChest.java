@@ -55,11 +55,11 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		}
 
 		p.openInventory(inv);
-		updateChestState();
+		updateChestState(inv.getViewers().size());
 	}
 
-	public void updateChestState() {
-		((CraftWorld) location.getWorld()).getHandle().playBlockAction(nmsPosition, nmsBlock, 1, inv.getViewers().size());
+	public void updateChestState(int viewers) {
+		((CraftWorld) location.getWorld()).getHandle().playBlockAction(nmsPosition, nmsBlock, 1, viewers);
 	}
 
 	public void resetTimer() {

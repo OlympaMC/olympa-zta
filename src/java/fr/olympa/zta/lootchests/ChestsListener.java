@@ -34,7 +34,7 @@ public class ChestsListener implements Listener{
 		if (!(inv.getHolder() instanceof LootChest)) return;
 
 		LootChest chest = (LootChest) inv.getHolder();
-		chest.updateChestState();
+		chest.updateChestState(e.getViewers().size() - 1);
 	}
 
 }
