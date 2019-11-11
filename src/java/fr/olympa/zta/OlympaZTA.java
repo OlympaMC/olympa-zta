@@ -11,6 +11,10 @@ import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaPlugin;
+import fr.olympa.api.scoreboard.DynamicLine;
+import fr.olympa.api.scoreboard.FixedLine;
+import fr.olympa.api.scoreboard.ScoreboardManager;
+import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
@@ -62,6 +66,7 @@ public class OlympaZTA extends OlympaPlugin{
 	private MobsListener mobsListener = new MobsListener();
 
 	public MobSpawning spawn;
+	public ScoreboardManager scoreboards;
 
 	@Override
 	public void onEnable() {
@@ -90,6 +95,12 @@ public class OlympaZTA extends OlympaPlugin{
 		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
 		spawn.start();
 		
+		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
+				new FixedLine(""),
+				new DynamicLine(x -> "§eRang : §6" + x.getGroup().getName()),
+				new FixedLine(""),
+				new DynamicLine(x -> "§ePosition : §6" + SpigotUtils.convertBlockLocationToString(x.getPlayer().getLocation()), 1, 0)));
+
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
@@ -99,6 +110,7 @@ public class OlympaZTA extends OlympaPlugin{
 	public void onDisable(){
 		HandlerList.unregisterAll(this);
 		spawn.end();
+		scoreboards.unload();
 		
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));

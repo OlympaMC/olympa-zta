@@ -27,7 +27,7 @@ public class MobSpawning {
 
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS);
 
-	private World world;
+	public final World world;
 
 	private BukkitTask[] tasks = new BukkitTask[2];
 	private Random random = new Random();
@@ -77,7 +77,7 @@ public class MobSpawning {
 					int i = spawnQueue.size() / 2;
 					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						Location loc = iterator.next();
-						Mobs.spawnZombie(loc);
+						Mobs.spawnCommonZombie(loc);
 						iterator.remove();
 						i--;
 						if (i == 0) break;

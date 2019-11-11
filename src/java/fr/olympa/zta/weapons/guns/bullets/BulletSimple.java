@@ -20,8 +20,8 @@ public class BulletSimple extends Bullet{
 	public void hit(ProjectileHitEvent e){
 		Player shooter = (Player) e.getEntity().getShooter();
 		if (e.getHitEntity() != null) {
+			WeaponsListener.cancelDamageEvent = true;
 			if (e.getHitEntity() instanceof Player) {
-				WeaponsListener.cancelDamageEvent = true;
 				damage((Player) e.getHitEntity(), shooter, playerDamage + gun.damageAdded);
 			}else if (e.getHitEntity() instanceof LivingEntity) {
 				damage((LivingEntity) e.getHitEntity(), shooter, entityDamage + gun.damageAdded);

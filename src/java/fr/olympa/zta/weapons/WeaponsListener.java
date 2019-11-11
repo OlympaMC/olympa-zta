@@ -20,6 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
 import fr.olympa.zta.registry.Registrable;
@@ -34,6 +35,8 @@ public class WeaponsListener implements Listener{
 	public void onJoin(PlayerJoinEvent e){
 		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.REMOVE_SNOWBALLS);
 		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
+
+		e.getPlayer().setMaximumNoDamageTicks(Mobs.NO_DAMAGE_TICKS);
 	}
 	
 	@EventHandler
