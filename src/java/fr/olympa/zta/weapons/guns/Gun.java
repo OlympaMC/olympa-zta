@@ -9,7 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -173,6 +175,12 @@ public abstract class Gun extends Weapon{
 				}
 			}.runTaskTimer(OlympaZTA.getInstance(), time, time);
 			break;
+		}
+
+		float distance = fireVolume.getValue() * 16;
+		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
+			Zombie zombie = (Zombie) en;
+			if (zombie.getTarget() == null) zombie.setTarget(p);
 		}
 	}
 	
@@ -347,7 +355,7 @@ public abstract class Gun extends Weapon{
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
 	protected float getFireVolume(){
-		return 4;
+		return 3;
 	}
 	
 	/**

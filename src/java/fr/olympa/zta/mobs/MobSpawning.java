@@ -30,6 +30,7 @@ public class MobSpawning {
 	public final World world;
 
 	private BukkitTask[] tasks = new BukkitTask[2];
+	private boolean enabled = false;
 	private Random random = new Random();
 
 	private List<Location> spawnQueue = new ArrayList<>(150);
@@ -85,6 +86,8 @@ public class MobSpawning {
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 50L);
+
+		enabled = true;
 	}
 
 	private final int chunkRadius = 3;
@@ -108,6 +111,10 @@ public class MobSpawning {
 		return averageQueueSize.stream().mapToInt(x -> x).average().getAsDouble();
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 	public void end() {
 		for (int i = 0; i < tasks.length; i++) {
 			if (tasks[i] != null) {
@@ -115,6 +122,10 @@ public class MobSpawning {
 				tasks[i] = null;
 			}
 		}
+		spawnQueue.clear();
+		averageQueueSize.clear();
+
+		enabled = false;
 	}
 
 }

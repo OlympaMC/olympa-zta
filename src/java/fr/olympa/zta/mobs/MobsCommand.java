@@ -18,9 +18,13 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd
 	public void info(CommandContext cmd) {
-		sendMessage(Prefix.INFO, "Nombre de mobs moyen dans la queue de spawn : " + Utils.formatDouble(OlympaZTA.getInstance().spawn.getAverageQueueSize(), 2));
+		MobSpawning spawning = OlympaZTA.getInstance().spawn;
+		sendMessage(Prefix.INFO, "Le spawn de mob est §l" + (spawning.isEnabled() ? "§aactif" : "§cinactif"));
+		if (spawning.isEnabled()) {
+			sendMessage(Prefix.INFO, "Nombre de mobs moyen dans la queue de spawn : " + Utils.formatDouble(spawning.getAverageQueueSize(), 2));
+		}
 		sendMessage(Prefix.INFO, "Taille du tableau des inventaires : " + MobsListener.inventories.size());
-		sendMessage(Prefix.INFO, "Nombre d'entités vivantes sur le monde principal : " + OlympaZTA.getInstance().spawn.world.getLivingEntities().size());
+		sendMessage(Prefix.INFO, "Nombre d'entités vivantes sur le monde principal : " + spawning.world.getLivingEntities().size());
 	}
 
 	@Cmd (player = true)
@@ -39,6 +43,20 @@ public class MobsCommand extends ComplexCommand {
 			amount++;
 		}
 		sendSuccess(amount + " zombies " + (kill ? "tués." : "supprimés."));
+	}
+
+	@Cmd
+	public void toggleSpawning(CommandContext cmd) {
+		MobSpawning spawning = OlympaZTA.getInstance().spawn;
+		String state;
+		if (spawning.isEnabled()) {
+			spawning.end();
+			state = "désactivé";
+		}else {
+			spawning.start();
+			state = "activé";
+		}
+		sendSuccess("Le spawn naturel des mobs a été §l" + state + "§r§a.");
 	}
 
 }
