@@ -19,7 +19,7 @@ public class ChestCommand extends ComplexCommand {
 		super(null, OlympaZTA.getInstance(), "lootchest", "configuration des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
 	}
 	
-	@Cmd (player = true, args = "civil|military|contraband", min = 1)
+	@Cmd (player = true, args = "civil|military|contraband", min = 1, syntax = "<type de coffre>")
 	public void create(CommandContext cmd) {
 		Chest chestBlock = getTargetChest(cmd.player);
 		if (chestBlock == null) return;

@@ -117,7 +117,13 @@ public abstract class Gun extends Weapon{
 		ItemStack item = e.getItem();
 		e.setCancelled(true);
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
-			if (reloading != null) return;
+			if (reloading != null) {
+				if (isOneByOneCharge()) {
+					reloading.cancel();
+					reloading = null;
+				}else return;
+			}
+
 			if (ammos == 0) { // tentative de tir alors que le barillet est vide
 				reload(p, item);
 			}else if (ready) {

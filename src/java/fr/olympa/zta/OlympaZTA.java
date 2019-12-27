@@ -15,6 +15,10 @@ import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
 import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.zta.clans.Clan;
+import fr.olympa.zta.clans.ClansCommand;
+import fr.olympa.zta.clans.ClansListener;
+import fr.olympa.zta.clans.ClansManager;
 import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
@@ -64,6 +68,7 @@ public class OlympaZTA extends OlympaPlugin{
 	private WeaponsListener weaponListener = new WeaponsListener();
 	private ChestsListener chestsListener = new ChestsListener();
 	private MobsListener mobsListener = new MobsListener();
+	private ClansListener clansListener = new ClansListener();
 
 	public MobSpawning spawn;
 	public ScoreboardManager scoreboards;
@@ -73,16 +78,20 @@ public class OlympaZTA extends OlympaPlugin{
 		instance = this;
 		super.onEnable();
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
+
+		ClansManager.initialize();
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
 		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(mobsListener, this);
+		pluginManager.registerEvents(clansListener, this);
 		//pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
 		new ChestCommand().register();
 		new WeaponsCommand().register();
 		new MobsCommand().register();
+		new ClansCommand().register();
 		
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 		
@@ -90,7 +99,8 @@ public class OlympaZTA extends OlympaPlugin{
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class,
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class,
-				LootChest.class).forEach(ZTARegistry::registerObjectType);
+				LootChest.class,
+				Clan.class).forEach(ZTARegistry::registerObjectType);
 		
 		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
 		spawn.start();

@@ -8,5 +8,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission LOOT_CHEST_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission WEAPONS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission MOBS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
+
+	public static final OlympaPermission CLANS_PLAYERS_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 	
 }

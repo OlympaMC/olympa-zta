@@ -30,6 +30,10 @@ public class ZTARegistry{
 		return object.getID();
 	}
 
+	public static boolean removeObject(Registrable object) {
+		return registry.remove(object.getID()) != null;
+	}
+
 	/**
 	 * Chercher dans le registre l'objet correspondant à l'ID
 	 * @param id ID de l'objet

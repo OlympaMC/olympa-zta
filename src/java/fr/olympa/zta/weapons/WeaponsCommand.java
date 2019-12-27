@@ -16,7 +16,7 @@ public class WeaponsCommand extends ComplexCommand {
 		super(null, OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
 	}
 
-	@Cmd (player = true, min = 1)
+	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")
 	public void give(CommandContext cmd) {
 		Class<? extends Registrable> clazz = ZTARegistry.registrable.get(cmd.args[0]);
 		if (clazz == null) {
@@ -36,7 +36,7 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
-	@Cmd (player = true, min = 2, args = { "LIGHT|HEAVY|HANDWORKED|CARTRIDGE", "1|2|3|...", "true|false" })
+	@Cmd (player = true, min = 2, args = { "LIGHT|HEAVY|HANDWORKED|CARTRIDGE", "1|2|3|...", "true|false" }, syntax = "<type de munition> <quantité> <vide ?>")
 	public void giveAmmo(CommandContext cmd) {
 		try {
 			boolean empty = cmd.args.length > 2 ? Boolean.parseBoolean((String) cmd.args[2]) : false;

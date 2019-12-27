@@ -40,7 +40,6 @@ public class Mobs {
 		Zombie zombie = spawnZombie(p.getLocation(), SpawnReason.CUSTOM);
 		zombie.addPotionEffects(MOMIFIED_ZOMBIE_EFFECTS);
 		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
-		zombie.setBaby(false);
 		zombie.setCustomName(p.getName() + " momifié");
 		return zombie;
 	}
@@ -48,6 +47,7 @@ public class Mobs {
 	private static Zombie spawnZombie(Location location, SpawnReason reason) {
 		Zombie zombie = (Zombie) customZombie.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), false, false, reason).getBukkitEntity();
 		zombie.setMaximumNoDamageTicks(NO_DAMAGE_TICKS);
+		if (zombie.isBaby()) zombie.setBaby(false);
 		return zombie;
 	}
 

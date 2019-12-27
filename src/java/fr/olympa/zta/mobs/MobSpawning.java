@@ -77,11 +77,16 @@ public class MobSpawning {
 
 					int i = spawnQueue.size() / 2;
 					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
-						Location loc = iterator.next();
-						Mobs.spawnCommonZombie(loc);
-						iterator.remove();
-						i--;
-						if (i == 0) break;
+						try {
+							Location loc = iterator.next();
+							if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
+						}catch (Exception ex) {
+							ex.printStackTrace();
+						}finally {
+							iterator.remove();
+							i--;
+							if (i == 0) break;
+						}
 					}
 				}
 			}

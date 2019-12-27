@@ -32,7 +32,7 @@ public class MobsCommand extends ComplexCommand {
 		Mobs.spawnCommonZombie(cmd.player.getLocation());
 	}
 
-	@Cmd (args = "kill|remove", min = 0)
+	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")
 	public void removeZombies(CommandContext cmd) {
 		boolean kill = cmd.args.length == 0 ? false : cmd.args[0].equals("kill");
 		int amount = 0;
