@@ -1,6 +1,6 @@
 package fr.olympa.zta.packetslistener;
 
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import io.netty.channel.Channel;

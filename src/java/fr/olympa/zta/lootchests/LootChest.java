@@ -5,8 +5,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -16,8 +16,8 @@ import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
-import net.minecraft.server.v1_13_R2.Block;
-import net.minecraft.server.v1_13_R2.BlockPosition;
+import net.minecraft.server.v1_15_R1.Block;
+import net.minecraft.server.v1_15_R1.BlockPosition;
 
 public class LootChest extends AbstractRandomizedPicker<LootCreator> implements Registrable, InventoryHolder {
 

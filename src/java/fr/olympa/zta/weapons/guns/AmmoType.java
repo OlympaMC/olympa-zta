@@ -6,9 +6,9 @@ import org.bukkit.inventory.ItemStack;
 
 public enum AmmoType{
 	
-	LIGHT("Munitions légères", Material.CACTUS_GREEN, Material.LIME_DYE),
+	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE),
 	HEAVY("Munitions lourdes", Material.LAPIS_LAZULI, Material.LIGHT_BLUE_DYE),
-	HANDWORKED("Munitions artisanales", Material.ROSE_RED, Material.PINK_DYE),
+	HANDWORKED("Munitions artisanales", Material.RED_DYE, Material.PINK_DYE),
 	CARTRIDGE("Cartouches", Material.GRAY_DYE, Material.LIGHT_GRAY_DYE);
 	
 	private String name;

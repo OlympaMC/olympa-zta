@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
 
 @Sharable
 public class BulletRemovalHandler extends ChannelDuplexHandler{

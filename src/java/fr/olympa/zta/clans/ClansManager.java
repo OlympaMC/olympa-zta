@@ -16,7 +16,7 @@ import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.utils.NMS;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ZTARegistry;
-import net.minecraft.server.v1_13_R2.ScoreboardTeam;
+import net.minecraft.server.v1_15_R1.ScoreboardTeam;
 
 public class ClansManager {
 

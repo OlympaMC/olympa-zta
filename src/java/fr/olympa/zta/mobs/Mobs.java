@@ -3,20 +3,22 @@ package fr.olympa.zta.mobs;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityTypes;
-import net.minecraft.server.v1_13_R2.World;
+import net.minecraft.server.v1_15_R1.BlockPosition;
+import net.minecraft.server.v1_15_R1.Entity;
+import net.minecraft.server.v1_15_R1.EntityTypes;
+import net.minecraft.server.v1_15_R1.EnumCreatureType;
+import net.minecraft.server.v1_15_R1.EnumMobSpawn;
+import net.minecraft.server.v1_15_R1.World;
 
 public class Mobs {
 
@@ -26,7 +28,7 @@ public class Mobs {
 	private static final List<PotionEffect> MOMIFIED_ZOMBIE_EFFECTS = Arrays.asList(new PotionEffect(PotionEffectType.SPEED, 999999, 0, false, false), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 999999, 1, false, false), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999, 0, false, false));
 	private static Random random = new Random();
 
-	private static EntityTypes<CustomEntityZombie> customZombie = injectNewEntity("zombie", CustomEntityZombie.class, CustomEntityZombie::new);
+	private static EntityTypes<CustomEntityZombie> customZombie = injectNewEntity(EnumCreatureType.MONSTER, "zombie", CustomEntityZombie::new);
 	
 	public static void spawnCommonZombie(Location location) {
 		location.setYaw(random.nextInt(360));
@@ -45,14 +47,14 @@ public class Mobs {
 	}
 
 	private static Zombie spawnZombie(Location location, SpawnReason reason) {
-		Zombie zombie = (Zombie) customZombie.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), false, false, reason).getBukkitEntity();
+		Zombie zombie = (Zombie) customZombie.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), EnumMobSpawn.TRIGGERED, false, false, reason).getBukkitEntity();
 		zombie.setMaximumNoDamageTicks(NO_DAMAGE_TICKS);
 		if (zombie.isBaby()) zombie.setBaby(false);
 		return zombie;
 	}
 
-	private static <T extends Entity> EntityTypes<T> injectNewEntity(String name, Class<T> clazz, Function<? super World, T> function) {
-		return EntityTypes.a.a(clazz, function).a(name);
+	private static <T extends Entity> EntityTypes<T> injectNewEntity(EnumCreatureType type, String name, BiFunction<EntityTypes<T>, World, T> function) {
+		return (EntityTypes<T>) EntityTypes.a.a((a, b) -> function.apply(a, b), type).a(name);
 	}
 
 }

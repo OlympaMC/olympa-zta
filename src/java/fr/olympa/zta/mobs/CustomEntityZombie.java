@@ -1,31 +1,26 @@
 package fr.olympa.zta.mobs;
 
-import java.util.function.Function;
-
 import org.bukkit.event.entity.EntityTargetEvent;
 
-import net.minecraft.server.v1_13_R2.EntityCreature;
-import net.minecraft.server.v1_13_R2.EntityCreeper;
-import net.minecraft.server.v1_13_R2.EntityHuman;
-import net.minecraft.server.v1_13_R2.EntityInsentient;
-import net.minecraft.server.v1_13_R2.EntitySkeleton;
-import net.minecraft.server.v1_13_R2.EntityZombie;
-import net.minecraft.server.v1_13_R2.EnumItemSlot;
-import net.minecraft.server.v1_13_R2.ItemStack;
-import net.minecraft.server.v1_13_R2.Items;
-import net.minecraft.server.v1_13_R2.PathfinderGoal;
-import net.minecraft.server.v1_13_R2.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_13_R2.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.v1_13_R2.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_13_R2.PathfinderGoalRandomStrollLand;
-import net.minecraft.server.v1_13_R2.PathfinderGoalTarget;
-import net.minecraft.server.v1_13_R2.PathfinderGoalZombieAttack;
-import net.minecraft.server.v1_13_R2.World;
+import net.minecraft.server.v1_15_R1.EntityCreature;
+import net.minecraft.server.v1_15_R1.EntityHuman;
+import net.minecraft.server.v1_15_R1.EntityInsentient;
+import net.minecraft.server.v1_15_R1.EntityTypes;
+import net.minecraft.server.v1_15_R1.EntityZombie;
+import net.minecraft.server.v1_15_R1.PathfinderGoal;
+import net.minecraft.server.v1_15_R1.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_15_R1.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
+import net.minecraft.server.v1_15_R1.PathfinderGoalTarget;
+import net.minecraft.server.v1_15_R1.PathfinderGoalZombieAttack;
+import net.minecraft.server.v1_15_R1.PathfinderTargetCondition;
+import net.minecraft.server.v1_15_R1.World;
 
 public class CustomEntityZombie extends EntityZombie {
 
-	public CustomEntityZombie(World world) {
-		super(world);
+	public CustomEntityZombie(EntityTypes<CustomEntityZombie> type, World world) {
+		super(type, world);
 	}
 
 	protected void n() {
@@ -66,7 +61,8 @@ public class CustomEntityZombie extends EntityZombie {
 			if (this.chance > 0 && this.e.getRandom().nextInt(this.chance) != 0) {
 				return false;
 			}
-			this.target = this.e.world.a(this.e.locX, this.e.locY + this.e.getHeadHeight(), this.e.locZ, targetDistance, targetDistance / 2, new Function<EntityHuman, Double>() {
+			this.target = this.e.world.a(new PathfinderTargetCondition().a(targetDistance), this.e.locX(), this.e.locY() + this.e.getHeadHeight(), this.e.locZ());
+			/*new Function<EntityHuman, Double>() {
 				@Override
 				public Double apply(final EntityHuman entityhuman) {
 					final ItemStack itemstack = entityhuman.getEquipment(EnumItemSlot.HEAD);
@@ -74,7 +70,7 @@ public class CustomEntityZombie extends EntityZombie {
 							? 1.0
 							: 0.5;
 				}
-			}, null);
+			}*/
 			return this.target != null;
 		}
 
