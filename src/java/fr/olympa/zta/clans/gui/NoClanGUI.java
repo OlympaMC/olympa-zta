@@ -29,7 +29,7 @@ public class NoClanGUI extends OlympaGUI {
 			Prefix.DEFAULT.sendMessage(p, "§aChoisis le nom de ton clan :");
 			new TextEditor<String>(p, (msg) -> {
 				ClansCommand.createClan(msg, p);
-				new ClanManagementGUI(AccountProvider.get(p)).create(p);
+				new ClanManagementGUI(AccountProvider.get(p.getUniqueId())).create(p);
 			}, () -> {}, false, (player, msg) -> {
 				if (ClansManager.exists(msg)) {
 					Prefix.DEFAULT_BAD.sendMessage(player, "Un clan avec ce nom existe déjà !");

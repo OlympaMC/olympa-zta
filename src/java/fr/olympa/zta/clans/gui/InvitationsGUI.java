@@ -24,7 +24,7 @@ public class InvitationsGUI extends PagedGUI<Clan> {
 	}
 
 	public void click(Clan existing, Player p) {
-		if (existing.addPlayer(AccountProvider.get(p))) {
+		if (existing.addPlayer(AccountProvider.get(p.getUniqueId()))) {
 			Inventories.closeAndExit(p);
 			ClansManager.clearPlayerInvitations(p);
 		}else {

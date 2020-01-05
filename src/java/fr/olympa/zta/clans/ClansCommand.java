@@ -19,7 +19,7 @@ public class ClansCommand extends ComplexCommand {
 		super((sender) -> {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
-				OlympaPlayer olp = AccountProvider.get(p);
+				OlympaPlayer olp = AccountProvider.get(p.getUniqueId());
 				Clan clan = ClansManager.getPlayerClan(olp);
 				if (clan == null) {
 					new NoClanGUI(p).create(p);
@@ -41,7 +41,7 @@ public class ClansCommand extends ComplexCommand {
 	}
 	public static Clan createClan(String name, Player p) {
 		Clan clan = new Clan(name);
-		clan.addPlayer(AccountProvider.get(p));
+		clan.addPlayer(AccountProvider.get(p.getUniqueId()));
 		ClansManager.addClan(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Vous venez de créer votre clan !");
 		return clan;
@@ -56,7 +56,7 @@ public class ClansCommand extends ComplexCommand {
 		invite(clan, cmd.player, targetPlayer);
 	}
 	public static void invite(Clan clan, Player inviter, Player targetPlayer) {
-		OlympaPlayer target = AccountProvider.get(targetPlayer);
+		OlympaPlayer target = AccountProvider.get(targetPlayer.getUniqueId());
 		if (ClansManager.getPlayerClan(target) != null) {
 			Prefix.DEFAULT_BAD.sendMessage(inviter, "Ce joueur est déjà dans un clan.");
 			return;
@@ -115,7 +115,7 @@ public class ClansCommand extends ComplexCommand {
 			return;
 		}
 
-		OlympaPlayer target = AccountProvider.get((Player) cmd.args[0]);
+		OlympaPlayer target = AccountProvider.get(((Player) cmd.args[0]).getUniqueId());
 		if (!clan.contains(target)) {
 			sendError("Le joueur " + target.getName() + " ne fait pas partie de votre clan.");
 			return;
