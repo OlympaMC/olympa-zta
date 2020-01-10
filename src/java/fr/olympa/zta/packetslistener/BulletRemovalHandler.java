@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
 
 @Sharable
@@ -17,7 +18,7 @@ public class BulletRemovalHandler extends ChannelDuplexHandler{
 			PacketPlayOutSpawnEntity packet = (PacketPlayOutSpawnEntity) msg;
 			Field k = PacketPlayOutSpawnEntity.class.getDeclaredField("k"); // field qui contient le type d'entité
 			k.setAccessible(true);
-			if (k.getInt(packet) == 61) return; // 61=snowball : return pour ne pas call write (annule le packet)
+			if (k.get(packet) == EntityTypes.SNOWBALL) return; // return pour ne pas call write (annule le packet)
 		}
 		super.write(ctx, msg, promise);
 	};

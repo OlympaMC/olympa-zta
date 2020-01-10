@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class MobSpawning {
 	private boolean enabled = false;
 	private Random random = new Random();
 
-	private List<Location> spawnQueue = new ArrayList<>(150);
+	private List<Location> spawnQueue = Collections.synchronizedList(new ArrayList<>(150));
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
 	public MobSpawning(World world) {
@@ -43,23 +44,21 @@ public class MobSpawning {
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
-				synchronized (spawnQueue) {
-					List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
-					for (Chunk chunk : getActiveChunks()) {
-						for (int dx = 0; dx < 8; dx++) {
-							int x = dx * 2;
-							for (int dz = 0; dz < 8; dz++) {
-								int z = dz * 2;
-								Block prev = chunk.getBlock(x, 0, z);
-								y: for (int y = 1; y < 140; y++) {
-									if (!UNSPAWNABLE_ON.contains(prev.getType()) && (prev = chunk.getBlock(x, y, z)).getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-										if (random.nextFloat() < 0.01) { // 1 chance sur 100
-											Block block = chunk.getBlock(x, y, z);
-											for (Location loc : entities) {
-												if (loc.distanceSquared(block.getLocation()) < 100) continue y; // distance aux autres entités obligatoirement > à 10 blocs
-											}
-											if (block.getLightLevel() < 8) spawnQueue.add(block.getLocation());
+				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
+				for (Chunk chunk : getActiveChunks()) {
+					for (int dx = 0; dx < 8; dx++) {
+						int x = dx * 2;
+						for (int dz = 0; dz < 8; dz++) {
+							int z = dz * 2;
+							Block prev = chunk.getBlock(x, 0, z);
+							y: for (int y = 1; y < 140; y++) {
+								if (!UNSPAWNABLE_ON.contains(prev.getType()) && (prev = chunk.getBlock(x, y, z)).getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+									if (random.nextFloat() < 0.01) { // 1 chance sur 100
+										Block block = chunk.getBlock(x, y, z);
+										for (Location loc : entities) {
+											if (loc.distanceSquared(block.getLocation()) < 100) continue y; // distance aux autres entités obligatoirement > à 10 blocs
 										}
+										if (block.getLightLevel() < 8) spawnQueue.add(block.getLocation());
 									}
 								}
 							}
@@ -71,22 +70,20 @@ public class MobSpawning {
 
 		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
-				synchronized (spawnQueue) {
-					averageQueueSize.add(spawnQueue.size());
-					if (averageQueueSize.size() > 24) averageQueueSize.remove();
+				averageQueueSize.add(spawnQueue.size());
+				if (averageQueueSize.size() > 24) averageQueueSize.remove();
 
-					int i = spawnQueue.size() / 2;
-					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
-						try {
-							Location loc = iterator.next();
-							if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
-						}catch (Exception ex) {
-							ex.printStackTrace();
-						}finally {
-							iterator.remove();
-							i--;
-							if (i == 0) break;
-						}
+				int i = spawnQueue.size() / 2;
+				for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
+					try {
+						Location loc = iterator.next();
+						if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
+					}catch (Exception ex) {
+						ex.printStackTrace();
+					}finally {
+						iterator.remove();
+						i--;
+						if (i == 0) break;
 					}
 				}
 			}
@@ -113,7 +110,7 @@ public class MobSpawning {
 	}
 
 	public double getAverageQueueSize() {
-		return averageQueueSize.stream().mapToInt(x -> x).average().getAsDouble();
+		return averageQueueSize.stream().mapToInt(x -> x).average().orElse(0);
 	}
 
 	public boolean isEnabled() {

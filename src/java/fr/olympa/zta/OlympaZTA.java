@@ -23,6 +23,7 @@ import fr.olympa.zta.lootchests.ChestCommand;
 import fr.olympa.zta.lootchests.ChestsListener;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning;
+import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.registry.ZTARegistry;
@@ -86,7 +87,6 @@ public class OlympaZTA extends OlympaPlugin{
 		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(clansListener, this);
-		//pluginManager.registerEvents(new Inventories(), this); // temporaire : la classe Inventories sera register dans le plugin Core
 
 		new ChestCommand().register();
 		new WeaponsCommand().register();
@@ -100,6 +100,7 @@ public class OlympaZTA extends OlympaPlugin{
 				LootChest.class,
 				Clan.class).forEach(ZTARegistry::registerObjectType);
 		
+		new Mobs(); // initalise les mobs custom
 		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
 		spawn.start();
 		

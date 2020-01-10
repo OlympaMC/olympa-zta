@@ -18,6 +18,8 @@ import net.minecraft.server.v1_15_R1.Entity;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EnumCreatureType;
 import net.minecraft.server.v1_15_R1.EnumMobSpawn;
+import net.minecraft.server.v1_15_R1.IRegistry;
+import net.minecraft.server.v1_15_R1.MinecraftKey;
 import net.minecraft.server.v1_15_R1.World;
 
 public class Mobs {
@@ -54,7 +56,10 @@ public class Mobs {
 	}
 
 	private static <T extends Entity> EntityTypes<T> injectNewEntity(EnumCreatureType type, String name, BiFunction<EntityTypes<T>, World, T> function) {
-		return (EntityTypes<T>) EntityTypes.a.a((a, b) -> function.apply(a, b), type).a(name);
+		MinecraftKey key = new MinecraftKey(name);
+		EntityTypes<T> entityTypes = (EntityTypes<T>) EntityTypes.a.a((a, b) -> function.apply(a, b), type).a(name);
+		IRegistry.ENTITY_TYPE.a(IRegistry.ENTITY_TYPE.a(IRegistry.ENTITY_TYPE.get(key)), key, entityTypes);
+		return entityTypes;
 	}
 
 }
