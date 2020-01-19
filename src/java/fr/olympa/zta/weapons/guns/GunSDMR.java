@@ -8,6 +8,10 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunSDMR extends Gun{
 	
+	public GunSDMR(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "SDMR";
 	}

@@ -12,6 +12,10 @@ public class GunKSG extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
 	
+	public GunKSG(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "KSG";
 	}

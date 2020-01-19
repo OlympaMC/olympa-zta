@@ -8,6 +8,10 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunAK extends Gun{
 	
+	public GunAK(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "AK-20";
 	}

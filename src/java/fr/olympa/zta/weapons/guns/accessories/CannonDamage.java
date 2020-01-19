@@ -6,6 +6,10 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonDamage extends Cannon{
 	
+	public CannonDamage(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Canon V2";
 	}

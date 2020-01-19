@@ -4,13 +4,10 @@ import org.bukkit.event.entity.EntityTargetEvent;
 
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityHuman;
-import net.minecraft.server.v1_15_R1.EntityInsentient;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
-import net.minecraft.server.v1_15_R1.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.v1_15_R1.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
 import net.minecraft.server.v1_15_R1.PathfinderGoalTarget;
 import net.minecraft.server.v1_15_R1.PathfinderGoalZombieAttack;
@@ -23,10 +20,8 @@ public class CustomEntityZombie extends EntityZombie {
 		super(type, world);
 	}
 
-	protected void n() {
+	protected void l() {
 		this.goalSelector.a(5, (PathfinderGoal) new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
-		this.goalSelector.a(8, (PathfinderGoal) new PathfinderGoalLookAtPlayer((EntityInsentient) this, EntityHuman.class, 8.0f));
-		this.goalSelector.a(8, (PathfinderGoal) new PathfinderGoalRandomLookaround((EntityInsentient) this));
 		this.goalSelector.a(2, (PathfinderGoal) new PathfinderGoalZombieAttack(this, 1.0, false));
 		this.goalSelector.a(7, (PathfinderGoal) new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
 		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 8, true));
@@ -36,7 +31,7 @@ public class CustomEntityZombie extends EntityZombie {
 		super.tick();
 	}
 
-	protected boolean dC() {
+	protected boolean et() {
 		return false;
 	}
 

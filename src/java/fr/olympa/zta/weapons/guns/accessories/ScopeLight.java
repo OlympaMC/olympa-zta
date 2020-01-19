@@ -10,10 +10,14 @@ import org.bukkit.potion.PotionEffectType;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class ScopeLight extends Scope{
-	
+
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -1, Operation.ADD_SCALAR);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 0);
 	
+	public ScopeLight(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Mire V2";
 	}

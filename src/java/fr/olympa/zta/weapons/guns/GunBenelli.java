@@ -12,6 +12,10 @@ public class GunBenelli extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
 	
+	public GunBenelli(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Benelli M5 Super";
 	}

@@ -4,6 +4,10 @@ import org.bukkit.Material;
 
 public class KnifeSurin extends Knife{
 
+	public KnifeSurin(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Surin";
 	}

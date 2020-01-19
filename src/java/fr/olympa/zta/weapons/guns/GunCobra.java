@@ -12,6 +12,10 @@ public class GunCobra extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
 	
+	public GunCobra(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "King Cobra";
 	}

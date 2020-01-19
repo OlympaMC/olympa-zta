@@ -4,6 +4,10 @@ import org.bukkit.Material;
 
 public class KnifeBiche extends Knife{
 	
+	public KnifeBiche(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Pied-de-biche";
 	}

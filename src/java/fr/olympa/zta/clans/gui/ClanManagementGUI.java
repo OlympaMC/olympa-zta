@@ -42,14 +42,14 @@ public class ClanManagementGUI extends OlympaGUI {
 		inv.setItem(17, isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(16, disband);
 
-		for (byte id = 0; id < 5; id++) {
+		for (int id = 0; id < clan.getMaxSize(); id++) {
 			OlympaPlayer member = clan.getMember(id);
 			ItemStack item;
 			if (isChief) {
 				String[] lore = member == player ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
 				item = member == null ? noMemberInvite : ItemUtils.skull("§a" + member.getName(), member.getName(), lore);
 			}else {
-				item = member == null ? noMember : ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChiefID() == id ? "§6§lChef" : "§eMembre");
+				item = member == null ? noMember : ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
 			}
 			inv.setItem(9 + id, item);
 		}

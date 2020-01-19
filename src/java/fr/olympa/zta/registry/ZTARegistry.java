@@ -17,7 +17,7 @@ import fr.olympa.zta.OlympaZTA;
 public class ZTARegistry{
 
 	public static final Map<String, RegistryType<?>> registrable = new HashMap<>();
-	private static final Map<Integer, Registrable> registry = new HashMap<>(200); // TODO: à sauvegarder dans une bdd ou un fichier YAML
+	private static final Map<Integer, Registrable> registry = new HashMap<>(200);
 	private static final Random idGen = new Random();
 	
 	private static PreparedStatement insertRegistrable;
@@ -28,14 +28,16 @@ public class ZTARegistry{
 	 * @param objectClass Classe de l'objet à enregistrer
 	 * @throws SQLException 
 	 */
-	public static <T extends Registrable> void registerObjectType(Class<T> objectClass, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) throws SQLException {
-		registrable.put(objectClass.getSimpleName(), new RegistryType<>(objectClass, tableName, deserialize));
-		if (tableName == null) return;
-		ResultSet tables = OlympaZTA.getInstance().getDatabase().getMetaData().getTables(null, null, "%", null);
-		while (tables.next()) {
-			if (tableName.equals(tables.getString(3))) return;
+	public static <T extends Registrable> void registerObjectType(Class<T> objectClass, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
+		if (tableName != null) {
+			try {
+				OlympaZTA.getInstance().getDatabase().createStatement().executeUpdate(tableCreatorStatement);
+			}catch (SQLException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
-		OlympaZTA.getInstance().getDatabase().createStatement().executeUpdate(tableCreatorStatement);
+		registrable.put(objectClass.getSimpleName(), new RegistryType<>(objectClass, tableName, deserialize));
 	}
 	
 	/**
@@ -126,7 +128,7 @@ public class ZTARegistry{
 		return is;
 	}
 
-	public static void loadFromDatabase() throws SQLException {
+	public static int loadFromDatabase() throws SQLException {
 		Statement statement = OlympaZTA.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS `registry` (\r\n" + 
 				"  `id` INT NOT NULL,\r\n" + 
@@ -135,14 +137,21 @@ public class ZTARegistry{
 		ResultSet resultSet = statement.executeQuery("SELECT * FROM `registry`");
 		while (resultSet.next()){
 			int id = resultSet.getInt("id");
-			RegistryType<?> type = registrable.get(resultSet.getString("type"));
-			ResultSet objectSet = null;
-			if (type.tableName != null) {
-				objectSet = statement.executeQuery("SELECT * FROM `" + type.tableName + "`");
-				objectSet.next();
+			try {
+				RegistryType<?> type = registrable.get(resultSet.getString("type"));
+				ResultSet objectSet = null;
+				if (type.tableName != null) {
+					objectSet = statement.executeQuery("SELECT * FROM `" + type.tableName + "`");
+					objectSet.next();
+				}
+				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
+			}catch (Exception e) {
+				OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
+				e.printStackTrace();
+				continue;
 			}
-			registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
 		}
+		return registry.size();
 	}
 
 	public static void saveDatabase() {
@@ -164,6 +173,7 @@ public class ZTARegistry{
 
 		public RegistryType(Class<T> clazz, String tableName, DeserializeDatas<T> deserialize) {
 			this.clazz = clazz;
+			this.tableName = tableName;
 			this.deserialize = deserialize;
 		}
 
@@ -179,7 +189,7 @@ public class ZTARegistry{
 
 		static final DeserializeDatas<?> EASY_CLASS = (set, id, clazz) -> {
 			try {
-				Constructor<?> constructor = clazz.getConstructor(Integer.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(int.class);
 				return (Registrable) constructor.newInstance(id);
 			}catch (ReflectiveOperationException e) {
 				e.printStackTrace();

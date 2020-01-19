@@ -8,7 +8,6 @@ import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.RegistryType;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -21,19 +20,19 @@ public class WeaponsCommand extends ComplexCommand {
 
 	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")
 	public void give(CommandContext cmd) {
-		Class<? extends Registrable> clazz = ZTARegistry.registrable.get(cmd.args[0]).clazz;
-		if (clazz == null) {
+		RegistryType<?> type = ZTARegistry.registrable.get(cmd.args[0]);
+		if (type == null) {
 			sendError("Cette arme n'existe pas.");
 			return;
 		}
 		try {
-			if (ItemStackable.class.isAssignableFrom(clazz)) {
-				cmd.player.getInventory().addItem(ZTARegistry.createItem(((Class<? extends ItemStackable>) clazz).newInstance()));
+			if (ItemStackable.class.isAssignableFrom(type.clazz)) {
+				cmd.player.getInventory().addItem(ZTARegistry.createItem(((Class<? extends ItemStackable>) type.clazz).getDeclaredConstructor(int.class).newInstance(ZTARegistry.generateID())));
 				sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
 			}else {
 				sendError("L'objet spécifié ne peut pas être matérialisé comme item.");
 			}
-		}catch (InstantiationException | IllegalAccessException ex) {
+		}catch (ReflectiveOperationException ex) {
 			sendError("Une erreur est survenue lors du don de l'objet.");
 			ex.printStackTrace();
 		}

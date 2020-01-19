@@ -7,8 +7,12 @@ import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonSilent extends Cannon{
-	
+
 	private static final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.25f);
+	
+	public CannonSilent(int id) {
+		super(id);
+	}
 	
 	public String getName(){
 		return "Silencieux";

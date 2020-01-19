@@ -14,6 +14,10 @@ public class GunStoner extends Gun{
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
 	private static final PotionEffect playerEffect = new PotionEffect(PotionEffectType.SLOW, 9999, 1);
 	
+	public GunStoner(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Stoner 24";
 	}

@@ -8,6 +8,10 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class Gun870 extends Gun{
 	
+	public Gun870(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Remington 870 Express";
 	}

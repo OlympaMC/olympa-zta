@@ -140,7 +140,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		updateStatement.executeUpdate();
 	}
 
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE `zta`.`chests` (" +
+	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS `zta`.`chests` (" +
 			"  `id` INT NOT NULL," +
 			"  `world` VARCHAR(45) NULL," +
 			"  `x` INT NOT NULL," +

@@ -10,6 +10,10 @@ public class StockStrong extends Stock{
 	
 	private static final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
 	
+	public StockStrong(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Crosse lourde";
 	}

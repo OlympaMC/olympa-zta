@@ -12,6 +12,10 @@ public class GunLupara extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
 	
+	public GunLupara(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Lupara";
 	}

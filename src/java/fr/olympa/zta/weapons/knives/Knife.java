@@ -14,6 +14,10 @@ import fr.olympa.zta.weapons.Weapon;
 
 public abstract class Knife extends Weapon{
 	
+	public Knife(int id) {
+		super(id);
+	}
+
 	public ItemStack createItemStack(){
 		List<String> lore = new ArrayList<>(Arrays.asList(
 				getFeatureLoreLine("Dégâts aux joueurs", getPlayerDamage()),

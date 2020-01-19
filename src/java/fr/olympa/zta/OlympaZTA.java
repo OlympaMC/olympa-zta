@@ -1,5 +1,6 @@
 package fr.olympa.zta;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
@@ -94,14 +95,7 @@ public class OlympaZTA extends OlympaPlugin{
 		new WeaponsCommand().register();
 		new MobsCommand().register();
 		new ClansCommand().register();
-		
-		Arrays.asList(
-				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class,
-				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
-				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class,
-				LootChest.class,
-				Clan.class).forEach(ZTARegistry::registerObjectType);
-		
+
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
 				.forEach(x -> ZTARegistry.registerObjectType(x, "guns", Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
@@ -109,8 +103,8 @@ public class OlympaZTA extends OlympaPlugin{
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
 				.forEach(x -> ZTARegistry.registerObjectType(x, null, null, DeserializeDatas.easyClass()));
-
 		ZTARegistry.registerObjectType(LootChest.class, "chests", LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeGun);
+		ZTARegistry.registerObjectType(Clan.class, null, null, DeserializeDatas.easyClass()); // TODO
 
 		new Mobs(); // initalise les mobs custom
 		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
@@ -120,13 +114,19 @@ public class OlympaZTA extends OlympaPlugin{
 				new FixedLine(""),
 				new DynamicLine(x -> "§eRang : §6" + x.getGroup().getName()),
 				new FixedLine(""),
+				new DynamicLine(x -> "§eNombre de mobs : §6" + spawn.world.getLivingEntities().size(), 1, 0),
+				new FixedLine(""),
 				new DynamicLine(x -> "§ePosition : §6" + SpigotUtils.convertBlockLocationToString(x.getPlayer().getLocation()), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 
-		ZTARegistry.loadFromDatabase();
+		try {
+			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

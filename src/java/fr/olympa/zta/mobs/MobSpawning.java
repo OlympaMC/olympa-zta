@@ -2,7 +2,6 @@ package fr.olympa.zta.mobs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ public class MobSpawning {
 	private boolean enabled = false;
 	private Random random = new Random();
 
-	private List<Location> spawnQueue = Collections.synchronizedList(new ArrayList<>(150));
+	private List<Location> spawnQueue = new ArrayList<>(150);
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
 	public MobSpawning(World world) {
@@ -45,46 +44,58 @@ public class MobSpawning {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
-				for (Chunk chunk : getActiveChunks()) {
+				Set<Chunk> activeChunks = getActiveChunks();
+				System.out.println("active chunks " + activeChunks.size());
+				int i = 0;
+				for (Chunk chunk : activeChunks) {
 					for (int dx = 0; dx < 8; dx++) {
 						int x = dx * 2;
 						for (int dz = 0; dz < 8; dz++) {
 							int z = dz * 2;
 							Block prev = chunk.getBlock(x, 0, z);
 							y: for (int y = 1; y < 140; y++) {
-								if (!UNSPAWNABLE_ON.contains(prev.getType()) && (prev = chunk.getBlock(x, y, z)).getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+								i++;
+								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
+								prev = chunk.getBlock(x, y, z);
+								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
 									if (random.nextFloat() < 0.01) { // 1 chance sur 100
 										Block block = chunk.getBlock(x, y, z);
+										if (block.getLightLevel() < 8) continue;
 										for (Location loc : entities) {
-											if (loc.distanceSquared(block.getLocation()) < 100) continue y; // distance aux autres entités obligatoirement > à 10 blocs
+											if (loc.distanceSquared(block.getLocation()) < 100) {
+												continue y; // distance aux autres entités obligatoirement > à 10 blocs
+											}
 										}
-										if (block.getLightLevel() < 8) spawnQueue.add(block.getLocation());
+										Location lc = block.getLocation();
+										entities.add(lc);
+										spawnQueue.add(lc);
 									}
 								}
 							}
 						}
 					}
 				}
+				System.out.println("end chunks spawn " + i);
 			}
-		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 100L);
+		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);
 
 		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
 				averageQueueSize.add(spawnQueue.size());
 				if (averageQueueSize.size() > 24) averageQueueSize.remove();
 
-				int i = spawnQueue.size() / 2;
+				int toRemove = spawnQueue.size() / 2 + 1;
+				System.out.println("queue size : " + spawnQueue.size() + " | to remove : " + toRemove);
 				for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 					try {
 						Location loc = iterator.next();
 						if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
 					}catch (Exception ex) {
 						ex.printStackTrace();
-					}finally {
-						iterator.remove();
-						i--;
-						if (i == 0) break;
 					}
+					iterator.remove();
+					toRemove--;
+					if (toRemove == 0) break;
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 50L);
@@ -98,6 +109,7 @@ public class MobSpawning {
 		Set<Chunk> chunks = new HashSet<>(100);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Location lc = p.getLocation();
+			if (lc.getChunk().getEntities().length > 15) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {

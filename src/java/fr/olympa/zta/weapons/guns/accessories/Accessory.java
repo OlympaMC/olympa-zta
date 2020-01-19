@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public abstract class Accessory implements ItemStackable{
@@ -17,10 +16,6 @@ public abstract class Accessory implements ItemStackable{
 
 	public Accessory(int id) {
 		this.id = id;
-	}
-
-	public Accessory() {
-		this.id = ZTARegistry.generateID();
 	}
 	
 	public int getID() {

@@ -36,7 +36,7 @@ import fr.olympa.zta.weapons.guns.accessories.Stock;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public abstract class Gun extends Weapon{
-	
+
 	protected int ammos = 0;
 	protected boolean ready = false;
 	protected boolean zoomed = false;
@@ -57,6 +57,10 @@ public abstract class Gun extends Weapon{
 	public Cannon cannon;
 	public Stock stock;
 	
+	public Gun(int id) {
+		super(id);
+	}
+
 	public ItemStack createItemStack(){
 		return createItemStack(true);
 	}
@@ -364,12 +368,15 @@ public abstract class Gun extends Weapon{
 		case SCOPE:
 			old = scope;
 			scope = (Scope) accessory;
+			break;
 		case CANNON:
 			old = cannon;
 			cannon = (Cannon) accessory;
+			break;
 		case STOCK:
 			old = stock;
 			stock = (Stock) accessory;
+			break;
 		}
 		if (old != null) old.remove(this);
 		if (accessory != null) accessory.apply(this);
@@ -437,9 +444,9 @@ public abstract class Gun extends Weapon{
 		updateStatement.setBoolean(2, ready);
 		updateStatement.setBoolean(3, zoomed);
 		updateStatement.setBoolean(4, secondaryMode);
-		updateStatement.setInt(5, scope.getID());
-		updateStatement.setInt(6, cannon.getID());
-		updateStatement.setInt(7, stock.getID());
+		if (scope != null) updateStatement.setInt(5, scope.getID());
+		if (cannon != null) updateStatement.setInt(6, cannon.getID());
+		if (stock != null) updateStatement.setInt(7, stock.getID());
 		updateStatement.setInt(8, getID());
 		updateStatement.executeUpdate();
 	}
@@ -501,15 +508,15 @@ public abstract class Gun extends Weapon{
 		
 	}
 	
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE `zta`.`guns` (" +
+	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS `zta`.`guns` (" +
 			"  `id` INT NOT NULL," +
-			"  `ammos` SMALLINT(2) UNSIGNED NOT NULL," +
+			"  `ammos` SMALLINT(2) UNSIGNED DEFAULT 0," +
 			"  `ready` TINYINT DEFAULT 1," +
 			"  `zoomed` TINYINT DEFAULT 0," +
-			"  `secondary_mode` TINYINT DEFAULT 1," +
-			"  `scope_id` INT(11) NULL DEFAULT -1," +
-			"  `cannon_id` INT(11) NULL DEFAULT -1," +
-			"  `stock_id` INT(11) NULL DEFAULT -1," +
+			"  `secondary_mode` TINYINT DEFAULT 0," +
+			"  `scope_id` INT(11) NULL," +
+			"  `cannon_id` INT(11) NULL," +
+			"  `stock_id` INT(11) NULL," +
 			"  PRIMARY KEY (`id`))";
 
 	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) {

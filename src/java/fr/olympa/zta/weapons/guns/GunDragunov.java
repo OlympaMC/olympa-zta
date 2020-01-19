@@ -15,6 +15,10 @@ public class GunDragunov extends Gun{
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -1, Operation.ADD_SCALAR);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 20, 1);
 	
+	public GunDragunov(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Dragunov";
 	}

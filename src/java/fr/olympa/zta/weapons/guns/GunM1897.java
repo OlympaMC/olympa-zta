@@ -12,6 +12,10 @@ public class GunM1897 extends Gun{
 	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
 	
+	public GunM1897(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "M1897";
 	}

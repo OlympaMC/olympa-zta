@@ -10,6 +10,10 @@ public class ScopeStrong extends Scope{
 	
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -3, Operation.ADD_SCALAR);
 	
+	public ScopeStrong(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Lunette x3";
 	}

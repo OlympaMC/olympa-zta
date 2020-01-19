@@ -7,8 +7,12 @@ import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class StockLight extends Stock{
-	
+
 	private static final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
+	
+	public StockLight(int id) {
+		super(id);
+	}
 	
 	public String getName(){
 		return "Crosse légère";

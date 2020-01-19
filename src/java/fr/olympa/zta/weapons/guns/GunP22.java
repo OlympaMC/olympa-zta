@@ -8,6 +8,10 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunP22 extends Gun{
 	
+	public GunP22(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "P22";
 	}

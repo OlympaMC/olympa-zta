@@ -7,10 +7,14 @@ import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonStabilizer extends Cannon{
-	
+
 	private static final AttributeModifier rateModifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
 	private static final AttributeModifier spreadModifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.8f);
 	
+	public CannonStabilizer(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Stabilisateur";
 	}

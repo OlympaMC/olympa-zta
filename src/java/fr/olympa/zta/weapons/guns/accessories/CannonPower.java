@@ -7,8 +7,12 @@ import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonPower extends Cannon{
-	
+
 	private static final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
+	
+	public CannonPower(int id) {
+		super(id);
+	}
 	
 	public String getName(){
 		return "Canon lourd";

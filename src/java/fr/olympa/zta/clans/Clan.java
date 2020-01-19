@@ -1,5 +1,6 @@
 package fr.olympa.zta.clans;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,8 +19,9 @@ public class Clan implements Registrable {
 
 	private final int id;
 	private final String name;
-	private OlympaPlayer[] members = new OlympaPlayer[5];
-	private byte chiefID = 0;
+	private List<OlympaPlayer> members = new ArrayList<>(5);
+	private OlympaPlayer chief;
+	private int maxSize = 5;
 
 	public Clan(String name) {
 		this(name, ZTARegistry.generateID());
@@ -39,49 +41,38 @@ public class Clan implements Registrable {
 	}
 
 	public boolean addPlayer(OlympaPlayer p) {
-		for (byte i = 0; i < members.length; i++) {
-			if (members[i] != null) continue;
-			// packets pour mettre le nouveau joueur en vert pour les anciens
-			Player[] players = getPlayersArray();
-			List<String> joiner = Arrays.asList(p.getName());
-			NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.enemies, joiner), players);
-			NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.clan, joiner), players);
-			// packets pour mettre les autres joueurs en vert pour le nouveau
-			List<String> names = Arrays.stream(members).filter(x -> x != null).map(x -> x.getName()).collect(Collectors.toList());
-			NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.enemies, names), p.getPlayer());
-			NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.clan, names), p.getPlayer());
-			members[i] = p;
-			broadcast("Le joueur " + p.getName() + " rejoint le clan.");
-			return true;
-		}
-		return false;
+		if (members.size() >= getMaxSize()) return false;
+		// packets pour mettre le nouveau joueur en vert pour les anciens
+		Player[] players = getPlayersArray();
+		List<String> joiner = Arrays.asList(p.getName());
+		NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.enemies, joiner), players);
+		NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.clan, joiner), players);
+		// packets pour mettre les autres joueurs en vert pour le nouveau
+		List<String> names = members.stream().filter(x -> x != null).map(x -> x.getName()).collect(Collectors.toList());
+		NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.enemies, names), p.getPlayer());
+		NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.clan, names), p.getPlayer());
+		members.add(p);
+		broadcast("Le joueur " + p.getName() + " rejoint le clan.");
+		return true;
 	}
 
 	public void removePlayer(OlympaPlayer p) {
-		for (byte i = 0; i < members.length; i++) {
-			if (!p.equals(members[i])) continue;
-			broadcast("Le joueur " + p.getName() + " a quitté le clan.");
-			members[i] = null;
-			// packets pour mettre le joueur partant en rouge pour les restants
-			Player[] players = getPlayersArray();
-			List<String> leaver = Arrays.asList(p.getName());
-			NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.clan, leaver), players);
-			NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.enemies, leaver), players);
-			// packets pour mettre les autres joueurs en rouge pour le partant
-			List<String> names = Arrays.stream(members).filter(x -> x != null).map(x -> x.getName()).collect(Collectors.toList());
-			NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.clan, names), p.getPlayer());
-			NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.enemies, names), p.getPlayer());
-			break;
-		}
+		broadcast("Le joueur " + p.getName() + " a quitté le clan.");
+		members.remove(p);
+		// packets pour mettre le joueur partant en rouge pour les restants
+		Player[] players = getPlayersArray();
+		List<String> leaver = Arrays.asList(p.getName());
+		NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.clan, leaver), players);
+		NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.enemies, leaver), players);
+		// packets pour mettre les autres joueurs en rouge pour le partant
+		List<String> names = members.stream().filter(x -> x != null).map(x -> x.getName()).collect(Collectors.toList());
+		NMS.sendPacket(NMS.removePlayersFromTeam(ClansManager.clan, names), p.getPlayer());
+		NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.enemies, names), p.getPlayer());
 	}
 
 	public void setChief(OlympaPlayer p) {
-		for (byte i = 0; i < members.length; i++) {
-			if (!p.equals(members[i])) continue;
-			chiefID = i;
-			broadcast("Le joueur " + p.getName() + " est désormais le chef du clan.");
-			break;
-		}
+		chief = p;
+		broadcast("Le joueur " + p.getName() + " est désormais le chef du clan.");
 	}
 
 	public void disband() {
@@ -90,21 +81,20 @@ public class Clan implements Registrable {
 	}
 
 	public OlympaPlayer getChief() {
-		return members[chiefID];
+		return chief;
 	}
 
-	public byte getChiefID() {
-		return chiefID;
+	public int getMembersAmount() {
+		return members.size();
 	}
 
-	public byte getMembersAmount() {
-		byte i = 0;
-		for (OlympaPlayer member : members) if (member != null) i++;
-		return i;
+	public OlympaPlayer getMember(int id) {
+		if (id >= members.size()) return null;
+		return members.get(id);
 	}
 
-	public OlympaPlayer getMember(byte id) {
-		return members[id];
+	public int getMaxSize() {
+		return maxSize;
 	}
 
 	public boolean contains(OlympaPlayer p) {
@@ -124,9 +114,9 @@ public class Clan implements Registrable {
 	}
 
 	public Player[] getPlayersArray() {
-		Player[] playersArray = new Player[5];
-		for (int i = 0; i < members.length; i++) {
-			OlympaPlayer member = members[i];
+		Player[] playersArray = new Player[members.size()];
+		for (int i = 0; i < members.size(); i++) {
+			OlympaPlayer member = members.get(i);
 			if (member != null) {
 				Player p = member.getPlayer();
 				if (p != null) playersArray[i] = p;

@@ -6,7 +6,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.ZTARegistry;
 
 public abstract class Weapon implements ItemStackable{
 	
@@ -16,10 +15,6 @@ public abstract class Weapon implements ItemStackable{
 
 	public Weapon(int id) {
 		this.id = id;
-	}
-
-	public Weapon() {
-		this.id = ZTARegistry.generateID();
 	}
 
 	public int getID(){

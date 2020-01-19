@@ -11,6 +11,10 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
  */
 public class GunM1911 extends Gun{
 	
+	public GunM1911(int id) {
+		super(id);
+	}
+
 	public String getName(){
 		return "Colt M1911";
 	}
