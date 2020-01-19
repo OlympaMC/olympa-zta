@@ -6,4 +6,8 @@ public abstract class Scope extends Accessory{
 	
 	public void zoomToggled(Player p, boolean zoom){}
 	
+	public AccessoryType getType() {
+		return AccessoryType.SCOPE;
+	}
+
 }

@@ -1,5 +1,7 @@
 package fr.olympa.zta.weapons;
 
+import java.util.Map.Entry;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -8,6 +10,7 @@ import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
+import fr.olympa.zta.registry.ZTARegistry.RegistryType;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class WeaponsCommand extends ComplexCommand {
@@ -18,7 +21,7 @@ public class WeaponsCommand extends ComplexCommand {
 
 	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")
 	public void give(CommandContext cmd) {
-		Class<? extends Registrable> clazz = ZTARegistry.registrable.get(cmd.args[0]);
+		Class<? extends Registrable> clazz = ZTARegistry.registrable.get(cmd.args[0]).clazz;
 		if (clazz == null) {
 			sendError("Cette arme n'existe pas.");
 			return;
@@ -28,7 +31,7 @@ public class WeaponsCommand extends ComplexCommand {
 				cmd.player.getInventory().addItem(ZTARegistry.createItem(((Class<? extends ItemStackable>) clazz).newInstance()));
 				sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
 			}else {
-				sendError("L'objet spécifié ne correspond pas à une arme.");
+				sendError("L'objet spécifié ne peut pas être matérialisé comme item.");
 			}
 		}catch (InstantiationException | IllegalAccessException ex) {
 			sendError("Une erreur est survenue lors du don de l'objet.");
@@ -51,9 +54,9 @@ public class WeaponsCommand extends ComplexCommand {
 
 	@Cmd
 	public void list(CommandContext cmd) {
-		for (Class<? extends Registrable> clazz : ZTARegistry.registrable.values()) {
-			if (ItemStackable.class.isAssignableFrom(clazz)) {
-				sendMessage("§d● " + clazz.getSimpleName());
+		for (Entry<String, RegistryType<?>> type : ZTARegistry.registrable.entrySet()) {
+			if (ItemStackable.class.isAssignableFrom(type.getValue().clazz)) {
+				sendMessage("§d● " + type.getKey());
 			}
 		}
 	}

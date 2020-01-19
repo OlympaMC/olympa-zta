@@ -1,5 +1,8 @@
 package fr.olympa.zta.weapons.guns;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +25,14 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.accessories.Accessory;
+import fr.olympa.zta.weapons.guns.accessories.Accessory.AccessoryType;
+import fr.olympa.zta.weapons.guns.accessories.Cannon;
 import fr.olympa.zta.weapons.guns.accessories.Scope;
+import fr.olympa.zta.weapons.guns.accessories.Stock;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public abstract class Gun extends Weapon{
@@ -46,15 +53,9 @@ public abstract class Gun extends Weapon{
 	public final Attribute fireRate = new Attribute(getFireRate());
 	public final Attribute fireVolume = new Attribute(getFireVolume());
 	
-	/**
-	 * Accessoires attachés sur l'arme.
-	 * <ol start="0">
-	 * <li> Scope (lunette)
-	 * <li> Cannon (canon)
-	 * <li> Stock (crosse)
-	 * </ol>
-	 */
-	public final Accessory[] accessories = new Accessory[3];
+	public Scope scope;
+	public Cannon cannon;
+	public Stock stock;
 	
 	public ItemStack createItemStack(){
 		return createItemStack(true);
@@ -223,7 +224,7 @@ public abstract class Gun extends Weapon{
 			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier());
 		}
 		zoomed = !zoomed;
-		if (accessories[0] != null) ((Scope) accessories[0]).zoomToggled(p, zoomed);
+		if (scope != null) scope.zoomToggled(p, zoomed);
 	}
 	
 	private void launchBullet(Bullet bullet, Player p){
@@ -341,11 +342,11 @@ public abstract class Gun extends Weapon{
 		return false;
 	}
 	
-	public int getAccessoriesAmount(){
+	public int getAccessoriesAmount() {
 		int i = 0;
-		for (Accessory access : accessories) {
-			if (access != null) i++;
-		}
+		if (scope != null) i++;
+		if (cannon != null) i++;
+		if (stock != null) i++;
 		return i;
 	}
 	
@@ -356,7 +357,24 @@ public abstract class Gun extends Weapon{
 		if (isStockAllowed()) i++;
 		return i;
 	}
-	
+
+	public void setAccessory(AccessoryType type, Accessory accessory) {
+		Accessory old = null;
+		switch (type) {
+		case SCOPE:
+			old = scope;
+			scope = (Scope) accessory;
+		case CANNON:
+			old = cannon;
+			cannon = (Cannon) accessory;
+		case STOCK:
+			old = stock;
+			stock = (Stock) accessory;
+		}
+		if (old != null) old.remove(this);
+		if (accessory != null) accessory.apply(this);
+	}
+
 	/**
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
@@ -395,7 +413,37 @@ public abstract class Gun extends Weapon{
 	public void playReadySound(Location lc){
 		lc.getWorld().playSound(lc, Sound.BLOCK_STONE_HIT, SoundCategory.PLAYERS, 1, 1);
 	}
+
+	private static PreparedStatement createStatement;
+	private static PreparedStatement updateStatement;
 	
+	public void createDatas() throws SQLException {
+		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("INSERT INTO `guns` (`id`) VALUES (?)");
+		createStatement.setInt(1, getID());
+		createStatement.executeUpdate();
+	}
+
+	public synchronized void updateDatas() throws SQLException {
+		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("UPDATE `guns` SET "
+				+ "`ammos` = ?, "
+				+ "`ready` = ?, "
+				+ "`zoomed` = ?, "
+				+ "`secondary_mode` = ?, "
+				+ "`scope_id` = ?, "
+				+ "`cannon_id` = ?, "
+				+ "`stock_id` = ? "
+				+ "WHERE (`id` = ?)");
+		updateStatement.setInt(1, ammos);
+		updateStatement.setBoolean(2, ready);
+		updateStatement.setBoolean(3, zoomed);
+		updateStatement.setBoolean(4, secondaryMode);
+		updateStatement.setInt(5, scope.getID());
+		updateStatement.setInt(6, cannon.getID());
+		updateStatement.setInt(7, stock.getID());
+		updateStatement.setInt(8, getID());
+		updateStatement.executeUpdate();
+	}
+
 	public enum GunAction{
 		ZOOM, CHANGE_MODE;
 	}
@@ -453,4 +501,39 @@ public abstract class Gun extends Weapon{
 		
 	}
 	
+	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE `zta`.`guns` (" +
+			"  `id` INT NOT NULL," +
+			"  `ammos` SMALLINT(2) UNSIGNED NOT NULL," +
+			"  `ready` TINYINT DEFAULT 1," +
+			"  `zoomed` TINYINT DEFAULT 0," +
+			"  `secondary_mode` TINYINT DEFAULT 1," +
+			"  `scope_id` INT(11) NULL DEFAULT -1," +
+			"  `cannon_id` INT(11) NULL DEFAULT -1," +
+			"  `stock_id` INT(11) NULL DEFAULT -1," +
+			"  PRIMARY KEY (`id`))";
+
+	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) {
+		try {
+			T gun = (T) clazz.getConstructor(int.class).newInstance(id);
+			gun.ammos = set.getInt("ammos");
+			gun.ready = set.getBoolean("ready");
+			gun.zoomed = set.getBoolean("zoomed");
+			gun.secondaryMode = set.getBoolean("secondary_mode");
+			int scopeID = set.getInt("scope_id");
+			int cannonID = set.getInt("cannon_id");
+			int stockID = set.getInt("stock_id");
+			new BukkitRunnable() {
+				public void run() {
+					gun.setAccessory(AccessoryType.SCOPE, (Accessory) ZTARegistry.getObject(scopeID));
+					gun.setAccessory(AccessoryType.CANNON, (Accessory) ZTARegistry.getObject(cannonID));
+					gun.setAccessory(AccessoryType.STOCK, (Accessory) ZTARegistry.getObject(stockID));
+				}
+			}.runTaskLater(OlympaZTA.getInstance(), 20L);
+			return gun;
+		}catch (ReflectiveOperationException | SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

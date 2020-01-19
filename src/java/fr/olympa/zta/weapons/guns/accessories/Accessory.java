@@ -2,22 +2,31 @@ package fr.olympa.zta.weapons.guns.accessories;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Gun;
 
 public abstract class Accessory implements ItemStackable{
 	
-	public final int id = new Random().nextInt();
-	public int getID(){
-		return id;
+	private final int id;
+
+	public Accessory(int id) {
+		this.id = id;
+	}
+
+	public Accessory() {
+		this.id = ZTARegistry.generateID();
 	}
 	
+	public int getID() {
+		return id;
+	}
+
 	public ItemStack createItemStack(){
 		List<String> lore = new ArrayList<>();
 		lore.add("§6§l" + (getEffectsDescription().length < 2 ? "Effet" : "Effets") + " §r§6:");
@@ -30,6 +39,8 @@ public abstract class Accessory implements ItemStackable{
 	
 	public abstract String[] getEffectsDescription();
 	
+	public abstract AccessoryType getType();
+
 	public abstract void apply(Gun gun);
 	
 	public abstract void remove(Gun gun);
@@ -78,17 +89,22 @@ public abstract class Accessory implements ItemStackable{
 			return false;
 		}
 		
+		public Accessory get(Gun gun) {
+			switch (this) {
+			case SCOPE:
+				return gun.scope;
+			case CANNON:
+				return gun.cannon;
+			case STOCK:
+				return gun.stock;
+			}
+			return null;
+		}
+
 		public static AccessoryType getFromSlot(int slot){
 			for (AccessoryType type : values()) {
 				if (type.slot == slot) return type;
 			}
-			return null;
-		}
-		
-		public static AccessoryType getFromAccessory(Accessory accessory){
-			if (accessory instanceof Scope) return SCOPE;
-			if (accessory instanceof Cannon) return CANNON;
-			if (accessory instanceof Stock) return STOCK;
 			return null;
 		}
 	}

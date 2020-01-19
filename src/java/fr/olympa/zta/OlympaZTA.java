@@ -27,8 +27,10 @@ import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.registry.ZTARegistry;
+import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunAK;
 import fr.olympa.zta.weapons.guns.GunBarrett;
@@ -100,6 +102,16 @@ public class OlympaZTA extends OlympaPlugin{
 				LootChest.class,
 				Clan.class).forEach(ZTARegistry::registerObjectType);
 		
+		Arrays.asList(
+				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
+				.forEach(x -> ZTARegistry.registerObjectType(x, "guns", Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+		Arrays.asList(
+				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
+				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
+				.forEach(x -> ZTARegistry.registerObjectType(x, null, null, DeserializeDatas.easyClass()));
+
+		ZTARegistry.registerObjectType(LootChest.class, "chests", LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeGun);
+
 		new Mobs(); // initalise les mobs custom
 		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
 		spawn.start();
@@ -113,6 +125,8 @@ public class OlympaZTA extends OlympaPlugin{
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
+
+		ZTARegistry.loadFromDatabase();
 	}
 
 	@Override
@@ -124,6 +138,8 @@ public class OlympaZTA extends OlympaPlugin{
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
 		}
+
+		ZTARegistry.saveDatabase();
 
 		super.disable();
 	}

@@ -1,19 +1,27 @@
 package fr.olympa.zta.weapons;
 
-import java.util.Random;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ZTARegistry;
 
 public abstract class Weapon implements ItemStackable{
 	
 	// Système de cassage d'arme etc. ?
 	
-	public final int id = new Random().nextInt();
+	private final int id;
+
+	public Weapon(int id) {
+		this.id = id;
+	}
+
+	public Weapon() {
+		this.id = ZTARegistry.generateID();
+	}
+
 	public int getID(){
 		return id;
 	}

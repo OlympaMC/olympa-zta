@@ -2,7 +2,6 @@ package fr.olympa.zta.clans;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -13,19 +12,30 @@ import fr.olympa.api.utils.NMS;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.zta.registry.Registrable;
+import fr.olympa.zta.registry.ZTARegistry;
 
 public class Clan implements Registrable {
 
+	private final int id;
 	private final String name;
 	private OlympaPlayer[] members = new OlympaPlayer[5];
 	private byte chiefID = 0;
 
 	public Clan(String name) {
+		this(name, ZTARegistry.generateID());
+	}
+
+	public Clan(String name, int id) {
 		this.name = name;
+		this.id = id;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public int getID() {
+		return id;
 	}
 
 	public boolean addPlayer(OlympaPlayer p) {
@@ -128,11 +138,6 @@ public class Clan implements Registrable {
 	public void broadcast(String message) {
 		String finalMessage = SpigotUtils.color(Prefix.DEFAULT + "§6" + name + " §e: " + message + " Terminé.");
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
-	}
-
-	private final int id = new Random().nextInt();
-	public int getID() {
-		return id;
 	}
 
 }

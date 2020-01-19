@@ -31,7 +31,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		for (AccessoryType type : AccessoryType.values()) {
 			ItemStack item = null;
 			if (type.isEnabled(gun)) {
-				Accessory accessory = gun.accessories[type.ordinal()];
+				Accessory accessory = type.get(gun);
 				if (accessory == null) {
 					item = type.getAvailableItemSlot();
 				}else item = accessory.createItemStack();
@@ -52,8 +52,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		Material type = current.getType();
 		if (type == Material.RED_STAINED_GLASS_PANE || type == Material.LIME_STAINED_GLASS_PANE) return true; // si c'est un slot avec rien dedans : cancel
 		
-		gun.accessories[accessoryType.ordinal()].remove(gun); // enlever les caractéristiques de l'accessoire sur l'arme
-		gun.accessories[accessoryType.ordinal()] = null; // enlever l'accessoire de l'arme
+		gun.setAccessory(accessoryType, null);
 		
 		new BukkitRunnable(){
 			public void run(){
@@ -72,7 +71,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		ItemStackable object = ZTARegistry.getItemStackable(cursor);
 		if (!(object instanceof Accessory)) return true; // si l'objet en main n'est pas un accessoire : cancel
 		Accessory accessory = (Accessory) object;
-		if (accessoryType != AccessoryType.getFromAccessory(accessory)) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
+		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
 		
 		if (current.getType() == Material.LIME_STAINED_GLASS_PANE) {
 			new BukkitRunnable(){
@@ -80,9 +79,9 @@ public class AccessoriesGUI extends OlympaGUI{
 					p.setItemOnCursor(null); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
 				}
 			}.runTask(OlympaZTA.getInstance());
-		}else gun.accessories[accessoryType.ordinal()].remove(gun); // enlever les caractéristiques de l'accessoire précédent de l'arme
+		}
 		
-		gun.accessories[accessoryType.ordinal()] = accessory; // mettre l'accessoire sur l'arme
+		gun.setAccessory(accessoryType, accessory);
 		accessory.apply(gun); // mettre les caractéristiques de l'accessoire sur l'arme
 		
 		return false; // laisse le joueur swapper les items
