@@ -15,7 +15,6 @@ import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
-import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansListener;
@@ -27,6 +26,7 @@ import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
+import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.weapons.WeaponsCommand;
@@ -73,6 +73,7 @@ public class OlympaZTA extends OlympaPlugin{
 	private ChestsListener chestsListener = new ChestsListener();
 	private MobsListener mobsListener = new MobsListener();
 	private ClansListener clansListener = new ClansListener();
+	private ItemsListener itemsListener = new ItemsListener();
 
 	public MobSpawning spawn;
 	public ScoreboardManager scoreboards;
@@ -90,6 +91,7 @@ public class OlympaZTA extends OlympaPlugin{
 		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(clansListener, this);
+		pluginManager.registerEvents(itemsListener, this);
 
 		new ChestCommand().register();
 		new WeaponsCommand().register();
@@ -116,7 +118,7 @@ public class OlympaZTA extends OlympaPlugin{
 				new FixedLine(""),
 				new DynamicLine(x -> "§eNombre de mobs : §6" + spawn.world.getLivingEntities().size(), 1, 0),
 				new FixedLine(""),
-				new DynamicLine(x -> "§ePosition : §6" + SpigotUtils.convertBlockLocationToString(x.getPlayer().getLocation()), 1, 0)));
+				new DynamicLine(x -> "§eMonnaie : §6" + x.getMoney() + "$", 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));

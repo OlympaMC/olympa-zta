@@ -6,11 +6,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public enum ArmorType {
-	CIVIL("LEATHER", "Bandana", "Veste", "Jeans", "Baskets", true),
-	GANGSTER("GOLDEN", "Cagoule en Kevlar", "Veste en Kevlar", "Pantalon en Kevlar", "Chaussures en Kevlar", true, Enchantment.PROTECTION_PROJECTILE, 0),
-	ANTIRIOT("CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 0),
-	MILITARY("IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Jambières en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 0);
+	CIVIL("Tenue civile", "LEATHER", "Bandana", "Veste", "Jeans", "Baskets", true),
+	GANGSTER("Tenue de gangster", "GOLDEN", "Cagoule en Kevlar", "Veste en Kevlar", "Pantalon en Kevlar", "Chaussures en Kevlar", true, Enchantment.PROTECTION_PROJECTILE, 1),
+	ANTIRIOT("Armure anti-émeutes", "CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 1),
+	MILITARY("Armure en kevlar", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Jambières en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
 
+	private String name;
 	private String type;
 	private boolean unbreakable;
 	private Enchantment enchantment;
@@ -20,11 +21,12 @@ public enum ArmorType {
 	private ItemStack leggings;
 	private ItemStack boots;
 
-	private ArmorType(String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable) {
-		this(type, helmet, chestplate, leggings, boots, unbreakable, null, 0);
+	private ArmorType(String name, String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable) {
+		this(name, type, helmet, chestplate, leggings, boots, unbreakable, null, 0);
 	}
 
-	private ArmorType(String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable, Enchantment enchantment, int level) {
+	private ArmorType(String name, String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable, Enchantment enchantment, int level) {
+		this.name = name;
 		this.type = type;
 		this.unbreakable = unbreakable;
 		this.enchantment = enchantment;
@@ -33,6 +35,10 @@ public enum ArmorType {
 		this.chestplate = createItem(ArmorSlot.CHESTPLATE, chestplate);
 		this.leggings = createItem(ArmorSlot.LEGGINGS, leggings);
 		this.boots = createItem(ArmorSlot.BOOTS, boots);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	private ItemStack createItem(ArmorSlot slot, String name) {

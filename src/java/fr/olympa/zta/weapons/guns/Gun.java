@@ -444,9 +444,9 @@ public abstract class Gun extends Weapon{
 		updateStatement.setBoolean(2, ready);
 		updateStatement.setBoolean(3, zoomed);
 		updateStatement.setBoolean(4, secondaryMode);
-		if (scope != null) updateStatement.setInt(5, scope.getID());
-		if (cannon != null) updateStatement.setInt(6, cannon.getID());
-		if (stock != null) updateStatement.setInt(7, stock.getID());
+		updateStatement.setInt(5, scope == null ? null : scope.getID());
+		updateStatement.setInt(6, cannon == null ? null : cannon.getID());
+		updateStatement.setInt(7, stock == null ? null : stock.getID());
 		updateStatement.setInt(8, getID());
 		updateStatement.executeUpdate();
 	}

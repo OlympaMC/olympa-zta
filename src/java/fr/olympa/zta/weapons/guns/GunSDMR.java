@@ -29,7 +29,7 @@ public class GunSDMR extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 15;
+		return 12;
 	}
 	
 	protected int getChargeTime(){

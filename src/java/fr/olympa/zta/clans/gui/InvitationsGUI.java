@@ -16,7 +16,7 @@ import fr.olympa.zta.clans.ClansManager;
 public class InvitationsGUI extends PagedGUI<Clan> {
 
 	protected InvitationsGUI(Player p) {
-		super("§dMes invitations", DyeColor.MAGENTA, ClansManager.getPlayerInvitations(p));
+		super("§4Mes invitations", DyeColor.MAGENTA, ClansManager.getPlayerInvitations(p));
 	}
 
 	public ItemStack getItemStack(Clan clan) {

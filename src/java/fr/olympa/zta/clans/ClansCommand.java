@@ -41,7 +41,9 @@ public class ClansCommand extends ComplexCommand {
 	}
 	public static Clan createClan(String name, Player p) {
 		Clan clan = new Clan(name);
-		clan.addPlayer(AccountProvider.get(p.getUniqueId()));
+		OlympaPlayer op = AccountProvider.get(p.getUniqueId());
+		clan.addPlayer(op);
+		clan.setChief(op);
 		ClansManager.addClan(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Vous venez de créer votre clan !");
 		return clan;

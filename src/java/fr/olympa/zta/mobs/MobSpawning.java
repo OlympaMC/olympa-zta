@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -34,6 +36,7 @@ public class MobSpawning {
 	private Random random = new Random();
 
 	private List<Location> spawnQueue = new ArrayList<>(150);
+	private Lock queueLock = new ReentrantLock();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
 	public MobSpawning(World world) {
@@ -43,18 +46,17 @@ public class MobSpawning {
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
+				queueLock.lock();
 				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
 				Set<Chunk> activeChunks = getActiveChunks();
-				System.out.println("active chunks " + activeChunks.size());
-				int i = 0;
+				int spawned = 0;
 				for (Chunk chunk : activeChunks) {
-					for (int dx = 0; dx < 8; dx++) {
+					/*for (int dx = 0; dx < 8; dx++) {
 						int x = dx * 2;
 						for (int dz = 0; dz < 8; dz++) {
 							int z = dz * 2;
 							Block prev = chunk.getBlock(x, 0, z);
 							y: for (int y = 1; y < 140; y++) {
-								i++;
 								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
 								prev = chunk.getBlock(x, y, z);
 								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
@@ -73,9 +75,35 @@ public class MobSpawning {
 								}
 							}
 						}
+					}*/
+					int mobs = random.nextInt(3);
+					for (int i = 0; i < mobs; i++) {
+						int x = random.nextInt(16);
+						int y = 1 + random.nextInt(30);
+						int z = random.nextInt(16);
+						Block prev = chunk.getBlock(x, y, z);
+						y: for (; y < 140; y++) {
+							boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
+							prev = chunk.getBlock(x, y, z);
+							if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+								Block block = chunk.getBlock(x, y, z);
+								if (block.getLightLevel() < 8 || world.isThundering()) continue;
+								for (Location loc : entities) {
+									if (loc.distanceSquared(block.getLocation()) < 144) {
+										continue y; // distance aux autres entités obligatoirement > à 12 blocs
+									}
+								}
+								Location lc = block.getLocation();
+								//entities.add(lc);
+								spawnQueue.add(lc);
+								spawned++;
+								break y;
+							}
+						}
 					}
 				}
-				System.out.println("end chunks spawn " + i);
+				System.out.println("spawned: " + spawned);
+				queueLock.unlock();
 			}
 		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);
 
@@ -84,8 +112,7 @@ public class MobSpawning {
 				averageQueueSize.add(spawnQueue.size());
 				if (averageQueueSize.size() > 24) averageQueueSize.remove();
 
-				int toRemove = spawnQueue.size() / 2 + 1;
-				System.out.println("queue size : " + spawnQueue.size() + " | to remove : " + toRemove);
+				if (!queueLock.tryLock()) return;
 				for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 					try {
 						Location loc = iterator.next();
@@ -94,16 +121,15 @@ public class MobSpawning {
 						ex.printStackTrace();
 					}
 					iterator.remove();
-					toRemove--;
-					if (toRemove == 0) break;
 				}
+				queueLock.unlock();
 			}
-		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 50L);
+		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 20L);
 
 		enabled = true;
 	}
 
-	private final int chunkRadius = 3;
+	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
 	private Set<Chunk> getActiveChunks() {
 		Set<Chunk> chunks = new HashSet<>(100);
