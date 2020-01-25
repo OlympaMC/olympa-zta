@@ -15,6 +15,7 @@ import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
+import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansListener;
@@ -60,6 +61,8 @@ import fr.olympa.zta.weapons.guns.accessories.StockStrong;
 import fr.olympa.zta.weapons.knives.KnifeBatte;
 import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.trait.TraitInfo;
 
 public class OlympaZTA extends OlympaPlugin{
 
@@ -123,6 +126,8 @@ public class OlympaZTA extends OlympaPlugin{
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
+
+		CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BankTrait.class));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");

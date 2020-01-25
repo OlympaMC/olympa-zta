@@ -141,7 +141,7 @@ public class ZTARegistry{
 				RegistryType<?> type = registrable.get(resultSet.getString("type"));
 				ResultSet objectSet = null;
 				if (type.tableName != null) {
-					objectSet = statement.executeQuery("SELECT * FROM `" + type.tableName + "`");
+					objectSet = statement.executeQuery("SELECT * FROM `" + type.tableName + "` WHERE (`id` = '" + id + "')");
 					objectSet.next();
 				}
 				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
