@@ -24,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.Attribute;
@@ -207,7 +208,7 @@ public abstract class Gun extends Weapon{
 		}else toCharge = Math.min(max - ammos, getAmmoType().getAmmos(p));
 		if (toCharge == 0) return;
 		
-		reloading = OlympaZTA.getInstance().getTask().runTaskLater(() -> {
+		reloading = Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
 			reloading = null;
 			ammos += getAmmoType().removeAmmos(p, toCharge);
 			if (ammos != 0) ready = true;
@@ -425,13 +426,13 @@ public abstract class Gun extends Weapon{
 	private static PreparedStatement updateStatement;
 	
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("INSERT INTO `guns` (`id`) VALUES (?)");
+		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `guns` (`id`) VALUES (?)");
 		createStatement.setInt(1, getID());
 		createStatement.executeUpdate();
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("UPDATE `guns` SET "
+		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE `guns` SET "
 				+ "`ammos` = ?, "
 				+ "`ready` = ?, "
 				+ "`zoomed` = ?, "

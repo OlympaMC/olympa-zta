@@ -16,7 +16,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.AbstractRandomizedPicker;
-import fr.olympa.zta.OlympaZTA;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
@@ -114,7 +114,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	private static PreparedStatement updateStatement;
 
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("INSERT INTO `chests` (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
+		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `chests` (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
 		createStatement.setInt(1, getID());
 		createStatement.setString(2, location.getWorld().getName());
 		createStatement.setInt(3, location.getBlockX());
@@ -125,7 +125,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaZTA.getInstance().getDatabase().prepareStatement("UPDATE `chests` SET "
+		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE `chests` SET "
 				+ "`world` = ?, "
 				+ "`x` = ?, "
 				+ "`y` = ?, "

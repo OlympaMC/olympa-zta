@@ -12,6 +12,7 @@ import java.util.Random;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 
 public class ZTARegistry{
@@ -31,7 +32,7 @@ public class ZTARegistry{
 	public static <T extends Registrable> void registerObjectType(Class<T> objectClass, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
 		if (tableName != null) {
 			try {
-				OlympaZTA.getInstance().getDatabase().createStatement().executeUpdate(tableCreatorStatement);
+				OlympaCore.getInstance().getDatabase().createStatement().executeUpdate(tableCreatorStatement);
 			}catch (SQLException e) {
 				e.printStackTrace();
 				return;
@@ -49,7 +50,7 @@ public class ZTARegistry{
 		if (!registrable.containsKey(object.getClass().getSimpleName())) throw new IllegalArgumentException("Registrable object \"" + object.getClass().getName() + "\" has not been registered!");
 		registry.put(object.getID(), object);
 		try {
-			if (insertRegistrable == null || insertRegistrable.isClosed()) insertRegistrable = OlympaZTA.getInstance().getDatabase().prepareStatement("INSERT INTO `registry` (`id`, `type`) VALUES (?, ?)");
+			if (insertRegistrable == null || insertRegistrable.isClosed()) insertRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `registry` (`id`, `type`) VALUES (?, ?)");
 			insertRegistrable.setInt(1, object.getID());
 			insertRegistrable.setString(2, object.getClass().getSimpleName());
 			insertRegistrable.executeUpdate();
@@ -64,7 +65,7 @@ public class ZTARegistry{
 	public static boolean removeObject(Registrable object) {
 		if (!registry.containsKey(object.getID())) return false;
 		try {
-			if (removeRegistrable == null || removeRegistrable.isClosed()) removeRegistrable = OlympaZTA.getInstance().getDatabase().prepareStatement("DELETE FROM `registry` WHERE (`id` = ?)");
+			if (removeRegistrable == null || removeRegistrable.isClosed()) removeRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM `registry` WHERE (`id` = ?)");
 			removeRegistrable.setInt(1, object.getID());
 			removeRegistrable.executeUpdate();
 
@@ -129,7 +130,7 @@ public class ZTARegistry{
 	}
 
 	public static int loadFromDatabase() throws SQLException {
-		Statement statement = OlympaZTA.getInstance().getDatabase().createStatement();
+		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS `registry` (\r\n" + 
 				"  `id` INT NOT NULL,\r\n" + 
 				"  `type` VARCHAR(45) NOT NULL,\r\n" + 
@@ -178,7 +179,7 @@ public class ZTARegistry{
 		}
 
 		synchronized void removeDatas(int id) throws SQLException {
-			if (removeDatas == null || removeDatas.isClosed()) removeDatas = OlympaZTA.getInstance().getDatabase().prepareStatement("DELETE FROM `" + tableName + "` WHERE (`id` = ?)");
+			if (removeDatas == null || removeDatas.isClosed()) removeDatas = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM `" + tableName + "` WHERE (`id` = ?)");
 			removeDatas.setInt(1, id);
 			removeDatas.executeUpdate();
 		}

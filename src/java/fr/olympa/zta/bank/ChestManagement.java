@@ -14,12 +14,12 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.zta.OlympaZTA;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class ChestManagement {
 
 	public static void init() throws SQLException {
-		OlympaZTA.getInstance().getDatabase().createStatement().executeUpdate(
+		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate(
 				"CREATE TABLE IF NOT EXISTS `player_bank` (" +
 						"  `player_id` BIGINT NOT NULL," +
 						"  `slots` TINYINT(1) UNSIGNED NULL DEFAULT 9," +
@@ -33,7 +33,7 @@ public class ChestManagement {
 	private static PreparedStatement updateDatas;
 
 	public static ResultSet createBank(OlympaPlayer player) throws SQLException {
-		if (createBank == null || createBank.isClosed()) createBank = OlympaZTA.getInstance().getDatabase().prepareStatement("INSERT INTO `player_bank` (`player_id`) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+		if (createBank == null || createBank.isClosed()) createBank = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `player_bank` (`player_id`) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 		createBank.setLong(1, player.getId());
 		createBank.executeUpdate();
 		ResultSet result = createBank.getGeneratedKeys();
@@ -42,14 +42,14 @@ public class ChestManagement {
 	}
 
 	public static void updateSize(OlympaPlayer player, int newSize) throws SQLException {
-		if (updateSize == null || updateSize.isClosed()) updateSize = OlympaZTA.getInstance().getDatabase().prepareStatement("UPDATE `player_bank` SET `rows` = ? WHERE (`player_id` = ?)");
+		if (updateSize == null || updateSize.isClosed()) updateSize = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE `player_bank` SET `rows` = ? WHERE (`player_id` = ?)");
 		updateDatas.setInt(1, newSize);
 		updateSize.setLong(2, player.getId());
 		updateSize.executeUpdate();
 	}
 
 	public static ChestGUI getBankGUI(OlympaPlayer player) throws SQLException, IOException {
-		if (getBank == null || getBank.isClosed()) getBank = OlympaZTA.getInstance().getDatabase().prepareStatement("SELECT * FROM `player_bank` WHERE (`player_id` = ?)");
+		if (getBank == null || getBank.isClosed()) getBank = OlympaCore.getInstance().getDatabase().prepareStatement("SELECT * FROM `player_bank` WHERE (`player_id` = ?)");
 		getBank.setLong(1, player.getId());
 		ResultSet result = getBank.executeQuery();
 		if (!result.next()) result = createBank(player);
@@ -83,7 +83,7 @@ public class ChestManagement {
 		dataOutput.close();
 		String inventory = Base64Coder.encodeLines(outputStream.toByteArray());
 
-		if (updateDatas == null || updateDatas.isClosed()) updateDatas = OlympaZTA.getInstance().getDatabase().prepareStatement("");
+		if (updateDatas == null || updateDatas.isClosed()) updateDatas = OlympaCore.getInstance().getDatabase().prepareStatement("");
 		updateDatas.setLong(1, player.getId());
 		updateDatas.setString(2, inventory);
 		updateDatas.executeUpdate();

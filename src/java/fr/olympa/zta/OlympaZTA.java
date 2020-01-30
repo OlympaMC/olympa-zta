@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.plugin.OlympaPlugin;
+import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
@@ -64,7 +64,7 @@ import fr.olympa.zta.weapons.knives.KnifeSurin;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.trait.TraitInfo;
 
-public class OlympaZTA extends OlympaPlugin{
+public class OlympaZTA extends OlympaAPIPlugin {
 
 	private static OlympaZTA instance;
 
@@ -84,7 +84,6 @@ public class OlympaZTA extends OlympaPlugin{
 	@Override
 	public void onEnable() {
 		instance = this;
-		super.enable();
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 
 		ClansManager.initialize();
@@ -147,8 +146,6 @@ public class OlympaZTA extends OlympaPlugin{
 		}
 
 		ZTARegistry.saveDatabase();
-
-		super.disable();
 	}
 	
 }

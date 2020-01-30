@@ -1,8 +1,1 @@
 world: "world"
-database:
-   default:
-      host: localhost
-      port: 3306
-      user: olympa
-      password: password
-      database: server
