@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
@@ -85,6 +86,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	public void onEnable() {
 		instance = this;
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
+		AccountProvider.setPlayerProvider(OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		ClansManager.initialize();
 		
