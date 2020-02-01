@@ -1,19 +1,23 @@
 package fr.olympa.zta.packetslistener;
 
+import java.util.HashSet;
+
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 
 public class PacketInjector{
 	
+	private static HashSet<String> handlers = new HashSet<>();
+
 	public static void addPlayer(Player p, ChannelHandler handler){
+		String handlerName = handler.getClass().getSimpleName();
+		handlers.add(handlerName);
 		try {
 			ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
-			if (pipeline.get("PacketInjector") != null) pipeline.remove("PacketInjector");
-			pipeline.addBefore("packet_handler", handler.getClass().getSimpleName(), handler);
+			pipeline.addBefore("packet_handler", handlerName, handler);
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -21,9 +25,9 @@ public class PacketInjector{
 	
 	public static void removePlayer(Player p){
 		try {
-			Channel ch = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel;
-			if (ch.pipeline().get("PacketInjector") != null) {
-				ch.pipeline().remove("PacketInjector");
+			ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
+			for (String handler : handlers) {
+				if (pipeline.get(handler) != null) pipeline.remove(handler);
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();

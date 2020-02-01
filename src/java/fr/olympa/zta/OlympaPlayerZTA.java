@@ -12,14 +12,20 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.ImmutableMap;
 
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.provider.OlympaPlayerObject;
 
 public class OlympaPlayerZTA extends OlympaPlayerObject {
 
-	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY NULL").build();
+	public static final int MAX_SLOTS = 27;
+	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY NULL").put("ender_chest", "VARBINARY NULL").put("money", "VARINT NULL DEFAULT 0").build();
 
 	private int bankSlots = 9;
-	private ItemStack[] bankContent = new ItemStack[9];
+	private ItemStack[] bankContent = new ItemStack[MAX_SLOTS];
+
+	private ItemStack[] enderChest = new ItemStack[9];
+
+	private OlympaMoney money;
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
@@ -41,19 +47,35 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 		this.bankContent = items;
 	}
 
+	public ItemStack[] getEnderChest() {
+		return enderChest;
+	}
+
+	public void setEnderChest(ItemStack[] enderChest) {
+		this.enderChest = enderChest;
+	}
+
+	public OlympaMoney getGameMoney() {
+		return money;
+	}
+
 	public void loadDatas(ResultSet resultSet) throws SQLException {
-		bankSlots = resultSet.getInt("bank_slots");
 		try {
+			bankSlots = resultSet.getInt("bank_slots");
 			bankContent = ItemUtils.deserializeItemsArray(resultSet.getBytes("bank_content"));
+			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
+			money = new OlympaMoney(resultSet.getDouble("money"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void saveDatas(PreparedStatement statement) throws SQLException {
-		statement.setInt(1, bankSlots);
 		try {
+			statement.setInt(1, bankSlots);
 			statement.setBytes(2, ItemUtils.serializeItemsArray(bankContent));
+			statement.setBytes(3, ItemUtils.serializeItemsArray(enderChest));
+			statement.setDouble(4, money.get());
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -10,20 +10,19 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 
-public class ChestGUI extends OlympaGUI {
+public class BankGUI extends OlympaGUI {
 
-	public final static int MAX_ROWS = 3;
 	private OlympaPlayerZTA player;
 	private int maxSlot;
 
 	private boolean change = false;
 
-	public ChestGUI(OlympaPlayerZTA player) {
-		super("Coffre de " + player.getName(), MAX_ROWS);
+	public BankGUI(OlympaPlayerZTA player) {
+		super("Coffre de " + player.getName(), OlympaPlayerZTA.MAX_SLOTS / 9);
 		this.player = player;
 		maxSlot = player.getBankSlots();
 
-		for (int i = 0; i < MAX_ROWS * 9; i++) {
+		for (int i = 0; i < OlympaPlayerZTA.MAX_SLOTS; i++) {
 			if (i < maxSlot) {
 				if (player.getBankContent().length > i) inv.setItem(i, player.getBankContent()[i]);
 			}else if (i == maxSlot) {
@@ -43,11 +42,11 @@ public class ChestGUI extends OlympaGUI {
 			change = true;
 			return false;
 		}else if (slot == maxSlot) { // si c'est le slot à acheter
-			if (player.withdrawMoney(price(maxSlot))) { // vérifier si l'achat se fait
+			if (player.getGameMoney().withdraw(price(maxSlot))) { // vérifier si l'achat se fait
 				player.incrementBankSlots();
 				maxSlot++;
 				inv.setItem(slot, null); // enlever l'item "Acheter l'emplacement"
-				if (maxSlot < MAX_ROWS * 9) inv.setItem(maxSlot, slotBuyItem());
+				if (maxSlot < OlympaPlayerZTA.MAX_SLOTS) inv.setItem(maxSlot, slotBuyItem());
 			}else Prefix.DEFAULT_BAD.sendMessage(p, "Vous n'avez pas l'argent suffisant pour acheter cet emplacement.");
 			return true;
 		}

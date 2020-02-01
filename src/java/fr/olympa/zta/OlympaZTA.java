@@ -118,11 +118,11 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
 				new FixedLine(""),
-				new DynamicLine(x -> "§eRang : §6" + x.getGroup().getName()),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroup().getName()),
 				new FixedLine(""),
-				new DynamicLine(x -> "§eNombre de mobs : §6" + spawn.world.getLivingEntities().size(), 1, 0),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + spawn.world.getLivingEntities().size(), 1, 0),
 				new FixedLine(""),
-				new DynamicLine(x -> "§eMonnaie : §6" + x.getMoney() + "$", 1, 0)));
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().get(), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
