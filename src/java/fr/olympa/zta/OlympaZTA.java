@@ -85,6 +85,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		super.onEnable();
+
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
@@ -104,12 +106,12 @@ public class OlympaZTA extends OlympaAPIPlugin {
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
-				.forEach(x -> ZTARegistry.registerObjectType(x, "guns", Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+				.forEach(x -> ZTARegistry.registerObjectType(x, "zta_guns", Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
 				.forEach(x -> ZTARegistry.registerObjectType(x, null, null, DeserializeDatas.easyClass()));
-		ZTARegistry.registerObjectType(LootChest.class, "chests", LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeGun);
+		ZTARegistry.registerObjectType(LootChest.class, "zta_chests", LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeGun);
 		ZTARegistry.registerObjectType(Clan.class, null, null, DeserializeDatas.easyClass()); // TODO
 
 		new Mobs(); // initalise les mobs custom

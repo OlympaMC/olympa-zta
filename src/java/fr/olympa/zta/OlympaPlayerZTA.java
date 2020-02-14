@@ -18,7 +18,7 @@ import fr.olympa.api.provider.OlympaPlayerObject;
 public class OlympaPlayerZTA extends OlympaPlayerObject {
 
 	public static final int MAX_SLOTS = 27;
-	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY NULL").put("ender_chest", "VARBINARY NULL").put("money", "VARINT NULL DEFAULT 0").build();
+	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY(10) NULL").put("ender_chest", "VARBINARY(10) NULL").put("money", "INT(2) NULL DEFAULT 0").build();
 
 	private int bankSlots = 9;
 	private ItemStack[] bankContent = new ItemStack[MAX_SLOTS];
