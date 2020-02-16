@@ -102,7 +102,6 @@ public class MobSpawning {
 						}
 					}
 				}
-				System.out.println("spawned: " + spawned);
 				queueLock.unlock();
 			}
 		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);

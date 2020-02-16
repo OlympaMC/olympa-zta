@@ -9,7 +9,7 @@ import net.citizensnpcs.api.trait.Trait;
 
 public class BankTrait extends Trait {
 
-	protected BankTrait() {
+	public BankTrait() {
 		super("bank");
 	}
 

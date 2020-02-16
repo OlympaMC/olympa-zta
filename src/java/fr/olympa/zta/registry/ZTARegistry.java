@@ -17,6 +17,8 @@ import fr.olympa.zta.OlympaZTA;
 
 public class ZTARegistry{
 
+	public static final String TABLE_NAME = "`zta_registry`";
+
 	public static final Map<String, RegistryType<?>> registrable = new HashMap<>();
 	private static final Map<Integer, Registrable> registry = new HashMap<>(200);
 	private static final Random idGen = new Random();
@@ -131,11 +133,11 @@ public class ZTARegistry{
 
 	public static int loadFromDatabase() throws SQLException {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
-		statement.executeUpdate("CREATE TABLE IF NOT EXISTS `registry` (\r\n" + 
+		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (\r\n" +
 				"  `id` INT NOT NULL,\r\n" + 
 				"  `type` VARCHAR(45) NOT NULL,\r\n" + 
 				"  PRIMARY KEY (`id`))");
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM `registry`");
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
 		while (resultSet.next()){
 			int id = resultSet.getInt("id");
 			try {

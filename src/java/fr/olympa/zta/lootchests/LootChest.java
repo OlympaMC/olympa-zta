@@ -25,6 +25,8 @@ import net.minecraft.server.v1_15_R1.BlockPosition;
 
 public class LootChest extends AbstractRandomizedPicker<LootCreator> implements Registrable, InventoryHolder {
 
+	public static final String TABLE_NAME = "`zta_lootchests`";
+
 	private final int id;
 
 	private Location location;
@@ -114,7 +116,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	private static PreparedStatement updateStatement;
 
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `chests` (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
+		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO " + TABLE_NAME + " (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
 		createStatement.setInt(1, getID());
 		createStatement.setString(2, location.getWorld().getName());
 		createStatement.setInt(3, location.getBlockX());
@@ -125,7 +127,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE `chests` SET "
+		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE " + TABLE_NAME + " SET "
 				+ "`world` = ?, "
 				+ "`x` = ?, "
 				+ "`y` = ?, "
@@ -140,7 +142,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		updateStatement.executeUpdate();
 	}
 
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS `zta`.`chests` (" +
+	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 			"  `id` INT NOT NULL," +
 			"  `world` VARCHAR(45) NULL," +
 			"  `x` INT NOT NULL," +

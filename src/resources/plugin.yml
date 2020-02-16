@@ -1,6 +1,6 @@
 name: OlympaZta
 version: 0.1
 api-version: 1.13
-depend: [OlympaCore]
+depend: [OlympaCore, Citizens]
 authors: [SkytAsul]
 main: fr.olympa.zta.OlympaZTA

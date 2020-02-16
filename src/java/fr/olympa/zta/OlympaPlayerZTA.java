@@ -25,10 +25,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 
 	private ItemStack[] enderChest = new ItemStack[9];
 
-	private OlympaMoney money;
+	private OlympaMoney money = new OlympaMoney(0);
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
+		System.out.println("OlympaPlayerZTA.OlympaPlayerZTA()");
 	}
 
 	public int getBankSlots() {
@@ -56,15 +57,17 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 	}
 
 	public OlympaMoney getGameMoney() {
+		System.out.println("OlympaPlayerZTA.getGameMoney()");
 		return money;
 	}
 
 	public void loadDatas(ResultSet resultSet) throws SQLException {
+		System.out.println("OlympaPlayerZTA.loadDatas()");
 		try {
 			bankSlots = resultSet.getInt("bank_slots");
 			bankContent = ItemUtils.deserializeItemsArray(resultSet.getBytes("bank_content"));
 			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
-			money = new OlympaMoney(resultSet.getDouble("money"));
+			money.give(resultSet.getDouble("money"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

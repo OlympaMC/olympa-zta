@@ -21,9 +21,10 @@ import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansListener;
 import fr.olympa.zta.clans.ClansManager;
-import fr.olympa.zta.lootchests.ChestCommand;
-import fr.olympa.zta.lootchests.ChestsListener;
+import fr.olympa.zta.enderchest.EnderChestCommand;
 import fr.olympa.zta.lootchests.LootChest;
+import fr.olympa.zta.lootchests.LootChestCommand;
+import fr.olympa.zta.lootchests.LootChestsListener;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
@@ -74,7 +75,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	}
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
-	private ChestsListener chestsListener = new ChestsListener();
+	private LootChestsListener chestsListener = new LootChestsListener();
 	private MobsListener mobsListener = new MobsListener();
 	private ClansListener clansListener = new ClansListener();
 	private ItemsListener itemsListener = new ItemsListener();
@@ -88,7 +89,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		super.onEnable();
 
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
-		AccountProvider.setPlayerProvider(OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
+		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		ClansManager.initialize();
 		
@@ -99,10 +100,11 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		pluginManager.registerEvents(clansListener, this);
 		pluginManager.registerEvents(itemsListener, this);
 
-		new ChestCommand().register();
+		new LootChestCommand().register();
 		new WeaponsCommand().register();
 		new MobsCommand().register();
 		new ClansCommand().register();
+		new EnderChestCommand().register();
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
@@ -130,7 +132,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 
-		CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BankTrait.class));
+		CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BankTrait.class).withName("bank"));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");

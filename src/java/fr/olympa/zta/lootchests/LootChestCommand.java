@@ -13,9 +13,9 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.registry.ZTARegistry;
 
-public class ChestCommand extends ComplexCommand {
+public class LootChestCommand extends ComplexCommand {
 	
-	public ChestCommand(){
+	public LootChestCommand(){
 		super(null, OlympaZTA.getInstance(), "lootchest", "configuration des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
 	}
 	

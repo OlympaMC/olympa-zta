@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 
-public class ChestsListener implements Listener{
+public class LootChestsListener implements Listener{
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){

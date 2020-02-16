@@ -38,6 +38,8 @@ import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public abstract class Gun extends Weapon{
 
+	public static final String TABLE_NAME = "`zta_guns`";
+
 	protected int ammos = 0;
 	protected boolean ready = false;
 	protected boolean zoomed = false;
@@ -426,13 +428,13 @@ public abstract class Gun extends Weapon{
 	private static PreparedStatement updateStatement;
 	
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `guns` (`id`) VALUES (?)");
+		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO " + TABLE_NAME + " (`id`) VALUES (?)");
 		createStatement.setInt(1, getID());
 		createStatement.executeUpdate();
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE `guns` SET "
+		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE " + TABLE_NAME + " SET "
 				+ "`ammos` = ?, "
 				+ "`ready` = ?, "
 				+ "`zoomed` = ?, "
@@ -509,7 +511,7 @@ public abstract class Gun extends Weapon{
 		
 	}
 	
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS `zta`.`guns` (" +
+	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 			"  `id` INT NOT NULL," +
 			"  `ammos` SMALLINT(2) UNSIGNED DEFAULT 0," +
 			"  `ready` TINYINT DEFAULT 1," +
