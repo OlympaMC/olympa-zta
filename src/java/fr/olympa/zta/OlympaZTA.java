@@ -105,6 +105,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new MobsCommand().register();
 		new ClansCommand().register();
 		new EnderChestCommand().register();
+		new MoneyCommand().register();
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)

@@ -20,6 +20,11 @@ public class CustomEntityZombie extends EntityZombie {
 		super(type, world);
 	}
 
+	@Override
+	public EntityTypes<?> getEntityType() {
+		return EntityTypes.ZOMBIE;
+	}
+
 	protected void l() {
 		this.goalSelector.a(5, (PathfinderGoal) new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
 		this.goalSelector.a(2, (PathfinderGoal) new PathfinderGoalZombieAttack(this, 1.0, false));

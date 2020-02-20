@@ -18,7 +18,7 @@ import fr.olympa.api.provider.OlympaPlayerObject;
 public class OlympaPlayerZTA extends OlympaPlayerObject {
 
 	public static final int MAX_SLOTS = 27;
-	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY(10) NULL").put("ender_chest", "VARBINARY(10) NULL").put("money", "INT(2) NULL DEFAULT 0").build();
+	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY(8000) NULL").put("ender_chest", "VARBINARY(8000) NULL").put("money", "INT(2) NULL DEFAULT 0").build();
 
 	private int bankSlots = 9;
 	private ItemStack[] bankContent = new ItemStack[MAX_SLOTS];
@@ -29,7 +29,6 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
-		System.out.println("OlympaPlayerZTA.OlympaPlayerZTA()");
 	}
 
 	public int getBankSlots() {
@@ -57,12 +56,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 	}
 
 	public OlympaMoney getGameMoney() {
-		System.out.println("OlympaPlayerZTA.getGameMoney()");
 		return money;
 	}
 
 	public void loadDatas(ResultSet resultSet) throws SQLException {
-		System.out.println("OlympaPlayerZTA.loadDatas()");
 		try {
 			bankSlots = resultSet.getInt("bank_slots");
 			bankContent = ItemUtils.deserializeItemsArray(resultSet.getBytes("bank_content"));

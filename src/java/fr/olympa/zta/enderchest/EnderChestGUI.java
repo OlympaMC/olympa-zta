@@ -30,7 +30,7 @@ public class EnderChestGUI extends OlympaGUI {
 
 	public boolean onClose(Player p) {
 		if (change) {
-			player.setBankContent(inv.getContents());
+			player.setEnderChest(inv.getContents());
 		}
 		return true;
 	}

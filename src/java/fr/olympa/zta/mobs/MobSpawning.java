@@ -87,7 +87,7 @@ public class MobSpawning {
 							prev = chunk.getBlock(x, y, z);
 							if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
 								Block block = chunk.getBlock(x, y, z);
-								if (block.getLightLevel() < 8 || world.isThundering()) continue;
+								if (block.getLightLevel() > 10 && !world.isThundering()) continue;
 								for (Location loc : entities) {
 									if (loc.distanceSquared(block.getLocation()) < 144) {
 										continue y; // distance aux autres entités obligatoirement > à 12 blocs

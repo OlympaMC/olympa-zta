@@ -9,7 +9,7 @@ public class ItemsListener implements Listener {
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
 		ItemStackable itemStackable = ZTARegistry.getItemStackable(e.getEntity().getItemStack());
-		ZTARegistry.removeObject(itemStackable);
+		if (itemStackable != null) ZTARegistry.removeObject(itemStackable);
 	}
 
 }
