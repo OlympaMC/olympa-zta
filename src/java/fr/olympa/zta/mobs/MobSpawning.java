@@ -49,7 +49,6 @@ public class MobSpawning {
 				queueLock.lock();
 				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
 				Set<Chunk> activeChunks = getActiveChunks();
-				int spawned = 0;
 				for (Chunk chunk : activeChunks) {
 					/*for (int dx = 0; dx < 8; dx++) {
 						int x = dx * 2;
@@ -94,9 +93,7 @@ public class MobSpawning {
 									}
 								}
 								Location lc = block.getLocation();
-								//entities.add(lc);
 								spawnQueue.add(lc);
-								spawned++;
 								break y;
 							}
 						}

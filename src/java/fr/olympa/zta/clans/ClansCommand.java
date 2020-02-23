@@ -8,6 +8,7 @@ import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.clans.gui.ClanManagementGUI;
@@ -41,9 +42,9 @@ public class ClansCommand extends ComplexCommand {
 	}
 	public static Clan createClan(String name, Player p) {
 		Clan clan = new Clan(name);
-		OlympaPlayer op = AccountProvider.get(p.getUniqueId());
+		OlympaPlayerZTA op = AccountProvider.get(p.getUniqueId());
 		clan.addPlayer(op);
-		clan.setChief(op);
+		clan.setChief(op.getInformation());
 		ClansManager.addClan(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Vous venez de créer votre clan !");
 		return clan;
@@ -104,7 +105,7 @@ public class ClansCommand extends ComplexCommand {
 			return;
 		}
 		
-		clan.removePlayer(p);
+		clan.removePlayer(p.getInformation());
 	}
 
 	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>")
@@ -123,7 +124,7 @@ public class ClansCommand extends ComplexCommand {
 			return;
 		}
 
-		clan.setChief(target);
+		clan.setChief(target.getInformation());
 	}
 
 	private Clan getPlayerClan(boolean chief) {

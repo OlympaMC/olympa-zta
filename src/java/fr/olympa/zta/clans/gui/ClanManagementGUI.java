@@ -1,5 +1,8 @@
 package fr.olympa.zta.clans.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import org.bukkit.Material;
@@ -13,7 +16,9 @@ import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.gui.templates.ConfirmGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansManager;
@@ -32,6 +37,8 @@ public class ClanManagementGUI extends OlympaGUI {
 	private Clan clan;
 	private boolean isChief;
 
+	private List<OlympaPlayerInformations> playersOrder = new ArrayList<>();
+
 	public ClanManagementGUI(OlympaPlayer p) {
 		super("Gérer son clan", 2);
 		this.player = p;
@@ -42,35 +49,39 @@ public class ClanManagementGUI extends OlympaGUI {
 		inv.setItem(17, isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(16, disband);
 
-		for (int id = 0; id < clan.getMaxSize(); id++) {
-			OlympaPlayer member = clan.getMember(id);
+		for (Entry<OlympaPlayerInformations, OlympaPlayerZTA> entry : clan.members.values()){
+			OlympaPlayerInformations member = entry.getKey();
+			playersOrder.add(member);
 			ItemStack item;
 			if (isChief) {
 				String[] lore = member == player ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
-				item = member == null ? noMemberInvite : ItemUtils.skull("§a" + member.getName(), member.getName(), lore);
+				item = ItemUtils.skull("§a" + member.getName(), member.getName(), lore);
 			}else {
-				item = member == null ? noMember : ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
+				item = ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
 			}
-			inv.setItem(9 + id, item);
+			inv.setItem(8 + playersOrder.size(), item);
+		}
+		for (int id = playersOrder.size(); id < clan.getMaxSize(); id++) {
+			inv.setItem(9 + id, isChief ? noMemberInvite : noMember);
 		}
 	}
 
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 17) {
 			if (!isChief) {
-				clan.removePlayer(player);
+				clan.removePlayer(player.getInformation());
 				p.closeInventory();
 			}
 		}else if (isChief && slot >= 9 && slot < 14) {
-			OlympaPlayer member = clan.getMember((byte) (slot - 9));
+			OlympaPlayerInformations member = playersOrder.get(slot - 9);
 			if (member == null){
 				Prefix.DEFAULT.sendMessage(p, "Entrez le nom du joueur à inviter.");
 				new TextEditor<Player>(p, (target) -> {
 					ClansCommand.invite(clan, p, target);
-					this.create(p);
+					new ClanManagementGUI(player).create(p);
 				}, () -> this.create(p), false, new PlayerParser()).enterOrLeave(p);
 			}else if (member != player) { // pas le chef
-				BiConsumer<Clan, OlympaPlayer> consumer;
+				BiConsumer<Clan, OlympaPlayerInformations> consumer;
 				String msg;
 				if (click == ClickType.LEFT){
 					consumer = Clan::removePlayer;

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -80,8 +81,10 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	private ClansListener clansListener = new ClansListener();
 	private ItemsListener itemsListener = new ItemsListener();
 
-	public MobSpawning spawn;
+	public MobSpawning mobSpawning;
 	public ScoreboardManager scoreboards;
+
+	public Location spawn;
 
 	@Override
 	public void onEnable() {
@@ -109,25 +112,27 @@ public class OlympaZTA extends OlympaAPIPlugin {
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
-				.forEach(x -> ZTARegistry.registerObjectType(x, "zta_guns", Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+				.forEach(x -> ZTARegistry.registerObjectType(x, Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
 				.forEach(x -> ZTARegistry.registerObjectType(x, null, null, DeserializeDatas.easyClass()));
-		ZTARegistry.registerObjectType(LootChest.class, "zta_chests", LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeGun);
-		ZTARegistry.registerObjectType(Clan.class, null, null, DeserializeDatas.easyClass()); // TODO
+		ZTARegistry.registerObjectType(LootChest.class, LootChest.TABLE_NAME, LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeLootChest);
+		ZTARegistry.registerObjectType(Clan.class, Clan.TABLE_NAME, Clan.CREATE_TABLE_STATEMENT, Clan::deserializeClan);
 
 		new Mobs(); // initalise les mobs custom
-		spawn = new MobSpawning(Bukkit.getWorld(getConfig().getString("world")));
-		spawn.start();
+		mobSpawning = new MobSpawning(Bukkit.getWorld(getConfig().getString("spawnWorld")));
+		mobSpawning.start();
+
+		spawn = Location.deserialize(getConfig().getConfigurationSection("spawn").getValues(false));
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
 				new FixedLine(""),
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroup().getName()),
 				new FixedLine(""),
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + spawn.world.getLivingEntities().size(), 1, 0),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
 				new FixedLine(""),
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().get(), 1, 0)));
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().getFormatted(), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
 			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
@@ -145,7 +150,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	@Override
 	public void onDisable(){
 		HandlerList.unregisterAll(this);
-		spawn.end();
+		mobSpawning.end();
 		scoreboards.unload();
 		
 		for (Player p : getServer().getOnlinePlayers()) {

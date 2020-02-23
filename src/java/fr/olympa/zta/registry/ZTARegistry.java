@@ -1,6 +1,5 @@
 package fr.olympa.zta.registry;
 
-import java.lang.reflect.Constructor;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,7 +51,7 @@ public class ZTARegistry{
 		if (!registrable.containsKey(object.getClass().getSimpleName())) throw new IllegalArgumentException("Registrable object \"" + object.getClass().getName() + "\" has not been registered!");
 		registry.put(object.getID(), object);
 		try {
-			if (insertRegistrable == null || insertRegistrable.isClosed()) insertRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO `registry` (`id`, `type`) VALUES (?, ?)");
+			if (insertRegistrable == null || insertRegistrable.isClosed()) insertRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO " + TABLE_NAME + " (`id`, `type`) VALUES (?, ?)");
 			insertRegistrable.setInt(1, object.getID());
 			insertRegistrable.setString(2, object.getClass().getSimpleName());
 			insertRegistrable.executeUpdate();
@@ -67,7 +66,7 @@ public class ZTARegistry{
 	public static boolean removeObject(Registrable object) {
 		if (!registry.containsKey(object.getID())) return false;
 		try {
-			if (removeRegistrable == null || removeRegistrable.isClosed()) removeRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM `registry` WHERE (`id` = ?)");
+			if (removeRegistrable == null || removeRegistrable.isClosed()) removeRegistrable = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
 			removeRegistrable.setInt(1, object.getID());
 			removeRegistrable.executeUpdate();
 
@@ -92,8 +91,8 @@ public class ZTARegistry{
 	 * @param id ID de l'objet
 	 * @return objet correspondant à l'ID spécifié
 	 */
-	public static Registrable getObject(int id) {
-		return registry.get(id);
+	public static <T extends Registrable> T getObject(int id) {
+		return (T) registry.get(id);
 	}
 
 	public static int getRegistrySize() {
@@ -181,23 +180,17 @@ public class ZTARegistry{
 		}
 
 		synchronized void removeDatas(int id) throws SQLException {
-			if (removeDatas == null || removeDatas.isClosed()) removeDatas = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM `" + tableName + "` WHERE (`id` = ?)");
+			if (removeDatas == null || removeDatas.isClosed()) removeDatas = OlympaCore.getInstance().getDatabase().prepareStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
 			removeDatas.setInt(1, id);
 			removeDatas.executeUpdate();
 		}
 	}
 
 	public static interface DeserializeDatas<T extends Registrable> {
-		public abstract T deserialize(ResultSet set, int id, Class<?> clazz);
+		public abstract T deserialize(ResultSet set, int id, Class<?> clazz) throws Exception;
 
 		static final DeserializeDatas<?> EASY_CLASS = (set, id, clazz) -> {
-			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(int.class);
-				return (Registrable) constructor.newInstance(id);
-			}catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-			}
-			return null;
+			return (Registrable) clazz.getDeclaredConstructor(int.class).newInstance(id);
 		};
 
 		public static <Z extends Registrable> DeserializeDatas<Z> easyClass() {

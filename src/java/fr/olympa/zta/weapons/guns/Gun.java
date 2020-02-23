@@ -522,28 +522,23 @@ public abstract class Gun extends Weapon{
 			"  `stock_id` INT(11) NULL," +
 			"  PRIMARY KEY (`id`))";
 
-	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) {
-		try {
-			T gun = (T) clazz.getConstructor(int.class).newInstance(id);
-			gun.ammos = set.getInt("ammos");
-			gun.ready = set.getBoolean("ready");
-			gun.zoomed = set.getBoolean("zoomed");
-			gun.secondaryMode = set.getBoolean("secondary_mode");
-			int scopeID = set.getInt("scope_id");
-			int cannonID = set.getInt("cannon_id");
-			int stockID = set.getInt("stock_id");
-			new BukkitRunnable() {
-				public void run() {
-					gun.setAccessory(AccessoryType.SCOPE, (Accessory) ZTARegistry.getObject(scopeID));
-					gun.setAccessory(AccessoryType.CANNON, (Accessory) ZTARegistry.getObject(cannonID));
-					gun.setAccessory(AccessoryType.STOCK, (Accessory) ZTARegistry.getObject(stockID));
-				}
-			}.runTaskLater(OlympaZTA.getInstance(), 20L);
-			return gun;
-		}catch (ReflectiveOperationException | SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) throws Exception {
+		T gun = (T) clazz.getConstructor(int.class).newInstance(id);
+		gun.ammos = set.getInt("ammos");
+		gun.ready = set.getBoolean("ready");
+		gun.zoomed = set.getBoolean("zoomed");
+		gun.secondaryMode = set.getBoolean("secondary_mode");
+		int scopeID = set.getInt("scope_id");
+		int cannonID = set.getInt("cannon_id");
+		int stockID = set.getInt("stock_id");
+		new BukkitRunnable() {
+			public void run() {
+				gun.setAccessory(AccessoryType.SCOPE, ZTARegistry.getObject(scopeID));
+				gun.setAccessory(AccessoryType.CANNON, ZTARegistry.getObject(cannonID));
+				gun.setAccessory(AccessoryType.STOCK, ZTARegistry.getObject(stockID));
+			}
+		}.runTaskLater(OlympaZTA.getInstance(), 20L);
+		return gun;
 	}
 
 }

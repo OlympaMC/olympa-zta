@@ -102,7 +102,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		ItemStack item = chest.getInventory().getItem(0);
 		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return null;
 		try {
-			return (LootChest) ZTARegistry.getObject(Integer.parseInt(item.getItemMeta().getDisplayName()));
+			return ZTARegistry.getObject(Integer.parseInt(item.getItemMeta().getDisplayName()));
 		}catch (NumberFormatException ex) {
 			return null;
 		}
@@ -151,15 +151,10 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 			"  `loot_type` VARCHAR(45) NOT NULL," +
 			"  PRIMARY KEY (`id`))";
 
-	public static LootChest deserializeGun(ResultSet set, int id, Class<?> clazz) {
-		try {
-			LootChest chest = new LootChest(new Location(Bukkit.getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z")), id);
-			chest.setLootType(LootChestType.chestTypes.get(set.getString("loot_type")));
-			return chest;
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public static LootChest deserializeLootChest(ResultSet set, int id, Class<?> clazz) throws Exception {
+		LootChest chest = new LootChest(new Location(Bukkit.getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z")), id);
+		chest.setLootType(LootChestType.chestTypes.get(set.getString("loot_type")));
+		return chest;
 	}
 
 }

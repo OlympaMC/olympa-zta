@@ -18,7 +18,7 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd
 	public void info(CommandContext cmd) {
-		MobSpawning spawning = OlympaZTA.getInstance().spawn;
+		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
 		sendMessage(Prefix.INFO, "Le spawn de mob est §l" + (spawning.isEnabled() ? "§aactif" : "§cinactif"));
 		if (spawning.isEnabled()) {
 			sendMessage(Prefix.INFO, "Nombre de mobs moyen dans la queue de spawn : " + Utils.formatDouble(spawning.getAverageQueueSize(), 2));
@@ -36,7 +36,7 @@ public class MobsCommand extends ComplexCommand {
 	public void removeZombies(CommandContext cmd) {
 		boolean kill = cmd.args.length == 0 ? false : cmd.args[0].equals("kill");
 		int amount = 0;
-		for (Zombie zombie : OlympaZTA.getInstance().spawn.world.getEntitiesByClass(Zombie.class)) {
+		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
 			if (kill) {
 				zombie.damage(1000000);
 			}else zombie.remove();
@@ -47,7 +47,7 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd
 	public void toggleSpawning(CommandContext cmd) {
-		MobSpawning spawning = OlympaZTA.getInstance().spawn;
+		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
 		String state;
 		if (spawning.isEnabled()) {
 			spawning.end();

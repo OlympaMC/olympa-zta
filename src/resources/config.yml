@@ -1,1 +1,8 @@
-world: "world"
+spawnWorld: "world"
+spawn:
+  world: "world"
+  x: 5632.5
+  y: 5.0
+  z: 5632.5
+  pitch: -180.0
+  yaw: 0.0

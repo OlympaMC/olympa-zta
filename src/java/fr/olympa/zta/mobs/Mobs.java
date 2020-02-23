@@ -52,6 +52,7 @@ public class Mobs {
 		Zombie zombie = (Zombie) customZombie.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), EnumMobSpawn.TRIGGERED, false, false, reason).getBukkitEntity();
 		zombie.setMaximumNoDamageTicks(NO_DAMAGE_TICKS);
 		if (zombie.isBaby()) zombie.setBaby(false);
+		if (zombie.isInsideVehicle()) zombie.getVehicle().remove();
 		return zombie;
 	}
 
