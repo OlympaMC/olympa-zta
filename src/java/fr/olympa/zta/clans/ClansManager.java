@@ -12,15 +12,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.utils.NMS;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.registry.ZTARegistry;
 import net.minecraft.server.v1_15_R1.ScoreboardTeam;
 
 public class ClansManager {
 
-	private static List<Clan> clans = new ArrayList<>();
 	private static Map<Player, List<Clan>> invitations = new HashMap<>();
 
 	public static Team enemiesBukkit;
@@ -49,24 +46,6 @@ public class ClansManager {
 			team.setColor(color);
 		}
 		return NMS.getNMSTeam(team);
-	}
-
-	public static void addClan(Clan clan) {
-		clans.add(clan);
-		ZTARegistry.registerObject(clan);
-	}
-	
-	public static void removeClan(Clan clan){
-		clans.remove(clan);
-		ZTARegistry.removeObject(clan);
-	}
-
-	public static boolean exists(String name) {
-		return clans.stream().anyMatch(x -> x.getName().equals(name));
-	}
-
-	public static Clan getPlayerClan(OlympaPlayer p){
-		return clans.stream().filter(x -> x.contains(p)).findFirst().orElse(null);
 	}
 
 	public static void addInvitation(Player p, Clan clan) {

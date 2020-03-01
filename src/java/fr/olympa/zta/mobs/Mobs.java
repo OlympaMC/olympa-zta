@@ -1,9 +1,10 @@
 package fr.olympa.zta.mobs;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiFunction;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
@@ -13,14 +14,13 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import net.citizensnpcs.nms.v1_15_R1.util.CustomEntityRegistry;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 import net.minecraft.server.v1_15_R1.Entity;
 import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EnumCreatureType;
 import net.minecraft.server.v1_15_R1.EnumMobSpawn;
 import net.minecraft.server.v1_15_R1.IRegistry;
 import net.minecraft.server.v1_15_R1.MinecraftKey;
-import net.minecraft.server.v1_15_R1.World;
 
 public class Mobs {
 
@@ -30,8 +30,8 @@ public class Mobs {
 	private static final List<PotionEffect> MOMIFIED_ZOMBIE_EFFECTS = Arrays.asList(new PotionEffect(PotionEffectType.SPEED, 999999, 0, false, false), new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 999999, 1, false, false), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999, 0, false, false));
 	private static Random random = new Random();
 
-	private static EntityTypes<CustomEntityZombie> customZombie = injectNewEntity(EnumCreatureType.MONSTER, "customzombie", EntityTypes.ZOMBIE, "zombie", CustomEntityZombie::new);
-	
+	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE");
+
 	public static void spawnCommonZombie(Location location) {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
@@ -56,28 +56,25 @@ public class Mobs {
 		return zombie;
 	}
 
-	private static <T extends Entity> EntityTypes<T> injectNewEntity(EnumCreatureType type, String customName, EntityTypes<?> override, String overrideName, BiFunction<EntityTypes<T>, World, T> function) {
-		customName = overrideName;
-		EntityTypes<T> entityTypes = (EntityTypes<T>) EntityTypes.a.a((a, b) -> function.apply(a, b), type).a(customName);
-		/*MinecraftKey key = new MinecraftKey(name);
-		System.out.println("old " + IRegistry.ENTITY_TYPE.get(key).f());
-		
-		EntityTypes<?> oldEntityType = IRegistry.ENTITY_TYPE.get(key);
-		int oldID = IRegistry.ENTITY_TYPE.a(oldEntityType);
-		IRegistry.ENTITY_TYPE.a(oldID, key, entityTypes);
-		System.out.println("old id " + oldID + " / new id " + IRegistry.ENTITY_TYPE.a(entityTypes));*/
+	private static <T extends Entity> EntityTypes<T> replaceEntity(EntityTypes.b<T> function, String overrideName, EntityTypes<?> overrideType, String overrideTypeFieldName) {
+		try {
+			EntityTypes<T> type = EntityTypes.a.<T>a(function, overrideType.e()).a(overrideName);
 
-		IRegistry.ENTITY_TYPE.a(IRegistry.ENTITY_TYPE.a(override), new MinecraftKey(/*"olympa", */customName), entityTypes);
+			CustomEntityRegistry registry = (CustomEntityRegistry) IRegistry.ENTITY_TYPE;
+			registry.put(registry.a(overrideType), new MinecraftKey(overrideName), type);
 
-		/*Map<Object, Type<?>> dataTypes = (Map<Object, Type<?>>) DataConverterRegistry.a()
-				.getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion()))
-				.findChoiceType(DataConverterTypes.ENTITY_TREE).types();
-		dataTypes.put("minecraft:" + customName, dataTypes.get(entityTypes.f()));
-		IRegistry.a(IRegistry.ENTITY_TYPE, customName, entityTypes);*/
+			Field entityTypesField = EntityTypes.class.getField(overrideTypeFieldName);
+			entityTypesField.setAccessible(true);
+			Field modifiersField = Field.class.getDeclaredField("modifiers");
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(entityTypesField, entityTypesField.getModifiers() & ~Modifier.FINAL);
+			entityTypesField.set(null, type);
 
-		System.out.println("zombie " + IRegistry.ENTITY_TYPE.a(EntityTypes.ZOMBIE) + " | custom " + IRegistry.ENTITY_TYPE.a(entityTypes));
-
-		return entityTypes;
+			return type;
+		}catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

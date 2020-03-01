@@ -18,7 +18,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 	public ItemStackableCreator(double chance, Class<T> clazz) {
 		this.chance = chance;
 		try {
-			constructor = clazz.getDeclaredConstructor();
+			constructor = clazz.getDeclaredConstructor(int.class);
 		}catch (NoSuchMethodException | SecurityException e) {
 			OlympaZTA.getInstance().sendMessage("Impossible d'instancier l'ItemStackable " + clazz.getSimpleName());
 		}
@@ -30,7 +30,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 
 	public ItemStack create(Player p, Random random) {
 		try {
-			return ZTARegistry.createItem(constructor.newInstance());
+			return ZTARegistry.createItem(constructor.newInstance(ZTARegistry.generateID()));
 		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}

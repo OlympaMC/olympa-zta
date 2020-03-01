@@ -15,9 +15,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
-import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.lootchests.creators.LootCreator;
+import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import net.minecraft.server.v1_15_R1.Block;
@@ -30,7 +31,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	private final int id;
 
 	private Location location;
-	private LootChestType type = null;
+	private LootChestType type;
 	private int minutesToWait = 8;
 	private long nextOpen = 0;
 
@@ -39,12 +40,14 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
 
-	public LootChest(Location lc, int id) {
+	public LootChest(Location lc, int id, LootChestType type) {
 		this.location = lc;
 		this.id = id;
 
 		this.nmsPosition = new BlockPosition(lc.getX(), lc.getY(), lc.getZ());
 		this.nmsBlock = ((CraftBlock) lc.getBlock()).getNMS().getBlock();
+
+		setLootType(type);
 	}
 
 	public void click(Player p) {
@@ -63,6 +66,16 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 
 		p.openInventory(inv);
 		updateChestState(inv.getViewers().size());
+	}
+
+	public void clearInventory() {
+		for (ItemStack is : inv.getContents()) {
+			if (is != null) {
+				ItemStackable stackable = ZTARegistry.getItemStackable(is);
+				if (stackable != null) ZTARegistry.removeObject(stackable);
+			}
+		}
+		inv.clear();
 	}
 
 	public void updateChestState(int viewers) {
@@ -112,34 +125,35 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		return inv;
 	}
 
-	private static PreparedStatement createStatement;
-	private static PreparedStatement updateStatement;
+	private static OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
+	private static OlympaStatement updateStatement = new OlympaStatement("UPDATE " + TABLE_NAME + " SET "
+			+ "`world` = ?, "
+			+ "`x` = ?, "
+			+ "`y` = ?, "
+			+ "`z` = ?, "
+			+ "`loot_type` = ? "
+			+ "WHERE (`id` = ?)");
 
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO " + TABLE_NAME + " (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
-		createStatement.setInt(1, getID());
-		createStatement.setString(2, location.getWorld().getName());
-		createStatement.setInt(3, location.getBlockX());
-		createStatement.setInt(4, location.getBlockY());
-		createStatement.setInt(5, location.getBlockZ());
-		createStatement.setString(6, LootChestType.chestTypes.inverse().get(type));
-		createStatement.executeUpdate();
+		PreparedStatement statement = createStatement.getStatement();
+		statement.setInt(1, getID());
+		statement.setString(2, location.getWorld().getName());
+		statement.setInt(3, location.getBlockX());
+		statement.setInt(4, location.getBlockY());
+		statement.setInt(5, location.getBlockZ());
+		statement.setString(6, LootChestType.chestTypes.inverse().get(type));
+		statement.executeUpdate();
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE " + TABLE_NAME + " SET "
-				+ "`world` = ?, "
-				+ "`x` = ?, "
-				+ "`y` = ?, "
-				+ "`z` = ?, "
-				+ "`loot_type` = ?, "
-				+ "WHERE (`id` = ?)");
-		updateStatement.setString(1, location.getWorld().getName());
-		updateStatement.setInt(2, location.getBlockX());
-		updateStatement.setInt(3, location.getBlockY());
-		updateStatement.setInt(4, location.getBlockZ());
-		updateStatement.setString(5, LootChestType.chestTypes.inverse().get(type));
-		updateStatement.executeUpdate();
+		PreparedStatement statement = updateStatement.getStatement();
+		statement.setString(1, location.getWorld().getName());
+		statement.setInt(2, location.getBlockX());
+		statement.setInt(3, location.getBlockY());
+		statement.setInt(4, location.getBlockZ());
+		statement.setString(5, LootChestType.chestTypes.inverse().get(type));
+		statement.setInt(6, getID());
+		statement.executeUpdate();
 	}
 
 	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
@@ -152,8 +166,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 			"  PRIMARY KEY (`id`))";
 
 	public static LootChest deserializeLootChest(ResultSet set, int id, Class<?> clazz) throws Exception {
-		LootChest chest = new LootChest(new Location(Bukkit.getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z")), id);
-		chest.setLootType(LootChestType.chestTypes.get(set.getString("loot_type")));
+		LootChest chest = new LootChest(new Location(Bukkit.getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z")), id, LootChestType.chestTypes.get(set.getString("loot_type")));
 		return chest;
 	}
 

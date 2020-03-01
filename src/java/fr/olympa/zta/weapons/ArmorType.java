@@ -2,7 +2,9 @@ package fr.olympa.zta.weapons;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public enum ArmorType {
@@ -64,6 +66,14 @@ public enum ArmorType {
 		default:
 			return null;
 		}
+	}
+
+	public void setFull(Player p) {
+		PlayerInventory inv = p.getInventory();
+		inv.setHelmet(get(ArmorSlot.HELMET));
+		inv.setChestplate(get(ArmorSlot.CHESTPLATE));
+		inv.setLeggings(get(ArmorSlot.LEGGINGS));
+		inv.setBoots(get(ArmorSlot.BOOTS));
 	}
 
 	public enum ArmorSlot {

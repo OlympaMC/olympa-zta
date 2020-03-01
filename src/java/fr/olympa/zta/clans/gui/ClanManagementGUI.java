@@ -15,13 +15,11 @@ import fr.olympa.api.editor.parsers.PlayerParser;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.gui.templates.ConfirmGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
-import fr.olympa.zta.clans.ClansManager;
 
 public class ClanManagementGUI extends OlympaGUI {
 
@@ -33,28 +31,30 @@ public class ClanManagementGUI extends OlympaGUI {
 
 	private static ItemStack disband = ItemUtils.item(Material.BARRIER, "§cDémenteler le clan");
 
-	private OlympaPlayer player;
+	private OlympaPlayerZTA player;
+	private OlympaPlayerInformations playerInformations;
 	private Clan clan;
 	private boolean isChief;
 
 	private List<OlympaPlayerInformations> playersOrder = new ArrayList<>();
 
-	public ClanManagementGUI(OlympaPlayer p) {
+	public ClanManagementGUI(OlympaPlayerZTA p) {
 		super("Gérer son clan", 2);
 		this.player = p;
-		this.clan = ClansManager.getPlayerClan(p);
-		isChief = clan.getChief() == player;
+		this.playerInformations = p.getInformation();
+		this.clan = p.getClan();
+		isChief = clan.getChief() == playerInformations;
 
 		inv.setItem(4, ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres §r§6: §e§o" + clan.getMembersAmount()));
 		inv.setItem(17, isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(16, disband);
 
-		for (Entry<OlympaPlayerInformations, OlympaPlayerZTA> entry : clan.members.values()){
+		for (Entry<OlympaPlayerInformations, OlympaPlayerZTA> entry : clan.getMembers()) {
 			OlympaPlayerInformations member = entry.getKey();
 			playersOrder.add(member);
 			ItemStack item;
 			if (isChief) {
-				String[] lore = member == player ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
+				String[] lore = member == playerInformations ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
 				item = ItemUtils.skull("§a" + member.getName(), member.getName(), lore);
 			}else {
 				item = ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
@@ -69,27 +69,28 @@ public class ClanManagementGUI extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 17) {
 			if (!isChief) {
-				clan.removePlayer(player.getInformation());
+				clan.removePlayer(playerInformations, true);
 				p.closeInventory();
 			}
 		}else if (isChief && slot >= 9 && slot < 14) {
-			OlympaPlayerInformations member = playersOrder.get(slot - 9);
-			if (member == null){
+			if (playersOrder.size() <= slot - 9) {
 				Prefix.DEFAULT.sendMessage(p, "Entrez le nom du joueur à inviter.");
 				new TextEditor<Player>(p, (target) -> {
 					ClansCommand.invite(clan, p, target);
 					new ClanManagementGUI(player).create(p);
 				}, () -> this.create(p), false, new PlayerParser()).enterOrLeave(p);
-			}else if (member != player) { // pas le chef
+			}else {
+				OlympaPlayerInformations member = playersOrder.get(slot - 9);
+				if (member == playerInformations) return true;
 				BiConsumer<Clan, OlympaPlayerInformations> consumer;
 				String msg;
 				if (click == ClickType.LEFT){
-					consumer = Clan::removePlayer;
+					consumer = (clan, info) -> clan.removePlayer(info, true);
 					msg = "§7Voulez-vous vraiment éjecter le joueur " + member.getName() + " ?";
 				}else if (click == ClickType.RIGHT) {
 					consumer = Clan::setChief;
 					msg = "§7Voulez-vous vraiment donner la direction au joueur " + member.getName() + " ?";
-				}else return false;
+				}else return true;
 				new ConfirmGUI(() -> {
 					consumer.accept(clan, member);
 					new ClanManagementGUI(player).create(p); // pour update les items

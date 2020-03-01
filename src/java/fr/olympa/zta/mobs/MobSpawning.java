@@ -1,6 +1,5 @@
 package fr.olympa.zta.mobs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,7 +34,7 @@ public class MobSpawning {
 	private boolean enabled = false;
 	private Random random = new Random();
 
-	private List<Location> spawnQueue = new ArrayList<>(150);
+	private LinkedList<Location> spawnQueue = new LinkedList<>();
 	private Lock queueLock = new ReentrantLock();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 

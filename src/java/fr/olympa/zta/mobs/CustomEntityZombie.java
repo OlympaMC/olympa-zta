@@ -6,6 +6,7 @@ import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityHuman;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
@@ -21,23 +22,26 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 
 	@Override
-	public EntityTypes<?> getEntityType() {
-		return EntityTypes.ZOMBIE;
-	}
-
-	protected void l() {
+	protected void l() { // addBehaviourGoals
 		this.goalSelector.a(5, (PathfinderGoal) new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
 		this.goalSelector.a(2, (PathfinderGoal) new PathfinderGoalZombieAttack(this, 1.0, false));
 		this.goalSelector.a(7, (PathfinderGoal) new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
 		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 8, true));
 	}
 
-	public void tick() {
-		super.tick();
+	@Override
+	protected boolean et() { // convertsInWater
+		return false;
 	}
 
-	protected boolean et() {
+	@Override
+	protected boolean K_() { // isSunSensitive
 		return false;
+	}
+
+	@Override
+	public void b(NBTTagCompound nbttagcompound) {
+		super.b(nbttagcompound);
 	}
 
 	class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget {

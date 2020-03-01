@@ -109,6 +109,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new ClansCommand().register();
 		new EnderChestCommand().register();
 		new MoneyCommand().register();
+		new SpawnCommand().register();
+		new ChunkFixCommand().register();
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
@@ -127,11 +129,11 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		spawn = Location.deserialize(getConfig().getConfigurationSection("spawn").getValues(false));
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
-				new FixedLine(""),
+				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroup().getName()),
-				new FixedLine(""),
+				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
-				new FixedLine(""),
+				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().getFormatted(), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {

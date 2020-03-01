@@ -447,9 +447,9 @@ public abstract class Gun extends Weapon{
 		updateStatement.setBoolean(2, ready);
 		updateStatement.setBoolean(3, zoomed);
 		updateStatement.setBoolean(4, secondaryMode);
-		updateStatement.setInt(5, scope == null ? null : scope.getID());
-		updateStatement.setInt(6, cannon == null ? null : cannon.getID());
-		updateStatement.setInt(7, stock == null ? null : stock.getID());
+		updateStatement.setInt(5, scope == null ? -1 : scope.getID());
+		updateStatement.setInt(6, cannon == null ? -1 : cannon.getID());
+		updateStatement.setInt(7, stock == null ? -1 : stock.getID());
 		updateStatement.setInt(8, getID());
 		updateStatement.executeUpdate();
 	}
@@ -517,9 +517,9 @@ public abstract class Gun extends Weapon{
 			"  `ready` TINYINT DEFAULT 1," +
 			"  `zoomed` TINYINT DEFAULT 0," +
 			"  `secondary_mode` TINYINT DEFAULT 0," +
-			"  `scope_id` INT(11) NULL," +
-			"  `cannon_id` INT(11) NULL," +
-			"  `stock_id` INT(11) NULL," +
+			"  `scope_id` INT(11) DEFAULT -1," +
+			"  `cannon_id` INT(11) DEFAULT -1," +
+			"  `stock_id` INT(11) DEFAULT -1," +
 			"  PRIMARY KEY (`id`))";
 
 	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) throws Exception {
@@ -533,9 +533,9 @@ public abstract class Gun extends Weapon{
 		int stockID = set.getInt("stock_id");
 		new BukkitRunnable() {
 			public void run() {
-				gun.setAccessory(AccessoryType.SCOPE, ZTARegistry.getObject(scopeID));
-				gun.setAccessory(AccessoryType.CANNON, ZTARegistry.getObject(cannonID));
-				gun.setAccessory(AccessoryType.STOCK, ZTARegistry.getObject(stockID));
+				if (scopeID != -1) gun.setAccessory(AccessoryType.SCOPE, ZTARegistry.getObject(scopeID));
+				if (cannonID != -1) gun.setAccessory(AccessoryType.CANNON, ZTARegistry.getObject(cannonID));
+				if (stockID != -1) gun.setAccessory(AccessoryType.STOCK, ZTARegistry.getObject(stockID));
 			}
 		}.runTaskLater(OlympaZTA.getInstance(), 20L);
 		return gun;

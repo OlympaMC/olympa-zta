@@ -110,8 +110,9 @@ public class ZTARegistry{
 		if (!im.hasLore()) return null;
 		
 		for (String s : im.getLore()) {
-			if (s.contains("[I")) {
-				return (ItemStackable) registry.get(Integer.parseInt(s.substring(s.indexOf("[I") + 2, s.indexOf("]"))));
+			int index = s.indexOf("[I");
+			if (index != -1) {
+				return (ItemStackable) registry.get(Integer.parseInt(s.substring(index + 2, s.indexOf("]"))));
 			}
 		}
 		
@@ -143,7 +144,7 @@ public class ZTARegistry{
 				RegistryType<?> type = registrable.get(resultSet.getString("type"));
 				ResultSet objectSet = null;
 				if (type.tableName != null) {
-					objectSet = statement.executeQuery("SELECT * FROM `" + type.tableName + "` WHERE (`id` = '" + id + "')");
+					objectSet = statement.executeQuery("SELECT * FROM " + type.tableName + " WHERE (`id` = '" + id + "')");
 					objectSet.next();
 				}
 				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));

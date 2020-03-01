@@ -32,13 +32,13 @@ public class LootChestCommand extends ComplexCommand {
 
 		LootChest chest = LootChest.getLootChest(chestBlock);
 		if (chest == null) {
-			chest = new LootChest(chestBlock.getLocation(), ZTARegistry.generateID());
+			chest = new LootChest(chestBlock.getLocation(), ZTARegistry.generateID(), type);
 			chestBlock.getInventory().setItem(0, ItemUtils.item(Material.DIRT, String.valueOf(ZTARegistry.registerObject(chest))));
-			sendSuccess("Le coffre de loot a été créé ! ID: " + chest.getID());
+			sendSuccess("Le coffre de loot a été créé ! ID: " + chest.getID() + ", type: " + type.getName());
+		}else {
+			chest.setLootType(type);
+			sendSuccess("Ce coffre est désormais un coffre " + type.getName());
 		}
-
-		chest.setLootType(type);
-		sendSuccess("Ce coffre est désormais un coffre " + type.getName());
 	}
 	
 	@Cmd (player = true)

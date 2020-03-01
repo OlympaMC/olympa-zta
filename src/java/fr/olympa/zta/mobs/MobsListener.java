@@ -4,12 +4,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -17,13 +21,35 @@ import fr.olympa.zta.OlympaZTA;
 
 public class MobsListener implements Listener {
 
+	private static int lastId = 0;
 	static Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		int id = inventories.size();
-		inventories.put(id, e.getEntity().getInventory().getContents());
-		Mobs.spawnMomifiedZombie(e.getEntity()).setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
+		int id = lastId++;
+		Player p = e.getEntity();
+		inventories.put(id, p.getInventory().getContents());
+		Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
+		momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
+		momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
+		EntityDamageEvent cause = p.getLastDamageCause();
+		if (cause instanceof EntityDamageByEntityEvent) {
+			Entity damager = ((EntityDamageByEntityEvent) cause).getDamager();
+			if (damager instanceof Zombie) {
+				if (damager.hasMetadata("player")) {
+					e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0) + "§e.");
+				}else e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par un §6zombie§e.");
+			}else {
+				e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par §6" + damager.getName() + "§e.");
+			}
+		}else e.setDeathMessage("§6§l" + p.getName() + "§r§e est mort.");
+
+		OlympaZTA.getInstance().getTask().runTask(() -> p.spigot().respawn());
+	}
+
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent e) {
+		e.setRespawnLocation(OlympaZTA.getInstance().spawn);
 	}
 
 	@EventHandler
@@ -31,14 +57,8 @@ public class MobsListener implements Listener {
 		e.getDrops().clear();
 		if (e.getEntity().hasMetadata("inventory")) {
 			int id = e.getEntity().getMetadata("inventory").get(0).asInt();
-			Collections.addAll(e.getDrops(), inventories.get(id));
-			inventories.put(id, null);
+			Collections.addAll(e.getDrops(), inventories.remove(id));
 		}
-	}
-
-	@EventHandler
-	public void onEntityCombust(EntityCombustEvent e) {
-		if (e.getEntityType() == EntityType.ZOMBIE) e.setCancelled(true);
 	}
 
 }

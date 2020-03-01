@@ -18,14 +18,12 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
@@ -37,6 +35,8 @@ public class WeaponsListener implements Listener{
 		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
 
 		e.getPlayer().setMaximumNoDamageTicks(Mobs.NO_DAMAGE_TICKS);
+
+		if (!e.getPlayer().hasPlayedBefore()) ArmorType.CIVIL.setFull(e.getPlayer());
 	}
 	
 	@EventHandler
@@ -112,12 +112,7 @@ public class WeaponsListener implements Listener{
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		PlayerInventory inv = e.getPlayer().getInventory();
-		ArmorType type = ArmorType.CIVIL;
-		inv.setHelmet(type.get(ArmorSlot.HELMET));
-		inv.setChestplate(type.get(ArmorSlot.CHESTPLATE));
-		inv.setLeggings(type.get(ArmorSlot.LEGGINGS));
-		inv.setBoots(type.get(ArmorSlot.BOOTS));
+		ArmorType.CIVIL.setFull(e.getPlayer());
 	}
 
 }

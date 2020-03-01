@@ -13,6 +13,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.clans.gui.ClanManagementGUI;
 import fr.olympa.zta.clans.gui.NoClanGUI;
+import fr.olympa.zta.registry.ZTARegistry;
 
 public class ClansCommand extends ComplexCommand {
 
@@ -20,8 +21,8 @@ public class ClansCommand extends ComplexCommand {
 		super((sender) -> {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
-				OlympaPlayer olp = AccountProvider.get(p.getUniqueId());
-				Clan clan = ClansManager.getPlayerClan(olp);
+				OlympaPlayerZTA olp = AccountProvider.get(p.getUniqueId());
+				Clan clan = olp.getClan();
 				if (clan == null) {
 					new NoClanGUI(p).create(p);
 				}else new ClanManagementGUI(olp).create(p);
@@ -34,7 +35,7 @@ public class ClansCommand extends ComplexCommand {
 	@Cmd (player = true, min = 1, syntax = "<nom du clan>")
 	public void create(CommandContext cmd) { // syntax: create <name>
 		String name = (String) cmd.args[0];
-		if (ClansManager.exists(name)) {
+		if (Clan.exists(name)) {
 			sendError("Un clan avec ce nom existe déjà !");
 			return;
 		}
@@ -45,7 +46,7 @@ public class ClansCommand extends ComplexCommand {
 		OlympaPlayerZTA op = AccountProvider.get(p.getUniqueId());
 		clan.addPlayer(op);
 		clan.setChief(op.getInformation());
-		ClansManager.addClan(clan);
+		ZTARegistry.registerObject(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Vous venez de créer votre clan !");
 		return clan;
 	}
@@ -59,8 +60,8 @@ public class ClansCommand extends ComplexCommand {
 		invite(clan, cmd.player, targetPlayer);
 	}
 	public static void invite(Clan clan, Player inviter, Player targetPlayer) {
-		OlympaPlayer target = AccountProvider.get(targetPlayer.getUniqueId());
-		if (ClansManager.getPlayerClan(target) != null) {
+		OlympaPlayerZTA target = AccountProvider.get(targetPlayer.getUniqueId());
+		if (target.getClan() != null) {
 			Prefix.DEFAULT_BAD.sendMessage(inviter, "Ce joueur est déjà dans un clan.");
 			return;
 		}
@@ -98,14 +99,14 @@ public class ClansCommand extends ComplexCommand {
 		if (clan == null) return;
 		
 		OlympaPlayer p = getOlympaPlayer();
-		if (clan.getChief() == p) {
+		if (clan.getChief() == p.getInformation()) {
 			if (clan.getMembersAmount() == 1) {
 				clan.disband();
 			}else	sendError("Vous ne pouvez pas quitter votre clan en en étant le chef. Veuillez transférer la direction de celui-ci à un autre joueur.");
 			return;
 		}
 		
-		clan.removePlayer(p.getInformation());
+		clan.removePlayer(p.getInformation(), true);
 	}
 
 	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>")
@@ -128,13 +129,13 @@ public class ClansCommand extends ComplexCommand {
 	}
 
 	private Clan getPlayerClan(boolean chief) {
-		OlympaPlayer p = getOlympaPlayer();
-		Clan clan = ClansManager.getPlayerClan(p);
+		OlympaPlayerZTA p = getOlympaPlayer();
+		Clan clan = p.getClan();
 		if (clan == null){
 			sendError("Vous devez appartenir à un clan pour effectuer cette commande.");
 			return null;
 		}
-		if (chief && clan.getChief() != p) {
+		if (chief && clan.getChief() != p.getInformation()) {
 			sendError("Vous devez être le chef du clan pour effectuer cette commande.");
 			return null;
 		}

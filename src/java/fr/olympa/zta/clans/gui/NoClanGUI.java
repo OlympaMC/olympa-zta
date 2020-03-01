@@ -11,6 +11,7 @@ import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansManager;
 
@@ -31,7 +32,7 @@ public class NoClanGUI extends OlympaGUI {
 				ClansCommand.createClan(msg, p);
 				new ClanManagementGUI(AccountProvider.get(p.getUniqueId())).create(p);
 			}, () -> {}, false, (player, msg) -> {
-				if (ClansManager.exists(msg)) {
+				if (Clan.exists(msg)) {
 					Prefix.DEFAULT_BAD.sendMessage(player, "Un clan avec ce nom existe déjà !");
 					return null;
 				}
