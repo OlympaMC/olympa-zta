@@ -24,7 +24,7 @@ public class MobsCommand extends ComplexCommand {
 			sendMessage(Prefix.INFO, "Nombre de mobs moyen dans la queue de spawn : " + Utils.formatDouble(spawning.getAverageQueueSize(), 2));
 		}
 		sendMessage(Prefix.INFO, "Taille du tableau des inventaires : " + MobsListener.inventories.size());
-		sendMessage(Prefix.INFO, "Nombre d'entités vivantes sur le monde principal : " + spawning.world.getLivingEntities().size());
+		sendMessage(Prefix.INFO, "Nombre d'entités vivantes sur le monde principal : " + spawning.region.getWorld().getLivingEntities().size());
 	}
 
 	@Cmd (player = true)
@@ -36,7 +36,7 @@ public class MobsCommand extends ComplexCommand {
 	public void removeZombies(CommandContext cmd) {
 		boolean kill = cmd.args.length == 0 ? false : cmd.args[0].equals("kill");
 		int amount = 0;
-		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
+		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.region.getWorld().getEntitiesByClass(Zombie.class)) {
 			if (kill) {
 				zombie.damage(1000000);
 			}else zombie.remove();

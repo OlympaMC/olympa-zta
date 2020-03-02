@@ -1,8 +1,14 @@
-spawnWorld: "world"
+spawnRegion:
+  world: "world"
+  xMin: -1936
+  zMin: -2304
+  xMax: 2447
+  zMax: 1474
+
 spawn:
   world: "world"
   x: 5632.5
   y: 5.0
   z: 5632.5
-  pitch: -180.0
-  yaw: 0.0
+  pitch: 0.0
+  yaw: 180.0

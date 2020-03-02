@@ -3,7 +3,6 @@ package fr.olympa.zta;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -14,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.region.ExpandedCuboid;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
@@ -123,7 +123,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ZTARegistry.registerObjectType(Clan.class, Clan.TABLE_NAME, Clan.CREATE_TABLE_STATEMENT, Clan::deserializeClan);
 
 		new Mobs(); // initalise les mobs custom
-		mobSpawning = new MobSpawning(Bukkit.getWorld(getConfig().getString("spawnWorld")));
+		mobSpawning = new MobSpawning(getConfig().getSerializable("spawnRegion", ExpandedCuboid.class));
 		mobSpawning.start();
 
 		spawn = Location.deserialize(getConfig().getConfigurationSection("spawn").getValues(false));
@@ -132,7 +132,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroup().getName()),
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.region.getWorld().getLivingEntities().size(), 1, 0),
 				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().getFormatted(), 1, 0)));
 

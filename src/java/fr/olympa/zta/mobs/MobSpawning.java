@@ -16,19 +16,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.region.Region;
 import fr.olympa.zta.OlympaZTA;
 
 public class MobSpawning {
 
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS);
 
-	public final World world;
+	public final Region region;
 
 	private BukkitTask[] tasks = new BukkitTask[2];
 	private boolean enabled = false;
@@ -38,15 +38,15 @@ public class MobSpawning {
 	private Lock queueLock = new ReentrantLock();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
-	public MobSpawning(World world) {
-		this.world = world;
+	public MobSpawning(Region region) {
+		this.region = region;
 	}
 
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				queueLock.lock();
-				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
+				List<Location> entities = region.getWorld().getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
 				Set<Chunk> activeChunks = getActiveChunks();
 				for (Chunk chunk : activeChunks) {
 					/*for (int dx = 0; dx < 8; dx++) {
@@ -85,7 +85,7 @@ public class MobSpawning {
 							prev = chunk.getBlock(x, y, z);
 							if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
 								Block block = chunk.getBlock(x, y, z);
-								if (block.getLightLevel() > 10 && !world.isThundering()) continue;
+								if (block.getLightLevel() > 10 && !region.getWorld().isThundering()) continue;
 								for (Location loc : entities) {
 									if (loc.distanceSquared(block.getLocation()) < 144) {
 										continue y; // distance aux autres entités obligatoirement > à 12 blocs
@@ -130,12 +130,13 @@ public class MobSpawning {
 		Set<Chunk> chunks = new HashSet<>(100);
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			Location lc = p.getLocation();
+			if (!region.isIn(lc)) continue;
 			if (lc.getChunk().getEntities().length > 15) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
-					chunks.add(world.getChunkAt(x + ax, z + az));
+					chunks.add(region.getWorld().getChunkAt(x + ax, z + az));
 				}
 			}
 		}
