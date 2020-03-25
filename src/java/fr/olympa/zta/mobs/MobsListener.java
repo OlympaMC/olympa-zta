@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -43,13 +42,6 @@ public class MobsListener implements Listener {
 				e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par §6" + damager.getName() + "§e.");
 			}
 		}else e.setDeathMessage("§6§l" + p.getName() + "§r§e est mort.");
-
-		OlympaZTA.getInstance().getTask().runTask(() -> p.spigot().respawn());
-	}
-
-	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent e) {
-		e.setRespawnLocation(OlympaZTA.getInstance().spawn);
 	}
 
 	@EventHandler

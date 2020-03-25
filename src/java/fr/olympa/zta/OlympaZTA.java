@@ -23,6 +23,8 @@ import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansListener;
 import fr.olympa.zta.clans.ClansManager;
 import fr.olympa.zta.enderchest.EnderChestCommand;
+import fr.olympa.zta.hub.HubManager;
+import fr.olympa.zta.hub.SpawnCommand;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.lootchests.LootChestCommand;
 import fr.olympa.zta.lootchests.LootChestsListener;
@@ -83,8 +85,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 
 	public MobSpawning mobSpawning;
 	public ScoreboardManager scoreboards;
-
-	public Location spawn;
+	public HubManager hub;
 
 	@Override
 	public void onEnable() {
@@ -95,6 +96,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		ClansManager.initialize();
+
+		hub = new HubManager(getConfig().getSerializable("hub", ExpandedCuboid.class), getConfig().getSerializable("spawn", Location.class));
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
@@ -102,6 +105,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(clansListener, this);
 		pluginManager.registerEvents(itemsListener, this);
+		pluginManager.registerEvents(hub, this);
 
 		new LootChestCommand().register();
 		new WeaponsCommand().register();
@@ -125,8 +129,6 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new Mobs(); // initalise les mobs custom
 		mobSpawning = new MobSpawning(getConfig().getSerializable("spawnRegion", ExpandedCuboid.class));
 		mobSpawning.start();
-
-		spawn = Location.deserialize(getConfig().getConfigurationSection("spawn").getValues(false));
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
 				FixedLine.EMPTY_LINE,

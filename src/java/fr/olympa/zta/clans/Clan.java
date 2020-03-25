@@ -14,6 +14,7 @@ import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.objects.OlympaPlayer;
@@ -110,8 +111,8 @@ public class Clan implements Registrable {
 			}else if (member.getValue() == x) {
 				joiner.add("§3§l" + memberName);
 			}else {
-				Player pm = member.getValue().getPlayer();
-				joiner.add("§b" + memberName + " §l" + SpigotUtils.getDirectionToLocation(p, pm.getLocation()));
+				Location loc = member.getValue().getPlayer().getLocation();
+				joiner.add("§b" + memberName + " §l" + (OlympaZTA.getInstance().hub.region.isIn(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
 			}
 		}
 		return joiner.toString();

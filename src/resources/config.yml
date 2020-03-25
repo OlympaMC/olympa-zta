@@ -5,6 +5,12 @@ spawnRegion:
   xMax: 2447
   zMax: 1474
 
+hub:
+  world: "world"
+  xMin: 5400
+  zMin: 5300
+  xMax: 5710
+  zMax: 5700
 spawn:
   world: "world"
   x: 5632.5

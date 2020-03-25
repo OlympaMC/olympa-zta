@@ -1,4 +1,4 @@
-package fr.olympa.zta;
+package fr.olympa.zta.hub;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.ZTAPermissions;
 
 public class SpawnCommand extends OlympaCommand {
 
@@ -17,7 +19,7 @@ public class SpawnCommand extends OlympaCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		player.teleport(OlympaZTA.getInstance().spawn);
+		OlympaZTA.getInstance().hub.teleport(getPlayer());
 		return true;
 	}
 
