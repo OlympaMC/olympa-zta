@@ -29,7 +29,7 @@ public class GunSDMR extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 12;
+		return 6;
 	}
 	
 	protected int getChargeTime(){
@@ -56,6 +56,10 @@ public class GunSDMR extends Gun{
 		return GunMode.AUTOMATIC;
 	}
 	
+	/*public GunMode getSecondaryMode(){
+		return GunMode.SEMI_AUTOMATIC;
+	}*/
+
 	public boolean isScopeAllowed(){
 		return true;
 	}

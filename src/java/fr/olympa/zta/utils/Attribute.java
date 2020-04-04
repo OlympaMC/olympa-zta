@@ -8,6 +8,8 @@ public class Attribute{
 	private final float baseValue;
 	private final List<AttributeModifier> modifiers = new ArrayList<>(3);
 	
+	private float cachedValue = -666;
+
 	public Attribute(float baseValue){
 		this.baseValue = baseValue;
 	}
@@ -16,21 +18,24 @@ public class Attribute{
 		return baseValue;
 	}
 	
-	public List<AttributeModifier> getModifiers(){
+	/*public List<AttributeModifier> getModifiers(){
 		return modifiers;
-	}
+	}*/
 	
 	public void addModifier(AttributeModifier modifier){
 		modifiers.add(modifier);
+		cachedValue = -666;
 	}
 	
 	public void removeModifier(AttributeModifier modifier){
 		modifiers.remove(modifier);
+		cachedValue = -666;
 	}
 	
 	public float getValue(){
-		if (modifiers.isEmpty()) return baseValue;
+		if (cachedValue != -666) return cachedValue;
 		float value = baseValue;
+		if (modifiers.isEmpty()) return value;
 		float multiplicator = 1;
 		for (AttributeModifier modifier : modifiers) {
 			switch (modifier.getOperation()){
@@ -45,7 +50,9 @@ public class Attribute{
 				break;
 			}
 		}
-		return value * multiplicator;
+		value *= multiplicator;
+		cachedValue = value;
+		return value;
 	}
 	
 }

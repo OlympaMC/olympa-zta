@@ -35,6 +35,7 @@ import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
+import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
@@ -96,6 +97,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		ClansManager.initialize();
+		DynmapLink.initialize();
 
 		hub = new HubManager(getConfig().getSerializable("hub", ExpandedCuboid.class), getConfig().getSerializable("spawn", Location.class));
 		
