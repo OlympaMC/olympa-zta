@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.ImmutableMap;
@@ -133,4 +134,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject {
 		return null;
 	}
 
+	public static OlympaPlayerZTA get(Player p) {
+		return AccountProvider.get(p.getUniqueId());
+	}
+	
 }

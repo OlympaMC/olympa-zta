@@ -2,7 +2,6 @@ package fr.olympa.zta.mobs;
 
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EntityZombie;
 import net.minecraft.server.v1_15_R1.GenericAttributes;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
@@ -10,9 +9,9 @@ import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
 import net.minecraft.server.v1_15_R1.PathfinderGoalZombieAttack;
 import net.minecraft.server.v1_15_R1.World;
 
-public class CustomEntityZombie extends EntityZombie {
+public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 
-	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
+	public CustomEntityMommy(EntityTypes<CustomEntityMommy> type, World world) {
 		super(type, world);
 	}
 
@@ -27,10 +26,11 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.28);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(4);
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(8);
+		this.getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
 	}
-
+	
 	@Override
 	protected boolean et() { // convertsInWater
 		return false;

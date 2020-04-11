@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
@@ -20,7 +19,7 @@ public class EnderChestCommand extends OlympaCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		new EnderChestGUI(AccountProvider.<OlympaPlayerZTA>get(getPlayer())).create(getPlayer());
+		new EnderChestGUI(OlympaPlayerZTA.get(getPlayer())).create(getPlayer());
 		return true;
 	}
 

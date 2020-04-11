@@ -250,26 +250,6 @@ public abstract class Gun extends Weapon {
 		launchBullet(bullet, p); // première balle
 		ammos--;
 		if (ammos == 0) return;
-		/*switch (getCurrentMode()){
-		case AUTOMATIC:
-			Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
-				launchBullet(bullet, p);
-				ammos--;
-			}, (int) fireRate.getValue() / GunMode.AUTOMATIC_BULLETS_AMOUNT);
-			break;
-		case BLAST:
-			int time = (int) ((fireRate.getValue() / 2) / (GunMode.BLAST_BULLETS_AMOUNT - 1));
-			new BukkitRunnable(){
-				int amount = GunMode.BLAST_BULLETS_AMOUNT - 1;
-				public void run(){
-					launchBullet(bullet, p);
-					ammos--;
-					amount--;
-					if (amount == 0 || ammos == 0) cancel();
-				}
-			}.runTaskTimer(OlympaZTA.getInstance(), time, time);
-			break;
-		}*/
 
 		float distance = fireVolume.getValue() * 16;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {

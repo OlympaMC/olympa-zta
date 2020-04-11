@@ -10,17 +10,18 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.DynmapLink;
 
 public class HubManager implements Listener {
 
 	public Region region;
 	private Location spawnpoint;
+	private Region spawnRegion;
 
-	public HubManager(Region region, Location spawnpoint) {
+	public HubManager(Region region, Location spawnpoint, Region spawnRegion) {
 		this.region = region;
 		this.spawnpoint = spawnpoint;
+		this.spawnRegion = spawnRegion;
 	}
 
 	public void teleport(Player p) {
@@ -40,7 +41,7 @@ public class HubManager implements Listener {
 		if (!(e.getEntity() instanceof Player)) return;
 		Player p = (Player) e.getEntity();
 
-		Location location = OlympaZTA.getInstance().mobSpawning.region.getRandomLocation();
+		Location location = spawnRegion.getRandomLocation();
 		location.setY(location.getWorld().getHighestBlockYAt(location));
 		p.teleport(location);
 		DynmapLink.setPlayerVisiblity(p, true);

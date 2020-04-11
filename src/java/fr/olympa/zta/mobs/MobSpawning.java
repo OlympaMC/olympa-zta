@@ -1,10 +1,15 @@
 package fr.olympa.zta.mobs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -16,19 +21,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.region.Region;
+import fr.olympa.api.region.ChunkCuboid;
 import fr.olympa.zta.OlympaZTA;
+import net.minecraft.server.v1_15_R1.Entity;
 
 public class MobSpawning {
 
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS);
-
-	public final Region region;
 
 	private BukkitTask[] tasks = new BukkitTask[2];
 	private boolean enabled = false;
@@ -38,43 +44,24 @@ public class MobSpawning {
 	private Lock queueLock = new ReentrantLock();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
-	public MobSpawning(Region region) {
-		this.region = region;
+	public World world = Bukkit.getWorlds().get(0);
+
+	public MobSpawning(List<ChunkCuboid> hard, List<ChunkCuboid> medium, List<ChunkCuboid> easy) {
+		SpawnType.HARD.regions.addAll(hard); 
+		SpawnType.MEDIUM.regions.addAll(medium); 
+		SpawnType.EASY.regions.addAll(easy); 
 	}
 
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				queueLock.lock();
-				List<Location> entities = region.getWorld().getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
-				Set<Chunk> activeChunks = getActiveChunks();
-				for (Chunk chunk : activeChunks) {
-					/*for (int dx = 0; dx < 8; dx++) {
-						int x = dx * 2;
-						for (int dz = 0; dz < 8; dz++) {
-							int z = dz * 2;
-							Block prev = chunk.getBlock(x, 0, z);
-							y: for (int y = 1; y < 140; y++) {
-								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-								prev = chunk.getBlock(x, y, z);
-								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-									if (random.nextFloat() < 0.01) { // 1 chance sur 100
-										Block block = chunk.getBlock(x, y, z);
-										if (block.getLightLevel() < 8) continue;
-										for (Location loc : entities) {
-											if (loc.distanceSquared(block.getLocation()) < 100) {
-												continue y; // distance aux autres entités obligatoirement > à 10 blocs
-											}
-										}
-										Location lc = block.getLocation();
-										entities.add(lc);
-										spawnQueue.add(lc);
-									}
-								}
-							}
-						}
-					}*/
-					int mobs = random.nextInt(3);
+				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
+				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
+				for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
+					Chunk chunk = entry.getKey();
+					SpawnType spawn = entry.getValue();
+					int mobs = random.nextInt(spawn.spawnAmount);
 					for (int i = 0; i < mobs; i++) {
 						int x = random.nextInt(16);
 						int y = 1 + random.nextInt(30);
@@ -85,9 +72,9 @@ public class MobSpawning {
 							prev = chunk.getBlock(x, y, z);
 							if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
 								Block block = chunk.getBlock(x, y, z);
-								if (block.getLightLevel() > 10 && !region.getWorld().isThundering()) continue;
+								if (block.getLightLevel() > 10 && !world.isThundering()) continue;
 								for (Location loc : entities) {
-									if (loc.distanceSquared(block.getLocation()) < 144) {
+									if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) {
 										continue y; // distance aux autres entités obligatoirement > à 12 blocs
 									}
 								}
@@ -126,21 +113,38 @@ public class MobSpawning {
 
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
-	private Set<Chunk> getActiveChunks() {
-		Set<Chunk> chunks = new HashSet<>(100);
-		for (Player p : Bukkit.getOnlinePlayers()) {
+
+	private Map<Chunk, SpawnType> getActiveChunks() {
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		Set<Chunk> processedChunks = new HashSet<Chunk>(players.size());
+		Map<Chunk, SpawnType> chunks = new HashMap<>(players.size() * 8);
+		for (Player p : players) {
 			Location lc = p.getLocation();
-			if (!region.isIn(lc)) continue;
-			if (lc.getChunk().getEntities().length > 15) continue;
+			Chunk centralChunk = lc.getChunk();
+			if (!processedChunks.add(centralChunk)) continue;
+			if (SpawnType.getSpawnType(centralChunk) == null) continue;
+			if (entityCount(centralChunk) > 15) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
-					chunks.add(region.getWorld().getChunkAt(x + ax, z + az));
+					Chunk chunk = world.getChunkAt(x + ax, z + az);
+					if (chunks.containsKey(chunk)) continue;
+					SpawnType type = SpawnType.getSpawnType(chunk);
+					if (type != null) chunks.put(chunk, type);
 				}
 			}
 		}
 		return chunks;
+	}
+
+	private int entityCount(Chunk chunk) {
+		int count = 0;
+		net.minecraft.server.v1_15_R1.Chunk nmsChunk = ((CraftChunk) chunk).getHandle(); // + opti de passer par les NMS, sinon Bukkit construit une array avec les bukkit entity et c'est lourd
+		for (List<Entity> slice : nmsChunk.entitySlices) {
+			count += slice.size();
+		}
+		return count;
 	}
 
 	public double getAverageQueueSize() {
@@ -162,6 +166,33 @@ public class MobSpawning {
 		averageQueueSize.clear();
 
 		enabled = false;
+	}
+	
+	enum SpawnType{
+		HARD(10, 4), MEDIUM(12, 3), EASY(13, 2);
+		
+		private List<ChunkCuboid> regions = new ArrayList<>();
+		private int minDistanceSquared;
+		private int spawnAmount;
+		
+		private SpawnType(int minDistance, int spawnAmount) {
+			this.minDistanceSquared = minDistance ^ 2;
+			this.spawnAmount = spawnAmount;
+		}
+
+		public boolean isInto(Chunk chunk) {
+			for (ChunkCuboid region : regions) {
+				if (region.isIn(chunk)) return true;
+			}
+			return false;
+		}
+
+		public static SpawnType getSpawnType(Chunk chunk) {
+			for (SpawnType type : values()) {
+				if (type.isInto(chunk)) return type;
+			}
+			return null;
+		}
 	}
 
 }

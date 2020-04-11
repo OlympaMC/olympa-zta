@@ -5,6 +5,17 @@ spawnRegion:
   xMax: 2447
   zMax: 1474
 
+mobRegions:
+  hard:
+  - ==: fr.olympa.api.region.ChunkCuboid
+    world: "world"
+    chunkXMin: -94
+    chunkZMin: -144
+    chunkXMax: 137
+    chunkZMax: 81
+  medium: []
+  easy: []
+
 hub:
   world: "world"
   xMin: 5400

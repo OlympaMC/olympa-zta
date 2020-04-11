@@ -6,7 +6,6 @@ import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.objects.OlympaMoney;
-import fr.olympa.api.provider.AccountProvider;
 
 public class MoneyCommand extends ComplexCommand {
 
@@ -53,7 +52,7 @@ public class MoneyCommand extends ComplexCommand {
 	}
 
 	private OlympaMoney getGameMoney(Player p) {
-		return AccountProvider.<OlympaPlayerZTA>get(p).getGameMoney();
+		return OlympaPlayerZTA.get(p).getGameMoney();
 	}
 
 }
