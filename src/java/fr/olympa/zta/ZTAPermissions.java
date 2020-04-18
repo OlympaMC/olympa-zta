@@ -6,7 +6,7 @@ import fr.olympa.api.permission.OlympaPermission;
 public class ZTAPermissions{
 	
 	public static final OlympaPermission LOOT_CHEST_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission WEAPONS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission WEAPONS_COMMAND = new OlympaPermission(OlympaGroup.BUILDER); // TODO change
 	public static final OlympaPermission MOBS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission CHUNKFIX_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	

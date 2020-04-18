@@ -124,13 +124,14 @@ public abstract class Gun extends Weapon {
 
 	private BukkitTask task;
 	private long lastClick;
-	private long timeDiff;
+
+	//private long timeDiff;
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		ItemStack item = e.getItem();
 		e.setCancelled(true);
 
-		timeDiff = System.currentTimeMillis() - lastClick;
+		//timeDiff = System.currentTimeMillis() - lastClick;
 		lastClick = System.currentTimeMillis();
 		
 		if (getCurrentMode() == GunMode.AUTOMATIC) {
@@ -148,7 +149,7 @@ public abstract class Gun extends Weapon {
 									cancel();
 									return;
 								}
-								if (timeDiff < 210) {
+								if (System.currentTimeMillis() - lastClick < 210) {
 									fire(p);
 									if (ready) {
 										ready = false;
@@ -187,6 +188,7 @@ public abstract class Gun extends Weapon {
 						ready = false;
 						updateItemName(item);
 						if (getCurrentMode() == GunMode.BLAST) {
+							int time = (int) (fireRate.getValue() / 3L);
 							task = new BukkitRunnable() {
 								byte left = 2;
 								@Override
@@ -207,7 +209,7 @@ public abstract class Gun extends Weapon {
 									super.cancel();
 									task = null;
 								}
-							}.runTaskTimer(OlympaZTA.getInstance(), (long) fireRate.getValue(), (long) (fireRate.getValue() / 3L));
+							}.runTaskTimer(OlympaZTA.getInstance(), time, time);
 						}else {
 							task = new BukkitRunnable() {
 								@Override
@@ -262,13 +264,17 @@ public abstract class Gun extends Weapon {
 		if (reloading != null) return;
 
 		int max = (int) maxAmmos.getValue();
+		if (max == ammos) return;
+
 		int toCharge;
-		if (max == ammos) { // déjà le max de munitions
-			toCharge = 0;
-		}else if (isOneByOneCharge()) {
-			toCharge = Math.min(1, getAmmoType().getAmmos(p));
-		}else toCharge = Math.min(max - ammos, getAmmoType().getAmmos(p));
-		if (toCharge == 0) return;
+		int availableAmmos = getAmmoType().getAmmos(p);
+		if (availableAmmos == 0) {
+			playOutOfAmmosSound(p.getLocation());
+			return;
+		}
+		if (isOneByOneCharge()) {
+			toCharge = 1;
+		}else toCharge = Math.min(max - ammos, availableAmmos);
 
 		reloading = Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
 			reloading = null;
@@ -484,6 +490,14 @@ public abstract class Gun extends Weapon {
 		lc.getWorld().playSound(lc, Sound.BLOCK_STONE_HIT, SoundCategory.PLAYERS, 1, 1);
 	}
 
+	/**
+	 * Jouer le son de chargeur vide
+	 * @param lc location où est jouée le son
+	 */
+	public void playOutOfAmmosSound(Location lc) {
+		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1, 1);
+	}
+
 	private static PreparedStatement createStatement;
 	private static PreparedStatement updateStatement;
 
@@ -548,7 +562,7 @@ public abstract class Gun extends Weapon {
 	}
 
 	public enum GunAccuracy {
-		EXTREME("Exrême", 0), HIGH("Bonne", 0.05f), MEDIUM("Moyenne", 0.2f), LOW("Faible", 0.7f);
+		EXTREME("Extrême", 0), HIGH("Bonne", 0.05f), MEDIUM("Moyenne", 0.2f), LOW("Faible", 0.7f);
 
 		private String name;
 		private float spread;

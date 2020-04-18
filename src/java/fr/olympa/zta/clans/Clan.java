@@ -23,6 +23,7 @@ import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.Scoreboard;
 import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.NMS;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.SpigotUtils;
@@ -190,7 +191,7 @@ public class Clan implements Registrable {
 	}
 
 	public void broadcast(String message) {
-		String finalMessage = SpigotUtils.color(Prefix.DEFAULT + "§6" + name + " §e: " + message + " Terminé.");
+		String finalMessage = ColorUtils.color(Prefix.DEFAULT + "§6" + name + " §e: " + message + " Terminé.");
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
 

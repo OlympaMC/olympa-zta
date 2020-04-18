@@ -15,21 +15,29 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.region.ChunkCuboid;
+import fr.olympa.api.region.Region;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.utils.DynmapLink;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_15_R1.Entity;
 
 public class MobSpawning {
@@ -46,65 +54,76 @@ public class MobSpawning {
 
 	public World world = Bukkit.getWorlds().get(0);
 
-	public MobSpawning(List<ChunkCuboid> hard, List<ChunkCuboid> medium, List<ChunkCuboid> easy) {
-		SpawnType.HARD.regions.addAll(hard); 
-		SpawnType.MEDIUM.regions.addAll(medium); 
-		SpawnType.EASY.regions.addAll(easy); 
+	public MobSpawning(ConfigurationSection config) {
+		for (String string : config.getKeys(false)) {
+			try {
+				SpawnType type = SpawnType.valueOf(string);
+				type.addRegions((List<Region>) config.getList(string));
+			}catch (IllegalArgumentException ex) {
+				OlympaZTA.getInstance().getLogger().warning("Type de spawn invalide: " + string);
+			}
+		}
 	}
 
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				queueLock.lock();
-				List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
-				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
-				for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
-					Chunk chunk = entry.getKey();
-					SpawnType spawn = entry.getValue();
-					int mobs = random.nextInt(spawn.spawnAmount);
-					for (int i = 0; i < mobs; i++) {
-						int x = random.nextInt(16);
-						int y = 1 + random.nextInt(30);
-						int z = random.nextInt(16);
-						Block prev = chunk.getBlock(x, y, z);
-						y: for (; y < 140; y++) {
-							boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-							prev = chunk.getBlock(x, y, z);
-							if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-								Block block = chunk.getBlock(x, y, z);
-								if (block.getLightLevel() > 10 && !world.isThundering()) continue;
-								for (Location loc : entities) {
-									if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) {
-										continue y; // distance aux autres entités obligatoirement > à 12 blocs
+				try {
+					List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
+					Map<Chunk, SpawnType> activeChunks = getActiveChunks();
+					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
+						Chunk chunk = entry.getKey();
+						SpawnType spawn = entry.getValue();
+						int mobs = random.nextInt(spawn.spawnAmount);
+						for (int i = 0; i < mobs; i++) {
+							int x = random.nextInt(16);
+							int y = 1 + random.nextInt(30);
+							int z = random.nextInt(16);
+							Block prev = chunk.getBlock(x, y, z);
+							y: for (; y < 140; y++) {
+								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
+								prev = chunk.getBlock(x, y, z);
+								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+									Block block = chunk.getBlock(x, y, z);
+									if (block.getLightLevel() > 10 && !world.isThundering()) continue;
+									for (Location loc : entities) {
+										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) {
+											continue y; // distance aux autres entités obligatoirement > à 12 blocs
+										}
 									}
+									Location lc = block.getLocation();
+									spawnQueue.add(lc);
+									break y;
 								}
-								Location lc = block.getLocation();
-								spawnQueue.add(lc);
-								break y;
 							}
 						}
 					}
+				}finally {
+					queueLock.unlock();
 				}
-				queueLock.unlock();
 			}
 		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);
 
-		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
+		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner les mobs calculés dans la tâche 0
 			public void run() {
 				averageQueueSize.add(spawnQueue.size());
 				if (averageQueueSize.size() > 24) averageQueueSize.remove();
 
 				if (!queueLock.tryLock()) return;
-				for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
-					try {
-						Location loc = iterator.next();
-						if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
-					}catch (Exception ex) {
-						ex.printStackTrace();
+				try {
+					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
+						try {
+							Location loc = iterator.next();
+							if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
+						}catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						iterator.remove();
 					}
-					iterator.remove();
+				}finally {
+					queueLock.unlock();
 				}
-				queueLock.unlock();
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 20L);
 
@@ -113,6 +132,7 @@ public class MobSpawning {
 
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
+	private final int maxEntities = 12;
 
 	private Map<Chunk, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
@@ -123,7 +143,7 @@ public class MobSpawning {
 			Chunk centralChunk = lc.getChunk();
 			if (!processedChunks.add(centralChunk)) continue;
 			if (SpawnType.getSpawnType(centralChunk) == null) continue;
-			if (entityCount(centralChunk) > 15) continue;
+			if (entityCount(centralChunk) > maxEntities) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {
@@ -168,23 +188,52 @@ public class MobSpawning {
 		enabled = false;
 	}
 	
-	enum SpawnType{
-		HARD(10, 4), MEDIUM(12, 3), EASY(13, 2);
+	public enum SpawnType {
+		HARD(10, 3, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
+		MEDIUM(12, 2, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone."),
+		EASY(13, 1, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
+		SAFE(22, 1, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
 		
-		private List<ChunkCuboid> regions = new ArrayList<>();
+		private List<Region> regions = new ArrayList<>();
 		private int minDistanceSquared;
 		private int spawnAmount;
 		
-		private SpawnType(int minDistance, int spawnAmount) {
+		private Predicate<Player> enterPredicate;
+		private BaseComponent[] texts;
+
+		public final Color color;
+		public final String name;
+		public final String description;
+
+		private SpawnType(int minDistance, int spawnAmount, String title, Color color, String name, String description) {
 			this.minDistanceSquared = minDistance ^ 2;
 			this.spawnAmount = spawnAmount;
+			this.color = color;
+			this.name = name;
+			this.description = description;
+
+			texts = TextComponent.fromLegacyText("§8§k§lgdn§r§7 vous entrez dans une " + title + "§r §8§k§lndg");
+
+			enterPredicate = player -> {
+				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, texts);
+				return false;
+			};
 		}
 
 		public boolean isInto(Chunk chunk) {
-			for (ChunkCuboid region : regions) {
+			for (Region region : regions) {
 				if (region.isIn(chunk)) return true;
 			}
 			return false;
+		}
+
+		public void addRegions(Collection<Region> regions) {
+			this.regions.addAll(regions);
+			for (Region region : regions) {
+				region.setEnterPredicate(enterPredicate);
+				OlympaCore.getInstance().getRegionManager().registerRegion(region);
+				DynmapLink.showArea(region, this);
+			}
 		}
 
 		public static SpawnType getSpawnType(Chunk chunk) {

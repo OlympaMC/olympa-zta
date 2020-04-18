@@ -86,6 +86,10 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		this.nextOpen = 0;
 	}
 
+	public void setTmier(int minutesToWait) {
+		this.minutesToWait = minutesToWait;
+	}
+
 	public void setLootType(LootChestType type) {
 		this.type = type;
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());

@@ -26,7 +26,7 @@ public class Mobs {
 	private static Random random = new Random();
 
 	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE");
-	private static EntityTypes<CustomEntityZombie> customMommy = replaceEntity(CustomEntityZombie::new, "husk", EntityTypes.HUSK, "HUSK");
+	private static EntityTypes<CustomEntityMommy> customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK");
 
 	public static void spawnCommonZombie(Location location) {
 		location.setYaw(random.nextInt(360));

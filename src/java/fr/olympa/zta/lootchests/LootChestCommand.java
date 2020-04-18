@@ -50,6 +50,15 @@ public class LootChestCommand extends ComplexCommand {
 		sendSuccess("Le compte à rebours de ce coffre a été réinitialisé.");
 	}
 
+	@Cmd (player = true)
+	public void noTime(CommandContext cmd) {
+		LootChest chest = getTargetLootChest(cmd.player);
+		if (chest == null) return;
+
+		chest.setTmier(0);
+		sendSuccess("Le compte à rebours de ce coffre a été mis à 0.");
+	}
+
 	private Chest getTargetChest(Player p) {
 		Block targetBlock = p.getTargetBlockExact(2);
 		if (targetBlock == null || targetBlock.getType() != Material.CHEST) {

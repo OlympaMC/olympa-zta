@@ -2,7 +2,6 @@ package fr.olympa.zta;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -14,8 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.region.ChunkCuboid;
-import fr.olympa.api.region.ExpandedCuboid;
+import fr.olympa.api.region.Region;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
@@ -101,7 +99,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ClansManager.initialize();
 		DynmapLink.initialize();
 
-		hub = new HubManager(getConfig().getSerializable("hub", ExpandedCuboid.class), getConfig().getSerializable("spawn", Location.class), getConfig().getSerializable("spawnRegion", ExpandedCuboid.class));
+		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getSerializable("spawn", Location.class), getConfig().getSerializable("spawnRegion", Region.class));
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
@@ -131,7 +129,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ZTARegistry.registerObjectType(Clan.class, Clan.TABLE_NAME, Clan.CREATE_TABLE_STATEMENT, Clan::deserializeClan);
 
 		new Mobs(); // initalise les mobs custom
-		mobSpawning = new MobSpawning((List<ChunkCuboid>) getConfig().getList("mobRegions.hard"), (List<ChunkCuboid>) getConfig().getList("mobRegions.medium"), (List<ChunkCuboid>) getConfig().getList("mobRegions.easy"));
+		mobSpawning = new MobSpawning(getConfig().getConfigurationSection("mobRegions"));
 		mobSpawning.start();
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(

@@ -36,7 +36,7 @@ public class MobsListener implements Listener {
 			Entity damager = ((EntityDamageByEntityEvent) cause).getDamager();
 			if (damager instanceof Zombie) {
 				if (damager.hasMetadata("player")) {
-					e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0) + "§e.");
+					e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.");
 				}else e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par un §6zombie§e.");
 			}else {
 				e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par §6" + damager.getName() + "§e.");
