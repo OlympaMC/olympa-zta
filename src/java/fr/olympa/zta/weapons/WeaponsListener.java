@@ -12,37 +12,17 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.mobs.Mobs;
-import fr.olympa.zta.packetslistener.PacketHandlers;
-import fr.olympa.zta.packetslistener.PacketInjector;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public class WeaponsListener implements Listener{
-	
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e){
-		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.REMOVE_SNOWBALLS);
-		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
-
-		e.getPlayer().setMaximumNoDamageTicks(Mobs.NO_DAMAGE_TICKS);
-
-		if (!e.getPlayer().hasPlayedBefore()) ArmorType.CIVIL.setFull(e.getPlayer());
-	}
-	
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e){
-		PacketInjector.removePlayer(e.getPlayer());
-	}
 	
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent e){

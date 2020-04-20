@@ -27,6 +27,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -42,7 +43,7 @@ import net.minecraft.server.v1_15_R1.Entity;
 
 public class MobSpawning {
 
-	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS);
+	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB);
 
 	private BukkitTask[] tasks = new BukkitTask[2];
 	private boolean enabled = false;
@@ -53,6 +54,8 @@ public class MobSpawning {
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
 	public World world = Bukkit.getWorlds().get(0);
+
+	public int maxEntities = 3000;
 
 	public MobSpawning(ConfigurationSection config) {
 		for (String string : config.getKeys(false)) {
@@ -70,7 +73,8 @@ public class MobSpawning {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
 				queueLock.lock();
 				try {
-					List<Location> entities = world.getLivingEntities().stream().map(x -> x.getLocation()).collect(Collectors.toList());
+					List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
+					if (entities.size() > maxEntities) return;
 					Map<Chunk, SpawnType> activeChunks = getActiveChunks();
 					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
 						Chunk chunk = entry.getKey();
@@ -105,13 +109,14 @@ public class MobSpawning {
 			}
 		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);
 
-		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner les mobs calculés dans la tâche 0
+		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
 				averageQueueSize.add(spawnQueue.size());
 				if (averageQueueSize.size() > 24) averageQueueSize.remove();
 
 				if (!queueLock.tryLock()) return;
 				try {
+					int i = spawnQueue.size() / 2;
 					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						try {
 							Location loc = iterator.next();
@@ -120,6 +125,7 @@ public class MobSpawning {
 							ex.printStackTrace();
 						}
 						iterator.remove();
+						if (--i == 0) return;
 					}
 				}finally {
 					queueLock.unlock();
@@ -132,7 +138,7 @@ public class MobSpawning {
 
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
-	private final int maxEntities = 12;
+	private final int criticalEntitiesPerChunk = 25;
 
 	private Map<Chunk, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
@@ -143,7 +149,7 @@ public class MobSpawning {
 			Chunk centralChunk = lc.getChunk();
 			if (!processedChunks.add(centralChunk)) continue;
 			if (SpawnType.getSpawnType(centralChunk) == null) continue;
-			if (entityCount(centralChunk) > maxEntities) continue;
+			if (entityCount(centralChunk) > criticalEntitiesPerChunk) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {
@@ -151,7 +157,10 @@ public class MobSpawning {
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
 					if (chunks.containsKey(chunk)) continue;
 					SpawnType type = SpawnType.getSpawnType(chunk);
-					if (type != null) chunks.put(chunk, type);
+					if (type != null) {
+						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
+						chunks.put(chunk, type);
+					}
 				}
 			}
 		}
@@ -189,14 +198,15 @@ public class MobSpawning {
 	}
 	
 	public enum SpawnType {
-		HARD(10, 3, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
-		MEDIUM(12, 2, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone."),
-		EASY(13, 1, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
-		SAFE(22, 1, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
+		HARD(10, 3, 20, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
+		MEDIUM(12, 2, 15, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone."),
+		EASY(13, 1, 12, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
+		SAFE(22, 1, 5, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
 		
 		private List<Region> regions = new ArrayList<>();
 		private int minDistanceSquared;
 		private int spawnAmount;
+		private int maxEntitiesPerChunk;
 		
 		private Predicate<Player> enterPredicate;
 		private BaseComponent[] texts;
@@ -205,7 +215,7 @@ public class MobSpawning {
 		public final String name;
 		public final String description;
 
-		private SpawnType(int minDistance, int spawnAmount, String title, Color color, String name, String description) {
+		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, String title, Color color, String name, String description) {
 			this.minDistanceSquared = minDistance ^ 2;
 			this.spawnAmount = spawnAmount;
 			this.color = color;

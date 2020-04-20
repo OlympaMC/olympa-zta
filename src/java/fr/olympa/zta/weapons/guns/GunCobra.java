@@ -10,7 +10,7 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunCobra extends Gun{
 	
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
+	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	
 	public GunCobra(int id) {
 		super(id);

@@ -3,13 +3,13 @@ package fr.olympa.zta.utils;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.api.utils.Point2D;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
@@ -38,8 +38,8 @@ public class DynmapLink {
 
 	public static void showArea(Region region, SpawnType spawn) {
 		if (api == null) return;
-		List<Point2D> points = region.getCorners();
-		AreaMarker area = markers.createAreaMarker("region" + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(x -> x.x).toArray(), points.stream().mapToDouble(x -> x.z).toArray(), false);
+		List<Location> points = region.getLocations();
+		AreaMarker area = markers.createAreaMarker("region" + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.5, spawn.color.asRGB());
 		area.setDescription(spawn.description);
 	}

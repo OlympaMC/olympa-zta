@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.permission.OlympaPermission;
@@ -33,6 +32,7 @@ import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.registry.ItemsListener;
+import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.utils.DynmapLink;
@@ -117,6 +117,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new MoneyCommand().register();
 		new SpawnCommand().register();
 		new ChunkFixCommand().register();
+		new RegistryCommand().register();
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
@@ -141,7 +142,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().getFormatted(), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
-			weaponListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
+			mobsListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 
 		CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BankTrait.class).withName("bank"));
@@ -158,10 +159,6 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		HandlerList.unregisterAll(this);
 		mobSpawning.end();
 		scoreboards.unload();
-		
-		for (Player p : getServer().getOnlinePlayers()) {
-			weaponListener.onQuit(new PlayerQuitEvent(p.getPlayer(), "random quit message"));
-		}
 
 		ZTARegistry.saveDatabase();
 	}

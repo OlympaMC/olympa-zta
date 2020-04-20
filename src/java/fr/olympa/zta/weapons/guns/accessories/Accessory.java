@@ -29,7 +29,7 @@ public abstract class Accessory implements ItemStackable{
 			lore.add("§e- " + getEffectsDescription()[i]);
 		}
 		lore.addAll(getIDLoreLines());
-		return ItemUtils.item(getItemMaterial(), "§a" + getName(), lore.toArray(new String[0]));
+		return addIdentifier(ItemUtils.item(getItemMaterial(), "§a" + getName(), lore.toArray(new String[0])));
 	}
 	
 	public abstract String[] getEffectsDescription();

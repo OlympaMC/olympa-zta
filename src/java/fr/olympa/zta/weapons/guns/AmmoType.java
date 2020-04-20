@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.ItemUtils;
+
 public enum AmmoType{
 	
 	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE),
@@ -14,10 +16,15 @@ public enum AmmoType{
 	private String name;
 	private Material empty, fill;
 	
+	private ItemStack itemFilled, itemEmpty;
+
 	private AmmoType(String name, Material empty, Material fill){
 		this.name = name;
 		this.empty = empty;
 		this.fill = fill;
+
+		this.itemFilled = ItemUtils.item(fill, name);
+		this.itemEmpty = ItemUtils.item(empty, name + " vides", "Associez-y de la", "poudre à canon.");
 	}
 	
 	public String getName(){
@@ -79,11 +86,16 @@ public enum AmmoType{
 	 * @return Item correspondant aux paramètres des munitions
 	 */
 	public ItemStack getAmmo(int amount, boolean filled) {
-		return new ItemStack(filled ? fill : empty, amount);
+		ItemStack item = filled ? itemFilled : itemEmpty;
+		item = item.clone();
+		item.setAmount(amount);
+		return item;
 	}
 	
 	public static ItemStack getPowder(int amount) {
-		return new ItemStack(Material.BONE_MEAL, amount);
+		ItemStack item = ItemUtils.item(Material.WHITE_DYE, "§7Poudre à canon");
+		item.setAmount(amount);
+		return item;
 	}
 
 }

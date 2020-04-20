@@ -23,7 +23,7 @@ public abstract class Knife extends Weapon{
 				getFeatureLoreLine("Dégâts aux joueurs", getPlayerDamage()),
 				getFeatureLoreLine("Dégâts aux monstres", getEntityDamage())));
 		lore.addAll(getIDLoreLines());
-		return ItemUtils.item(getItemMaterial(), "§b" + getName(), lore.toArray(new String[0]));
+		return addIdentifier(ItemUtils.item(getItemMaterial(), "§b" + getName(), lore.toArray(new String[0])));
 	}
 	
 	public void onInteract(PlayerInteractEvent e){}

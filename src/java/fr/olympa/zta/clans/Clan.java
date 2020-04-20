@@ -84,7 +84,7 @@ public class Clan implements Registrable {
 		NMS.sendPacket(NMS.addPlayersToTeam(ClansManager.enemies, leaver), players);
 
 		OlympaPlayerZTA oplayer = member.getValue();
-		if (oplayer == null) {
+		if (oplayer == null) { // joueur offline
 			OlympaPlayerZTA.removePlayerClan(pinfo);
 			return;
 		}
@@ -105,15 +105,16 @@ public class Clan implements Registrable {
 		Clan clan = x.getClan();
 		Player p = x.getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
+		boolean inHub = OlympaZTA.getInstance().hub.region.isIn(p);
 		for (Entry<OlympaPlayerInformations, OlympaPlayerZTA> member : clan.getMembers()) {
 			String memberName = member.getKey().getName();
 			if (member.getValue() == null) {
-				joiner.add("§c" + memberName);
+				joiner.add("§c○ " + memberName);
 			}else if (member.getValue() == x) {
-				joiner.add("§3§l" + memberName);
+				joiner.add("§6● §l" + memberName);
 			}else {
 				Location loc = member.getValue().getPlayer().getLocation();
-				joiner.add("§b" + memberName + " §l" + (OlympaZTA.getInstance().hub.region.isIn(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				joiner.add("§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.region.isIn(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
 			}
 		}
 		return joiner.toString();

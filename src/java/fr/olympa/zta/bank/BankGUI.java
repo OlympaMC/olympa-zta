@@ -54,7 +54,15 @@ public class BankGUI extends OlympaGUI {
 	}
 	
 	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) {
-		return slot >= maxSlot;
+		if (slot >= maxSlot) return true;
+		change = true;
+		return false;
+	}
+
+	@Override
+	public boolean onMoveItem(Player p, ItemStack moved) {
+		change = true;
+		return false;
 	}
 
 	public boolean onClose(Player p) {

@@ -13,10 +13,6 @@ public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget
 	private final int chance;
 	protected EntityHuman target;
 
-	public PathfinderGoalFixedDistanceTargetHuman(EntityCreature entitycreature, double distance, boolean sight) {
-		this(entitycreature, 10, distance, sight, false);
-	}
-
 	public PathfinderGoalFixedDistanceTargetHuman(EntityCreature entitycreature, int chance, double distance, boolean sight, boolean nearby) {
 		super(entitycreature, sight, nearby);
 		this.chance = chance;

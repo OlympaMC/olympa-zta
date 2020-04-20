@@ -9,6 +9,8 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class BulletSimple extends Bullet{
 	
+	public static final int NO_DAMAGE_TICKS = 1;
+
 	private float playerDamage, entityDamage;
 	
 	public BulletSimple(Gun gun, float playerDamage, float entityDamage){
@@ -31,6 +33,7 @@ public class BulletSimple extends Bullet{
 	
 	public void damage(LivingEntity entity, LivingEntity damager, float damage){
 		entity.damage(damage, damager);
+		entity.setNoDamageTicks(BulletSimple.NO_DAMAGE_TICKS);
 	}
 	
 }

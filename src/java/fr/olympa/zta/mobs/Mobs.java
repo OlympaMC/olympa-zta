@@ -21,8 +21,6 @@ import net.minecraft.server.v1_15_R1.MinecraftKey;
 
 public class Mobs {
 
-	public static final int NO_DAMAGE_TICKS = 1;
-
 	private static Random random = new Random();
 
 	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE");
@@ -39,12 +37,12 @@ public class Mobs {
 		Zombie zombie = spawnMob(customMommy, p.getLocation(), SpawnReason.CUSTOM);
 		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
 		zombie.setCustomName(p.getName() + " momifié");
+		zombie.setCustomNameVisible(true);
 		return zombie;
 	}
 
 	private static <T extends EntityZombie> Zombie spawnMob(EntityTypes<T> entityType, Location location, SpawnReason reason) {
 		Zombie zombie = (Zombie) entityType.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), EnumMobSpawn.TRIGGERED, false, false, reason).getBukkitEntity();
-		zombie.setMaximumNoDamageTicks(NO_DAMAGE_TICKS);
 		if (zombie.isBaby()) zombie.setBaby(false);
 		if (zombie.isInsideVehicle()) zombie.getVehicle().remove();
 		return zombie;

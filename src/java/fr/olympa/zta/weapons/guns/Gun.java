@@ -25,7 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.Attribute;
@@ -39,7 +39,7 @@ import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public abstract class Gun extends Weapon {
 
-	private static DecimalFormat format = new DecimalFormat("##.#");
+	private static DecimalFormat format = new DecimalFormat("##.##");
 
 	public static final String TABLE_NAME = "`zta_guns`";
 
@@ -75,7 +75,7 @@ public abstract class Gun extends Weapon {
 		ItemStack item = ItemUtils.item(getItemMaterial(), getName());
 		updateItemName(item);
 		updateItemLore(item, accessories);
-		return item;
+		return addIdentifier(item);
 	}
 
 	public void updateItemName(ItemStack item) {
@@ -187,6 +187,7 @@ public abstract class Gun extends Weapon {
 						fire(p);
 						ready = false;
 						updateItemName(item);
+						if (ammos == 0) return;
 						if (getCurrentMode() == GunMode.BLAST) {
 							int time = (int) (fireRate.getValue() / 3L);
 							task = new BukkitRunnable() {
@@ -498,34 +499,34 @@ public abstract class Gun extends Weapon {
 		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1, 1);
 	}
 
-	private static PreparedStatement createStatement;
-	private static PreparedStatement updateStatement;
+	private static OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`) VALUES (?)");
+	private static OlympaStatement updateStatement = new OlympaStatement("UPDATE " + TABLE_NAME + " SET "
+			+ "`ammos` = ?, "
+			+ "`ready` = ?, "
+			+ "`zoomed` = ?, "
+			+ "`secondary_mode` = ?, "
+			+ "`scope_id` = ?, "
+			+ "`cannon_id` = ?, "
+			+ "`stock_id` = ? "
+			+ "WHERE (`id` = ?)");
 
 	public void createDatas() throws SQLException {
-		if (createStatement == null || createStatement.isClosed()) createStatement = OlympaCore.getInstance().getDatabase().prepareStatement("INSERT INTO " + TABLE_NAME + " (`id`) VALUES (?)");
-		createStatement.setInt(1, getID());
-		createStatement.executeUpdate();
+		PreparedStatement statement = createStatement.getStatement();
+		statement.setInt(1, getID());
+		statement.executeUpdate();
 	}
 
 	public synchronized void updateDatas() throws SQLException {
-		if (updateStatement == null || updateStatement.isClosed()) updateStatement = OlympaCore.getInstance().getDatabase().prepareStatement("UPDATE " + TABLE_NAME + " SET "
-				+ "`ammos` = ?, "
-				+ "`ready` = ?, "
-				+ "`zoomed` = ?, "
-				+ "`secondary_mode` = ?, "
-				+ "`scope_id` = ?, "
-				+ "`cannon_id` = ?, "
-				+ "`stock_id` = ? "
-				+ "WHERE (`id` = ?)");
-		updateStatement.setInt(1, ammos);
-		updateStatement.setBoolean(2, ready);
-		updateStatement.setBoolean(3, zoomed);
-		updateStatement.setBoolean(4, secondaryMode);
-		updateStatement.setInt(5, scope == null ? -1 : scope.getID());
-		updateStatement.setInt(6, cannon == null ? -1 : cannon.getID());
-		updateStatement.setInt(7, stock == null ? -1 : stock.getID());
-		updateStatement.setInt(8, getID());
-		updateStatement.executeUpdate();
+		PreparedStatement statement = updateStatement.getStatement();
+		statement.setInt(1, ammos);
+		statement.setBoolean(2, ready);
+		statement.setBoolean(3, zoomed);
+		statement.setBoolean(4, secondaryMode);
+		statement.setInt(5, scope == null ? -1 : scope.getID());
+		statement.setInt(6, cannon == null ? -1 : cannon.getID());
+		statement.setInt(7, stock == null ? -1 : stock.getID());
+		statement.setInt(8, getID());
+		statement.executeUpdate();
 	}
 
 	public enum GunAction {

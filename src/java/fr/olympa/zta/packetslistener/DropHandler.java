@@ -20,7 +20,7 @@ public class DropHandler extends ChannelDuplexHandler{
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception{
 		if (msg instanceof PacketPlayInBlockDig) {
 			PacketPlayInBlockDig packet = (PacketPlayInBlockDig) msg;
-			if (packet.d() == EnumPlayerDigType.DROP_ITEM || packet.d() == EnumPlayerDigType.DROP_ALL_ITEMS) {
+			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
 				ItemStack item = p.getInventory().getItemInMainHand();
 				ItemStackable object = ZTARegistry.getItemStackable(item);

@@ -13,10 +13,15 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.packetslistener.PacketHandlers;
+import fr.olympa.zta.packetslistener.PacketInjector;
+import fr.olympa.zta.weapons.ArmorType;
 
 public class MobsListener implements Listener {
 
@@ -27,7 +32,12 @@ public class MobsListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		int id = lastId++;
 		Player p = e.getEntity();
-		inventories.put(id, p.getInventory().getContents());
+		ItemStack[] contents = p.getInventory().getContents();
+		for (int i = 0; i < contents.length; i++) {
+			ItemStack itemStack = contents[i];
+			if (itemStack != null && itemStack.getType().name().startsWith("LEATHER_")) contents[i] = null;
+		}
+		inventories.put(id, contents);
 		Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
 		momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
 		momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
@@ -51,6 +61,19 @@ public class MobsListener implements Listener {
 			int id = e.getEntity().getMetadata("inventory").get(0).asInt();
 			Collections.addAll(e.getDrops(), inventories.remove(id));
 		}
+	}
+
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e) {
+		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.REMOVE_SNOWBALLS);
+		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
+
+		if (!e.getPlayer().hasPlayedBefore()) ArmorType.CIVIL.setFull(e.getPlayer());
+	}
+
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		PacketInjector.removePlayer(e.getPlayer());
 	}
 
 }

@@ -4,7 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+
+import fr.olympa.zta.OlympaZTA;
 
 /**
  * Représente un objet pour lequel on peut créer un item.<br>
@@ -12,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public interface ItemStackable extends Registrable{
 	
+	public static final NamespacedKey PERISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "itemRegistry");
+
 	public abstract ItemStack createItemStack();
 	
 	public abstract String getName();
@@ -33,4 +40,11 @@ public interface ItemStackable extends Registrable{
 				"§e§m   §r§e[I" + getID() + "]§m   §r");
 	}
 	
+	public default ItemStack addIdentifier(ItemStack item) {
+		ItemMeta itemMeta = item.getItemMeta();
+		itemMeta.getPersistentDataContainer().set(PERISTENT_DATA_KEY, PersistentDataType.INTEGER, getID());
+		item.setItemMeta(itemMeta);
+		return item;
+	}
+
 }

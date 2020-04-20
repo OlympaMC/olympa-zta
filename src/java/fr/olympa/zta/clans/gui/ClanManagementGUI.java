@@ -100,7 +100,6 @@ public class ClanManagementGUI extends OlympaGUI {
 			}
 		}else if (slot == 16) {
 			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), "§7Voulez-vous vraiment supprimer le clan ?", "§cCette action sera définitive.").create(p);
-			clan.disband();
 		}
 		return true;
 	}

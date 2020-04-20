@@ -10,7 +10,7 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunBenelli extends Gun{
 	
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 2, 1);
+	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
 	public GunBenelli(int id) {
 		super(id);

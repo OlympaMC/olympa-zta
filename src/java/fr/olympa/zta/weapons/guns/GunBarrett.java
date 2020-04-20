@@ -16,7 +16,7 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 public class GunBarrett extends Gun{
 	
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -3, Operation.ADD_SCALAR);
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 2, 1);
+	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	
 	public GunBarrett(int id) {
 		super(id);
