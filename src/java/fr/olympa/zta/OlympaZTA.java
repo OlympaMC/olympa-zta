@@ -10,6 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginManager;
 
+import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
@@ -17,6 +18,7 @@ import fr.olympa.api.region.Region;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.Clan;
 import fr.olympa.zta.clans.ClansCommand;
@@ -157,6 +159,10 @@ public class OlympaZTA extends OlympaAPIPlugin {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
 		}catch (SQLException e) {
 			e.printStackTrace();
+		}
+		ProtocolAction protocolSupport = OlympaCore.getInstance().getProtocolSupport();
+		if (protocolSupport != null) {
+			protocolSupport.disable1_8();
 		}
 	}
 
