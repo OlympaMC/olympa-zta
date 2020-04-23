@@ -69,7 +69,7 @@ public class ClanManagementGUI extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 17) {
 			if (!isChief) {
-				clan.removePlayer(playerInformations, true);
+				new ConfirmGUI(() -> clan.removePlayer(playerInformations, true), () -> this.create(p), "§7Voulez-vous vraiment quitter le clan ?");
 				p.closeInventory();
 			}
 		}else if (isChief && slot >= 9 && slot < 14) {

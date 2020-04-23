@@ -2,8 +2,9 @@ package fr.olympa.zta;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import org.bukkit.Location;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -23,11 +24,12 @@ import fr.olympa.zta.clans.ClansListener;
 import fr.olympa.zta.clans.ClansManager;
 import fr.olympa.zta.enderchest.EnderChestCommand;
 import fr.olympa.zta.hub.HubManager;
-import fr.olympa.zta.hub.SpawnCommand;
+import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.lootchests.LootChestCommand;
 import fr.olympa.zta.lootchests.LootChestsListener;
 import fr.olympa.zta.mobs.MobSpawning;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
@@ -38,6 +40,7 @@ import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
+import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.Gun870;
 import fr.olympa.zta.weapons.guns.GunAK;
@@ -99,7 +102,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ClansManager.initialize();
 		DynmapLink.initialize();
 
-		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getSerializable("spawn", Location.class), getConfig().getSerializable("spawnRegion", Region.class));
+		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getLocation("teleportWait"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);
@@ -115,8 +118,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new ClansCommand().register();
 		new EnderChestCommand().register();
 		new MoneyCommand().register();
-		new SpawnCommand().register();
-		new ChunkFixCommand().register();
+		new HubCommand().register();
+		new UtilsCommand().register();
 		new RegistryCommand().register();
 
 		Arrays.asList(
@@ -129,13 +132,16 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ZTARegistry.registerObjectType(LootChest.class, LootChest.TABLE_NAME, LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeLootChest);
 		ZTARegistry.registerObjectType(Clan.class, Clan.TABLE_NAME, Clan.CREATE_TABLE_STATEMENT, Clan::deserializeClan);
 
+		Bukkit.clearRecipes();
+		AmmoType.CARTRIDGE.getName();
+
 		new Mobs(); // initalise les mobs custom
 		mobSpawning = new MobSpawning(getConfig().getConfigurationSection("mobRegions"));
 		mobSpawning.start();
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroup().getName()),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroupNameColored()),
 				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
 				FixedLine.EMPTY_LINE,

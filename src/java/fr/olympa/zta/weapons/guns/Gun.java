@@ -80,7 +80,7 @@ public abstract class Gun extends Weapon {
 
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + getMaxAmmos() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
 		item.setItemMeta(im);
 	}
 
@@ -90,6 +90,7 @@ public abstract class Gun extends Weapon {
 				getFeatureLoreLine("Cadence de tir", format.format(getFireRate() / 20D) + "s"),
 				getFeatureLoreLine("Temps de recharge", format.format(getChargeTime() / 20D) + "s"),
 				getFeatureLoreLine("Munitions", getAmmoType().getName()),
+				getFeatureLoreLine("Précision", getAccuracy().getName()),
 				getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
 		lore.addAll(getIDLoreLines());
 		if (accessories) {
@@ -125,13 +126,11 @@ public abstract class Gun extends Weapon {
 	private BukkitTask task;
 	private long lastClick;
 
-	//private long timeDiff;
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		ItemStack item = e.getItem();
 		e.setCancelled(true);
 
-		//timeDiff = System.currentTimeMillis() - lastClick;
 		lastClick = System.currentTimeMillis();
 		
 		if (getCurrentMode() == GunMode.AUTOMATIC) {
@@ -292,10 +291,10 @@ public abstract class Gun extends Weapon {
 	}
 
 	private void toggleZoom(Player p) {
-		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier());
-		}else {
+		if (zoomed = !zoomed) {
 			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier());
+		}else {
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier());
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -456,7 +455,7 @@ public abstract class Gun extends Weapon {
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
 	protected float getFireVolume() {
-		return 3;
+		return 2;
 	}
 
 	/**

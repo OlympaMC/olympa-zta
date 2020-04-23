@@ -1,11 +1,3 @@
-spawnRegion:
-  ==: fr.olympa.api.region.shapes.ExpandedCuboid
-  world: "world"
-  xMin: -1936
-  zMin: -2304
-  xMax: 2447
-  zMax: 1474
-
 mobRegions:
   HARD:
   - ==: fr.olympa.api.region.shapes.Polygon
@@ -39,11 +31,9 @@ hub:
   zMin: 5300
   xMax: 5710
   zMax: 5700
-spawn:
-  ==: org.bukkit.Location
-  world: "world"
-  x: 5632.5
-  y: 5.0
-  z: 5632.5
-  pitch: 0.0
-  yaw: 180.0
+
+spawn: world 5632.5 5.0 5632.5
+
+teleportWait: world 5609.5 24.0 5629.5
+
+spawnRegionTypes: [EASY]

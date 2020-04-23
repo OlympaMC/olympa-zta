@@ -40,7 +40,7 @@ public class DynmapLink {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
 		AreaMarker area = markers.createAreaMarker("region" + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
-		area.setFillStyle(0.5, spawn.color.asRGB());
+		area.setFillStyle(0.4, spawn.color.asRGB());
 		area.setDescription(spawn.description);
 	}
 	

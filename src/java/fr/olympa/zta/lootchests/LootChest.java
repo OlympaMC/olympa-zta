@@ -86,8 +86,9 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		this.nextOpen = 0;
 	}
 
-	public void setTmier(int minutesToWait) {
+	public void setTimer(int minutesToWait) {
 		this.minutesToWait = minutesToWait;
+		this.nextOpen = 0;
 	}
 
 	public void setLootType(LootChestType type) {

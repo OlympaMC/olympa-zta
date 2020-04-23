@@ -55,7 +55,7 @@ public class LootChestCommand extends ComplexCommand {
 		LootChest chest = getTargetLootChest(cmd.player);
 		if (chest == null) return;
 
-		chest.setTmier(0);
+		chest.setTimer(0);
 		sendSuccess("Le compte à rebours de ce coffre a été mis à 0.");
 	}
 

@@ -1,10 +1,14 @@
 package fr.olympa.zta.weapons.guns;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapelessRecipe;
 
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.zta.OlympaZTA;
 
 public enum AmmoType{
 	
@@ -25,6 +29,9 @@ public enum AmmoType{
 
 		this.itemFilled = ItemUtils.item(fill, name);
 		this.itemEmpty = ItemUtils.item(empty, name + " vides", "Associez-y de la", "poudre à canon.");
+
+		Bukkit.addRecipe(new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(empty).addIngredient(Material.WHITE_DYE));
+		OlympaZTA.getInstance().getLogger().info("Une nouvelle recette a été enregistrée pour : " + name);
 	}
 	
 	public String getName(){
@@ -91,7 +98,7 @@ public enum AmmoType{
 		item.setAmount(amount);
 		return item;
 	}
-	
+
 	public static ItemStack getPowder(int amount) {
 		ItemStack item = ItemUtils.item(Material.WHITE_DYE, "§7Poudre à canon");
 		item.setAmount(amount);

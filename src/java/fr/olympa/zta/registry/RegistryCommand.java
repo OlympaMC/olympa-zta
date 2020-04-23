@@ -16,14 +16,14 @@ public class RegistryCommand extends ComplexCommand {
 	@Cmd (syntax = "<id>", args = "INTEGER")
 	public void info(CommandContext cmd) {
 		if (cmd.args.length == 0) {
-			sendMessage(Prefix.INFO, "Objets actuellement chargés dans le registre : §l" + ZTARegistry.registry.size());
-			sendMessage(Prefix.INFO, "Types d'objets disponible : §l" + ZTARegistry.registrable.size());
+			sendInfo("Objets actuellement chargés dans le registre : §l" + ZTARegistry.registry.size());
+			sendInfo("Types d'objets disponible : §l" + ZTARegistry.registrable.size());
 		}else {
 			Registrable obj = getObject((int) cmd.args[0]);
 			if (obj == null) return;
-			sendMessage(Prefix.INFO, "Identifiant de l'objet : §l" + obj.getID());
-			sendMessage(Prefix.INFO, "Type d'objet : §l" + obj.getClass().getSimpleName());
-			sendMessage(Prefix.INFO, "Assignable à un item : §l" + (obj instanceof ItemStackable ? "§aoui" : "§cnon"));
+			sendInfo("Identifiant de l'objet : §l" + obj.getID());
+			sendInfo("Type d'objet : §l" + obj.getClass().getSimpleName());
+			sendInfo("Assignable à un item : §l" + (obj instanceof ItemStackable ? "§aoui" : "§cnon"));
 		}
 	}
 

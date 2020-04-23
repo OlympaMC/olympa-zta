@@ -55,6 +55,9 @@ public class MobSpawning {
 
 	public World world = Bukkit.getWorlds().get(0);
 
+	private final int chunkRadius = 2;
+	private final int chunkRadiusDoubled = chunkRadius * 2;
+	public int criticalEntitiesPerChunk = 25;
 	public int maxEntities = 3000;
 
 	public MobSpawning(ConfigurationSection config) {
@@ -135,10 +138,6 @@ public class MobSpawning {
 
 		enabled = true;
 	}
-
-	private final int chunkRadius = 2;
-	private final int chunkRadiusDoubled = chunkRadius * 2;
-	private final int criticalEntitiesPerChunk = 25;
 
 	private Map<Chunk, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
@@ -232,18 +231,21 @@ public class MobSpawning {
 
 		public boolean isInto(Chunk chunk) {
 			for (Region region : regions) {
-				if (region.isIn(chunk)) return true;
+				if (region.isIn(chunk.getWorld(), chunk.getX() * 16, region.getMin().getBlockY(), chunk.getZ() * 16)) return true;
 			}
 			return false;
 		}
 
 		public void addRegions(Collection<Region> regions) {
-			this.regions.addAll(regions);
 			for (Region region : regions) {
-				region.setEnterPredicate(enterPredicate);
-				OlympaCore.getInstance().getRegionManager().registerRegion(region);
+				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), enterPredicate, null);
+				this.regions.add(region);
 				DynmapLink.showArea(region, this);
 			}
+		}
+
+		public List<Region> getRegions() {
+			return regions;
 		}
 
 		public static SpawnType getSpawnType(Chunk chunk) {

@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -63,12 +64,15 @@ public class MobsListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent e) {
-		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.REMOVE_SNOWBALLS);
-		PacketInjector.addPlayer(e.getPlayer(), PacketHandlers.ITEM_DROP);
+		Player p = e.getPlayer();
+		PacketInjector.addPlayer(p, PacketHandlers.REMOVE_SNOWBALLS);
+		PacketInjector.addPlayer(p, PacketHandlers.ITEM_DROP);
 
-		if (!e.getPlayer().hasPlayedBefore()) ArmorType.CIVIL.setFull(e.getPlayer());
+		p.setHealth(p.getHealth());
+
+		if (!p.hasPlayedBefore()) ArmorType.CIVIL.setFull(p);
 	}
 
 	@EventHandler

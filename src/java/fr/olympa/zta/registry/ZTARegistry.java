@@ -68,6 +68,8 @@ public class ZTARegistry{
 	public static boolean removeObject(Registrable object) {
 		if (!registry.containsKey(object.getID())) return false;
 		try {
+			System.out.println("ZTARegistry.removeObject()");
+
 			PreparedStatement statement = removeRegistrable.getStatement();
 			statement.setInt(1, object.getID());
 			statement.executeUpdate();

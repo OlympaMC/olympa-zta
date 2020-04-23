@@ -34,6 +34,10 @@ public class ClansCommand extends ComplexCommand {
 
 	@Cmd (player = true, min = 1, syntax = "<nom du clan>")
 	public void create(CommandContext cmd) { // syntax: create <name>
+		if (OlympaPlayerZTA.get(cmd.player).getClan() != null) {
+			sendError("Vous faites déjà partie d'un clan !");
+			return;
+		}
 		String name = (String) cmd.args[0];
 		if (Clan.exists(name)) {
 			sendError("Un clan avec ce nom existe déjà !");
