@@ -1,5 +1,6 @@
 package fr.olympa.zta.clans;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.complex.Cmd;
@@ -18,18 +19,21 @@ import fr.olympa.zta.registry.ZTARegistry;
 public class ClansCommand extends ComplexCommand {
 
 	public ClansCommand() {
-		super((sender) -> {
-			if (sender instanceof Player) {
-				Player p = (Player) sender;
-				OlympaPlayerZTA olp = AccountProvider.get(p.getUniqueId());
-				Clan clan = olp.getClan();
-				if (clan == null) {
-					new NoClanGUI(p).create(p);
-				}else new ClanManagementGUI(olp).create(p);
-				return true;
-			}
-			return false;
-		}, OlympaZTA.getInstance(), "clans", "Commande de gestion des clans", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clan");
+		super(OlympaZTA.getInstance(), "clans", "Commande de gestion des clans", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clan");
+	}
+
+	@Override
+	public boolean noArguments(CommandSender sender) {
+		if (sender instanceof Player) {
+			Player p = (Player) sender;
+			OlympaPlayerZTA olp = AccountProvider.get(p.getUniqueId());
+			Clan clan = olp.getClan();
+			if (clan == null) {
+				new NoClanGUI(p).create(p);
+			}else new ClanManagementGUI(olp).create(p);
+			return true;
+		}
+		return false;
 	}
 
 	@Cmd (player = true, min = 1, syntax = "<nom du clan>")

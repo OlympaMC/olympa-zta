@@ -105,7 +105,7 @@ public class Clan implements Registrable {
 		Clan clan = x.getClan();
 		Player p = x.getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
-		boolean inHub = OlympaZTA.getInstance().hub.region.isIn(p);
+		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
 		for (Entry<OlympaPlayerInformations, OlympaPlayerZTA> member : clan.getMembers()) {
 			String memberName = member.getKey().getName();
 			if (member.getValue() == null) {
@@ -114,7 +114,7 @@ public class Clan implements Registrable {
 				joiner.add("§6● §l" + memberName);
 			}else {
 				Location loc = member.getValue().getPlayer().getLocation();
-				joiner.add("§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.region.isIn(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				joiner.add("§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
 			}
 		}
 		return joiner.toString();

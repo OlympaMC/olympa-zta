@@ -1,5 +1,6 @@
 package fr.olympa.zta;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.complex.Cmd;
@@ -10,13 +11,15 @@ import fr.olympa.api.objects.OlympaMoney;
 public class MoneyCommand extends ComplexCommand {
 
 	public MoneyCommand() {
-		super(null, OlympaZTA.getInstance(), "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, "monnaie");
-		noArgs = (sender) -> {
-			if (sender instanceof Player) {
-				get(new CommandContext(this, sender, new String[0], "money"));
-				return true;
-			}else return false;
-		};
+		super(OlympaZTA.getInstance(), "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, "monnaie");
+	}
+
+	@Override
+	public boolean noArguments(CommandSender sender) {
+		if (sender instanceof Player) {
+			get(new CommandContext(this, sender, new String[0], "money"));
+			return true;
+		}else return false;
 	}
 
 	@Cmd (args = "PLAYERS")

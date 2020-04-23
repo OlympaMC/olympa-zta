@@ -25,8 +25,9 @@ import fr.olympa.zta.clans.ClansCommand;
 import fr.olympa.zta.clans.ClansListener;
 import fr.olympa.zta.clans.ClansManager;
 import fr.olympa.zta.enderchest.EnderChestCommand;
-import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.HubCommand;
+import fr.olympa.zta.hub.HubManager;
+import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.lootchests.LootChestCommand;
 import fr.olympa.zta.lootchests.LootChestsListener;
@@ -121,8 +122,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		new EnderChestCommand().register();
 		new MoneyCommand().register();
 		new HubCommand().register();
-		new UtilsCommand().register();
 		new RegistryCommand().register();
+		new SpreadManageCommand().register();
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)

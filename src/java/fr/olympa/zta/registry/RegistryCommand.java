@@ -3,14 +3,13 @@ package fr.olympa.zta.registry;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
 public class RegistryCommand extends ComplexCommand {
 
 	public RegistryCommand() {
-		super(null, OlympaZTA.getInstance(), "registry", "Gestion du registre", ZTAPermissions.REGISTRY_COMMAND);
+		super(OlympaZTA.getInstance(), "registry", "Gestion du registre", ZTAPermissions.REGISTRY_COMMAND);
 	}
 
 	@Cmd (syntax = "<id>", args = "INTEGER")

@@ -16,7 +16,7 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 public class WeaponsCommand extends ComplexCommand {
 
 	public WeaponsCommand() {
-		super(null, OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
+		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
 	}
 
 	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")

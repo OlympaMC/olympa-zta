@@ -12,7 +12,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class MobsCommand extends ComplexCommand {
 
 	public MobsCommand() {
-		super(null, OlympaZTA.getInstance(), "mobs", "gestion des mobs", ZTAPermissions.MOBS_COMMAND);
+		super(OlympaZTA.getInstance(), "mobs", "gestion des mobs", ZTAPermissions.MOBS_COMMAND);
 	}
 
 	@Cmd

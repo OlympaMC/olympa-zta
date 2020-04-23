@@ -1,30 +1,30 @@
 package fr.olympa.zta.hub;
 
+import java.util.List;
+
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
-public class HubCommand extends ComplexCommand {
+public class HubCommand extends OlympaCommand {
 
 	public HubCommand() {
-		super(null, OlympaZTA.getInstance(), "spawn", "Vous téléporte au spawn.", ZTAPermissions.HUB_COMMAND, "hub");
-		super.noArgs = this::noArgsMethod;
+		super(OlympaZTA.getInstance(), "hub", ZTAPermissions.HUB_COMMAND, "spawn");
+		super.allowConsole = false;
 	}
 
-	public boolean noArgsMethod(CommandSender sender) {
-		if (player == null) return false;
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		OlympaZTA.getInstance().hub.teleport(player);
 		return true;
 	}
 
-	@Cmd (min = 1, args = "INTEGER", syntax = "<distance minimale>", permissionName = "HUB_EDIT_DISTANCE_COMMAND")
-	public void minDistance(CommandContext cmd) {
-		OlympaZTA.getInstance().hub.minDistance = (int) cmd.args[0];
-		sendSuccess("Vous avez modifié la distance de spawn par défaut entre deux joueurs.");
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+		return null;
 	}
 
 }
