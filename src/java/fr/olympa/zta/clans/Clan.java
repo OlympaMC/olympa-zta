@@ -34,7 +34,7 @@ import fr.olympa.zta.registry.ZTARegistry;
 
 public class Clan implements Registrable {
 
-	public static final String TABLE_NAME = "`zta_clans`";
+	public static final String TABLE_NAME = "`zta_clans`"; // TODO jarter du registre et en faire du standalone
 
 	private final int id;
 	private final String name;

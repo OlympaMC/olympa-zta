@@ -8,6 +8,7 @@ import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
 public class MobsCommand extends ComplexCommand {
 
@@ -26,6 +27,7 @@ public class MobsCommand extends ComplexCommand {
 		sendInfo("Nombre d'entités vivantes sur le monde principal : §l" + spawning.world.getLivingEntities().size());
 		sendInfo("Quantité maximale d'entités sur le monde : §l" + spawning.maxEntities);
 		sendInfo("Quantité maximale d'entités par chunk : §l" + spawning.criticalEntitiesPerChunk);
+		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l" + SpawnType.getSpawnType(player.getLocation().getChunk()));
 	}
 
 	@Cmd (player = true)

@@ -32,8 +32,6 @@ hub:
   xMax: 5710
   zMax: 5700
 
-spawn: world 5632.5 5.0 5632.5
-
-teleportWait: world 5609.5 24.0 5629.5
+spawn: world 5632.5 5.0 5632.5 180 0
 
 spawnRegionTypes: [EASY]

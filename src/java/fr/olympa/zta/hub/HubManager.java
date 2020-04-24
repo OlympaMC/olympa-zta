@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,19 +30,19 @@ public class HubManager implements Listener {
 
 	private Region region;
 	private Location spawnpoint;
-	private Location teleportWait;
 	private Set<SpawnType> spawnRegions;
 
-	private List<Region> cachedRegions;
+	private List<Region> cachedRegions = null;
 	private Region onlySpawnRegion;
 	private Random random = new Random();
 
+	private Set<Player> inRandomTP = new HashSet<>();
+
 	public int minDistance = 40;
 
-	public HubManager(Region region, Location spawnpoint, Location teleportWait, List<SpawnType> spawnRegions) {
+	public HubManager(Region region, Location spawnpoint, List<SpawnType> spawnRegions) {
 		this.region = region;
 		this.spawnpoint = spawnpoint;
-		this.teleportWait = teleportWait;
 		this.spawnRegions = new HashSet<>(spawnRegions);
 	}
 
@@ -70,8 +71,7 @@ public class HubManager implements Listener {
 	}
 
 	public void startRandomTeleport(Player p) {
-		p.teleport(teleportWait);
-		p.sendTitle("§8Patientez...", "§7Vous allez être téléporté.", 10, 1000, 0);
+		if (!inRandomTP.add(p)) return;
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -81,35 +81,38 @@ public class HubManager implements Listener {
 					if (cachedRegions.size() == 1) onlySpawnRegion = cachedRegions.get(0);
 				}
 
-				Region region = onlySpawnRegion;
-				Location lc = null;
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Vous allez être téléporté sur le champ de bataille. Bon courage.");
 				int minFoundDistance = Integer.MAX_VALUE;
 				attempt: for (int i = 0; i < 1000; i++) {
-					if (region == null) region = cachedRegions.get(random.nextInt(cachedRegions.size()));
-					lc = region.getRandomLocation();
+					Region region = onlySpawnRegion == null ? cachedRegions.get(random.nextInt(cachedRegions.size())) : onlySpawnRegion;
+					Location lc = region.getRandomLocation();
 					lc.setY(lc.getWorld().getHighestBlockYAt(lc));
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						int distance = (int) p.getLocation().distance(lc);
-						if (distance > minDistance) {
+					for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+						if (p == otherPlayer) continue;
+						int distance = (int) otherPlayer.getLocation().distance(lc);
+						if (distance < minDistance) {
 							if (distance < minFoundDistance) minFoundDistance = distance;
 							continue attempt;
 						}
 					}
-					if (MobSpawning.UNSPAWNABLE_ON.contains(lc.getWorld().getBlockAt(lc.getBlockX(), lc.getBlockY() + 1, lc.getBlockZ()).getType())) continue;
+					if (MobSpawning.UNSPAWNABLE_ON.contains(lc.getBlock().getType())) continue;
 
-					p.teleport(lc); // le joueur est téléporté
-					DynmapLink.setPlayerVisiblity(p, true);
+					Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+						p.teleport(lc.add(0, 2, 0));
+						inRandomTP.remove(p);
+						DynmapLink.setPlayerVisiblity(p, true);
+					}); // le joueur est téléporté de manière synchrone
 					return;
 				}
 				
 				Prefix.DEFAULT_BAD.sendMessage(p, "Une erreur est survenue lors de votre envoi aléatoire.");
 				ZTAPermissions.PROBLEM_MONITORING.sendMessage(Prefix.ERROR.toString() + "L'envoi aléatoire du joueur " + p.getName() + " a échoué. Plus petite distance trouvée : " + minFoundDistance);
-				p.resetTitle();
 				p.teleport(spawnpoint);
+				inRandomTP.remove(p);
 			}
 		}.runTaskAsynchronously(OlympaZTA.getInstance());
 	}
-	
+
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
 		e.setRespawnLocation(spawnpoint);
@@ -135,6 +138,11 @@ public class HubManager implements Listener {
 			Player p = (Player) e.getEntity();
 			if (region.isIn(p)) e.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onFood(FoodLevelChangeEvent e) {
+		if (region.isIn(e.getEntity().getLocation())) e.setCancelled(true);
 	}
 
 }

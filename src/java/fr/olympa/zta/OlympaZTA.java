@@ -105,7 +105,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		ClansManager.initialize();
 		DynmapLink.initialize();
 
-		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getLocation("teleportWait"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
+		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(weaponListener, this);

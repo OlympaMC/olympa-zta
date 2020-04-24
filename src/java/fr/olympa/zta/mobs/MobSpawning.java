@@ -82,7 +82,7 @@ public class MobSpawning {
 					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
 						Chunk chunk = entry.getKey();
 						SpawnType spawn = entry.getValue();
-						int mobs = random.nextInt(spawn.spawnAmount);
+						int mobs = random.nextInt(spawn.spawnAmount + 1);
 						for (int i = 0; i < mobs; i++) {
 							int x = random.nextInt(16);
 							int y = 1 + random.nextInt(30);
