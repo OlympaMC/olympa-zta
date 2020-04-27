@@ -32,7 +32,7 @@ public class StockLight extends Stock{
 	}
 	
 	public void remove(Gun gun){
-		gun.knockback.removeModifier(modifier);
+		gun.knockback.removeModifier(modifier.getName());
 	}
 	
 }

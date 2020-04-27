@@ -34,8 +34,8 @@ public class CannonStabilizer extends Cannon{
 	}
 	
 	public void remove(Gun gun){
-		gun.fireRate.removeModifier(rateModifier);
-		gun.bulletSpread.removeModifier(spreadModifier);
+		gun.fireRate.removeModifier(rateModifier.getName());
+		gun.bulletSpread.removeModifier(spreadModifier.getName());
 	}
 	
 }

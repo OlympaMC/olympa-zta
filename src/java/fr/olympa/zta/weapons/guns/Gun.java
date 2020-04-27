@@ -305,8 +305,10 @@ public abstract class Gun extends Weapon {
 		playFireSound(p.getLocation());
 
 		float knockback = this.knockback.getValue();
-		if (p.isSneaking()) knockback /= 2;
-		p.setVelocity(p.getLocation().getDirection().multiply(-knockback));
+		if (knockback != 0) {
+			if (p.isSneaking()) knockback /= 2;
+			p.setVelocity(p.getLocation().getDirection().multiply(-knockback));
+		}
 	}
 
 	/**

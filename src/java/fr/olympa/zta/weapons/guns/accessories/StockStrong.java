@@ -32,7 +32,7 @@ public class StockStrong extends Stock{
 	}
 	
 	public void remove(Gun gun){
-		gun.bulletSpread.removeModifier(modifier);
+		gun.bulletSpread.removeModifier(modifier.getName());
 	}
 	
 }

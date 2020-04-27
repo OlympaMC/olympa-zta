@@ -19,7 +19,6 @@ import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.zta.clans.ClanZTA;
-import fr.olympa.zta.registry.ZTARegistry;
 
 public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA> {
 
@@ -81,7 +80,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			bankContent = ItemUtils.deserializeItemsArray(resultSet.getBytes("bank_content"));
 			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
-			clan = ZTARegistry.getObject(resultSet.getInt("clan"));
+			clan = OlympaZTA.getInstance().clansManager.getClan(resultSet.getInt("clan"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

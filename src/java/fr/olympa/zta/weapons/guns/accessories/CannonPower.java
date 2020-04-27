@@ -32,7 +32,7 @@ public class CannonPower extends Cannon{
 	}
 	
 	public void remove(Gun gun){
-		gun.bulletSpeed.removeModifier(modifier);
+		gun.bulletSpeed.removeModifier(modifier.getName());
 	}
 	
 }

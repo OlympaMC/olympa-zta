@@ -28,4 +28,12 @@ public class AttributeModifier{
 		ADD_NUMBER, ADD_MULTIPLICATOR, MULTIPLY_VALUE;
 	}
 	
+	@Override
+	public int hashCode() {
+		int hash = name.hashCode();
+		hash += 37 * operation.ordinal();
+		hash += 37 * amount;
+		return hash;
+	}
+
 }

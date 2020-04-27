@@ -32,7 +32,7 @@ public class CannonSilent extends Cannon{
 	}
 	
 	public void remove(Gun gun){
-		gun.fireVolume.removeModifier(modifier);
+		gun.fireVolume.removeModifier(modifier.getName());
 	}
 	
 }

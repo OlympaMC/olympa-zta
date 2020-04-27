@@ -1,12 +1,12 @@
 package fr.olympa.zta.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Attribute{
 	
 	private final float baseValue;
-	private final List<AttributeModifier> modifiers = new ArrayList<>(3);
+	private final Map<String, AttributeModifier> modifiers = new HashMap<>();
 	
 	private float cachedValue = -666;
 
@@ -18,26 +18,22 @@ public class Attribute{
 		return baseValue;
 	}
 	
-	/*public List<AttributeModifier> getModifiers(){
-		return modifiers;
-	}*/
-	
 	public void addModifier(AttributeModifier modifier){
-		modifiers.add(modifier);
+		modifiers.put(modifier.getName(), modifier);
 		cachedValue = -666;
 	}
 	
-	public void removeModifier(AttributeModifier modifier){
-		modifiers.remove(modifier);
+	public void removeModifier(String name) {
+		modifiers.remove(name);
 		cachedValue = -666;
 	}
 	
 	public float getValue(){
 		if (cachedValue != -666) return cachedValue;
+		if (modifiers.isEmpty()) return cachedValue = baseValue;
 		float value = baseValue;
-		if (modifiers.isEmpty()) return value;
 		float multiplicator = 1;
-		for (AttributeModifier modifier : modifiers) {
+		for (AttributeModifier modifier : modifiers.values()) {
 			switch (modifier.getOperation()){
 			case ADD_NUMBER:
 				value += modifier.getAmount();

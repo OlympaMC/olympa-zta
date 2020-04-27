@@ -5,18 +5,17 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityHuman;
 import net.minecraft.server.v1_15_R1.PathfinderGoalTarget;
-import net.minecraft.server.v1_15_R1.PathfinderTargetCondition;
 
 public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget {
 
-	private double targetDistance = 8.0;
+	private double targetDistanceSquared;
 	private final int chance;
 	protected EntityHuman target;
 
 	public PathfinderGoalFixedDistanceTargetHuman(EntityCreature entitycreature, int chance, double distance, boolean sight, boolean nearby) {
 		super(entitycreature, sight, nearby);
 		this.chance = chance;
-		this.targetDistance = distance;
+		this.targetDistanceSquared = distance * distance;
 		this.a(1);
 	}
 
@@ -24,21 +23,21 @@ public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget
 		if (this.chance > 0 && this.e.getRandom().nextInt(this.chance) != 0) {
 			return false;
 		}
-		this.target = this.e.world.a(new PathfinderTargetCondition().a(targetDistance), this.e.locX(), this.e.locY() + this.e.getHeadHeight(), this.e.locZ());
-		/*new Function<EntityHuman, Double>() {
-			@Override
-			public Double apply(final EntityHuman entityhuman) {
-				final ItemStack itemstack = entityhuman.getEquipment(EnumItemSlot.HEAD);
-				return ((!(e instanceof EntitySkeleton) || itemstack.getItem() != Items.SKELETON_SKULL) && (!(e instanceof EntityZombie) || itemstack.getItem() != Items.ZOMBIE_HEAD) && (!(e instanceof EntityCreeper) || itemstack.getItem() != Items.CREEPER_HEAD))
-						? 1.0
-						: 0.5;
+		target = null;
+		double bestDistance = Integer.MAX_VALUE;
+		for (EntityHuman potential : this.e.world.getPlayers()) {
+			double distance = potential.h(this.e);
+			if (distance < targetDistanceSquared && distance < bestDistance) {
+				target = potential;
+				bestDistance = distance;
 			}
-		}*/
+		}
+		//this.target = this.e.world.a(new PathfinderTargetCondition().a(targetDistanceSquared).e(), this.e.locX(), this.e.locY() + this.e.getHeadHeight(), this.e.locZ());
 		return this.target != null;
 	}
 
 	public void c() { // startExecuting
-		e.setGoalTarget(this.target, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
 		super.c();
+		e.setGoalTarget(this.target, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
 	}
 }
