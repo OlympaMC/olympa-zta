@@ -3,7 +3,10 @@ package fr.olympa.zta.lootchests;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,20 +14,22 @@ import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
-public class LootChest extends AbstractRandomizedPicker<LootCreator> implements Registrable, InventoryHolder {
+public class LootChest extends OlympaGUI implements Registrable, AbstractRandomizedPicker<LootCreator> {
 
 	public static final String TABLE_NAME = "`zta_lootchests`";
 
@@ -35,12 +40,15 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 	private int minutesToWait = 8;
 	private long nextOpen = 0;
 
-	private Inventory inv;
+	private Map<Integer, Loot> currentLoots = new HashMap<>();
+
+	private Random random;
 
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
 
 	public LootChest(Location lc, int id, LootChestType type) {
+		super("Coffre " + type.getName(), InventoryType.CHEST);
 		this.location = lc;
 		this.id = id;
 
@@ -54,28 +62,40 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
 			nextOpen = time + minutesToWait * 60000;
-			inv.clear();
-			for (LootCreator creator : pick()) {
+			clearInventory();
+			for (LootCreator creator : pick(random)) {
 				int slot;
 				do {
 					slot = random.nextInt(27);
 				}while (inv.getItem(slot) != null);
-				inv.setItem(slot, creator.create(p, super.random));
+
+				Loot loot = creator.create(p, random);
+				currentLoots.put(slot, loot);
+				inv.setItem(slot, loot.getItem());
 			}
 		}
 
-		p.openInventory(inv);
+		super.create(p);
 		updateChestState(inv.getViewers().size());
 	}
 
 	public void clearInventory() {
-		for (ItemStack is : inv.getContents()) {
-			if (is != null) {
-				ItemStackable stackable = ZTARegistry.getItemStackable(is);
-				if (stackable != null) ZTARegistry.removeObject(stackable);
-			}
-		}
+		currentLoots.values().forEach(Loot::onRemove);
+		currentLoots.clear();
 		inv.clear();
+	}
+
+	@Override
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+		Loot loot = currentLoots.remove(slot);
+		if (loot == null) throw new RuntimeException("No loot at slot for chest " + getID());
+		return loot.onTake(p, inv, slot);
+	}
+
+	@Override
+	public boolean onClose(Player p) {
+		updateChestState(inv.getViewers().size() - 1);
+		return true;
 	}
 
 	public void updateChestState(int viewers) {
@@ -93,6 +113,7 @@ public class LootChest extends AbstractRandomizedPicker<LootCreator> implements 
 
 	public void setLootType(LootChestType type) {
 		this.type = type;
+		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
 	}
 
