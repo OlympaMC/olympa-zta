@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -22,10 +24,23 @@ public class ZTARegistry{
 
 	public static final Map<String, RegistryType<?>> registrable = new HashMap<>();
 	public static final Map<Integer, Registrable> registry = new HashMap<>(200);
+
+	public static final List<ItemStackableInstantiator<?>> itemStackables = new ArrayList<>(20);
+
 	private static final Random idGen = new Random();
 	
 	private static OlympaStatement insertRegistrable = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `type`) VALUES (?, ?)");
 	private static OlympaStatement removeRegistrable = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
+
+	/**
+	 * Enregistrer un type d'objet pouvant être enregistré dans le registre
+	 * @param objectClass Classe de l'objet à enregistrer
+	 * @throws SQLException 
+	 */
+	public static <T extends ItemStackable> void registerItemStackableType(ItemStackableInstantiator<T> creator, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
+		itemStackables.add(creator);
+		registerObjectType(creator.clazz, tableName, tableCreatorStatement, deserialize);
+	}
 
 	/**
 	 * Enregistrer un type d'objet pouvant être enregistré dans le registre
@@ -141,9 +156,9 @@ public class ZTARegistry{
 
 	public static int loadFromDatabase() throws SQLException {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
-		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (\r\n" +
-				"  `id` INT NOT NULL,\r\n" + 
-				"  `type` VARCHAR(45) NOT NULL,\r\n" + 
+		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+				"  `id` INT NOT NULL," + 
+				"  `type` VARCHAR(45) NOT NULL," + 
 				"  PRIMARY KEY (`id`))");
 		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
 		while (resultSet.next()){

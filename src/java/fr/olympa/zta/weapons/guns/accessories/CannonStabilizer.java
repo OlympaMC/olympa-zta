@@ -8,6 +8,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonStabilizer extends Cannon{
 
+	public static final String NAME = "Stabilisateur";
+	public static final Material TYPE = Material.GHAST_TEAR;
+
 	private static final AttributeModifier rateModifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
 	private static final AttributeModifier spreadModifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.8f);
 	
@@ -16,11 +19,11 @@ public class CannonStabilizer extends Cannon{
 	}
 
 	public String getName(){
-		return "Stabilisateur";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.GHAST_TEAR;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "augmente la cadence de tir", "diminue la dispersion des balles" };

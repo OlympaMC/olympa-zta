@@ -10,6 +10,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunBenelli extends Gun{
 	
+	public static final String NAME = "Benelli M5 Super";
+	public static final Material TYPE = Material.STONE_SHOVEL;
+
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
 	public GunBenelli(int id) {
@@ -17,11 +20,11 @@ public class GunBenelli extends Gun{
 	}
 
 	public String getName(){
-		return "Benelli M5 Super";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.STONE_SHOVEL;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

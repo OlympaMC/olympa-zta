@@ -2,12 +2,15 @@ package fr.olympa.zta.weapons;
 
 import java.util.Map.Entry;
 
+import org.bukkit.command.CommandSender;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.RegistryType;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
@@ -19,20 +22,30 @@ public class WeaponsCommand extends ComplexCommand {
 		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
 	}
 
+	@Override
+	public boolean noArguments(CommandSender sender) {
+		if (player != null) {
+			new WeaponsGiveGUI().create(player);
+			return true;
+		}else return false;
+	}
+
 	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")
 	public void give(CommandContext cmd) {
-		RegistryType<?> type = ZTARegistry.registrable.get(cmd.args[0]);
+		ItemStackableInstantiator<?> type = null;
+		for (ItemStackableInstantiator<?> stackable : ZTARegistry.itemStackables) {
+			if (stackable.clazz.getSimpleName().equalsIgnoreCase((String) cmd.args[0])) {
+				type = stackable;
+				break;
+			}
+		}
 		if (type == null) {
 			sendError("Cette arme n'existe pas.");
 			return;
 		}
 		try {
-			if (ItemStackable.class.isAssignableFrom(type.clazz)) {
-				cmd.player.getInventory().addItem(ZTARegistry.createItem(((Class<? extends ItemStackable>) type.clazz).getDeclaredConstructor(int.class).newInstance(ZTARegistry.generateID())));
-				sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
-			}else {
-				sendError("L'objet spécifié ne peut pas être matérialisé comme item.");
-			}
+			cmd.player.getInventory().addItem(ZTARegistry.createItem(type.create()));
+			sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
 		}catch (ReflectiveOperationException ex) {
 			sendError("Une erreur est survenue lors du don de l'objet.");
 			ex.printStackTrace();

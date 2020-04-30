@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunUZI extends Gun{
 	
+	public static final String NAME = "UZI";
+	public static final Material TYPE = Material.SLIME_BALL;
+
 	public GunUZI(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "UZI";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.SLIME_BALL;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

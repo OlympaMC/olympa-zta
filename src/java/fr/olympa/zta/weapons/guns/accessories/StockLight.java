@@ -8,6 +8,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class StockLight extends Stock{
 
+	public static final String NAME = "Crosse légère";
+	public static final Material TYPE = Material.SPRUCE_FENCE_GATE;
+
 	private static final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
 	
 	public StockLight(int id) {
@@ -15,11 +18,11 @@ public class StockLight extends Stock{
 	}
 	
 	public String getName(){
-		return "Crosse légère";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.SPRUCE_FENCE_GATE;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "réduit le recul" };

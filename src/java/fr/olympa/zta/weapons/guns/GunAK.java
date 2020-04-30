@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunAK extends Gun{
 	
+	public static final String NAME = "AK-20";
+	public static final Material TYPE = Material.GOLDEN_PICKAXE;
+
 	public GunAK(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "AK-20";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.GOLDEN_PICKAXE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

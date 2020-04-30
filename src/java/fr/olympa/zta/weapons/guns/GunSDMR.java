@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunSDMR extends Gun{
 	
+	public static final String NAME = "SDMR";
+	public static final Material TYPE = Material.IRON_PICKAXE;
+
 	public GunSDMR(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "SDMR";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.IRON_PICKAXE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

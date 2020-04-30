@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.AttributeModifier;
@@ -291,10 +292,10 @@ public abstract class Gun extends Weapon {
 	}
 
 	private void toggleZoom(Player p) {
-		if (zoomed = !zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier());
-		}else {
+		if (zoomed) {
 			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier());
+		}else {
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier());
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -612,6 +613,10 @@ public abstract class Gun extends Weapon {
 			}
 		}.runTaskLater(OlympaZTA.getInstance(), 20L);
 		return gun;
+	}
+
+	public static ItemStack buildDemoStack(Material type, String name) {
+		return ItemUtils.item(type, "§e" + name);
 	}
 
 }

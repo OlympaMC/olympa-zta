@@ -11,6 +11,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class ScopeLight extends Scope{
 
+	public static final String NAME = "Mire V2";
+	public static final Material TYPE = Material.BRICK;
+
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -1, Operation.ADD_SCALAR);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 0);
 	
@@ -19,11 +22,11 @@ public class ScopeLight extends Scope{
 	}
 
 	public String getName(){
-		return "Mire V2";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.BRICK;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "dispose d'un zoom faible", "donne la vision nocturne" };

@@ -33,6 +33,8 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
+import fr.olympa.zta.plots.players.PlayerPlotsManager;
+import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
@@ -87,6 +89,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	private ItemsListener itemsListener = new ItemsListener();
 
 	public ClansManagerZTA clansManager;
+	public PlayerPlotsManager plotsManager;
 	public MobSpawning mobSpawning;
 	public ScoreboardManager scoreboards;
 	public HubManager hub;
@@ -112,9 +115,16 @@ public class OlympaZTA extends OlympaAPIPlugin {
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
-		}catch (SQLException | ReflectiveOperationException ex) {
+		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans.");
+		}
+
+		try {
+			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(getConfig().getInt("plotNPC")), this);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots.");
 		}
 
 		new LootChestCommand().register();
@@ -128,11 +138,11 @@ public class OlympaZTA extends OlympaAPIPlugin {
 
 		Arrays.asList(
 				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
-				.forEach(x -> ZTARegistry.registerObjectType(x, Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+				.forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
-				.forEach(x -> ZTARegistry.registerObjectType(x, null, null, DeserializeDatas.easyClass()));
+				.forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 		ZTARegistry.registerObjectType(LootChest.class, LootChest.TABLE_NAME, LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeLootChest);
 
 		Bukkit.clearRecipes();

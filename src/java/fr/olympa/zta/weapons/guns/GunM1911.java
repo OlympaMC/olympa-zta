@@ -11,16 +11,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
  */
 public class GunM1911 extends Gun{
 	
+	public static final String NAME = "Colt M1911";
+	public static final Material TYPE = Material.WOODEN_AXE;
+
 	public GunM1911(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "Colt M1911";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_AXE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

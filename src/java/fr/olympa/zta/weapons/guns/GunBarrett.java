@@ -15,6 +15,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
  */
 public class GunBarrett extends Gun{
 	
+	public static final String NAME = "Barrett M109";
+	public static final Material TYPE = Material.IRON_HOE;
+
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -3, Operation.ADD_SCALAR);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	
@@ -23,11 +26,11 @@ public class GunBarrett extends Gun{
 	}
 
 	public String getName(){
-		return "Barrett M109";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.IRON_HOE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

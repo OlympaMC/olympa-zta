@@ -8,6 +8,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class StockStrong extends Stock{
 	
+	public static final String NAME = "Crosse lourde";
+	public static final Material TYPE = Material.BIRCH_FENCE_GATE;
+
 	private static final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
 	
 	public StockStrong(int id) {
@@ -15,11 +18,11 @@ public class StockStrong extends Stock{
 	}
 
 	public String getName(){
-		return "Crosse lourde";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.BIRCH_FENCE_GATE;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "réduit la dispersion des balles" };

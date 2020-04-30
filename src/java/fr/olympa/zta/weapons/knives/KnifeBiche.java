@@ -4,16 +4,19 @@ import org.bukkit.Material;
 
 public class KnifeBiche extends Knife{
 	
+	public static final String NAME = "Pied-de-biche";
+	public static final Material TYPE = Material.ARROW;
+
 	public KnifeBiche(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "Pied-de-biche";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.ARROW;
+		return TYPE;
 	}
 	
 	public float getPlayerDamage(){

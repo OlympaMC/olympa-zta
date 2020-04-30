@@ -19,11 +19,19 @@ import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.zta.clans.ClanZTA;
+import fr.olympa.zta.plots.players.PlayerPlot;
 
 public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA> {
 
 	public static final int MAX_SLOTS = 27;
-	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder().put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9").put("bank_content", "VARBINARY(8000) NULL").put("ender_chest", "VARBINARY(8000) NULL").put("money", "DOUBLE NULL DEFAULT 0").put("clan", "INT NULL DEFAULT NULL").build();
+	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder()
+			.put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9")
+			.put("bank_content", "VARBINARY(8000) NULL")
+			.put("ender_chest", "VARBINARY(8000) NULL")
+			.put("money", "DOUBLE NULL DEFAULT 0")
+			.put("clan", "INT NULL DEFAULT NULL")
+			.put("plot", "INT NULL DEFAULT NULL")
+			.build();
 
 	private int bankSlots = 9;
 	private ItemStack[] bankContent = new ItemStack[MAX_SLOTS];
@@ -33,6 +41,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private OlympaMoney money = new OlympaMoney(0);
 
 	private ClanZTA clan = null;
+
+	private PlayerPlot plot = null;
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
@@ -74,6 +84,14 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		this.clan = clan;
 	}
 
+	public PlayerPlot getPlot() {
+		return plot;
+	}
+
+	public void setPlot(PlayerPlot plot) {
+		this.plot = plot;
+	}
+
 	public void loadDatas(ResultSet resultSet) throws SQLException {
 		try {
 			bankSlots = resultSet.getInt("bank_slots");
@@ -81,6 +99,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
 			clan = OlympaZTA.getInstance().clansManager.getClan(resultSet.getInt("clan"));
+			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
@@ -96,6 +115,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 				statement.setNull(5, Types.INTEGER);
 			}else {
 				statement.setInt(5, clan.getID());
+			}
+			if (plot == null) {
+				statement.setNull(6, Types.INTEGER);
+			}else {
+				statement.setInt(6, plot.getID());
 			}
 		}catch (IOException e) {
 			e.printStackTrace();

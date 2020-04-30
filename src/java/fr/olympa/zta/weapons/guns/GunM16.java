@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunM16 extends Gun{
 	
+	public static final String NAME = "M16";
+	public static final Material TYPE = Material.WOODEN_PICKAXE;
+
 	public GunM16(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "M16";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_PICKAXE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class Gun870 extends Gun{
 	
+	public static final String NAME = "Remington 870 Express";
+	public static final Material TYPE = Material.WOODEN_HOE;
+
 	public Gun870(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "Remington 870 Express";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_HOE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

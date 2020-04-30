@@ -8,6 +8,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonPower extends Cannon{
 
+	public static final String NAME = "Canon lourd";
+	public static final Material TYPE = Material.GUNPOWDER;
+
 	private static final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
 	
 	public CannonPower(int id) {
@@ -15,11 +18,11 @@ public class CannonPower extends Cannon{
 	}
 	
 	public String getName(){
-		return "Canon lourd";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.GUNPOWDER;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "augmente la vitesse des balles" };

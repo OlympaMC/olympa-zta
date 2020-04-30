@@ -10,6 +10,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunKSG extends Gun{
 	
+	public static final String NAME = "KSG";
+	public static final Material TYPE = Material.IRON_SHOVEL;
+
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
 	public GunKSG(int id) {
@@ -17,11 +20,11 @@ public class GunKSG extends Gun{
 	}
 
 	public String getName(){
-		return "KSG";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.IRON_SHOVEL;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

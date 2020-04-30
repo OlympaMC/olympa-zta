@@ -10,6 +10,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunCobra extends Gun{
 	
+	public static final String NAME = "King Cobra";
+	public static final Material TYPE = Material.STONE_AXE;
+
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	
 	public GunCobra(int id) {
@@ -17,11 +20,11 @@ public class GunCobra extends Gun{
 	}
 
 	public String getName(){
-		return "King Cobra";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.STONE_AXE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

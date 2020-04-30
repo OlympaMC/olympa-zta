@@ -10,6 +10,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunM1897 extends Gun{
 	
+	public static final String NAME = "M1897";
+	public static final Material TYPE = Material.WOODEN_SHOVEL;
+
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
 	public GunM1897(int id) {
@@ -17,11 +20,11 @@ public class GunM1897 extends Gun{
 	}
 
 	public String getName(){
-		return "M1897";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.WOODEN_SHOVEL;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

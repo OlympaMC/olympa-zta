@@ -20,7 +20,7 @@ public interface ItemStackable extends Registrable{
 	public static final NamespacedKey PERISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "itemRegistry");
 
 	public abstract ItemStack createItemStack();
-	
+
 	public abstract String getName();
 	
 	public abstract Material getItemMaterial();

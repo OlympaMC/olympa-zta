@@ -12,6 +12,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunDragunov extends Gun{
 	
+	public static final String NAME = "Dragunov";
+	public static final Material TYPE = Material.GOLDEN_HOE;
+
 	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -1, Operation.ADD_SCALAR);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 20, 1);
 	
@@ -20,11 +23,11 @@ public class GunDragunov extends Gun{
 	}
 
 	public String getName(){
-		return "Dragunov";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.GOLDEN_HOE;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

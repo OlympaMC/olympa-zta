@@ -8,16 +8,19 @@ import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
 public class GunSkorpion extends Gun{
 	
+	public static final String NAME = "Skorpion VZ64";
+	public static final Material TYPE = Material.MAGMA_CREAM;
+
 	public GunSkorpion(int id) {
 		super(id);
 	}
 
 	public String getName(){
-		return "Skorpion VZ64";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.MAGMA_CREAM;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

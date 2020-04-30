@@ -11,6 +11,9 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
 public class GunStoner extends Gun{
 	
+	public static final String NAME = "Stoner 24";
+	public static final Material TYPE = Material.IRON_HORSE_ARMOR;
+
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	private static final PotionEffect playerEffect = new PotionEffect(PotionEffectType.SLOW, 99999999, 1);
 	
@@ -19,11 +22,11 @@ public class GunStoner extends Gun{
 	}
 
 	public String getName(){
-		return "Stoner 24";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.IRON_HORSE_ARMOR;
+		return TYPE;
 	}
 	
 	public AmmoType getAmmoType(){

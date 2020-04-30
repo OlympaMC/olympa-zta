@@ -8,6 +8,9 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class CannonSilent extends Cannon{
 
+	public static final String NAME = "Silencieux";
+	public static final Material TYPE = Material.REDSTONE;
+
 	private static final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.25f);
 	
 	public CannonSilent(int id) {
@@ -15,11 +18,11 @@ public class CannonSilent extends Cannon{
 	}
 	
 	public String getName(){
-		return "Silencieux";
+		return NAME;
 	}
 	
 	public Material getItemMaterial(){
-		return Material.REDSTONE;
+		return TYPE;
 	}
 	
 	private static String[] desc = new String[] { "réduit le volume de la détonation" };

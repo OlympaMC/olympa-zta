@@ -35,3 +35,5 @@ hub:
 spawn: world 5632.5 5.0 5632.5 180 0
 
 spawnRegionTypes: [EASY]
+
+plotNPC: 2
