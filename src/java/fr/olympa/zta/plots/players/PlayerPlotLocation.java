@@ -7,11 +7,11 @@ import fr.olympa.zta.OlympaZTA;
 public class PlayerPlotLocation {
 
 	private int x, z;
+	private int worldX, worldZ;
 	
 	public PlayerPlotLocation(int x, int z) {
-		System.out.println(x + " " + z);
-		this.x = x;
-		this.z = z;
+		setX(x);
+		setZ(z);
 	}
 
 	public int getX() {
@@ -20,6 +20,7 @@ public class PlayerPlotLocation {
 
 	public void setX(int x) {
 		this.x = x;
+		this.worldX = x * PlotChunkGenerator.PLOT_CHUNK_SIZE * 16;
 	}
 
 	public int getZ() {
@@ -28,6 +29,15 @@ public class PlayerPlotLocation {
 
 	public void setZ(int z) {
 		this.z = z;
+		this.worldZ = z * PlotChunkGenerator.PLOT_CHUNK_SIZE * 16;
+	}
+
+	public int getWorldX() {
+		return worldX;
+	}
+
+	public int getWorldZ() {
+		return worldZ;
 	}
 
 	@Override
@@ -47,7 +57,7 @@ public class PlayerPlotLocation {
 	}
 	
 	public Location toLocation() {
-		return new Location(OlympaZTA.getInstance().plotsManager.getWorld(), x * PlotChunkGenerator.PLOT_CHUNK_SIZE * 16, PlotChunkGenerator.WORLD_LEVEL, z * PlotChunkGenerator.PLOT_CHUNK_SIZE * 16);
+		return new Location(OlympaZTA.getInstance().plotsManager.getWorld(), worldX, PlotChunkGenerator.WORLD_LEVEL, worldZ);
 	}
 	
 	public static PlayerPlotLocation get(Location loc) {

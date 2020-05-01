@@ -1,6 +1,5 @@
 package fr.olympa.zta.plots.players;
 
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,28 +18,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.plots.PlotsCommand;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.npc.NPC;
 
 public class PlayerPlotsManager implements Listener {
 	
 	private static final String tableName = "`zta_player_plots`";
 
 	private final OlympaStatement createPlot;
-	private final NPC npc;
+	private final OlympaStatement setPlotLevel;
 
 	private Map<Integer, PlayerPlot> plotsByID = new HashMap<>();
 	private Map<PlayerPlotLocation, PlayerPlot> plotsByPosition = new HashMap<>();
 	private World worldCrea;
 
-	public PlayerPlotsManager(int npcID) throws SQLException {
+	public PlayerPlotsManager() throws SQLException {
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," +
 				"  `x` INT NOT NULL," +
@@ -50,12 +47,13 @@ public class PlayerPlotsManager implements Listener {
 				"  PRIMARY KEY (`id`))");
 
 		createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`x`, `z`, `owner`) VALUES (?, ?, ?)", true);
+		setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?", true);
 
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
 		while (resultSet.next()) {
 			try {
 				PlayerPlot plot = new PlayerPlot(resultSet.getInt("id"), resultSet.getInt("x"), resultSet.getInt("z"), resultSet.getLong("owner"));
-				plot.setLevel(resultSet.getInt("level"));
+				plot.setLevel(resultSet.getInt("level"), false);
 				addPlot(plot);
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -63,34 +61,18 @@ public class PlayerPlotsManager implements Listener {
 			}
 		}
 
-		worldCrea = Bukkit.createWorld(new WorldCreator("plots").generator(new PlotChunkGenerator()).environment(Environment.NORMAL));
+		worldCrea = Bukkit.createWorld(new WorldCreator("plots").generator(new PlotChunkGenerator()).generateStructures(false).environment(Environment.NORMAL));
 		worldCrea.setSpawnLocation(0, worldCrea.getHighestBlockYAt(0, 0), 0);
 		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 5);
 		worldCrea.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
 
 		new PlotsCommand(this).register();
-
-		npc = CitizensAPI.getNPCRegistry().getById(npcID);
 	}
 
 	private void addPlot(PlayerPlot plot) {
 		plotsByID.put(plot.getID(), plot);
 		plotsByPosition.put(plot.getLocation(), plot);
-	}
-
-	public PlayerPlot create(PlayerPlotLocation location, OlympaPlayer owner) throws SQLException, IOException {
-		PreparedStatement statement = createPlot.getStatement();
-		statement.setInt(1, location.getX());
-		statement.setInt(2, location.getZ());
-		statement.setLong(3, owner.getId());
-		statement.executeUpdate();
-		ResultSet resultSet = statement.getGeneratedKeys();
-		resultSet.next();
-		PlayerPlot plot = new PlayerPlot(resultSet.getInt(1), location, owner.getId());
-		addPlot(plot);
-		resultSet.close();
-		return plot;
 	}
 
 	public PlayerPlot getPlot(PlayerPlotLocation point) {
@@ -99,6 +81,29 @@ public class PlayerPlotsManager implements Listener {
 
 	public PlayerPlot getPlot(int id) {
 		return plotsByID.get(id);
+	}
+
+	public PlayerPlot create(PlayerPlotLocation location, OlympaPlayerZTA owner) throws SQLException {
+		PreparedStatement statement = createPlot.getStatement();
+		statement.setInt(1, location.getX());
+		statement.setInt(2, location.getZ());
+		statement.setLong(3, owner.getId());
+		statement.executeUpdate();
+		ResultSet resultSet = statement.getGeneratedKeys();
+		resultSet.next();
+		PlayerPlot plot = new PlayerPlot(resultSet.getInt(1), location, owner.getId());
+		plot.setLevel(1, true);
+		addPlot(plot);
+		owner.setPlot(plot);
+		resultSet.close();
+		return plot;
+	}
+
+	void updateLevel(PlayerPlot plot, int newLevel) throws SQLException {
+		PreparedStatement statement = setPlotLevel.getStatement();
+		statement.setInt(1, newLevel);
+		statement.setInt(2, plot.getID());
+		statement.executeUpdate();
 	}
 
 	public PlayerPlotLocation getAvailable() {
@@ -116,11 +121,29 @@ public class PlayerPlotsManager implements Listener {
 		return null;
 	}
 
+	public void initSearch(OlympaPlayerZTA player) {
+		player.plotFind = new BukkitRunnable() {
+			@Override
+			public void run() {
+				PlayerPlotLocation available = getAvailable();
+				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+					try {
+						create(available, player);
+					}catch (SQLException e) {
+						e.printStackTrace();
+					}finally {
+						player.plotFind = null;
+					}
+				});
+			}
+		}.runTaskAsynchronously(OlympaZTA.getInstance());
+	}
+
 	public World getWorld() {
 		return worldCrea;
 	}
 
-	private boolean blockEvent(Player p, Block block) {
+	private boolean blockEvent(Player p, Block block, boolean place) {
 		if (block.getWorld() != worldCrea) return true;
 
 		PlayerPlotLocation location = PlayerPlotLocation.get(block.getLocation());
@@ -129,24 +152,17 @@ public class PlayerPlotsManager implements Listener {
 		PlayerPlot plot = getPlot(location);
 		if (plot == null) return true; // empty plot
 
-		return plot.blockAction(p);
+		return plot.blockAction(p, block, place);
 	}
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
-		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock()));
+		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock(), false));
 	}
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock()));
-	}
-
-	@EventHandler
-	public void onNPCClick(NPCRightClickEvent e) {
-		if (e.getNPC() == npc) {
-			new PlayerPlotGUI().create(e.getClicker());
-		}
+		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock(), true));
 	}
 
 }

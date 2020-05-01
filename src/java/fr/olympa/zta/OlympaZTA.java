@@ -34,6 +34,7 @@ import fr.olympa.zta.mobs.Mobs;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.plots.players.PlayerPlotsManager;
+import fr.olympa.zta.plots.players.TomHookTrait;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
@@ -121,7 +122,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		}
 
 		try {
-			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(getConfig().getInt("plotNPC")), this);
+			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(), this);
+			CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TomHookTrait.class).withName("plots"));
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots.");

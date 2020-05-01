@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -43,6 +44,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private ClanZTA clan = null;
 
 	private PlayerPlot plot = null;
+	public BukkitTask plotFind = null; // pas persistant
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);

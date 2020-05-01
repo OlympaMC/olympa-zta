@@ -11,11 +11,11 @@ public class PlotChunkGenerator extends ChunkGenerator {
 
 	public static final int ROAD_WIDTH = 6;
 	public static final int PLOT_CHUNK_SIZE = 3;
-	public static final int WORLD_LEVEL = 30;
-	private int plotWidth = PLOT_CHUNK_SIZE * 16 - ROAD_WIDTH;
+	public static final int WORLD_LEVEL = 10;
+	public static final int PLOT_WIDTH = PLOT_CHUNK_SIZE * 16 - ROAD_WIDTH;
 
-	private Material[] materials = { Material.GRASS_BLOCK, Material.PODZOL, Material.COARSE_DIRT, Material.GRASS_PATH };
-	private float[] chances = { 0.45f, 0.3f, 0.15f, 0.1f };
+	private Material[] materials = { Material.GRASS_BLOCK, Material.PODZOL, Material.COARSE_DIRT };
+	private float[] chances = { 0.55f, 0.25f, 0.2f };
 
 	@Override
 	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
@@ -33,10 +33,10 @@ public class PlotChunkGenerator extends ChunkGenerator {
 
 				//set couches hautes
 				//si route, set stone
-				if ((Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) >= plotWidth &&
-						Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) < plotWidth + ROAD_WIDTH) ||
-						(Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) >= plotWidth &&
-						Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) < plotWidth + ROAD_WIDTH)) {
+				if ((Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) >= PLOT_WIDTH &&
+						Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) < PLOT_WIDTH + ROAD_WIDTH) ||
+						(Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) >= PLOT_WIDTH &&
+						Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) < PLOT_WIDTH + ROAD_WIDTH)) {
 
 					//set stone pour les routes
 					for (int y = 1; y <= WORLD_LEVEL; y++) {
@@ -46,25 +46,27 @@ public class PlotChunkGenerator extends ChunkGenerator {
 					for (int y = 1; y < WORLD_LEVEL; y++) {
 						chunk.setBlock(x, y, z, Material.DIRT);
 					}
-					chunk.setBlock(x, WORLD_LEVEL, z, randomObject(random, materials, chances));
+					Material type = randomObject(random, materials, chances);
+					chunk.setBlock(x, WORLD_LEVEL, z, type);
+					if (type == Material.GRASS_BLOCK && random.nextDouble() < 0.4) chunk.setBlock(x, WORLD_LEVEL + 1, z, Material.GRASS);
 				}
 
 				//si bord de plot, set demies dalles
 
-				if (((Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) == plotWidth ||
-						Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) == plotWidth + ROAD_WIDTH - 1) &&
-						!(Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) > plotWidth &&
-								Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) < plotWidth
+				if (((Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH ||
+						Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH + ROAD_WIDTH - 1) &&
+						!(Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) > PLOT_WIDTH &&
+								Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) < PLOT_WIDTH
 								+ ROAD_WIDTH))
 						||
-						((Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) == plotWidth ||
-						Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) == plotWidth + ROAD_WIDTH - 1) &&
-								!(Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) > plotWidth &&
-										Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) < plotWidth
+						((Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH ||
+						Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH + ROAD_WIDTH - 1) &&
+								!(Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) > PLOT_WIDTH &&
+										Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) < PLOT_WIDTH
 										+ ROAD_WIDTH))
 						||
-						(Math.floorMod(chunkX * 16 + x, plotWidth + ROAD_WIDTH) == plotWidth + ROAD_WIDTH - 1 &&
-						Math.floorMod(chunkZ * 16 + z, plotWidth + ROAD_WIDTH) == plotWidth + ROAD_WIDTH - 1)) {
+						(Math.floorMod(chunkX * 16 + x, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH + ROAD_WIDTH - 1 &&
+						Math.floorMod(chunkZ * 16 + z, PLOT_WIDTH + ROAD_WIDTH) == PLOT_WIDTH + ROAD_WIDTH - 1)) {
 
 					chunk.setBlock(x, WORLD_LEVEL + 1, z, Material.SMOOTH_STONE_SLAB);
 				}
