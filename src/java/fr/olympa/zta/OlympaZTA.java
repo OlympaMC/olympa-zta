@@ -1,5 +1,7 @@
 package fr.olympa.zta;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -122,7 +124,12 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		}
 
 		try {
-			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(), this);
+			String schemName = getConfig().getString("firstBuildSchem");
+			File file = new File(getDataFolder(), schemName);
+			if (!file.exists()) {
+				Files.copy(getResource(schemName), file.toPath());
+			}
+			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(file), this);
 			CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TomHookTrait.class).withName("plots"));
 		}catch (Exception ex) {
 			ex.printStackTrace();
