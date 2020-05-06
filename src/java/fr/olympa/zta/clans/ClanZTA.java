@@ -38,6 +38,10 @@ public class ClanZTA extends Clan<ClanZTA> {
 		}
 		return joiner.toString();
 	}, 1, 0);
+	
+	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize, long created) {
+		super(manager, id, name, chief, maxSize, created);
+	}
 
 	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize) {
 		super(manager, id, name, chief, maxSize);
