@@ -105,7 +105,8 @@ public abstract class Gun extends Weapon {
 	}
 
 	public void onEntityHit(EntityDamageByEntityEvent e) {
-		e.setDamage(getHitDamage());
+		Player damager = (Player) e.getDamager();
+		onInteract(new PlayerInteractEvent(damager, Action.LEFT_CLICK_AIR, damager.getInventory().getItemInMainHand(), null, null));
 	}
 
 	public void itemHeld(Player p, ItemStack item) {}
@@ -139,7 +140,7 @@ public abstract class Gun extends Weapon {
 				if (reloading != null) return;
 				if (ammos == 0) { // tentative de tir alors que le barillet est vide
 					reload(p, item);
-				}else if (ready) {
+				}else if (ready && fireEnabled(p)) {
 					if (task == null) {
 						task = new BukkitRunnable() {
 							@Override
@@ -182,7 +183,7 @@ public abstract class Gun extends Weapon {
 
 				if (ammos == 0) { // tentative de tir alors que le barillet est vide
 					reload(p, item);
-				}else if (ready) {
+				}else if (ready && fireEnabled(p)) {
 					if (task == null) {
 						fire(p);
 						ready = false;
@@ -228,6 +229,10 @@ public abstract class Gun extends Weapon {
 				}
 			}else secondaryClick(p, item);
 		}
+	}
+
+	public boolean fireEnabled(Player p) {
+		return !OlympaZTA.getInstance().hub.isInHub(p.getLocation()) && OlympaZTA.getInstance().mobSpawning.world == p.getWorld();
 	}
 
 	public void itemClick(Player p, ItemStack item) {
@@ -381,13 +386,6 @@ public abstract class Gun extends Weapon {
 	 */
 	public GunAction getSecondClickAction() {
 		return getSecondaryMode() != null ? GunAction.CHANGE_MODE : getZoomModifier() != null ? GunAction.ZOOM : null;
-	}
-
-	/**
-	 * @return Dommages sur un coup à la main avec l'arme
-	 */
-	public float getHitDamage() {
-		return 2;
 	}
 
 	/**
