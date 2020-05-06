@@ -91,11 +91,11 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	private MobsListener mobsListener = new MobsListener();
 	private ItemsListener itemsListener = new ItemsListener();
 
-	public ClansManagerZTA clansManager;
 	public PlayerPlotsManager plotsManager;
 	public MobSpawning mobSpawning;
 	public ScoreboardManager scoreboards;
 	public HubManager hub;
+	public ClansManagerZTA clansManager;
 	
 	@Override
 	public void onEnable() {
