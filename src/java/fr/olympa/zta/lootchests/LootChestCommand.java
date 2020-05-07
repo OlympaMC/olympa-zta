@@ -21,10 +21,10 @@ public class LootChestCommand extends ComplexCommand {
 	
 	@Cmd (player = true, args = "civil|military|contraband", min = 1, syntax = "<type de coffre>")
 	public void create(CommandContext cmd) {
-		Chest chestBlock = getTargetChest(cmd.player);
+		Chest chestBlock = getTargetChest(getPlayer());
 		if (chestBlock == null) return;
 		
-		LootChestType type = LootChestType.chestTypes.get(((String) cmd.args[0]).toLowerCase());
+		LootChestType type = LootChestType.chestTypes.get(cmd.<String>getArgument(0).toLowerCase());
 		if (type == null) {
 			sendError("Le type de coffre de loot spécifié n'existe pas.");
 			return;
@@ -43,7 +43,7 @@ public class LootChestCommand extends ComplexCommand {
 	
 	@Cmd (player = true)
 	public void resetTimer(CommandContext cmd) {
-		LootChest chest = getTargetLootChest(cmd.player);
+		LootChest chest = getTargetLootChest(getPlayer());
 		if (chest == null) return;
 		
 		chest.resetTimer();
@@ -52,7 +52,7 @@ public class LootChestCommand extends ComplexCommand {
 
 	@Cmd (player = true)
 	public void noTime(CommandContext cmd) {
-		LootChest chest = getTargetLootChest(cmd.player);
+		LootChest chest = getTargetLootChest(getPlayer());
 		if (chest == null) return;
 
 		chest.setTimer(0);

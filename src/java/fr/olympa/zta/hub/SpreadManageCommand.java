@@ -17,19 +17,19 @@ public class SpreadManageCommand extends ComplexCommand {
 
 	@Cmd (min = 1, args = "INTEGER", syntax = "<distance minimale>")
 	public void minDistance(CommandContext cmd) {
-		OlympaZTA.getInstance().hub.minDistance = (int) cmd.args[0];
+		OlympaZTA.getInstance().hub.minDistance = cmd.getArgument(0);
 		sendSuccess("Vous avez modifié la distance de spawn par défaut entre deux joueurs.");
 	}
 
 	@Cmd (min = 1, args = "SAFE|EASY|MEDIUM|HARD", syntax = "<région>")
 	public void addRegion(CommandContext cmd) {
-		OlympaZTA.getInstance().hub.addSpawnRegion(SpawnType.valueOf((String) cmd.args[0]));
+		OlympaZTA.getInstance().hub.addSpawnRegion(SpawnType.valueOf(cmd.getArgument(0)));
 		sendSuccess("Vous avez ajouté une région de spawn.");
 	}
 
 	@Cmd (min = 1, args = "SAFE|EASY|MEDIUM|HARD", syntax = "<région>")
 	public void removeRegion(CommandContext cmd) {
-		OlympaZTA.getInstance().hub.removeSpawnRegion(SpawnType.valueOf((String) cmd.args[0]));
+		OlympaZTA.getInstance().hub.removeSpawnRegion(SpawnType.valueOf(cmd.getArgument(0)));
 		sendSuccess("Vous avez retiré une région de spawn.");
 	}
 

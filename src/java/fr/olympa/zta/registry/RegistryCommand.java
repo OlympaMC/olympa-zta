@@ -18,7 +18,7 @@ public class RegistryCommand extends ComplexCommand {
 			sendInfo("Objets actuellement chargés dans le registre : §l" + ZTARegistry.registry.size());
 			sendInfo("Types d'objets disponible : §l" + ZTARegistry.registrable.size());
 		}else {
-			Registrable obj = getObject((int) cmd.args[0]);
+			Registrable obj = getObject(cmd.getArgument(0));
 			if (obj == null) return;
 			sendInfo("Identifiant de l'objet : §l" + obj.getID());
 			sendInfo("Type d'objet : §l" + obj.getClass().getSimpleName());
@@ -28,11 +28,11 @@ public class RegistryCommand extends ComplexCommand {
 
 	@Cmd (player = true, min = 1, syntax = "<id>", args = "INTEGER")
 	public void getItem(CommandContext cmd) {
-		Registrable obj = getObject((int) cmd.args[0]);
+		Registrable obj = getObject(cmd.getArgument(0));
 		if (obj == null) return;
 		if (obj instanceof ItemStackable) {
 			ItemStackable stackable = (ItemStackable) obj;
-			cmd.player.getInventory().addItem(stackable.createItemStack());
+			getPlayer().getInventory().addItem(stackable.createItemStack());
 			sendSuccess("Vous venez de recevoir une copie de l'objet " + obj.getID() + ". §c§lAttention ! Il est probable que ce même objet soit employé ailleurs dans le jeu, ce qui peut mener à des comportements simultanés et imprévisibles.");
 		}else {
 			sendError("L'objet de type " + obj.getClass().getSimpleName() + " ne peut pas être transformé en item.");
@@ -41,7 +41,7 @@ public class RegistryCommand extends ComplexCommand {
 
 	@Cmd (min = 1, syntax = "<id>", args = "INTEGER")
 	public void remove(CommandContext cmd) {
-		Registrable obj = getObject((int) cmd.args[0]);
+		Registrable obj = getObject(cmd.getArgument(0));
 		if (obj == null) return;
 		ZTARegistry.removeObject(obj);
 		sendSuccess("L'objet a été correctement supprimé du registre.");

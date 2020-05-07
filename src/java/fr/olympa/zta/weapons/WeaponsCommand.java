@@ -34,7 +34,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void give(CommandContext cmd) {
 		ItemStackableInstantiator<?> type = null;
 		for (ItemStackableInstantiator<?> stackable : ZTARegistry.itemStackables) {
-			if (stackable.clazz.getSimpleName().equalsIgnoreCase((String) cmd.args[0])) {
+			if (stackable.clazz.getSimpleName().equalsIgnoreCase(cmd.getArgument(0))) {
 				type = stackable;
 				break;
 			}
@@ -44,8 +44,8 @@ public class WeaponsCommand extends ComplexCommand {
 			return;
 		}
 		try {
-			cmd.player.getInventory().addItem(ZTARegistry.createItem(type.create()));
-			sendSuccess("Vous avez obtenu une instance de " + cmd.args[0] + ".");
+			getPlayer().getInventory().addItem(ZTARegistry.createItem(type.create()));
+			sendSuccess("Vous avez obtenu une instance de " + cmd.getArgument(0) + ".");
 		}catch (ReflectiveOperationException ex) {
 			sendError("Une erreur est survenue lors du don de l'objet.");
 			ex.printStackTrace();
@@ -55,13 +55,13 @@ public class WeaponsCommand extends ComplexCommand {
 	@Cmd (player = true, min = 2, args = { "light|heavy|handworked|cartridge|powder", "1|2|3|...", "true|false" }, syntax = "<type de munition> <quantité> [vide ?]")
 	public void giveAmmo(CommandContext cmd) {
 		try {
-			boolean empty = cmd.args.length > 2 ? Boolean.parseBoolean((String) cmd.args[2]) : false;
-			int amount = Integer.parseInt((String) cmd.args[1]);
-			if ("powder".equalsIgnoreCase((String) cmd.args[0])) {
-				cmd.player.getInventory().addItem(AmmoType.getPowder(amount));
-			}else cmd.player.getInventory().addItem(AmmoType.valueOf(((String) cmd.args[0]).toUpperCase()).getAmmo(amount, !empty));
+			boolean empty = cmd.args.length > 2 ? Boolean.parseBoolean(cmd.getArgument(2)) : false;
+			int amount = Integer.parseInt(cmd.getArgument(1));
+			if ("powder".equalsIgnoreCase(cmd.getArgument(0))) {
+				getPlayer().getInventory().addItem(AmmoType.getPowder(amount));
+			}else getPlayer().getInventory().addItem(AmmoType.valueOf(cmd.<String>getArgument(0).toUpperCase()).getAmmo(amount, !empty));
 		}catch (NumberFormatException ex) {
-			sendError(cmd.args[1] + " n'est pas un nombre valide.");
+			sendError(cmd.getArgument(1) + " n'est pas un nombre valide.");
 		}catch (IllegalArgumentException ex) {
 			sendError("Ce type de munition n'existe pas.");
 		}
@@ -70,15 +70,15 @@ public class WeaponsCommand extends ComplexCommand {
 	@Cmd (player = true, min = 1, args = { "civil|gangster|antiriot|military", "helmet|chestplate|leggings|boots" })
 	public void giveArmor(CommandContext cmd) {
 		try {
-			ArmorType armor = ArmorType.valueOf(((String) cmd.args[0]).toUpperCase());
+			ArmorType armor = ArmorType.valueOf(cmd.<String>getArgument(0).toUpperCase());
 			if (cmd.args.length == 1) {
 				for (ArmorSlot slot : ArmorSlot.values()) {
-					cmd.player.getInventory().addItem(armor.get(slot));
+					getPlayer().getInventory().addItem(armor.get(slot));
 				}
 				sendSuccess("Vous avez reçu l'équipement §o" + armor.getName() + "§r§a complet !");
 			}else {
 				try {
-					cmd.player.getInventory().addItem(armor.get(ArmorSlot.valueOf(((String) cmd.args[1]).toUpperCase())));
+					getPlayer().getInventory().addItem(armor.get(ArmorSlot.valueOf(cmd.<String>getArgument(1).toUpperCase())));
 					sendSuccess("Vous avez reçu une pièce de l'équipement §o" + armor.getName() + "§r§a !");
 				}catch (IllegalArgumentException ex) {
 					sendError("Cet emplacement n'existe pas.");

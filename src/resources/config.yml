@@ -37,3 +37,6 @@ spawn: world 5632.5 5.0 5632.5 180 0
 spawnRegionTypes: [EASY]
 
 firstBuildSchem: "tente.schem"
+
+bank: [0, 1]
+tomHookNPC: [2]

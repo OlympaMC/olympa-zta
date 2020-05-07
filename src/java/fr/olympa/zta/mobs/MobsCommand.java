@@ -32,12 +32,12 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd (player = true)
 	public void spawnZombie(CommandContext cmd) {
-		Mobs.spawnCommonZombie(cmd.player.getLocation());
+		Mobs.spawnCommonZombie(getPlayer().getLocation());
 	}
 
 	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")
 	public void removeZombies(CommandContext cmd) {
-		boolean kill = cmd.args.length == 0 ? false : cmd.args[0].equals("kill");
+		boolean kill = cmd.args.length == 0 ? false : cmd.getArgument(0).equals("kill");
 		int amount = 0;
 		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
 			if (kill) {
@@ -64,13 +64,13 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd (min = 1, args = "INTEGER")
 	public void setMaximumWorldEntities(CommandContext cmd) {
-		OlympaZTA.getInstance().mobSpawning.maxEntities = (int) cmd.args[0];
+		OlympaZTA.getInstance().mobSpawning.maxEntities = cmd.getArgument(0);
 		sendSuccess("Vous avez modifié la quantité maximale d'entités sur le monde.");
 	}
 
 	@Cmd (min = 1, args = "INTEGER")
 	public void setMaximumChunkEntities(CommandContext cmd) {
-		OlympaZTA.getInstance().mobSpawning.criticalEntitiesPerChunk = (int) cmd.args[0];
+		OlympaZTA.getInstance().mobSpawning.criticalEntitiesPerChunk = cmd.getArgument(0);
 		sendSuccess("Vous avez modifié la quantité maximale d'entités par chunk.");
 	}
 
