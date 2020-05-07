@@ -18,7 +18,7 @@ public class BulletRemovalHandler extends ChannelDuplexHandler{
 			PacketPlayOutSpawnEntity packet = (PacketPlayOutSpawnEntity) msg;
 			Field k = PacketPlayOutSpawnEntity.class.getDeclaredField("k"); // field qui contient le type d'entité
 			k.setAccessible(true);
-			if (k.get(packet) == EntityTypes.SNOWBALL) return; // return pour ne pas call write (annule le packet)
+			if (k.get(packet) == EntityTypes.LLAMA_SPIT) return; // return pour ne pas call write (annule le packet)
 		}
 		super.write(ctx, msg, promise);
 	};

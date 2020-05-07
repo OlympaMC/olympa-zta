@@ -4,12 +4,17 @@ import java.io.File;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.hook.ProtocolAction;
@@ -76,9 +81,12 @@ import fr.olympa.zta.weapons.knives.KnifeBatte;
 import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.CitizensEnableEvent;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitInfo;
 
-public class OlympaZTA extends OlympaAPIPlugin {
+public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 	private static OlympaZTA instance;
 
@@ -97,6 +105,8 @@ public class OlympaZTA extends OlympaAPIPlugin {
 	public HubManager hub;
 	public ClansManagerZTA clansManager;
 	
+	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
+
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -115,6 +125,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(itemsListener, this);
 		pluginManager.registerEvents(hub, this);
+		pluginManager.registerEvents(this, this);
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
@@ -130,7 +141,7 @@ public class OlympaZTA extends OlympaAPIPlugin {
 				Files.copy(getResource(schemName), file.toPath());
 			}
 			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(file), this);
-			CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TomHookTrait.class).withName("plots"));
+			checkForTrait(TomHookTrait.class, "plots", getConfig().getIntegerList("tomHookNPC"));
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots.");
@@ -173,22 +184,36 @@ public class OlympaZTA extends OlympaAPIPlugin {
 			mobsListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 
-		CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BankTrait.class).withName("bank"));
+		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 		ProtocolAction protocolSupport = OlympaCore.getInstance().getProtocolSupport();
 		if (protocolSupport != null) {
 			protocolSupport.disable1_8();
 		}
 	}
 
+	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {
+		if (CitizensAPI.getTraitFactory().getTraitClass(name) == null) CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(trait).withName(name));
+		npcs.forEach(x -> traitsToAdd.put(x, trait));
+	}
+
+	@EventHandler
+	public void onCitizensEnable(CitizensEnableEvent e) {
+		traitsToAdd.forEach((npcID, trait) -> {
+			NPC npc = CitizensAPI.getNPCRegistry().getById(npcID);
+			if (!npc.hasTrait(trait)) npc.addTrait(trait);
+		});
+	}
+
 	@Override
 	public void onDisable(){
-		HandlerList.unregisterAll(this);
+		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
 

@@ -4,7 +4,9 @@ import java.util.Random;
 
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.entity.LlamaSpit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -26,23 +28,31 @@ public abstract class Bullet{
 	}
 	
 	public void launchProjectile(Player p){
-		Vector velocity = p.getLocation().getDirection().multiply(gun.bulletSpeed.getValue());
+		float speed = gun.bulletSpeed.getValue();
+		Vector velocity = p.getLocation().getDirection().multiply(speed);
+
 		float bulletSpread = gun.bulletSpread.getValue();
 		if (bulletSpread != 0) {
 			float bulletSpreadHalf = bulletSpread / 2;
 			velocity.add(new Vector(random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf));
 		}
-		Snowball projectile = p.launchProjectile(Snowball.class, velocity);
+
+		boolean highVelocity = speed > 4;
+		Projectile projectile = p.launchProjectile(highVelocity ? LlamaSpit.class : Snowball.class, velocity);
 		projectile.setMetadata("bullet", metadata);
-		new BukkitRunnable(){
-			World world = projectile.getWorld();
-			public void run(){
-				if (projectile.isValid()) {
-					Vector velocity = projectile.getVelocity();
-					world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
-				}else cancel();
-			}
-		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 0, 4);
+
+		if (highVelocity) {
+			new BukkitRunnable() {
+				World world = projectile.getWorld();
+
+				public void run() {
+					if (projectile.isValid()) {
+						Vector velocity = projectile.getVelocity();
+						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
+					}else cancel();
+				}
+			}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 0, 4);
+		}
 	}
 	
 	/**
