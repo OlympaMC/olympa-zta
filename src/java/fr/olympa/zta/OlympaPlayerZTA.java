@@ -101,7 +101,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
 			clan = OlympaZTA.getInstance().clansManager.getClan(resultSet.getInt("clan"));
-			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"));
+			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true);
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

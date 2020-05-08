@@ -21,8 +21,8 @@ public class CivilBlockShop extends BlockShop {
 			new Article<>(Material.FLOWER_POT, 30)
 			);
 	
-	protected CivilBlockShop() {
-		super("civilblockshop", "Magasin de blocs", DyeColor.CYAN, materials);
+	public CivilBlockShop() {
+		super("blockshopcivil", "Magasin de blocs", DyeColor.CYAN, materials);
 	}
 
 }

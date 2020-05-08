@@ -8,6 +8,8 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -36,8 +38,8 @@ public class PlayerPlot {
 	private int min = -1;
 	private int max = -1;
 
-	PlayerPlot(int id, int x, int z, long owner, int chests, int level) {
-		this(id, new PlayerPlotLocation(x, z), owner);
+	PlayerPlot(int id, PlayerPlotLocation location, long owner, int chests, int level) {
+		this(id, location, owner);
 		this.chests = chests;
 		setLevel(level, false);
 	}
@@ -139,6 +141,14 @@ public class PlayerPlot {
 				int x = random.nextInt(sizePerLevel[level - 1] - schematic.width);
 				int z = random.nextInt(sizePerLevel[level - 1] - schematic.length);
 				schematic.paste(loc.toLocation().add(min + x, 1, min + z), true);
+
+				Block sign = loc.toLocation().add(3, 1, 2).getBlock();
+				sign.setType(Material.OAK_SIGN);
+				((org.bukkit.block.data.type.Sign) sign.getBlockData()).setRotation(BlockFace.NORTH_NORTH_EAST);
+				Sign signState = (Sign) sign.getState();
+				signState.setLine(1, "Parcelle de");
+				signState.setLine(2, AccountProvider.getPlayerInformations(owner).getName());
+				signState.update();
 			}else {
 				try {
 					OlympaZTA.getInstance().plotsManager.updateLevel(this, level);

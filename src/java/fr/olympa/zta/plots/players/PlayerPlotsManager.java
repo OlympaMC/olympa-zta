@@ -43,11 +43,12 @@ public class PlayerPlotsManager implements Listener {
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
 	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + tableName + " WHERE `plot` = ?");
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
+	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` WHERE `id` = ?");
 
 	private Map<OlympaPlayerZTA, List<PlayerPlot>> invitations = new HashMap<>();
 
-	private Map<Integer, PlayerPlot> plotsByID = new HashMap<>();
-	private Map<PlayerPlotLocation, PlayerPlot> plotsByPosition = new HashMap<>();
+	private Map<Integer, InternalPlotDatas> plotsByID = new HashMap<>();
+	private Map<PlayerPlotLocation, InternalPlotDatas> plotsByPosition = new HashMap<>();
 	private World worldCrea;
 	private Schematic schematic;
 
@@ -78,21 +79,13 @@ public class PlayerPlotsManager implements Listener {
 
 		OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
 			try {
-				ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
+				ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT `id`, `x`, `z` FROM " + tableName);
 				while (resultSet.next()) {
-					try {
-						PlayerPlot plot = new PlayerPlot(resultSet.getInt("id"), resultSet.getInt("x"), resultSet.getInt("z"), resultSet.getLong("owner"), resultSet.getInt("level"), resultSet.getInt("chests"));
-						addPlot(plot);
-						PreparedStatement statement = getPlotPlayers.getStatement();
-						statement.setInt(1, plot.getID());
-						ResultSet playersResultSet = statement.executeQuery();
-						while (playersResultSet.next()) {
-							plot.getPlayers().add(playersResultSet.getLong("player_id"));
-						}
-					}catch (Exception e) {
-						e.printStackTrace();
-						OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'un plot.");
-					}
+					int id = resultSet.getInt("id");
+					PlayerPlotLocation location = new PlayerPlotLocation(resultSet.getInt("x"), resultSet.getInt("z"));
+					InternalPlotDatas plot = new InternalPlotDatas(id, location);
+					plotsByPosition.put(location, plot);
+					plotsByID.put(id, plot);
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -108,17 +101,31 @@ public class PlayerPlotsManager implements Listener {
 		return schematic;
 	}
 
-	private void addPlot(PlayerPlot plot) {
-		plotsByID.put(plot.getID(), plot);
-		plotsByPosition.put(plot.getLocation(), plot);
+	private void addPlot(InternalPlotDatas plot) {
+		plotsByID.put(plot.id, plot);
+		plotsByPosition.put(plot.loc, plot);
 	}
+	
+	public PlayerPlot getPlot(int id, boolean load) throws SQLException {
+		InternalPlotDatas plotDatas = plotsByID.get(id);
+		if (plotDatas == null) throw new NullPointerException("Les données primaires avec l'ID " + id + " n'ont pas été chargées.");
 
-	public PlayerPlot getPlot(PlayerPlotLocation point) {
-		return plotsByPosition.get(point);
-	}
+		if (load && plotDatas.loadedPlot == null) {
+			PreparedStatement statement = loadPlot.getStatement();
+			statement.setInt(1, id);
+			ResultSet resultSet = statement.executeQuery();
+			if (!resultSet.first()) throw new NullPointerException("Le plot du joueur a été supprimé de la base de données.");
+			plotDatas.loadedPlot = new PlayerPlot(id, plotDatas.loc, resultSet.getLong("owner"), resultSet.getInt("chests"), resultSet.getInt("level"));
 
-	public PlayerPlot getPlot(int id) {
-		return plotsByID.get(id);
+			statement = getPlotPlayers.getStatement();
+			statement.setInt(1, id);
+			ResultSet playersResultSet = statement.executeQuery();
+			while (playersResultSet.next()) {
+				plotDatas.loadedPlot.getPlayers().add(playersResultSet.getLong("player_id"));
+			}
+		}
+
+		return plotDatas.loadedPlot;
 	}
 
 	public List<PlayerPlot> getInvitations(OlympaPlayerZTA player) {
@@ -150,7 +157,7 @@ public class PlayerPlotsManager implements Listener {
 		resultSet.next();
 		PlayerPlot plot = new PlayerPlot(resultSet.getInt(1), location, owner.getId());
 		plot.setLevel(1, true);
-		addPlot(plot);
+		addPlot(new InternalPlotDatas(plot));
 		owner.setPlot(plot);
 		resultSet.close();
 		return plot;
@@ -214,7 +221,8 @@ public class PlayerPlotsManager implements Listener {
 		PlayerPlotLocation location = PlayerPlotLocation.get(loc);
 		if (location == null) return null; // road
 
-		return getPlot(location);
+		InternalPlotDatas plotDatas = plotsByPosition.get(location);
+		return plotDatas == null ? null : plotDatas.loadedPlot;
 	}
 
 	private boolean blockEvent(Player p, Block block, boolean place) {
@@ -238,6 +246,23 @@ public class PlayerPlotsManager implements Listener {
 		if (e.getClickedBlock() == null) return;
 		PlayerPlot plot = getPlot(e.getClickedBlock().getLocation());
 		if (plot != null) e.setCancelled(plot.onInteract(e));
+	}
+
+	class InternalPlotDatas {
+		final int id;
+		final PlayerPlotLocation loc;
+		PlayerPlot loadedPlot;
+
+		InternalPlotDatas(int id, PlayerPlotLocation loc) {
+			this.id = id;
+			this.loc = loc;
+		}
+
+		InternalPlotDatas(PlayerPlot plot) {
+			this.id = plot.getID();
+			this.loc = plot.getLocation();
+			loadedPlot = plot;
+		}
 	}
 
 }

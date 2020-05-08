@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.RegionManager.TrackedRegion;
 import fr.olympa.api.scoreboard.sign.DynamicLine;
 import fr.olympa.api.scoreboard.sign.FixedLine;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
@@ -42,6 +44,9 @@ import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.plots.players.PlayerPlotsManager;
 import fr.olympa.zta.plots.players.TomHookTrait;
+import fr.olympa.zta.plots.shops.CivilBlockShop;
+import fr.olympa.zta.plots.shops.CorporationBlockShop;
+import fr.olympa.zta.plots.shops.FraterniteBlockShop;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
@@ -174,17 +179,25 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		scoreboards = new ScoreboardManager(this, "§6Olympa §e§lZTA", Arrays.asList(
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eRang : §6" + x.getGroupNameColored()),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§8Rang: §b" + x.getGroupNameColored()),
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eNombre de mobs : §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
+				new DynamicLine<OlympaPlayerZTA>(x -> "§8Nombre de mobs: §6" + mobSpawning.world.getLivingEntities().size(), 1, 0),
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§eMonnaie : §6" + x.getGameMoney().getFormatted(), 1, 0)));
+				new DynamicLine<OlympaPlayerZTA>(x -> {
+					SpawnType spawnType = SpawnType.getSpawnType(x.getPlayer().getLocation().getChunk());
+					return "§8Radar: " + spawnType == null ? "§c§kdddddddd" : spawnType.name;
+				}, 1, 0),
+				FixedLine.EMPTY_LINE,
+				new DynamicLine<OlympaPlayerZTA>(x -> "§8Monnaie: §6" + x.getGameMoney().getFormatted(), 1, 0)));
 
 		for (Player p : getServer().getOnlinePlayers()) {
 			mobsListener.onJoin(new PlayerJoinEvent(p.getPlayer(), "random join message"));
 		}
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
+		checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
+		checkForTrait(FraterniteBlockShop.class, "blockshopfraternite", getConfig().getIntegerList("blockShopFraternite"));
+		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");

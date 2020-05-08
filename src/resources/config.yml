@@ -40,3 +40,6 @@ firstBuildSchem: "tente.schem"
 
 bank: [0, 1]
 tomHookNPC: [2]
+blockShopCivil: [3]
+blockShopFraternite: [4]
+blockShopCorporation: [5]

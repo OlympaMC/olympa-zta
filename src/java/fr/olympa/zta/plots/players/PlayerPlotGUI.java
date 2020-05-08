@@ -39,7 +39,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 		super("Tom Hook", InventoryType.DISPENSER);
 		this.player = player;
 		this.plot = player.getPlot();
-		this.isChief = plot.getOwner() == player.getId();
+		this.isChief = plot == null ? false : plot.getOwner() == player.getId();
 
 		setState();
 	}
@@ -101,11 +101,12 @@ public class PlayerPlotGUI extends OlympaGUI {
 				plot.setLevel(plot.getLevel() + 1, true);
 				setState();
 			}else if (slot == 6) {
+				Prefix.DEFAULT.sendMessage(p, "Entrez le nom du joueur que vous souhaitez inviter.");
 				new TextEditor<>(p, (target) -> {
 					manager.invite(target, plot);
 					Prefix.DEFAULT_GOOD.sendMessage(target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
 					create(p);
-				}, null, false, new OlympaPlayerParser<OlympaPlayerZTA>()).enterOrLeave(p);
+				}, () -> create(p), false, new OlympaPlayerParser<OlympaPlayerZTA>()).enterOrLeave(p);
 			}else if (slot == 8) {
 				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), (x) -> PlayerPlotGUI.super.create(p)) {
 
@@ -153,6 +154,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 				p.teleport(plot.getLocation().toLocation().add(0, 2, 0));
 			}else if (click.isLeftClick()) {
 				manage = true;
+				inv.setItem(4, null);
 				setState();
 			}
 		}
