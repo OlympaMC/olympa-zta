@@ -142,9 +142,13 @@ public class PlayerPlot {
 				int z = random.nextInt(sizePerLevel[level - 1] - schematic.length);
 				schematic.paste(loc.toLocation().add(min + x, 1, min + z), true);
 
-				Block sign = loc.toLocation().add(3, 1, 2).getBlock();
+				Block sign = loc.toLocation().add(16, 1, 11).getBlock();
 				sign.setType(Material.OAK_SIGN);
-				((org.bukkit.block.data.type.Sign) sign.getBlockData()).setRotation(BlockFace.NORTH_NORTH_EAST);
+
+				org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) sign.getBlockData();
+				signData.setRotation(BlockFace.NORTH_NORTH_EAST);
+				sign.setBlockData(signData);
+
 				Sign signState = (Sign) sign.getState();
 				signState.setLine(1, "Parcelle de");
 				signState.setLine(2, AccountProvider.getPlayerInformations(owner).getName());

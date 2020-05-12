@@ -16,6 +16,7 @@ import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.plots.clans.ClanPlot;
 
 public class ClanZTA extends Clan<ClanZTA> {
 
@@ -39,6 +40,8 @@ public class ClanZTA extends Clan<ClanZTA> {
 		return joiner.toString();
 	}, 1, 0);
 	
+	public ClanPlot cachedPlot;
+
 	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize, long created) {
 		super(manager, id, name, chief, maxSize, created);
 	}

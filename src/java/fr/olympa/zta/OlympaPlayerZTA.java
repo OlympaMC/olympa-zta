@@ -31,7 +31,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.put("ender_chest", "VARBINARY(8000) NULL")
 			.put("money", "DOUBLE NULL DEFAULT 0")
 			.put("clan", "INT NULL DEFAULT NULL")
-			.put("plot", "INT NULL DEFAULT NULL")
+			.put("plot", "INT NULL DEFAULT -1")
 			.build();
 
 	private int bankSlots = 9;

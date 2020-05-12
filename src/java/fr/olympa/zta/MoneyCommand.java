@@ -28,7 +28,7 @@ public class MoneyCommand extends ComplexCommand {
 			if (player != null) {
 				sendSuccess("Vous disposez de " + getGameMoney(getPlayer()).getFormatted());
 			}else sendImpossibleWithConsole();
-		}else if (ZTAPermissions.MONEY_COMMAND_OTHER.hasPermission(getSender())) {
+		}else if (ZTAPermissions.MONEY_COMMAND_OTHER.hasSenderPermission(getSender())) {
 			sendSuccess("Le joueur dispose de " + getGameMoney(cmd.getArgument(0)).getFormatted());
 		}else sendDoNotHavePermission();
 	}

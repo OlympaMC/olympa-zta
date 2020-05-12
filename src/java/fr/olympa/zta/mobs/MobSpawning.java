@@ -213,6 +213,7 @@ public class MobSpawning {
 		public final Color color;
 		public final String name;
 		public final String description;
+		public final String title;
 
 		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, String title, Color color, String name, String description) {
 			this.minDistanceSquared = minDistance ^ 2;
@@ -220,6 +221,7 @@ public class MobSpawning {
 			this.color = color;
 			this.name = name;
 			this.description = description;
+			this.title = title;
 
 			texts = TextComponent.fromLegacyText("§8§k§lgdn§r§7 vous entrez dans une " + title + "§r §8§k§lndg");
 

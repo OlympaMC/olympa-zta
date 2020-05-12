@@ -43,7 +43,7 @@ public class PlayerPlotsManager implements Listener {
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
 	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + tableName + " WHERE `plot` = ?");
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
-	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` WHERE `id` = ?");
+	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM + " + tableName + " WHERE `id` = ?");
 
 	private Map<OlympaPlayerZTA, List<PlayerPlot>> invitations = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class PlayerPlotsManager implements Listener {
 	private World worldCrea;
 	private Schematic schematic;
 
-	public PlayerPlotsManager(File file) throws SQLException {
+	public PlayerPlotsManager(File schematicFile) throws SQLException {
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," +
 				"  `x` INT NOT NULL," +
@@ -67,12 +67,13 @@ public class PlayerPlotsManager implements Listener {
 		worldCrea.setSpawnLocation(0, worldCrea.getHighestBlockYAt(0, 0), 0);
 		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 5);
 		worldCrea.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+		worldCrea.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
 
 		new PlotsCommand(this).register();
 		
 		try {
-			schematic = Schematic.load(file);
+			schematic = Schematic.load(schematicFile);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -107,6 +108,7 @@ public class PlayerPlotsManager implements Listener {
 	}
 	
 	public PlayerPlot getPlot(int id, boolean load) throws SQLException {
+		if (id == -1) return null;
 		InternalPlotDatas plotDatas = plotsByID.get(id);
 		if (plotDatas == null) throw new NullPointerException("Les données primaires avec l'ID " + id + " n'ont pas été chargées.");
 
@@ -130,8 +132,7 @@ public class PlayerPlotsManager implements Listener {
 
 	public List<PlayerPlot> getInvitations(OlympaPlayerZTA player) {
 		List<PlayerPlot> invit = invitations.get(player);
-		if (invit == null) invit = Collections.EMPTY_LIST;
-		return invit;
+		return invit == null ? Collections.EMPTY_LIST : invit;
 	}
 
 	public void invite(OlympaPlayerZTA player, PlayerPlot plot) {

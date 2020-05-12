@@ -37,7 +37,7 @@ public abstract class AbstractShop<T> extends Trait {
 
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent e) {
-		gui.create(e.getClicker());
+		if (e.getNPC() == super.npc) gui.create(e.getClicker());
 	}
 
 	class ShopGUI extends PagedGUI<Article<T>> {

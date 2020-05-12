@@ -37,10 +37,13 @@ import fr.olympa.zta.weapons.guns.accessories.Cannon;
 import fr.olympa.zta.weapons.guns.accessories.Scope;
 import fr.olympa.zta.weapons.guns.accessories.Stock;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class Gun extends Weapon {
 
-	private static DecimalFormat format = new DecimalFormat("##.##");
+	private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
+	private static DecimalFormat timeFormat = new DecimalFormat("##.#");
 
 	public static final String TABLE_NAME = "`zta_guns`";
 
@@ -88,8 +91,8 @@ public abstract class Gun extends Weapon {
 	public void updateItemLore(ItemStack item, boolean accessories) {
 		ItemMeta im = item.getItemMeta();
 		List<String> lore = new ArrayList<>(Arrays.asList(
-				getFeatureLoreLine("Cadence de tir", format.format(getFireRate() / 20D) + "s"),
-				getFeatureLoreLine("Temps de recharge", format.format(getChargeTime() / 20D) + "s"),
+				getFeatureLoreLine("Cadence de tir", attributeFormat.format(getFireRate() / 20D) + "s"), getFeatureLoreLine("Temps de recharge", attributeFormat.format(getChargeTime() / 20D)
+						+ "s"),
 				getFeatureLoreLine("Munitions", getAmmoType().getName()),
 				getFeatureLoreLine("Précision", getAccuracy().getName()),
 				getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
@@ -282,15 +285,42 @@ public abstract class Gun extends Weapon {
 			toCharge = 1;
 		}else toCharge = Math.min(max - ammos, availableAmmos);
 
-		reloading = Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
-			reloading = null;
-			ammos += getAmmoType().removeAmmos(p, toCharge);
-			if (ammos != 0) ready = true;
-			updateItemName(item);
-			playChargeCompleteSound(p.getLocation());
+		reloading = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), new Runnable() {
+			final short max = 15;
+			final char character = '█';
 
-			if (isOneByOneCharge()) reload(p, item); // relancer une charge
-		}, (int) chargeTime.getValue());
+			short time = (short) chargeTime.getValue();
+			float add = (float) max / (float) time;
+			float current = 0;
+
+			@Override
+			public void run() {
+				if (time == 0) {
+					reloading.cancel();
+					reloading = null;
+					ammos += getAmmoType().removeAmmos(p, toCharge);
+					if (ammos != 0) ready = true;
+					updateItemName(item);
+					playChargeCompleteSound(p.getLocation());
+
+					if (isOneByOneCharge()) reload(p, item); // relancer une charge
+					return;
+				}
+				StringBuilder status = new StringBuilder("§bRechargement... ");
+				boolean changed = false;
+				for (int i = 0; i < max; i++) {
+					if (i >= current && !changed) {
+						status.append("§c");
+						changed = true;
+					}
+					status.append(character);
+				}
+				status.append("§b " + timeFormat.format(time / 20D) + "s");
+				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(status.toString()));
+				current += add;
+				time--;
+			}
+		}, 0, 1);
 
 		updateItemName(item);
 		playChargeSound(p.getLocation());
