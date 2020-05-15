@@ -57,7 +57,7 @@ public abstract class AbstractShop<T> extends Trait {
 			if (player.getGameMoney().withdraw(existing.price)) {
 				AbstractShop.this.click(existing.object, p);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
-			}
+			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 		}
 
 	}

@@ -16,7 +16,7 @@ import fr.olympa.api.editor.parsers.OlympaPlayerParser;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -113,7 +113,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
 					Prefix.DEFAULT_GOOD.sendMessage(target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
 					create(p);
-				}, () -> create(p), false, new OlympaPlayerParser<OlympaPlayerZTA>()).enterOrLeave();
+				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
 				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), (x) -> PlayerPlotGUI.super.create(p)) {
 

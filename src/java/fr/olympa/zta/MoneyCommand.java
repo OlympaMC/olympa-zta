@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.objects.OlympaMoney;
+import fr.olympa.api.economy.OlympaMoney;
 
 public class MoneyCommand extends ComplexCommand {
 

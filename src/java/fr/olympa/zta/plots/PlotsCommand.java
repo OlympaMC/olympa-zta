@@ -2,6 +2,7 @@ package fr.olympa.zta.plots;
 
 import java.sql.SQLException;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.complex.Cmd;
@@ -9,7 +10,9 @@ import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.editor.RegionEditor;
 import fr.olympa.api.editor.TextEditor;
+import fr.olympa.api.editor.WaitBlockClick;
 import fr.olympa.api.editor.parsers.NumberParser;
+import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
@@ -54,15 +57,26 @@ public class PlotsCommand extends ComplexCommand {
 	@Cmd (player = true)
 	public void createClanPlot(CommandContext cmd) {
 		Player p = player;
+		Runnable cancel = /*() -> Prefix.DEFAULT_BAD.sendMessage(p, "Tu as annulé la création d'une parcelle de clan.")*/ null;
+		Prefix.INFO.sendMessage(p, "Sélectionne la région de la parcelle.");
 		new RegionEditor(p, (region) -> {
 			if (region == null) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "La région sélectionnée n'est pas correcte.");
 				return;
 			}
+			Prefix.INFO.sendMessage(p, "Entre le prix de la parcelle.");
 			new TextEditor<>(p, (price) -> {
-				ClanPlot plot = OlympaZTA.getInstance().clanPlotsManager.create(region, price);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as créé la parcelle de clan, ID " + plot.getID());
-			}, () -> Prefix.DEFAULT_BAD.sendMessage(p, "Tu as annulé la création d'une parcelle de clan."), false, new NumberParser<>(Integer.class, true, true)).enterOrLeave();
+				Prefix.INFO.sendMessage(p, "Clique sur la pancarte utilisée pour louer la parcelle.");
+				new WaitBlockClick(p, (block) -> {
+					try {
+						ClanPlot plot = OlympaZTA.getInstance().clanPlotsManager.create(region, price, block);
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as créé la parcelle de clan, ID " + plot.getID());
+					}catch (Exception e) {
+						e.printStackTrace();
+						Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de la création de la parcelle.");
+					}
+				}, ItemUtils.item(Material.STICK, "§aSélectionner le bloc"), (block) -> block.getType().name().endsWith("_SIGN")).enterOrLeave();
+			}, cancel, false, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave();
 		}).enterOrLeave();
 	}
 

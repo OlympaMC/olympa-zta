@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.clans.Clan;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.sign.DynamicLine;
 import fr.olympa.api.scoreboard.sign.FixedLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.plots.clans.ClanPlot;
@@ -42,8 +42,8 @@ public class ClanZTA extends Clan<ClanZTA> {
 	
 	public ClanPlot cachedPlot;
 
-	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize, long created) {
-		super(manager, id, name, chief, maxSize, created);
+	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize, double money, long created) {
+		super(manager, id, name, chief, maxSize, money, created);
 	}
 
 	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize) {

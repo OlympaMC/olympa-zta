@@ -1,4 +1,4 @@
-package fr.olympa.zta.plots.shops;
+package fr.olympa.zta.plots.players.shops;
 
 import java.util.Arrays;
 import java.util.List;

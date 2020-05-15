@@ -17,8 +17,8 @@ public class ClansManagerZTA extends ClansManager<ClanZTA> {
 	}
 
 	@Override
-	protected ClanZTA provideClan(int id, String name, long chief, int maxSize, long created, ResultSet resultSet) {
-		return new ClanZTA(this, id, name, chief, maxSize, created);
+	protected ClanZTA provideClan(int id, String name, long chief, int maxSize, double money, long created, ResultSet resultSet) {
+		return new ClanZTA(this, id, name, chief, maxSize, money, created);
 	}
 
 	@Override

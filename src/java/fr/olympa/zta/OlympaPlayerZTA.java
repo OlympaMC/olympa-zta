@@ -15,8 +15,8 @@ import org.bukkit.scheduler.BukkitTask;
 import com.google.common.collect.ImmutableMap;
 
 import fr.olympa.api.clans.ClanPlayerInterface;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.zta.clans.ClanZTA;
@@ -74,6 +74,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		this.enderChest = enderChest;
 	}
 
+	@Override
 	public OlympaMoney getGameMoney() {
 		return money;
 	}

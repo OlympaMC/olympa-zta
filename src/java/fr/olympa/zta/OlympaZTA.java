@@ -43,9 +43,9 @@ import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.plots.clans.ClanPlotsManager;
 import fr.olympa.zta.plots.players.PlayerPlotsManager;
 import fr.olympa.zta.plots.players.TomHookTrait;
-import fr.olympa.zta.plots.shops.CivilBlockShop;
-import fr.olympa.zta.plots.shops.CorporationBlockShop;
-import fr.olympa.zta.plots.shops.FraterniteBlockShop;
+import fr.olympa.zta.plots.players.shops.CivilBlockShop;
+import fr.olympa.zta.plots.players.shops.CorporationBlockShop;
+import fr.olympa.zta.plots.players.shops.FraterniteBlockShop;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
@@ -134,6 +134,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
+
+			try {
+				pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				getLogger().severe("Une erreur est survenue lors de l'initialisation du système de parcelles de clans.");
+			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans.");
@@ -150,13 +157,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots joueurs.");
-		}
-
-		try {
-			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(), this);
-		}catch (Exception ex) {
-			ex.printStackTrace();
-			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans.");
 		}
 
 		new LootChestCommand().register();
