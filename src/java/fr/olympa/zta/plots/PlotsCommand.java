@@ -17,10 +17,7 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
-import fr.olympa.zta.plots.clans.ClanPlot;
-import fr.olympa.zta.plots.players.PlayerPlotGUI;
-import fr.olympa.zta.plots.players.PlayerPlotLocation;
-import fr.olympa.zta.plots.players.PlayerPlotsManager;
+import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class PlotsCommand extends ComplexCommand {
 

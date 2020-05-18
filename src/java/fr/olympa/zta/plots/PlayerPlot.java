@@ -1,4 +1,4 @@
-package fr.olympa.zta.plots.players;
+package fr.olympa.zta.plots;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

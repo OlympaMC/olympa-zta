@@ -16,7 +16,7 @@ import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.plots.clans.ClanPlot;
+import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTA extends Clan<ClanZTA> {
 

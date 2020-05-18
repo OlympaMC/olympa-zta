@@ -20,7 +20,7 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.zta.clans.ClanZTA;
-import fr.olympa.zta.plots.players.PlayerPlot;
+import fr.olympa.zta.plots.PlayerPlot;
 
 public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA> {
 

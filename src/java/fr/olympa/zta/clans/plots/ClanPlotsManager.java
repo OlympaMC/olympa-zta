@@ -1,4 +1,4 @@
-package fr.olympa.zta.plots.clans;
+package fr.olympa.zta.clans.plots;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;

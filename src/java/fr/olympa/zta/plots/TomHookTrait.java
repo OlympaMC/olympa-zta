@@ -1,4 +1,4 @@
-package fr.olympa.zta.plots.players;
+package fr.olympa.zta.plots;
 
 import org.bukkit.event.EventHandler;
 

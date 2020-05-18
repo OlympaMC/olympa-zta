@@ -15,7 +15,7 @@ import fr.olympa.api.clans.gui.ClanManagementGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.plots.clans.ClanPlot;
+import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
 

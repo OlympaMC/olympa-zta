@@ -1,4 +1,4 @@
-package fr.olympa.zta.plots.players;
+package fr.olympa.zta.plots;
 
 import java.io.File;
 import java.sql.PreparedStatement;
@@ -32,7 +32,6 @@ import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.plots.PlotsCommand;
 
 public class PlayerPlotsManager implements Listener {
 	
