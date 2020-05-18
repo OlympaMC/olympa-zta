@@ -11,6 +11,7 @@ import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.editor.RegionEditor;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.editor.WaitBlockClick;
+import fr.olympa.api.editor.WaitClick;
 import fr.olympa.api.editor.parsers.NumberParser;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
@@ -68,13 +69,16 @@ public class PlotsCommand extends ComplexCommand {
 			new TextEditor<>(p, (price) -> {
 				Prefix.INFO.sendMessage(p, "Clique sur la pancarte utilisée pour louer la parcelle.");
 				new WaitBlockClick(p, (block) -> {
-					try {
-						ClanPlot plot = OlympaZTA.getInstance().clanPlotsManager.create(region, price, block);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as créé la parcelle de clan, ID " + plot.getID());
-					}catch (Exception e) {
-						e.printStackTrace();
-						Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de la création de la parcelle.");
-					}
+					Prefix.INFO.sendMessage(p, "Déplace-toi à l'endroit où les joueurs spawneront.");
+					new WaitClick(p, ItemUtils.item(Material.DIAMOND, "§bValider le point de spawn"), () -> {
+						try {
+							ClanPlot plot = OlympaZTA.getInstance().clanPlotsManager.create(region, price, block, p.getLocation());
+							Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as créé la parcelle de clan, ID " + plot.getID());
+						}catch (Exception e) {
+							e.printStackTrace();
+							Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de la création de la parcelle.");
+						}
+					}).enterOrLeave();
 				}, ItemUtils.item(Material.STICK, "§aSélectionner le bloc"), (block) -> block.getType().name().endsWith("_SIGN")).enterOrLeave();
 			}, cancel, false, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave();
 		}).enterOrLeave();

@@ -103,6 +103,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	private MobsListener mobsListener = new MobsListener();
 	private ItemsListener itemsListener = new ItemsListener();
 
+	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
 	public MobSpawning mobSpawning;
@@ -123,14 +124,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		DynmapLink.initialize();
 
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
+		teleportationManager = new TeleportationManager();
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
+		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(weaponListener, this);
 		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(itemsListener, this);
 		pluginManager.registerEvents(hub, this);
-		pluginManager.registerEvents(this, this);
+		pluginManager.registerEvents(teleportationManager, this);
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);

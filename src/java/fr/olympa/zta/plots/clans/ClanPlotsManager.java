@@ -28,7 +28,9 @@ public class ClanPlotsManager implements Listener {
 	private static final String tableName = "`zta_clan_plots`";
 	private static final NamespacedKey signKey = new NamespacedKey(OlympaZTA.getInstance(), "plotID");
 
-	private final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`region`, `price`, `sign`) VALUES (?, ?, ?)", true);
+	private static final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`region`, `price`, `sign`, `spawn`) VALUES (?, ?, ?, ?)", true);
+	public static final OlympaStatement updatePlotClan = new OlympaStatement("UPDATE " + tableName + " SET `clan` = ? WHERE (`id` = ?)");
+	public static final OlympaStatement updatePlotNextPayment = new OlympaStatement("UPDATE " + tableName + " SET `next_payment` = ? WHERE (`id` = ?)");
 
 	private Map<Integer, ClanPlot> plots = new HashMap<>();
 
@@ -37,17 +39,20 @@ public class ClanPlotsManager implements Listener {
 				"  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," +
 				"  `region` VARBINARY(8000) NOT NULL," +
 				"  `clan` INT NULL DEFAULT -1," +
-				"  `sign` VARCHAR NOT NULL," +
+				"  `sign` VARCHAR(100) NOT NULL," +
+				"  `spawn` VARCHAR(100) NOT NULL," +
 				"  `price` INT NOT NULL," +
+				"  `next_payment` BIGINT NOT NULL DEFAULT 0," +
 				"  PRIMARY KEY (`id`))");
 
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
 		while (resultSet.next()) {
 			try {
-				ClanPlot plot = new ClanPlot(resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("factuib")));
+				ClanPlot plot = new ClanPlot(resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
 				plots.put(plot.getID(), plot);
 				int clanID = resultSet.getInt("clan");
-				if (clanID != -1) plot.setClan(clans.getClan(clanID));
+				if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
+				plot.setNextPayment(resultSet.getLong("next_payment"), false);
 			}catch (Exception ex) {
 				OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
 				ex.printStackTrace();
@@ -56,19 +61,20 @@ public class ClanPlotsManager implements Listener {
 		}
 	}
 
-	public ClanPlot create(Region region, int price, Block sign) throws SQLException, IOException {
+	public ClanPlot create(Region region, int price, Block sign, Location spawn) throws SQLException, IOException {
 		Location signLocation = sign.getLocation();
 
 		PreparedStatement statement = createPlot.getStatement();
 		statement.setBytes(1, SpigotUtils.serialize(region));
 		statement.setInt(2, price);
 		statement.setString(3, SpigotUtils.convertLocationToString(signLocation));
+		statement.setString(4, SpigotUtils.convertLocationToString(spawn));
 		statement.executeUpdate();
 		ResultSet resultSet = statement.getGeneratedKeys();
 		resultSet.next();
 
-		ClanPlot plot = new ClanPlot(resultSet.getInt(1), region, price, signLocation);
-		plot.setClan(null); // va initialiser le panneau
+		ClanPlot plot = new ClanPlot(resultSet.getInt(1), region, price, signLocation, spawn);
+		plot.setClan(null, true); // va initialiser le panneau
 		plots.put(plot.getID(), plot);
 		resultSet.close();
 
