@@ -51,7 +51,7 @@ public class ClanPlotsManager implements Listener {
 				ClanPlot plot = new ClanPlot(resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
 				plots.put(plot.getID(), plot);
 				int clanID = resultSet.getInt("clan");
-				if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
+				if (clanID != -1) plot.setClan(clans.getClan(clanID), false, false);
 				plot.setNextPayment(resultSet.getLong("next_payment"), false);
 			}catch (Exception ex) {
 				OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
@@ -74,7 +74,7 @@ public class ClanPlotsManager implements Listener {
 		resultSet.next();
 
 		ClanPlot plot = new ClanPlot(resultSet.getInt(1), region, price, signLocation, spawn);
-		plot.setClan(null, true); // va initialiser le panneau
+		plot.setClan(null, true, false); // va initialiser le panneau
 		plots.put(plot.getID(), plot);
 		resultSet.close();
 

@@ -115,7 +115,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
-				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), (x) -> PlayerPlotGUI.super.create(p)) {
+				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), x -> PlayerPlotGUI.super.create(p)) {
 
 					@Override
 					public ItemStack getItemStack(OlympaPlayerInformations object) {
@@ -140,7 +140,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 				manager.initSearch(player);
 				setState();
 			}else if (click.isLeftClick()) {
-				new PagedGUI<PlayerPlot>("Liste des invitations", DyeColor.CYAN, manager.getInvitations(player)) {
+				new PagedGUI<PlayerPlot>("Liste des invitations", DyeColor.CYAN, manager.getInvitations(player), x -> PlayerPlotGUI.super.create(p)) {
 
 					@Override
 					public ItemStack getItemStack(PlayerPlot object) {

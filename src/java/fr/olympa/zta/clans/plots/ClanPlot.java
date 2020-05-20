@@ -41,27 +41,29 @@ public class ClanPlot {
 		return clan;
 	}
 
-	public void setClan(ClanZTA clan, boolean update) {
+	public void setClan(ClanZTA clan, boolean updateSign, boolean updateDB) {
 		if (this.clan != null) {
 			this.clan.cachedPlot = null;
 		}
 
 		this.clan = clan;
+		if (clan != null) clan.cachedPlot = this;
 		
-		if (update) {
+		if (updateSign) {
 			Sign sign = (Sign) this.sign.getBlock().getState();
 
 			sign.setLine(0, "[" + price + "/semaine]");
 			if (clan == null) {
 				sign.setLine(2, "Parcelle à vendre");
 			}else {
-				clan.cachedPlot = this;
 				sign.setLine(2, clan.getName());
 			}
+		}
 
+		if (updateDB) {
 			try {
 				PreparedStatement statement = ClanPlotsManager.updatePlotClan.getStatement();
-				statement.setLong(1, clan.getID());
+				statement.setLong(1, clan == null ? -1 : clan.getID());
 				statement.setInt(2, id);
 				statement.executeUpdate();
 			}catch (SQLException e) {
@@ -99,14 +101,14 @@ public class ClanPlot {
 		if (nextPayment != -1) {
 			long timeBeforeExpiration = getSecondsBeforeExpiration();
 			if (timeBeforeExpiration < 0) {
-				setClan(null, true);
+				setClan(null, true, true);
 			}else {
 				if (paymentExpiration != null) paymentExpiration.cancel();
 				paymentExpiration = new BukkitRunnable() {
 					@Override
 					public void run() {
 						clan.broadcast("Vous n'avez pas renouvelé le payement, votre parcelle est donc arrivée à expiration.'");
-						setClan(null, true);
+						setClan(null, true, true);
 					}
 				}.runTaskLater(OlympaZTA.getInstance(), timeBeforeExpiration * 20);
 			}
@@ -170,7 +172,7 @@ public class ClanPlot {
 			return;
 		}
 		if (targetClan.getMoney().withdraw(price)) {
-			setClan(targetClan, true);
+			setClan(targetClan, true, true);
 			setNextPayment(System.currentTimeMillis() + PAYMENT_DURATION_MILLIS, true);
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
 		}

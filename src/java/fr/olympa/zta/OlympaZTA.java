@@ -15,15 +15,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
-import fr.olympa.api.scoreboard.sign.AnimLine;
-import fr.olympa.api.scoreboard.sign.DynamicLine;
-import fr.olympa.api.scoreboard.sign.FixedLine;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
+import fr.olympa.api.scoreboard.sign.lines.AnimLine;
+import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
+import fr.olympa.api.scoreboard.sign.lines.FixedLine;
+import fr.olympa.api.scoreboard.sign.lines.TimerLine;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -115,6 +117,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		return "§7Radar: " + (spawnType == null ? "§c§kdddddddd" : spawnType.title);
 	});
 	public DynamicLine<OlympaPlayerZTA> lineMoney = new DynamicLine<OlympaPlayerZTA>(x -> "§7Monnaie: §6" + x.getGameMoney().getFormatted());
+	public DynamicLine<OlympaPlayerZTA> lineGroup = new DynamicLine<OlympaPlayerZTA>(x -> "§7Rang: §b" + x.getGroupNameColored());
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
 
@@ -194,16 +197,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§7Rang: §b" + x.getGroupNameColored()),
+				lineGroup,
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayerZTA>(x -> "§7Nombre de mobs: §6" + mobSpawning.world.getLivingEntities().size()),
+				new TimerLine<OlympaPlayerZTA>(x -> "§7Nombre de mobs: §6" + mobSpawning.world.getLivingEntities().size(), this, 20),
 				FixedLine.EMPTY_LINE,
 				lineRadar,
 				FixedLine.EMPTY_LINE,
 				lineMoney)
 				.addFooters(
 				FixedLine.EMPTY_LINE,
-				new AnimLine("play.olympa.fr"));
+				new AnimLine(this, "play.olympa.fr", 1, 10 * 20));
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
@@ -233,6 +236,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			NPC npc = CitizensAPI.getNPCRegistry().getById(npcID);
 			if (!npc.hasTrait(trait)) npc.addTrait(trait);
 		});
+	}
+
+	@EventHandler
+	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
+		lineGroup.updatePlayer((OlympaPlayerZTA) e.getOlympaPlayer());
 	}
 
 	@Override
