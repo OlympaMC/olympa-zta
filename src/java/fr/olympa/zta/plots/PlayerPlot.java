@@ -70,6 +70,10 @@ public class PlayerPlot {
 		return level;
 	}
 
+	public Location getSpawnLocation() {
+		return loc.toLocation().add(17, 2, level == 1 ? 10 : 20 - sizePerLevel[level - 1] / 2);
+	}
+
 	public void addPlayer(OlympaPlayerZTA player) {
 		players.add(player.getId());
 		player.setPlot(this);

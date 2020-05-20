@@ -84,6 +84,13 @@ public class ClanPlotsManager implements Listener {
 		return plot;
 	}
 
+	public ClanPlot getPlot(Location location) {
+		for (ClanPlot plot : plots.values()) {
+			if (plot.getRegion().isIn(location)) return plot;
+		}
+		return null;
+	}
+
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Block clickedBlock = e.getClickedBlock();
@@ -93,13 +100,8 @@ public class ClanPlotsManager implements Listener {
 			Sign sign = (Sign) clickedBlock.getState();
 			if (sign.getPersistentDataContainer().has(signKey, PersistentDataType.INTEGER)) plots.get(sign.getPersistentDataContainer().get(signKey, PersistentDataType.INTEGER)).signClick(e.getPlayer());
 		}catch (ClassCastException ex) { // pas un panneau
-			Location loc = clickedBlock.getLocation();
-			for (ClanPlot plot : plots.values()) {
-				if (plot.getRegion().isIn(loc)) {
-					e.setCancelled(plot.onInteract(e.getPlayer()));
-					break;
-				}
-			}
+			ClanPlot plot = getPlot(clickedBlock.getLocation());
+			if (plot != null) e.setCancelled(plot.onInteract(e.getPlayer()));
 		}
 	}
 

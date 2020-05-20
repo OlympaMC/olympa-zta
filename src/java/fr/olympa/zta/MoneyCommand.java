@@ -22,7 +22,7 @@ public class MoneyCommand extends ComplexCommand {
 		}else return false;
 	}
 
-	@Cmd (args = "PLAYERS")
+	@Cmd (args = "PLAYERS", syntax = "[joueur]")
 	public void get(CommandContext cmd) {
 		if (cmd.args.length == 0) {
 			if (player != null) {
@@ -33,21 +33,21 @@ public class MoneyCommand extends ComplexCommand {
 		}else sendDoNotHavePermission();
 	}
 
-	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" })
+	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
 	public void set(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.set(cmd.getArgument(1));
 		sendSuccess("Le joueur dispose maintenant de " + money.getFormatted());
 	}
 
-	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" })
+	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
 	public void give(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.give(cmd.getArgument(1));
 		sendSuccess("Le joueur dispose maintenant de " + money.getFormatted());
 	}
 
-	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" })
+	@Cmd (permissionName = "MONEY_COMMAND_MANAGE", min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
 	public void withdraw(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.withdraw(cmd.getArgument(1));

@@ -43,7 +43,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public abstract class Gun extends Weapon {
 
 	private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
-	private static DecimalFormat timeFormat = new DecimalFormat("##.#");
+	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
 	public static final String TABLE_NAME = "`zta_guns`";
 

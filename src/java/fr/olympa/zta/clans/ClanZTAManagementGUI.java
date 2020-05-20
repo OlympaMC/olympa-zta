@@ -39,12 +39,12 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
 		}else {
 			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPrice(), "§8> §oProchain payement : §l" + paymentDateFormat.format(new Date(plot.getNextPayment())), "", "§e§lClique pour t'y téléporter" };
 		}
-		inv.setItem(7, ItemUtils.item(Material.STONE, "§6Parcelle du clan", plotLore));
+		inv.setItem(1, ItemUtils.item(Material.STONE, "§6Parcelle du clan", plotLore));
 	}
 
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
-		if (slot == 7) {
+		if (slot == 1) {
 			if (plot != null) OlympaZTA.getInstance().teleportationManager.teleport(p, plot.getSpawn(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté dans la parcelle de ton clan !"));
 			return true;
 		}

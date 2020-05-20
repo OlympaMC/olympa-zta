@@ -155,12 +155,12 @@ public class PlayerPlotGUI extends OlympaGUI {
 						PlayerPlotGUI.super.create(p);
 					}
 
-				};
+				}.create(p);
 			}
 		}else {
 			if (click.isRightClick() || !isChief) {
 				p.closeInventory();
-				p.teleport(plot.getLocation().toLocation().add(0, 2, 0));
+				p.teleport(plot.getSpawnLocation());
 			}else if (click.isLeftClick()) {
 				manage = true;
 				setState();

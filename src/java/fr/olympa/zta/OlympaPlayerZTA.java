@@ -31,7 +31,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.put("ender_chest", "VARBINARY(8000) NULL")
 			.put("money", "DOUBLE NULL DEFAULT 0")
 			.put("clan", "INT NULL DEFAULT NULL")
-			.put("plot", "INT NULL DEFAULT -1")
+			.put("plot", "INT NOT NULL DEFAULT -1")
 			.build();
 
 	private int bankSlots = 9;
@@ -48,6 +48,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
+		money.observe(() -> OlympaZTA.getInstance().lineMoney.updatePlayer(this));
 	}
 
 	public int getBankSlots() {
@@ -119,11 +120,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			}else {
 				statement.setInt(5, clan.getID());
 			}
-			if (plot == null) {
-				statement.setNull(6, Types.INTEGER);
-			}else {
-				statement.setInt(6, plot.getID());
-			}
+			statement.setInt(6, plot == null ? -1 : plot.getID());
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

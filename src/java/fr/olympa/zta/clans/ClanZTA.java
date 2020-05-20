@@ -20,7 +20,7 @@ import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTA extends Clan<ClanZTA> {
 
-	private static FixedLine header = new FixedLine("§e§oMon clan:");
+	private static FixedLine<OlympaPlayerZTA> header = new FixedLine<>("§7§oMon clan:");
 	private static DynamicLine<OlympaPlayerZTA> players = new DynamicLine<>((x) -> {
 		ClanZTA clan = x.getClan();
 		Player p = x.getPlayer();
@@ -38,7 +38,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 			}
 		}
 		return joiner.toString();
-	}, 1, 0);
+	});
 	
 	public ClanPlot cachedPlot;
 
@@ -54,15 +54,15 @@ public class ClanZTA extends Clan<ClanZTA> {
 	protected void removedOnlinePlayer(ClanPlayerInterface<ClanZTA> oplayer) {
 		super.removedOnlinePlayer(oplayer);
 		
-		OlympaZTA.getInstance().scoreboards.removePlayerScoreboard(oplayer);
-		OlympaZTA.getInstance().scoreboards.create(oplayer);
+		OlympaZTA.getInstance().scoreboards.removePlayerScoreboard((OlympaPlayerZTA) oplayer);
+		OlympaZTA.getInstance().scoreboards.create((OlympaPlayerZTA) oplayer);
 	}
 
 	@Override
 	public void memberJoin(ClanPlayerInterface<ClanZTA> member) {
 		super.memberJoin(member);
 
-		Scoreboard scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(member);
+		Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard((OlympaPlayerZTA) member);
 		scoreboard.addLine(FixedLine.EMPTY_LINE);
 		scoreboard.addLine(header);
 		scoreboard.addLine(players);

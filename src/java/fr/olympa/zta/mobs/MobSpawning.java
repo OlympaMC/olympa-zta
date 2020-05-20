@@ -34,6 +34,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.DynmapLink;
 import net.md_5.bungee.api.ChatMessageType;
@@ -92,10 +93,12 @@ public class MobSpawning {
 								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
 								prev = chunk.getBlock(x, y, z);
 								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-									Block block = chunk.getBlock(x, y, z);
+									Location location = new Location(world, x << 4 | x, y, z << 4 | z);
+									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue;
+									Block block = location.getBlock();
 									if (block.getLightLevel() > 10 && !world.isThundering()) continue;
 									for (Location loc : entities) {
-										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) {
+										if (loc.distanceSquared(location) < spawn.minDistanceSquared) {
 											continue y; // distance aux autres entités obligatoirement > à 12 blocs
 										}
 									}
@@ -226,6 +229,7 @@ public class MobSpawning {
 			texts = TextComponent.fromLegacyText("§8§k§lgdn§r§7 vous entrez dans une " + title + "§r §8§k§lndg");
 
 			enterPredicate = player -> {
+				OlympaZTA.getInstance().lineRadar.updatePlayer(OlympaPlayerZTA.get(player));
 				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, texts);
 				return false;
 			};
