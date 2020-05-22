@@ -19,6 +19,10 @@ public class TeleportationManager implements Listener {
 	private Map<Player, BukkitTask> teleportations = new HashMap<>();
 
 	public void teleport(Player p, Location to, String message) {
+		teleport(p, to, message, null);
+	}
+
+	public void teleport(Player p, Location to, String message, Runnable run) {
 		BukkitTask removed = teleportations.remove(p);
 		if (removed != null) {
 			removed.cancel();
@@ -29,6 +33,7 @@ public class TeleportationManager implements Listener {
 			public void run() {
 				p.teleport(to);
 				p.sendMessage(message);
+				if (run != null) run.run();
 			}
 		}.runTaskLater(OlympaZTA.getInstance(), TELEPORTATION_TICKS));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");

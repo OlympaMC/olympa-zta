@@ -1,4 +1,4 @@
-package fr.olympa.zta.mobs;
+package fr.olympa.zta.mobs.custom;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -38,6 +38,7 @@ public class Mobs {
 		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
 		zombie.setCustomName(p.getName() + " momifié");
 		zombie.setCustomNameVisible(true);
+		if (p.getKiller() != null) zombie.setTarget(p.getKiller());
 		return zombie;
 	}
 

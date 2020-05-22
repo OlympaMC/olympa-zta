@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
 import fr.olympa.zta.weapons.ArmorType;

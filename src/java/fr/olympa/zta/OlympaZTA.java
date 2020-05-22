@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -21,6 +22,7 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.scoreboard.sign.lines.AnimLine;
 import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
@@ -39,9 +41,10 @@ import fr.olympa.zta.lootchests.LootChestCommand;
 import fr.olympa.zta.lootchests.LootChestsListener;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
-import fr.olympa.zta.mobs.Mobs;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
+import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
 import fr.olympa.zta.plots.shops.CivilBlockShop;
@@ -113,8 +116,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ClansManagerZTA clansManager;
 	
 	public DynamicLine<OlympaPlayerZTA> lineRadar = new DynamicLine<OlympaPlayerZTA>(x -> {
-		SpawnType spawnType = SpawnType.getSpawnType(x.getPlayer().getLocation().getChunk());
-		return "§7Radar: " + (spawnType == null ? "§c§kdddddddd" : spawnType.title);
+		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getPlayer());
+		String title = "§c§kdddddddd";
+		for (TrackedRegion region : regions) {
+			SpawningFlag flag = region.getFlag(SpawningFlag.class);
+			if (flag != null) {
+				title = flag.type.title;
+				break;
+			}
+		}
+		return "§7Radar: " + title;
 	});
 	public DynamicLine<OlympaPlayerZTA> lineMoney = new DynamicLine<OlympaPlayerZTA>(x -> "§7Monnaie: §6" + x.getGameMoney().getFormatted());
 	public DynamicLine<OlympaPlayerZTA> lineGroup = new DynamicLine<OlympaPlayerZTA>(x -> "§7Rang: §b" + x.getGroupNameColored());
@@ -192,7 +203,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		AmmoType.CARTRIDGE.getName();
 
 		new Mobs(); // initalise les mobs custom
-		mobSpawning = new MobSpawning(getConfig().getConfigurationSection("mobRegions"));
+		mobSpawning = new MobSpawning(getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();
 		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(

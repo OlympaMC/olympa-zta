@@ -15,7 +15,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -33,42 +32,48 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.Flag;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.utils.DynmapLink;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_15_R1.Entity;
 
 public class MobSpawning {
 
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB);
+	private static final String RADAR = "§8§k§lgdn§r§7";
 
-	private BukkitTask[] tasks = new BukkitTask[2];
+	private BukkitTask[] tasks = new BukkitTask[2]; // 0: calculation, 1: spawn
+	public World world = Bukkit.getWorlds().get(0);
+
 	private boolean enabled = false;
 	private Random random = new Random();
 
-	private LinkedList<Location> spawnQueue = new LinkedList<>();
 	private Lock queueLock = new ReentrantLock();
+	private LinkedList<Location> spawnQueue = new LinkedList<>();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
-	public World world = Bukkit.getWorlds().get(0);
+	private Set<Region> safeRegions = new HashSet<>();
 
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
 	public int criticalEntitiesPerChunk = 25;
 	public int maxEntities = 3000;
 
-	public MobSpawning(ConfigurationSection config) {
-		for (String string : config.getKeys(false)) {
+	public MobSpawning(ConfigurationSection spawnRegions, ConfigurationSection safeRegions) {
+		for (String type : spawnRegions.getKeys(false)) {
 			try {
-				SpawnType type = SpawnType.valueOf(string);
-				type.addRegions((List<Region>) config.getList(string));
+				SpawnType.valueOf(type).addRegions((List<Region>) spawnRegions.getList(type));
 			}catch (IllegalArgumentException ex) {
-				OlympaZTA.getInstance().getLogger().warning("Type de spawn invalide: " + string);
+				OlympaZTA.getInstance().getLogger().warning("Type de spawn invalide: " + type);
 			}
+		}
+
+		for (String id : safeRegions.getKeys(false)) {
+			addSafeZone(safeRegions.getSerializable(id, Region.class), id, safeRegions.getString(id + ".greeting"), safeRegions.getString(id + ".farewell"));
 		}
 	}
 
@@ -93,7 +98,7 @@ public class MobSpawning {
 								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
 								prev = chunk.getBlock(x, y, z);
 								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-									Location location = new Location(world, x << 4 | x, y, z << 4 | z);
+									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue;
 									Block block = location.getBlock();
 									if (block.getLightLevel() > 10 && !world.isThundering()) continue;
@@ -137,7 +142,7 @@ public class MobSpawning {
 					queueLock.unlock();
 				}
 			}
-		}.runTaskTimer(OlympaZTA.getInstance(), 50L, 20L);
+		}.runTaskTimer(OlympaZTA.getInstance(), 20L, 0L);
 
 		enabled = true;
 	}
@@ -161,6 +166,7 @@ public class MobSpawning {
 					SpawnType type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
+						if (isInSafeZone(chunk)) continue;
 						chunks.put(chunk, type);
 					}
 				}
@@ -178,6 +184,18 @@ public class MobSpawning {
 		return count;
 	}
 
+	public void addSafeZone(Region region, String id, String greeting, String farewell) {
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, new Flag(RADAR + greeting + "§r " + RADAR, RADAR + farewell + "§r " + RADAR, ChatMessageType.ACTION_BAR));
+		safeRegions.add(region);
+	}
+
+	public boolean isInSafeZone(Chunk chunk) {
+		for (Region safeRegion : safeRegions) {
+			if (safeRegion.isIn(chunk.getWorld(), chunk.getX() * 16, safeRegion.getMin().getBlockY(), chunk.getZ() * 16)) return true;
+		}
+		return false;
+	}
+
 	public double getAverageQueueSize() {
 		return averageQueueSize.stream().mapToInt(x -> x).average().orElse(0);
 	}
@@ -193,6 +211,7 @@ public class MobSpawning {
 				tasks[i] = null;
 			}
 		}
+
 		spawnQueue.clear();
 		averageQueueSize.clear();
 
@@ -203,20 +222,19 @@ public class MobSpawning {
 		HARD(10, 3, 20, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
 		MEDIUM(12, 2, 15, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone."),
 		EASY(13, 1, 12, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
-		SAFE(22, 1, 5, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
+		SAFE(20, 1, 7, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
 		
 		private List<Region> regions = new ArrayList<>();
 		private int minDistanceSquared;
 		private int spawnAmount;
 		private int maxEntitiesPerChunk;
-		
-		private Predicate<Player> enterPredicate;
-		private BaseComponent[] texts;
 
 		public final Color color;
 		public final String name;
 		public final String description;
 		public final String title;
+
+		private Flag flag;
 
 		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, String title, Color color, String name, String description) {
 			this.minDistanceSquared = minDistance ^ 2;
@@ -226,13 +244,7 @@ public class MobSpawning {
 			this.description = description;
 			this.title = title;
 
-			texts = TextComponent.fromLegacyText("§8§k§lgdn§r§7 vous entrez dans une " + title + "§r §8§k§lndg");
-
-			enterPredicate = player -> {
-				OlympaZTA.getInstance().lineRadar.updatePlayer(OlympaPlayerZTA.get(player));
-				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, texts);
-				return false;
-			};
+			flag = new SpawningFlag(this);
 		}
 
 		public boolean isInto(Chunk chunk) {
@@ -244,7 +256,7 @@ public class MobSpawning {
 
 		public void addRegions(Collection<Region> regions) {
 			for (Region region : regions) {
-				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), enterPredicate, null);
+				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), flag);
 				this.regions.add(region);
 				DynmapLink.showArea(region, this);
 			}
@@ -259,6 +271,21 @@ public class MobSpawning {
 				if (type.isInto(chunk)) return type;
 			}
 			return null;
+		}
+
+		public static class SpawningFlag extends Flag {
+			public final SpawnType type;
+
+			public SpawningFlag(SpawnType type) {
+				super(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
+				this.type = type;
+			}
+
+			@Override
+			public boolean enters(Player p) {
+				OlympaZTA.getInstance().lineRadar.updatePlayer(OlympaPlayerZTA.get(p));
+				return super.enters(p);
+			}
 		}
 	}
 

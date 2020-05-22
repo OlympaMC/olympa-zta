@@ -80,6 +80,7 @@ public class ClanPlotsManager implements Listener {
 
 		Sign signState = (Sign) sign.getState();
 		signState.getPersistentDataContainer().set(signKey, PersistentDataType.INTEGER, plot.getID());
+		signState.update();
 
 		return plot;
 	}
@@ -96,10 +97,10 @@ public class ClanPlotsManager implements Listener {
 		Block clickedBlock = e.getClickedBlock();
 		if (clickedBlock == null) return;
 
-		try {
+		if (clickedBlock.getType().name().contains("_SIGN")) {
 			Sign sign = (Sign) clickedBlock.getState();
 			if (sign.getPersistentDataContainer().has(signKey, PersistentDataType.INTEGER)) plots.get(sign.getPersistentDataContainer().get(signKey, PersistentDataType.INTEGER)).signClick(e.getPlayer());
-		}catch (ClassCastException ex) { // pas un panneau
+		}else {
 			ClanPlot plot = getPlot(clickedBlock.getLocation());
 			if (plot != null) e.setCancelled(plot.onInteract(e.getPlayer()));
 		}

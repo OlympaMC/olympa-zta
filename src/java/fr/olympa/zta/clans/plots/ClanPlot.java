@@ -54,10 +54,13 @@ public class ClanPlot {
 
 			sign.setLine(0, "[" + price + "/semaine]");
 			if (clan == null) {
-				sign.setLine(2, "Parcelle à vendre");
+				sign.setLine(2, "Parcelle à");
+				sign.setLine(3, "vendre");
 			}else {
 				sign.setLine(2, clan.getName());
+				sign.setLine(3, "");
 			}
+			sign.update();
 		}
 
 		if (updateDB) {
@@ -175,7 +178,7 @@ public class ClanPlot {
 			setClan(targetClan, true, true);
 			setNextPayment(System.currentTimeMillis() + PAYMENT_DURATION_MILLIS, true);
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
-		}
+		}else Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour louer cette parcelle.");
 	}
 
 }

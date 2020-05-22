@@ -1,4 +1,4 @@
-package fr.olympa.zta.mobs;
+package fr.olympa.zta.mobs.custom;
 
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;

@@ -1,4 +1,4 @@
-package fr.olympa.zta.mobs;
+package fr.olympa.zta.mobs.custom;
 
 import org.bukkit.event.entity.EntityTargetEvent;
 

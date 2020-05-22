@@ -9,6 +9,7 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
+import fr.olympa.zta.mobs.custom.Mobs;
 
 public class MobsCommand extends ComplexCommand {
 

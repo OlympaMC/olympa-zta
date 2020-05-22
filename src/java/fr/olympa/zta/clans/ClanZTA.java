@@ -68,4 +68,10 @@ public class ClanZTA extends Clan<ClanZTA> {
 		scoreboard.addLine(players);
 	}
 
+	@Override
+	public void disband() {
+		super.disband();
+		if (cachedPlot != null) cachedPlot.setClan(null, true, true);
+	}
+
 }
