@@ -7,9 +7,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
+import org.dynmap.markers.MarkerDescription;
 import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
@@ -23,7 +25,7 @@ public class DynmapLink {
 			api = (DynmapAPI) Bukkit.getPluginManager().getPlugin("dynmap");
 			if (api != null) {
 				markers = api.getMarkerAPI().getMarkerSet("regions");
-				if (markers == null) markers = api.getMarkerAPI().createMarkerSet("regions", "Zones", null, false);
+				if (markers == null) markers = api.getMarkerAPI().createMarkerSet("regions", "Radar", null, false);
 			}
 		}catch (Exception ex) {
 			api = null;
@@ -42,6 +44,21 @@ public class DynmapLink {
 		AreaMarker area = markers.createAreaMarker("region" + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.4, spawn.color.asRGB());
 		area.setDescription(spawn.description);
+		OlympaZTA.getInstance().getLogger().info("Région affichée sur dynmap : " + area.getMarkerID());
+	}
+	
+	public static void showSafeArea(Region region, String id, String title) {
+		if (api == null) return;
+		
+		MarkerDescription marker;
+		if (region instanceof Cylinder) {
+			Cylinder cylinder = (Cylinder) region;
+			marker = markers.createCircleMarker(id, title, true, region.getWorld().getName(), cylinder.getCenterX(), 0, cylinder.getCenterZ(), cylinder.getRadius(), cylinder.getRadius(), false);
+		}else {
+			List<Location> points = region.getLocations();
+			marker = markers.createAreaMarker(id, title, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+		}
+		OlympaZTA.getInstance().getLogger().info("Région affichée sur dynmap : " + marker.getMarkerID());
 	}
 	
 }

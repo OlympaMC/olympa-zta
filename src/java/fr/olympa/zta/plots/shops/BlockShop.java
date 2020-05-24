@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.utils.AbstractShop;
 
 public class BlockShop extends AbstractShop<Material> {
@@ -22,7 +23,7 @@ public class BlockShop extends AbstractShop<Material> {
 
 	@Override
 	public void click(Material object, Player p) {
-		p.getInventory().addItem(new ItemStack(object));
+		SpigotUtils.giveItems(p, new ItemStack(object));
 	}
 
 }

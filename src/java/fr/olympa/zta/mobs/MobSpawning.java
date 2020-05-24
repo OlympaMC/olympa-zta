@@ -73,7 +73,7 @@ public class MobSpawning {
 		}
 
 		for (String id : safeRegions.getKeys(false)) {
-			addSafeZone(safeRegions.getSerializable(id, Region.class), id, safeRegions.getString(id + ".greeting"), safeRegions.getString(id + ".farewell"));
+			addSafeZone(safeRegions.getSerializable(id, Region.class), id, safeRegions.getString(id + ".title"));
 		}
 	}
 
@@ -184,9 +184,10 @@ public class MobSpawning {
 		return count;
 	}
 
-	public void addSafeZone(Region region, String id, String greeting, String farewell) {
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, new Flag(RADAR + greeting + "§r " + RADAR, RADAR + farewell + "§r " + RADAR, ChatMessageType.ACTION_BAR));
+	public void addSafeZone(Region region, String id, String title) {
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, new Flag(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR));
 		safeRegions.add(region);
+		DynmapLink.showSafeArea(region, id, title);
 	}
 
 	public boolean isInSafeZone(Chunk chunk) {
