@@ -27,19 +27,19 @@ public class PhysicalMoney {
 		Inventory inv = p.getInventory();
 		
 		int b1 = SpigotUtils.getItemAmount(inv, BANKNOTE_1);
-		SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_1, b1)); // enlève le total de billet de 1
+		if (b1 != 0) SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_1, b1)); // enlève le total de billet de 1
 		amount -= b1; // réduit la quantité d'or à prendre
 		if (amount <= 0) return true;
 		
 		int b10 = SpigotUtils.getItemAmount(inv, BANKNOTE_10) * 10;
-		SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_10, b10));
+		if (b10 != 0) SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_10, b10));
 		amount -= b10; // enlève la valeur du total de pièces
 		if (amount <= 0){
 			give(p, Math.abs(amount)); // si enlevé plus que nécessaire, rendre la monnaie manquante
 			return true;
 		}
 		int b100 = SpigotUtils.getItemAmount(inv, BANKNOTE_100) * 100;
-		SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_100, b100));
+		if (b100 != 0) SpigotUtils.removeItems(inv, getBanknote(BANKNOTE_100, b100));
 		amount -= b100; // idem
 		if (amount <= 0){
 			give(p, Math.abs(amount));

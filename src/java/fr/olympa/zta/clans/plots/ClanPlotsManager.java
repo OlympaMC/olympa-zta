@@ -42,7 +42,7 @@ public class ClanPlotsManager implements Listener {
 				"  `sign` VARCHAR(100) NOT NULL," +
 				"  `spawn` VARCHAR(100) NOT NULL," +
 				"  `price` INT NOT NULL," +
-				"  `next_payment` BIGINT NOT NULL DEFAULT 0," +
+				"  `next_payment` BIGINT NOT NULL DEFAULT -1," +
 				"  PRIMARY KEY (`id`))");
 
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
@@ -51,7 +51,7 @@ public class ClanPlotsManager implements Listener {
 				ClanPlot plot = new ClanPlot(resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
 				plots.put(plot.getID(), plot);
 				int clanID = resultSet.getInt("clan");
-				if (clanID != -1) plot.setClan(clans.getClan(clanID), false, false);
+				if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
 				plot.setNextPayment(resultSet.getLong("next_payment"), false);
 			}catch (Exception ex) {
 				OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
@@ -74,7 +74,7 @@ public class ClanPlotsManager implements Listener {
 		resultSet.next();
 
 		ClanPlot plot = new ClanPlot(resultSet.getInt(1), region, price, signLocation, spawn);
-		plot.setClan(null, true, false); // va initialiser le panneau
+		plot.updateSign();
 		plots.put(plot.getID(), plot);
 		resultSet.close();
 

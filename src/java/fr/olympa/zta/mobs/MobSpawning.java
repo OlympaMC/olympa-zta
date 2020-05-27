@@ -73,7 +73,7 @@ public class MobSpawning {
 		}
 
 		for (String id : safeRegions.getKeys(false)) {
-			addSafeZone(safeRegions.getSerializable(id, Region.class), id, safeRegions.getString(id + ".title"));
+			addSafeZone(safeRegions.getSerializable(id + ".region", Region.class), id, safeRegions.getString(id + ".title"));
 		}
 	}
 
@@ -91,7 +91,7 @@ public class MobSpawning {
 						int mobs = random.nextInt(spawn.spawnAmount + 1);
 						for (int i = 0; i < mobs; i++) {
 							int x = random.nextInt(16);
-							int y = 1 + random.nextInt(30);
+							int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
 							int z = random.nextInt(16);
 							Block prev = chunk.getBlock(x, y, z);
 							y: for (; y < 140; y++) {
@@ -259,7 +259,7 @@ public class MobSpawning {
 			for (Region region : regions) {
 				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), flag);
 				this.regions.add(region);
-				DynmapLink.showArea(region, this);
+				DynmapLink.showMobArea(region, this);
 			}
 		}
 

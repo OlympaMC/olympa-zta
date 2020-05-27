@@ -1,7 +1,5 @@
 package fr.olympa.zta.plots;
 
-import java.util.stream.Collectors;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,6 +16,7 @@ import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.ObservableList;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -115,7 +114,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
-				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), x -> PlayerPlotGUI.super.create(p)) {
+				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(ObservableList.getCollector()), x -> PlayerPlotGUI.super.create(p)) {
 
 					@Override
 					public ItemStack getItemStack(OlympaPlayerInformations object) {

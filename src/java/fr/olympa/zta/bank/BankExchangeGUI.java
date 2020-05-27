@@ -1,12 +1,14 @@
 package fr.olympa.zta.bank;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.utils.PhysicalMoney;
 
@@ -25,7 +27,8 @@ public class BankExchangeGUI extends OlympaGUI {
 		super("Échanger ma monnaie", 1);
 		this.player = player;
 
-		inv.setItem(0, ItemUtils.item(Material.EMERALD, "§e§lMa monnaie", "§e> Compte bancaire : §6§l" + player.getGameMoney().getFormatted(), "§e> Mon portefeille : §6§l" + PhysicalMoney.getPlayerMoney(player.getPlayer())));
+		inv.setItem(0, ItemUtils.item(Material.EMERALD, "§e§lMa monnaie"));
+		updateMoney();
 
 		inv.setItem(2, add);
 		inv.setItem(4, remove);
@@ -38,6 +41,10 @@ public class BankExchangeGUI extends OlympaGUI {
 
 	private void updateCounter() {
 		ItemUtils.name(inv.getItem(3), "§eTransaction: §6§l" + amount);
+	}
+
+	private void updateMoney() {
+		ItemUtils.lore(inv.getItem(0), "§e> Compte bancaire : §6§l" + player.getGameMoney().getFormatted(), "§e> Mon portefeille : §6§l" + PhysicalMoney.getPlayerMoney(player.getPlayer()));
 	}
 
 	@Override
@@ -63,15 +70,21 @@ public class BankExchangeGUI extends OlympaGUI {
 		}else if (slot == 7) {
 			if (amount == 0) return true;
 			int money = PhysicalMoney.getPlayerMoney(p);
-			if (money > amount) amount = money;
+			if (money < amount) amount = money;
 			PhysicalMoney.withdraw(p, amount, false);
 			player.getGameMoney().give(amount);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as transféré %s sur ton compte en banque.", amount);
+			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
+			updateMoney();
 		}else if (slot == 8) {
 			if (amount == 0) return true;
 			int money = (int) player.getGameMoney().get();
-			if (money > amount) amount = money;
+			if (money < amount) amount = money;
 			player.getGameMoney().withdraw(amount);
 			PhysicalMoney.give(p, amount);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as retiré %s de ton compte en banque.", amount);
+			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
+			updateMoney();
 		}
 		return true;
 	}

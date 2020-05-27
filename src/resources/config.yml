@@ -26,51 +26,57 @@ mobRegions:
 
 safeRegions:
   fraternite1:
-  - ==: fr.olympa.api.region.shapes.Polygon
-    world: "world"
-    minY: 0
-    maxY: 256
-    points: ["1778|-228", "1778|-319", "1470|-319", "1470|-174", "1534|-174", "1534|-187", "1537|-188", "1557|-179", "1557|-163", "1565|-163", "1570|-160", "1577|-160", "1582|-156", "1582|-74", "1716|-74", "1716|-115", "1726|-126", "1726|-198", "1732|-206", "1735|-207"]
+    region:
+      ==: fr.olympa.api.region.shapes.Polygon
+      world: "world"
+      minY: 0
+      maxY: 256
+      points: ["1778|-228", "1778|-319", "1470|-319", "1470|-174", "1534|-174", "1534|-187", "1537|-188", "1557|-179", "1557|-163", "1565|-163", "1570|-160", "1577|-160", "1582|-156", "1582|-74", "1716|-74", "1716|-115", "1726|-126", "1726|-198", "1732|-206", "1735|-207"]
     title: "Zone de la Fraternité"
   fraternite2:
-  - ==: fr.olympa.api.region.shapes.Polygon
-    world: "world"
-    minY: 0
-    maxY: 256
-    points: ["-486|-764", "-486|-758", "-635|-709", "-661|-709", "-908|-724", "-905|-818", "-890|-1086", "-497|-1034"]
+    region:
+      ==: fr.olympa.api.region.shapes.Polygon
+      world: "world"
+      minY: 0
+      maxY: 256
+      points: ["-486|-764", "-486|-758", "-635|-709", "-661|-709", "-908|-724", "-905|-818", "-890|-1086", "-497|-1034"]
     title: "Zone de la Fraternité"
   corporation1:
-  - ==: fr.olympa.api.region.shapes.Cylinder
-    world: "world"
-    centerX: 196
-    centerZ: -1287
-    radius: 95
-    yMin: 0
-    yMax: 256
+    region:
+      ==: fr.olympa.api.region.shapes.Cylinder
+      world: "world"
+      centerX: 196
+      centerZ: -1287
+      radius: 95
+      minY: 0
+      maxY: 256
     title: "Zone de la Corporation"
   corporation2:
-  - ==: fr.olympa.api.region.shapes.ExpandedCuboid
-    world: "world"
-    xMin: 189
-    zMin: -274
-    xMax: 279
-    zMax: -229
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: 189
+      zMin: -274
+      xMax: 279
+      zMax: -229
     title: "Zone de la Corporation"
   corporation3:
-  - ==: fr.olympa.api.region.shapes.ExpandedCuboid
-    world: "world"
-    xMin: -609
-    zMin: -68
-    xMax: -443
-    zMax: 33
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: -609
+      zMin: -68
+      xMax: -443
+      zMax: 33
     title: "Zone de la Corporation"
   neutral1:
-  - ==: fr.olympa.api.region.shapes.ExpandedCuboid
-    world: "world"
-    xMin: -84
-    zMin: -473
-    xMax: 22
-    zMax: -407
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: -84
+      zMin: -473
+      xMax: 22
+      zMax: -407
     title: "Zone neutre"
 
 hub:

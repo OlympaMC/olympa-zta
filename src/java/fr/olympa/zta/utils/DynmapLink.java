@@ -38,10 +38,10 @@ public class DynmapLink {
 		api.setPlayerVisiblity(p, visibility);
 	}
 
-	public static void showArea(Region region, SpawnType spawn) {
+	public static void showMobArea(Region region, SpawnType spawn) {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
-		AreaMarker area = markers.createAreaMarker("region" + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+		AreaMarker area = markers.createAreaMarker(spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.4, spawn.color.asRGB());
 		area.setDescription(spawn.description);
 		OlympaZTA.getInstance().getLogger().info("Région affichée sur dynmap : " + area.getMarkerID());

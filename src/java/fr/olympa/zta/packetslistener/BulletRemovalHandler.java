@@ -21,6 +21,6 @@ public class BulletRemovalHandler extends ChannelDuplexHandler{
 			if (k.get(packet) == EntityTypes.LLAMA_SPIT) return; // return pour ne pas call write (annule le packet)
 		}
 		super.write(ctx, msg, promise);
-	};
+	}
 	
 }

@@ -11,8 +11,8 @@ import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
 import fr.olympa.api.scoreboard.sign.lines.FixedLine;
+import fr.olympa.api.scoreboard.sign.lines.TimerLine;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -21,7 +21,7 @@ import fr.olympa.zta.clans.plots.ClanPlot;
 public class ClanZTA extends Clan<ClanZTA> {
 
 	private static FixedLine<OlympaPlayerZTA> header = new FixedLine<>("§7§oMon clan:");
-	private static DynamicLine<OlympaPlayerZTA> players = new DynamicLine<>((x) -> {
+	private static TimerLine<OlympaPlayerZTA> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getClan();
 		Player p = x.getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
@@ -38,7 +38,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 			}
 		}
 		return joiner.toString();
-	});
+	}, OlympaZTA.getInstance(), 10);
 	
 	public ClanPlot cachedPlot;
 
@@ -71,7 +71,11 @@ public class ClanZTA extends Clan<ClanZTA> {
 	@Override
 	public void disband() {
 		super.disband();
-		if (cachedPlot != null) cachedPlot.setClan(null, true, true);
+		if (cachedPlot != null) {
+			ClanPlot plot = cachedPlot;
+			plot.setClan(null, true);
+			plot.updateSign();
+		}
 	}
 
 }

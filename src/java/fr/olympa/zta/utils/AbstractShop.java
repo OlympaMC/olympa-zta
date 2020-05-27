@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
@@ -43,7 +44,7 @@ public abstract class AbstractShop<T> extends Trait {
 	class ShopGUI extends PagedGUI<Article<T>> {
 
 		public ShopGUI() {
-			super(shopName, color, articles);
+			super(shopName, color, new ObservableList<>(articles));
 		}
 
 		@Override

@@ -5,9 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -29,6 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.utils.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -45,7 +44,7 @@ public class PlayerPlotsManager implements Listener {
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 
-	private Map<OlympaPlayerZTA, List<PlayerPlot>> invitations = new HashMap<>();
+	private Map<OlympaPlayerZTA, ObservableList<PlayerPlot>> invitations = new HashMap<>();
 
 	private Map<Integer, InternalPlotDatas> plotsByID = new HashMap<>();
 	private Map<PlayerPlotLocation, InternalPlotDatas> plotsByPosition = new HashMap<>();
@@ -130,15 +129,15 @@ public class PlayerPlotsManager implements Listener {
 		return plotDatas.loadedPlot;
 	}
 
-	public List<PlayerPlot> getInvitations(OlympaPlayerZTA player) {
-		List<PlayerPlot> invit = invitations.get(player);
-		return invit == null ? Collections.EMPTY_LIST : invit;
+	public ObservableList<PlayerPlot> getInvitations(OlympaPlayerZTA player) {
+		ObservableList<PlayerPlot> invit = invitations.get(player);
+		return invit == null ? ObservableList.EMPTY_LIST : invit;
 	}
 
 	public void invite(OlympaPlayerZTA player, PlayerPlot plot) {
-		List<PlayerPlot> invit = invitations.get(player);
+		ObservableList<PlayerPlot> invit = invitations.get(player);
 		if (invit == null) {
-			invit = new ArrayList<>();
+			invit = new ObservableList<>(new ArrayList<>());
 			invitations.put(player, invit);
 		}
 		invit.add(plot);

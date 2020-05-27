@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.registry.ItemStackable;
@@ -93,7 +94,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void list(CommandContext cmd) {
 		for (Entry<String, RegistryType<?>> type : ZTARegistry.registrable.entrySet()) {
 			if (ItemStackable.class.isAssignableFrom(type.getValue().clazz)) {
-				sendMessage("§d● " + type.getKey());
+				sendMessage(Prefix.NONE, "§d● " + type.getKey());
 			}
 		}
 	}

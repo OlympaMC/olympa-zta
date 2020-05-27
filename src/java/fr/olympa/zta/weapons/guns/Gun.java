@@ -84,7 +84,7 @@ public abstract class Gun extends Weapon {
 
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
 		item.setItemMeta(im);
 	}
 
@@ -96,13 +96,13 @@ public abstract class Gun extends Weapon {
 				getFeatureLoreLine("Munitions", getAmmoType().getName()),
 				getFeatureLoreLine("Précision", getAccuracy().getName()),
 				getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
-		lore.addAll(getIDLoreLines());
 		if (accessories) {
 			lore.addAll(Arrays.asList(
 					"",
 					"§6§lAccessoires §r§6: §e[§n" + getAccessoriesAmount() + "§r§e/" + getAllowedAccessoriesAmount() + "]",
 					"§e§oClic droit pour attacher des accessoires"));
 		}
+		lore.addAll(getIDLoreLines());
 		im.setLore(lore);
 		item.setItemMeta(im);
 	}

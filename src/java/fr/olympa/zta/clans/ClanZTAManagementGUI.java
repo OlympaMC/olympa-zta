@@ -1,9 +1,5 @@
 package fr.olympa.zta.clans;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -18,8 +14,6 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
-
-	private static final DateFormat paymentDateFormat = new SimpleDateFormat("dd/MM");
 
 	private ClanPlot plot;
 
@@ -37,7 +31,7 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
 		if (plot == null) {
 			plotLore = new String[] { "§8> §oVotre clan n'a pas de parcelle" };
 		}else {
-			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPrice(), "§8> §oProchain payement : §l" + paymentDateFormat.format(new Date(plot.getNextPayment())), "", "§e§lClique pour t'y téléporter" };
+			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPrice(), "§8> §oDate d'expiration : §l" + plot.getExpirationDate(), "", "§e§lClique pour t'y téléporter" };
 		}
 		inv.setItem(1, ItemUtils.item(Material.STONE, "§6Parcelle du clan", plotLore));
 	}

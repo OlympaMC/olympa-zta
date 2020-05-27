@@ -42,7 +42,7 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 
 	private Map<Integer, Loot> currentLoots = new HashMap<>();
 
-	private Random random;
+	private Random random = new Random();
 
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
