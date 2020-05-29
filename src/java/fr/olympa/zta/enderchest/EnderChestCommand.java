@@ -19,7 +19,7 @@ public class EnderChestCommand extends OlympaCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		new EnderChestGUI(OlympaPlayerZTA.get(getPlayer())).create(getPlayer());
+		player.openInventory(OlympaPlayerZTA.get(player).getEnderChest());
 		return true;
 	}
 

@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.sql.OlympaStatement;
-import fr.olympa.api.utils.ObservableList;
+import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 

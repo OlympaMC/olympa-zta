@@ -2,6 +2,8 @@ package fr.olympa.zta.hub;
 
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -31,6 +33,20 @@ public class SpreadManageCommand extends ComplexCommand {
 	public void removeRegion(CommandContext cmd) {
 		OlympaZTA.getInstance().hub.removeSpawnRegion(SpawnType.valueOf(cmd.getArgument(0)));
 		sendSuccess("Vous avez retiré une région de spawn.");
+	}
+
+	@Cmd (args = "PLAYERS", syntax = "[joueur]")
+	public void spread(CommandContext cmd) {
+		Player target;
+		if (cmd.getArgumentsLength() == 0) {
+			if (player == null) {
+				sendImpossibleWithConsole();
+				return;
+			}
+			target = player;
+		}else target = cmd.getArgument(0);
+		OlympaZTA.getInstance().hub.startRandomTeleport(target);
+		sendSuccess("Le joueur %s est en cours de téléportation vers la zone de combat.", target.getName());
 	}
 
 	@Cmd

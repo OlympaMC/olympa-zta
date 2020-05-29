@@ -16,8 +16,8 @@ import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.utils.ObservableList;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
@@ -114,21 +114,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
-				new PagedGUI<OlympaPlayerInformations>("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(ObservableList.getCollector()), x -> PlayerPlotGUI.super.create(p)) {
-
-					@Override
-					public ItemStack getItemStack(OlympaPlayerInformations object) {
-						return ItemUtils.skull("§e" + object.getName(), object.getName(), "§8> §oéjecter le joueur");
-					}
-
-					@Override
-					public void click(OlympaPlayerInformations existing, Player p) {
-						plot.kick(existing);
-						super.removeItem(existing);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'expulser " + existing.getName() + " de ta parcelle.");
-					}
-
-				}.create(p);
+				new PlotGuestsGUI(plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(ObservableList.getCollector())).create(p);
 			}
 			return true;
 		}
@@ -139,22 +125,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 				manager.initSearch(player);
 				setState();
 			}else if (click.isLeftClick()) {
-				new PagedGUI<PlayerPlot>("Liste des invitations", DyeColor.CYAN, manager.getInvitations(player), x -> PlayerPlotGUI.super.create(p)) {
-
-					@Override
-					public ItemStack getItemStack(PlayerPlot object) {
-						return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getPlayerInformations(object.getOwner()).getName());
-					}
-
-					@Override
-					public void click(PlayerPlot existing, Player p) {
-						existing.addPlayer(player);
-						plot = existing;
-						setState();
-						PlayerPlotGUI.super.create(p);
-					}
-
-				}.create(p);
+				new PlotInvitationsGUI(manager.getInvitations(player)).create(p);
 			}
 		}else {
 			if (click.isRightClick() || !isChief) {
@@ -172,6 +143,57 @@ public class PlayerPlotGUI extends OlympaGUI {
 	public boolean onClose(Player p) {
 		if (progress != null) progress.cancel();
 		return true;
+	}
+
+	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
+		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
+			super("Liste des invités", DyeColor.CYAN, objects, false);
+			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
+		}
+
+		@Override
+		public ItemStack getItemStack(PlayerPlot object) {
+			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getPlayerInformations(object.getOwner()).getName());
+		}
+
+		@Override
+		public void click(PlayerPlot existing, Player p) {
+			existing.addPlayer(player);
+			plot = existing;
+			setState();
+			PlayerPlotGUI.super.create(p);
+		}
+
+		@Override
+		protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
+			PlayerPlotGUI.super.create(p);
+			return true;
+		}
+	}
+
+	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
+		private PlotGuestsGUI(ObservableList<OlympaPlayerInformations> objects) {
+			super("Liste des invités", DyeColor.MAGENTA, objects, false);
+			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
+		}
+
+		@Override
+		public ItemStack getItemStack(OlympaPlayerInformations object) {
+			return ItemUtils.skull("§e" + object.getName(), object.getName(), "§8> §oéjecter le joueur");
+		}
+
+		@Override
+		public void click(OlympaPlayerInformations existing, Player p) {
+			plot.kick(existing);
+			super.removeItem(existing);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'expulser " + existing.getName() + " de ta parcelle.");
+		}
+
+		@Override
+		protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
+			PlayerPlotGUI.super.create(p);
+			return true;
+		}
 	}
 
 }

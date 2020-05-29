@@ -27,7 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.sql.OlympaStatement;
-import fr.olympa.api.utils.ObservableList;
+import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;

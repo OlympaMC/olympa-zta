@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.sql.OlympaStatement;
@@ -137,100 +138,73 @@ public abstract class Gun extends Weapon {
 		e.setCancelled(true);
 
 		lastClick = System.currentTimeMillis();
-		
-		if (getCurrentMode() == GunMode.AUTOMATIC) {
-			if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
-				if (reloading != null) return;
-				if (ammos == 0) { // tentative de tir alors que le barillet est vide
-					reload(p, item);
-				}else if (ready && fireEnabled(p)) {
-					if (task == null) {
-						task = new BukkitRunnable() {
-							@Override
-							public void run() {
-								if (ammos == 0) {
-									updateItemName(item);
-									cancel();
-									return;
-								}
-								if (System.currentTimeMillis() - lastClick < 210) {
-									fire(p);
-									if (ready) {
-										ready = false;
-										updateItemName(item);
-									}
-								}else {
+
+		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
+			if (reloading != null) {
+				if (isOneByOneCharge() && ammos > 0) {
+					reloading.cancel();
+					reloading = null;
+				}else return;
+			}
+			if (ammos == 0) { // tentative de tir alors que le barillet est vide
+				reload(p, item);
+			}else if (ready && fireEnabled(p) && task != null) {
+				if (getCurrentMode() == GunMode.BLAST) {
+					fire(p);
+					if (ammos == 0) return;
+					int time = (int) (fireRate.getValue() / 3L);
+					task = new BukkitRunnable() {
+						byte left = 2;
+						@Override
+						public void run() {
+							fire(p);
+							left--;
+							if (left == 0 || ammos == 0) {
+								if (ammos > 0) {
 									ready = true;
 									playReadySound(p.getLocation());
-									updateItemName(item);
-									cancel();
 								}
+								updateItemName(item);
+								cancel();
 							}
-
-							public synchronized void cancel() throws IllegalStateException {
-								super.cancel();
-								task = null;
-							}
-						}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
-					}
-				}
-			}else secondaryClick(p, item);
-		}else {
-			if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
-				if (reloading != null) {
-					if (isOneByOneCharge()) {
-						reloading.cancel();
-						reloading = null;
-					}else return;
-				}
-
-				if (ammos == 0) { // tentative de tir alors que le barillet est vide
-					reload(p, item);
-				}else if (ready && fireEnabled(p)) {
-					if (task == null) {
-						fire(p);
-						ready = false;
-						updateItemName(item);
-						if (ammos == 0) return;
-						if (getCurrentMode() == GunMode.BLAST) {
-							int time = (int) (fireRate.getValue() / 3L);
-							task = new BukkitRunnable() {
-								byte left = 2;
-								@Override
-								public void run() {
-									fire(p);
-									left--;
-									if (left == 0 || ammos == 0) {
-										if (ammos > 0) {
-											ready = true;
-											playReadySound(p.getLocation());
-										}
-										updateItemName(item);
-										cancel();
-									}
-								}
-								@Override
-								public synchronized void cancel() throws IllegalStateException {
-									super.cancel();
-									task = null;
-								}
-							}.runTaskTimer(OlympaZTA.getInstance(), time, time);
-						}else {
-							task = new BukkitRunnable() {
-								@Override
-								public void run() {
-									task = null;
-									if (ammos != 0) {
-										ready = true;
-										updateItemName(item);
-										playReadySound(p.getLocation());
-									}
-								}
-							}.runTaskLater(OlympaZTA.getInstance(), (long) fireRate.getValue());
 						}
-					}
+						@Override
+						public synchronized void cancel() throws IllegalStateException {
+							super.cancel();
+							task = null;
+						}
+					}.runTaskTimer(OlympaZTA.getInstance(), time, time);
+				}else {
+					ready = false;
+					updateItemName(item);
+					task = new BukkitRunnable() {
+						@Override
+						public void run() {
+							if (ammos == 0) {
+								updateItemName(item);
+								cancel();
+								return;
+							}
+							if (System.currentTimeMillis() - lastClick < 210) {
+								fire(p);
+								updateItemName(item);
+							}else {
+								ready = true;
+								playReadySound(p.getLocation());
+								updateItemName(item);
+								cancel();
+							}
+						}
+
+						public synchronized void cancel() throws IllegalStateException {
+							super.cancel();
+							task = null;
+						}
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
 				}
-			}else secondaryClick(p, item);
+			}
+		}else 	if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
+			if (reloading == null) secondaryClick(p, item);
 		}
 	}
 
@@ -241,7 +215,7 @@ public abstract class Gun extends Weapon {
 	public void itemClick(Player p, ItemStack item) {
 		new AccessoriesGUI(this, item).create(p);
 	}
-	
+
 	private void secondaryClick(Player p, ItemStack item) {
 		GunAction action = getSecondClickAction();
 		if (action == null) return;
@@ -255,12 +229,11 @@ public abstract class Gun extends Weapon {
 			break;
 		}
 	}
-	
+
 	private void fire(Player p) {
 		Bullet bullet = getFiredBullet(p);
-		launchBullet(bullet, p); // première balle
+		launchBullet(bullet, p);
 		ammos--;
-		if (ammos == 0) return;
 
 		float distance = fireVolume.getValue() * 16;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
@@ -286,8 +259,8 @@ public abstract class Gun extends Weapon {
 		}else toCharge = Math.min(max - ammos, availableAmmos);
 
 		reloading = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), new Runnable() {
-			final short max = 15;
-			final char character = '█';
+			final short max = 13;
+			final char character = '░'; //'█';
 
 			short time = (short) chargeTime.getValue();
 			float add = (float) max / (float) time;
@@ -337,13 +310,19 @@ public abstract class Gun extends Weapon {
 	}
 
 	private void launchBullet(Bullet bullet, Player p) {
-		bullet.launchProjectile(p);
+		if (getAmmoType() == AmmoType.CARTRIDGE) {
+			for (int i = 0; i < 5; i++) {
+				bullet.launchProjectile(p);
+			}
+		}else bullet.launchProjectile(p);
 		playFireSound(p.getLocation());
 
 		float knockback = this.knockback.getValue();
 		if (knockback != 0) {
 			if (p.isSneaking()) knockback /= 2;
-			p.setVelocity(p.getLocation().getDirection().multiply(-knockback));
+			Vector velocity = p.getLocation().getDirection().multiply(-knockback);
+			velocity.setY(velocity.getY() / 3);
+			p.setVelocity(velocity);
 		}
 	}
 
@@ -564,21 +543,9 @@ public abstract class Gun extends Weapon {
 	}
 
 	public enum GunMode {
-		/**
-		 * Clic gauche ; 1 balle par clic
-		 */
 		SINGLE("tir unique"),
-		/**
-		 * Clic gauche : 1 balle par clic
-		 */
 		SEMI_AUTOMATIC("semi-automatique"),
-		/**
-		 * Clic droit : permet de maintenir
-		 */
 		AUTOMATIC("automatique"),
-		/**
-		 * Clic gauche : 3 balles par clic
-		 */
 		BLAST("rafales");
 
 		private String name;

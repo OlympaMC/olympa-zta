@@ -51,7 +51,7 @@ public class GunDragunov extends Gun{
 	}
 	
 	protected float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_HIGH;
+		return CommonGunConstants.BULLET_SPEED_ULTRA_HIGH;
 	}
 	
 	protected GunAccuracy getAccuracy(){

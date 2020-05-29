@@ -1,6 +1,7 @@
 package fr.olympa.zta;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
@@ -114,6 +116,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ScoreboardManager<OlympaPlayerZTA> scoreboards;
 	public HubManager hub;
 	public ClansManagerZTA clansManager;
+	public AuctionsManager auctionsManager;
 	
 	public DynamicLine<OlympaPlayerZTA> lineRadar = new DynamicLine<OlympaPlayerZTA>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getPlayer());
@@ -180,6 +183,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots joueurs.");
 		}
+		
+		try {
+			auctionsManager = new AuctionsManager(this, "zta_auctions");
+		}catch (ClassNotFoundException | SQLException | IOException e1) {
+			e1.printStackTrace();
+			getLogger().severe("Une erreur est survenue lors du chargement des ventes.");
+		}
 
 		new LootChestCommand().register();
 		new WeaponsCommand().register();
@@ -203,7 +213,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		AmmoType.CARTRIDGE.getName();
 
 		new Mobs(); // initalise les mobs custom
-		mobSpawning = new MobSpawning(getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
+		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();
 		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(
@@ -220,6 +230,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new AnimLine(this, "play.olympa.fr", 1, 10 * 20));
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
+		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
 		checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
 		checkForTrait(FraterniteBlockShop.class, "blockshopfraternite", getConfig().getIntegerList("blockShopFraternite"));
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));

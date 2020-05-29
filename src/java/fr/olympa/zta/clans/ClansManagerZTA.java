@@ -2,7 +2,6 @@ package fr.olympa.zta.clans;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansCommand;
@@ -14,7 +13,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class ClansManagerZTA extends ClansManager<ClanZTA> {
 
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
-		super(OlympaZTA.getInstance(), "zta_clans", Collections.EMPTY_LIST, 5);
+		super(OlympaZTA.getInstance(), "zta_clans", 5);
 
 		new ClansCommand<>(this, "clan", "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
 	}

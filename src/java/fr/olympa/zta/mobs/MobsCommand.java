@@ -10,6 +10,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.custom.Mobs;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 
 public class MobsCommand extends ComplexCommand {
 
@@ -31,14 +32,14 @@ public class MobsCommand extends ComplexCommand {
 		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l" + SpawnType.getSpawnType(player.getLocation().getChunk()));
 	}
 
-	@Cmd (player = true)
+	@Cmd (player = true, args = "COMMON|DROWNED", min = 0, syntax = "[type]")
 	public void spawnZombie(CommandContext cmd) {
-		Mobs.spawnCommonZombie(getPlayer().getLocation());
+		Mobs.spawnCommonZombie(Zombies.valueOf(cmd.getArgument(0, "COMMON")), getPlayer().getLocation());
 	}
 
 	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")
 	public void removeZombies(CommandContext cmd) {
-		boolean kill = cmd.args.length == 0 ? false : cmd.getArgument(0).equals("kill");
+		boolean kill = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("kill");
 		int amount = 0;
 		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
 			if (kill) {

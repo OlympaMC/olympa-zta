@@ -8,8 +8,9 @@ import java.sql.Types;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.collect.ImmutableMap;
@@ -26,18 +27,13 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public static final int MAX_SLOTS = 27;
 	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder()
-			.put("bank_slots", "TINYINT(1) UNSIGNED NULL DEFAULT 9")
-			.put("bank_content", "VARBINARY(8000) NULL")
 			.put("ender_chest", "VARBINARY(8000) NULL")
 			.put("money", "DOUBLE NULL DEFAULT 0")
 			.put("clan", "INT NULL DEFAULT NULL")
 			.put("plot", "INT NOT NULL DEFAULT -1")
 			.build();
 
-	private int bankSlots = 9;
-	private ItemStack[] bankContent = new ItemStack[MAX_SLOTS];
-
-	private ItemStack[] enderChest = new ItemStack[9];
+	private Inventory enderChest = Bukkit.createInventory(null, 9, "Enderchest de " + getName());
 
 	private OlympaMoney money = new OlympaMoney(0);
 
@@ -48,31 +44,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
-		money.observe(() -> OlympaZTA.getInstance().lineMoney.updatePlayer(this));
+		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updatePlayer(this));
 	}
 
-	public int getBankSlots() {
-		return bankSlots;
-	}
-
-	public void incrementBankSlots() {
-		bankSlots++;
-	}
-
-	public ItemStack[] getBankContent() {
-		return bankContent;
-	}
-
-	public void setBankContent(ItemStack[] items) {
-		this.bankContent = items;
-	}
-
-	public ItemStack[] getEnderChest() {
+	public Inventory getEnderChest() {
 		return enderChest;
-	}
-
-	public void setEnderChest(ItemStack[] enderChest) {
-		this.enderChest = enderChest;
 	}
 
 	@Override
@@ -98,9 +74,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public void loadDatas(ResultSet resultSet) throws SQLException {
 		try {
-			bankSlots = resultSet.getInt("bank_slots");
-			bankContent = ItemUtils.deserializeItemsArray(resultSet.getBytes("bank_content"));
-			enderChest = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
+			enderChest.setContents(ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest")));
 			money.set(resultSet.getDouble("money"));
 			clan = OlympaZTA.getInstance().clansManager.getClan(resultSet.getInt("clan"));
 			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true);
@@ -111,16 +85,14 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public void saveDatas(PreparedStatement statement) throws SQLException {
 		try {
-			statement.setInt(1, bankSlots);
-			statement.setBytes(2, ItemUtils.serializeItemsArray(bankContent));
-			statement.setBytes(3, ItemUtils.serializeItemsArray(enderChest));
-			statement.setDouble(4, money.get());
+			statement.setBytes(1, ItemUtils.serializeItemsArray(enderChest.getContents()));
+			statement.setDouble(2, money.get());
 			if (clan == null) {
-				statement.setNull(5, Types.INTEGER);
+				statement.setNull(3, Types.INTEGER);
 			}else {
-				statement.setInt(5, clan.getID());
+				statement.setInt(3, clan.getID());
 			}
-			statement.setInt(6, plot == null ? -1 : plot.getID());
+			statement.setInt(4, plot == null ? -1 : plot.getID());
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

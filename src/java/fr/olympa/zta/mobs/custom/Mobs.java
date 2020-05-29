@@ -5,10 +5,13 @@ import java.lang.reflect.Modifier;
 import java.util.Random;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 
 import net.citizensnpcs.nms.v1_15_R1.util.CustomEntityRegistry;
 import net.minecraft.server.v1_15_R1.BlockPosition;
@@ -25,12 +28,20 @@ public class Mobs {
 
 	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE");
 	private static EntityTypes<CustomEntityMommy> customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK");
+	private static EntityTypes<CustomEntityDrowned> customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED");
 
-	public static void spawnCommonZombie(Location location) {
+	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
-		Zombie zombie = spawnMob(customZombie, location, SpawnReason.NATURAL);
-		zombie.getEquipment().clear();
+		Zombie zombie = spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
+		ItemStack empty = new ItemStack(Material.AIR);
+		EntityEquipment equipment = zombie.getEquipment();
+		equipment.setBoots(empty);
+		equipment.setLeggings(empty);
+		equipment.setChestplate(empty);
+		equipment.setHelmet(empty);
+		equipment.setItemInMainHand(empty);
+		equipment.setItemInOffHand(empty);
 	}
 
 	public static Zombie spawnMomifiedZombie(Player p) {
@@ -68,6 +79,20 @@ public class Mobs {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public enum Zombies {
+		COMMON(customZombie), DROWNED(customDrowned);
+
+		private final EntityTypes<? extends EntityZombie> type;
+
+		private Zombies(EntityTypes<? extends EntityZombie> type) {
+			this.type = type;
+		}
+
+		public EntityTypes<? extends EntityZombie> getType() {
+			return type;
+		}
 	}
 
 }

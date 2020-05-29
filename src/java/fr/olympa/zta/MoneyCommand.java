@@ -24,7 +24,7 @@ public class MoneyCommand extends ComplexCommand {
 
 	@Cmd (args = "PLAYERS", syntax = "[joueur]")
 	public void get(CommandContext cmd) {
-		if (cmd.args.length == 0) {
+		if (cmd.getArgumentsLength() == 0) {
 			if (player != null) {
 				sendSuccess("Vous disposez de " + getGameMoney(getPlayer()).getFormatted());
 			}else sendImpossibleWithConsole();

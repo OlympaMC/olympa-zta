@@ -26,7 +26,7 @@ public class WeaponsCommand extends ComplexCommand {
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		if (player != null) {
-			new WeaponsGiveGUI().create(player);
+			WeaponsGiveGUI.GUI.create(player);
 			return true;
 		}else return false;
 	}
@@ -53,16 +53,14 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
-	@Cmd (player = true, min = 2, args = { "light|heavy|handworked|cartridge|powder", "1|2|3|...", "true|false" }, syntax = "<type de munition> <quantité> [vide ?]")
+	@Cmd (player = true, min = 2, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "<type de munition> <quantité> [vide ?]")
 	public void giveAmmo(CommandContext cmd) {
 		try {
-			boolean empty = cmd.args.length > 2 ? Boolean.parseBoolean(cmd.getArgument(2)) : false;
-			int amount = Integer.parseInt(cmd.getArgument(1));
+			boolean empty = cmd.getArgument(2, false);
+			int amount = cmd.getArgument(1);
 			if ("powder".equalsIgnoreCase(cmd.getArgument(0))) {
 				getPlayer().getInventory().addItem(AmmoType.getPowder(amount));
 			}else getPlayer().getInventory().addItem(AmmoType.valueOf(cmd.<String>getArgument(0).toUpperCase()).getAmmo(amount, !empty));
-		}catch (NumberFormatException ex) {
-			sendError(cmd.getArgument(1) + " n'est pas un nombre valide.");
 		}catch (IllegalArgumentException ex) {
 			sendError("Ce type de munition n'existe pas.");
 		}
@@ -72,7 +70,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void giveArmor(CommandContext cmd) {
 		try {
 			ArmorType armor = ArmorType.valueOf(cmd.<String>getArgument(0).toUpperCase());
-			if (cmd.args.length == 1) {
+			if (cmd.getArgumentsLength() == 1) {
 				for (ArmorSlot slot : ArmorSlot.values()) {
 					getPlayer().getInventory().addItem(armor.get(slot));
 				}

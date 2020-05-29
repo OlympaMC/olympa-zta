@@ -3,11 +3,12 @@ package fr.olympa.zta.utils;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
-import org.dynmap.markers.MarkerDescription;
+import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
@@ -42,23 +43,22 @@ public class DynmapLink {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
 		AreaMarker area = markers.createAreaMarker(spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
-		area.setFillStyle(0.4, spawn.color.asRGB());
+		area.setFillStyle(0.3, spawn.color.asRGB());
 		area.setDescription(spawn.description);
-		OlympaZTA.getInstance().getLogger().info("Région affichée sur dynmap : " + area.getMarkerID());
 	}
 	
 	public static void showSafeArea(Region region, String id, String title) {
 		if (api == null) return;
 		
-		MarkerDescription marker;
 		if (region instanceof Cylinder) {
 			Cylinder cylinder = (Cylinder) region;
-			marker = markers.createCircleMarker(id, title, true, region.getWorld().getName(), cylinder.getCenterX(), 0, cylinder.getCenterZ(), cylinder.getRadius(), cylinder.getRadius(), false);
+			CircleMarker marker = markers.createCircleMarker(id, title, true, region.getWorld().getName(), cylinder.getCenterX(), 0, cylinder.getCenterZ(), cylinder.getRadius(), cylinder.getRadius(), false);
+			marker.setFillStyle(0.45, Color.GREEN.asRGB());
 		}else {
 			List<Location> points = region.getLocations();
-			marker = markers.createAreaMarker(id, title, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+			AreaMarker marker = markers.createAreaMarker(id, title, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+			marker.setFillStyle(0.45, Color.GREEN.asRGB());
 		}
-		OlympaZTA.getInstance().getLogger().info("Région affichée sur dynmap : " + marker.getMarkerID());
 	}
 	
 }

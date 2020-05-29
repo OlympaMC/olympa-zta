@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.utils.DynmapLink;
 import net.md_5.bungee.api.ChatMessageType;
 import net.minecraft.server.v1_15_R1.Entity;
@@ -53,17 +55,20 @@ public class MobSpawning {
 	private Random random = new Random();
 
 	private Lock queueLock = new ReentrantLock();
-	private LinkedList<Location> spawnQueue = new LinkedList<>();
+	private LinkedList<Entry<Location, Zombies>> spawnQueue = new LinkedList<>();
 	private Queue<Integer> averageQueueSize = new LinkedList<>();
 
 	private Set<Region> safeRegions = new HashSet<>();
 
+	public int seaLevel;
+
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
-	public int criticalEntitiesPerChunk = 25;
+	public int criticalEntitiesPerChunk = 20;
 	public int maxEntities = 3000;
 
-	public MobSpawning(ConfigurationSection spawnRegions, ConfigurationSection safeRegions) {
+	public MobSpawning(int seaLevel, ConfigurationSection spawnRegions, ConfigurationSection safeRegions) {
+		this.seaLevel = seaLevel;
 		for (String type : spawnRegions.getKeys(false)) {
 			try {
 				SpawnType.valueOf(type).addRegions((List<Region>) spawnRegions.getList(type));
@@ -89,27 +94,35 @@ public class MobSpawning {
 						Chunk chunk = entry.getKey();
 						SpawnType spawn = entry.getValue();
 						int mobs = random.nextInt(spawn.spawnAmount + 1);
-						for (int i = 0; i < mobs; i++) {
+						mobs: for (int i = 0; i < mobs; i++) {
 							int x = random.nextInt(16);
-							int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
 							int z = random.nextInt(16);
-							Block prev = chunk.getBlock(x, y, z);
-							y: for (; y < 140; y++) {
-								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-								prev = chunk.getBlock(x, y, z);
-								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
-									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
-									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue;
-									Block block = location.getBlock();
-									if (block.getLightLevel() > 10 && !world.isThundering()) continue;
+							if (spawn == SpawnType.NONE) {
+								Block block = chunk.getBlock(x, seaLevel, z);
+								if (block.getType() == Material.WATER) {
 									for (Location loc : entities) {
-										if (loc.distanceSquared(location) < spawn.minDistanceSquared) {
-											continue y; // distance aux autres entités obligatoirement > à 12 blocs
-										}
+										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs;
 									}
-									Location lc = block.getLocation();
-									spawnQueue.add(lc);
-									break y;
+									spawnQueue.add(new AbstractMap.SimpleEntry<>(block.getLocation(), Zombies.DROWNED));
+								}
+							}else {
+								int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
+								Block prev = chunk.getBlock(x, y, z);
+								y: for (; y < 140; y++) {
+									boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
+									prev = chunk.getBlock(x, y, z);
+									if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+										Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
+										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue;
+										Block block = location.getBlock();
+										if (block.getLightLevel() > 10 && !world.isThundering()) continue;
+										for (Location loc : entities) {
+											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y;
+										}
+										Location lc = block.getLocation();
+										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, Zombies.COMMON));
+										break y;
+									}
 								}
 							}
 						}
@@ -128,10 +141,10 @@ public class MobSpawning {
 				if (!queueLock.tryLock()) return;
 				try {
 					int i = spawnQueue.size() / 2;
-					for (Iterator<Location> iterator = spawnQueue.iterator(); iterator.hasNext();) {
+					for (Iterator<Entry<Location, Zombies>> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						try {
-							Location loc = iterator.next();
-							if (loc.getChunk().isLoaded()) Mobs.spawnCommonZombie(loc);
+							Entry<Location, Zombies> loc = iterator.next();
+							if (loc.getKey().getChunk().isLoaded()) Mobs.spawnCommonZombie(loc.getValue(), loc.getKey());
 						}catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -166,6 +179,7 @@ public class MobSpawning {
 					SpawnType type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
+						if (type == SpawnType.NONE && world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() != Material.WATER) continue; // si pas de type de spawn et pas d'eau dans le coin 0 0 du chunk
 						if (isInSafeZone(chunk)) continue;
 						chunks.put(chunk, type);
 					}
@@ -220,7 +234,8 @@ public class MobSpawning {
 	}
 	
 	public enum SpawnType {
-		HARD(10, 3, 20, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
+		NONE(20, 1, 5, "§cerreur", null, null, null),
+		HARD(10, 3, 1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés."),
 		MEDIUM(12, 2, 15, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone."),
 		EASY(13, 1, 12, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
 		SAFE(20, 1, 7, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.");
@@ -245,7 +260,7 @@ public class MobSpawning {
 			this.description = description;
 			this.title = title;
 
-			flag = new SpawningFlag(this);
+			if (name != null) flag = new SpawningFlag(this);
 		}
 
 		public boolean isInto(Chunk chunk) {
@@ -271,7 +286,7 @@ public class MobSpawning {
 			for (SpawnType type : values()) {
 				if (type.isInto(chunk)) return type;
 			}
-			return null;
+			return NONE;
 		}
 
 		public static class SpawningFlag extends Flag {

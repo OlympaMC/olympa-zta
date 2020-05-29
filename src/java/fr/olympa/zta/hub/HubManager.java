@@ -39,6 +39,7 @@ public class HubManager implements Listener {
 	private Set<Player> inRandomTP = new HashSet<>();
 
 	public int minDistance = 40;
+	public int maxHeight = 45;
 
 	public HubManager(Region region, Location spawnpoint, List<SpawnType> spawnRegions) {
 		this.region = region;
@@ -76,15 +77,17 @@ public class HubManager implements Listener {
 				if (cachedRegions == null) {
 					cachedRegions = new ArrayList<>();
 					spawnRegions.forEach(x -> cachedRegions.addAll(x.getRegions()));
-					if (cachedRegions.size() == 1) onlySpawnRegion = cachedRegions.get(0);
+					onlySpawnRegion = cachedRegions.size() == 1 ? cachedRegions.get(0) : null;
 				}
 
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Vous allez être téléporté sur le champ de bataille. Bon courage.");
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu vas être téléporté sur le champ de bataille. Bon courage.");
 				int minFoundDistance = Integer.MAX_VALUE;
 				attempt: for (int i = 0; i < 1000; i++) {
 					Region region = onlySpawnRegion == null ? cachedRegions.get(random.nextInt(cachedRegions.size())) : onlySpawnRegion;
 					Location lc = region.getRandomLocation();
-					lc.setY(lc.getWorld().getHighestBlockYAt(lc));
+					int y = lc.getWorld().getHighestBlockYAt(lc);
+					if (y > maxHeight) continue attempt;
+					lc.setY(y);
 					for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
 						if (p == otherPlayer) continue;
 						int distance = (int) otherPlayer.getLocation().distance(lc);
@@ -96,7 +99,7 @@ public class HubManager implements Listener {
 					if (MobSpawning.UNSPAWNABLE_ON.contains(lc.getBlock().getType())) continue;
 
 					Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-						p.teleport(lc.add(0, 2, 0));
+						p.teleport(lc.add(0.5, 2, 0.5));
 						inRandomTP.remove(p);
 						DynmapLink.setPlayerVisiblity(p, true);
 					}); // le joueur est téléporté de manière synchrone

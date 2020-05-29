@@ -10,8 +10,10 @@ import fr.olympa.zta.registry.ZTARegistry;
 
 public class WeaponsGiveGUI extends PagedGUI<ItemStackableInstantiator<?>> {
 
-	public WeaponsGiveGUI() {
-		super("Don d'arme", DyeColor.CYAN, ZTARegistry.itemStackables);
+	public static final WeaponsGiveGUI GUI = new WeaponsGiveGUI();
+
+	private WeaponsGiveGUI() {
+		super("Don d'arme", DyeColor.CYAN, ZTARegistry.itemStackables, true);
 	}
 
 	@Override

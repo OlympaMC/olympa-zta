@@ -14,7 +14,7 @@ public class RegistryCommand extends ComplexCommand {
 
 	@Cmd (syntax = "<id>", args = "INTEGER")
 	public void info(CommandContext cmd) {
-		if (cmd.args.length == 0) {
+		if (cmd.getArgumentsLength() == 0) {
 			sendInfo("Objets actuellement chargés dans le registre : §l" + ZTARegistry.registry.size());
 			sendInfo("Types d'objets disponible : §l" + ZTARegistry.registrable.size());
 		}else {

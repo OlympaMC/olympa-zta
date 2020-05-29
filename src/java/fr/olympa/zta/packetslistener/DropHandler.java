@@ -21,13 +21,14 @@ public class DropHandler extends ChannelDuplexHandler{
 		if (msg instanceof PacketPlayInBlockDig) {
 			PacketPlayInBlockDig packet = (PacketPlayInBlockDig) msg;
 			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
+				System.out.println("DropHandler.channelRead() drop");
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
 				ItemStack item = p.getInventory().getItemInMainHand();
 				ItemStackable object = ZTARegistry.getItemStackable(item);
 				if (object instanceof Weapon) {
 					if (((Weapon) object).drop(p, item)) {
 						p.updateInventory();
-						return; // super.channelRead pas appelé si l'action est annulée
+						return; // super.channelRead pas appelé si l'action est annulée (en théorie, visiblement il est appelé)
 					}
 				}
 			}
