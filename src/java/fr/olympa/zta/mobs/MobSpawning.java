@@ -176,10 +176,12 @@ public class MobSpawning {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
 					if (chunks.containsKey(chunk)) continue;
-					SpawnType type = SpawnType.getSpawnType(chunk);
+					SpawnType type;
+					if (world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() == Material.WATER) {
+						type = SpawnType.NONE;
+					}else type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
-						if (type == SpawnType.NONE && world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() != Material.WATER) continue; // si pas de type de spawn et pas d'eau dans le coin 0 0 du chunk
 						if (isInSafeZone(chunk)) continue;
 						chunks.put(chunk, type);
 					}
@@ -286,7 +288,7 @@ public class MobSpawning {
 			for (SpawnType type : values()) {
 				if (type.isInto(chunk)) return type;
 			}
-			return NONE;
+			return null;
 		}
 
 		public static class SpawningFlag extends Flag {

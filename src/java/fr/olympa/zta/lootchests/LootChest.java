@@ -10,6 +10,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
+import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.zta.lootchests.creators.LootCreator;
@@ -100,6 +102,10 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 
 	public void updateChestState(int viewers) {
 		((CraftWorld) location.getWorld()).getHandle().playBlockAction(nmsPosition, nmsBlock, 1, viewers);
+	}
+
+	public void register(Chest chest) {
+		chest.getInventory().setItem(0, ItemUtils.item(Material.DIRT, String.valueOf(ZTARegistry.registerObject(this))));
 	}
 
 	public void resetTimer() {

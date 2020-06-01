@@ -14,9 +14,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PhysicalMoney {
 
-	public static final ItemStack BANKNOTE_1 = ItemUtils.item(Material.GOLD_NUGGET, "§eBillet de 1");
-	public static final ItemStack BANKNOTE_10 = ItemUtils.item(Material.GOLD_INGOT, "§eBillet de 10");
-	public static final ItemStack BANKNOTE_100 = ItemUtils.item(Material.GOLD_BLOCK, "§eBillet de 100");
+	public static final ItemStack BANKNOTE_1 = ItemUtils.item(Material.BRICK, "§eBillet de 1");
+	public static final ItemStack BANKNOTE_10 = ItemUtils.item(Material.NETHER_BRICK, "§eBillet de 10");
+	public static final ItemStack BANKNOTE_100 = ItemUtils.item(Material.PHANTOM_MEMBRANE, "§eBillet de 100");
 	
 	public static boolean withdraw(Player p, int amount, boolean checkAmount) {
 		if (amount == 0) return true;

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -14,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.sql.OlympaStatement;
-import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 
@@ -25,7 +25,7 @@ public class ZTARegistry{
 	public static final Map<String, RegistryType<?>> registrable = new HashMap<>();
 	public static final Map<Integer, Registrable> registry = new HashMap<>(200);
 
-	public static final ObservableList<ItemStackableInstantiator<?>> itemStackables = new ObservableList<>(new ArrayList<>(20));
+	public static final List<ItemStackableInstantiator<?>> itemStackables = new ArrayList<>(20);
 
 	private static final Random idGen = new Random();
 	

@@ -3,12 +3,12 @@ package fr.olympa.zta;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.utils.Prefix;
@@ -26,20 +26,24 @@ public class TeleportationManager implements Listener {
 	}
 
 	public void teleport(Player p, Location to, String message, Runnable run) {
+		Runnable teleport = () -> {
+			teleportations.remove(p);
+			p.teleport(to);
+			p.sendMessage(message);
+			if (run != null) run.run();
+		};
+
+		if (ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND.hasPermission(p.getUniqueId())) {
+			teleport.run();
+			return;
+		}
+
 		BukkitTask removed = teleportations.remove(p);
 		if (removed != null) {
 			removed.cancel();
 			Prefix.INFO.sendMessage(p, "La téléportation précédente a été annulée.");
 		}
-		teleportations.put(p, new BukkitRunnable() {
-			@Override
-			public void run() {
-				teleportations.remove(p);
-				p.teleport(to);
-				p.sendMessage(message);
-				if (run != null) run.run();
-			}
-		}.runTaskLater(OlympaZTA.getInstance(), TELEPORTATION_TICKS));
+		teleportations.put(p, Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), teleport, TELEPORTATION_TICKS));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
 	}
 

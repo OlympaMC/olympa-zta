@@ -148,22 +148,23 @@ public abstract class Gun extends Weapon {
 			}
 			if (ammos == 0) { // tentative de tir alors que le barillet est vide
 				reload(p, item);
-			}else if (ready && fireEnabled(p) && task != null) {
+			}else if (ready && fireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
-					fire(p);
-					if (ammos == 0) return;
+					ready = false;
 					int time = (int) (fireRate.getValue() / 3L);
 					task = new BukkitRunnable() {
-						byte left = 2;
+						byte left = 3;
 						@Override
 						public void run() {
-							fire(p);
-							left--;
-							if (left == 0 || ammos == 0) {
-								if (ammos > 0) {
-									ready = true;
-									playReadySound(p.getLocation());
+							if (left-- > 0) {
+								fire(p);
+								updateItemName(item);
+								if (ammos == 0) {
+									cancel();
 								}
+							}else if (left == -3) {
+								ready = true;
+								playReadySound(p.getLocation());
 								updateItemName(item);
 								cancel();
 							}
@@ -173,10 +174,9 @@ public abstract class Gun extends Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), time, time);
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, time);
 				}else {
 					ready = false;
-					updateItemName(item);
 					task = new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -497,7 +497,7 @@ public abstract class Gun extends Weapon {
 	 * @param lc location où est jouée le son
 	 */
 	public void playReadySound(Location lc) {
-		lc.getWorld().playSound(lc, Sound.BLOCK_STONE_HIT, SoundCategory.PLAYERS, 1, 1);
+		lc.getWorld().playSound(lc, Sound.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.PLAYERS, 0.5f, 1);
 	}
 
 	/**

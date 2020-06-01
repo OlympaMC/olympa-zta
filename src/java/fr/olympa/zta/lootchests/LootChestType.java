@@ -50,7 +50,6 @@ public class LootChestType {
 
 	static {
 		chestTypes.put("civil", new LootChestType("civil", Arrays.asList(
-
 				new ItemStackableCreator<>(1.485, GunM1911.class), new ItemStackableCreator<>(1.430, GunCobra.class), new ItemStackableCreator<>(1.485, Gun870.class), new ItemStackableCreator<>(1.485, GunUZI.class), new ItemStackableCreator<>(1.430, GunM16.class), new ItemStackableCreator<>(1.485, GunM1897.class), new ItemStackableCreator<>(2.2, KnifeBatte.class),
 				new ItemStackableCreator<>(1.4, StockLight.class), new ItemStackableCreator<>(0.6, ScopeLight.class),
 				new AmmoCreator(5.25, AmmoType.LIGHT, 1, 2, true), new AmmoCreator(1.75, AmmoType.CARTRIDGE, 1, 2, true), new AmmoCreator(5.6, 1, 3), new AmmoCreator(5.6, AmmoType.HANDWORKED, 1, 1, false), new AmmoCreator(5.6, AmmoType.LIGHT, 1, 1, false), new AmmoCreator(5.6, AmmoType.CARTRIDGE, 1, 1, false), new AmmoCreator(5.6, AmmoType.HEAVY, 1, 1, false),

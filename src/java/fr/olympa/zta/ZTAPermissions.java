@@ -12,6 +12,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission REGISTRY_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission PLAYER_SPREAD_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	
 	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission CLANS_PLAYERS_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);

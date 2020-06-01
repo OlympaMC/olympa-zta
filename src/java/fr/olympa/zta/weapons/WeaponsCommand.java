@@ -26,7 +26,7 @@ public class WeaponsCommand extends ComplexCommand {
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		if (player != null) {
-			WeaponsGiveGUI.GUI.create(player);
+			new WeaponsGiveGUI().create(player);
 			return true;
 		}else return false;
 	}

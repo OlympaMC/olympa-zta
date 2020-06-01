@@ -1,5 +1,6 @@
 package fr.olympa.zta.weapons.guns.bullets;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -21,19 +22,27 @@ public class BulletSimple extends Bullet{
 	
 	public void hit(ProjectileHitEvent e){
 		Player shooter = (Player) e.getEntity().getShooter();
-		if (e.getHitEntity() != null) {
+		if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
+			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
 			WeaponsListener.cancelDamageEvent = true;
+			float damage;
 			if (e.getHitEntity() instanceof Player) {
-				damage((Player) e.getHitEntity(), shooter, playerDamage + gun.damageAdded);
-			}else if (e.getHitEntity() instanceof LivingEntity) {
-				damage((LivingEntity) e.getHitEntity(), shooter, entityDamage + gun.damageAdded);
+				damage = playerDamage;
+			}else {
+				damage = entityDamage;
 			}
+			damage += gun.damageAdded;
+			if (e.getEntity().getLocation().getY() - hitEntity.getLocation().getY() > 1.4) {
+				damage *= 1.3;
+				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
+			}
+			damage(hitEntity, shooter, damage);
 		}
 	}
 	
-	public void damage(LivingEntity entity, LivingEntity damager, float damage){
+	public void damage(LivingEntity entity, LivingEntity damager, float damage) {
 		entity.damage(damage, damager);
-		entity.setNoDamageTicks(BulletSimple.NO_DAMAGE_TICKS);
+		entity.setNoDamageTicks(NO_DAMAGE_TICKS);
 	}
-	
+
 }

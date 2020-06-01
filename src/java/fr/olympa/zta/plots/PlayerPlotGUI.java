@@ -1,5 +1,8 @@
 package fr.olympa.zta.plots;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -114,7 +117,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
-				new PlotGuestsGUI(plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(ObservableList.getCollector())).create(p);
+				new PlotGuestsGUI(plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList())).create(p);
 			}
 			return true;
 		}
@@ -147,7 +150,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
 		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
-			super("Liste des invités", DyeColor.CYAN, objects, false);
+			super("Liste des invités", DyeColor.CYAN, objects, 5);
 			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
 		}
 
@@ -172,8 +175,8 @@ public class PlayerPlotGUI extends OlympaGUI {
 	}
 
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
-		private PlotGuestsGUI(ObservableList<OlympaPlayerInformations> objects) {
-			super("Liste des invités", DyeColor.MAGENTA, objects, false);
+		private PlotGuestsGUI(List<OlympaPlayerInformations> list) {
+			super("Liste des invités", DyeColor.MAGENTA, list, 5);
 			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
 		}
 

@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
@@ -22,14 +21,11 @@ public abstract class AbstractShop<T> extends Trait {
 	private String shopName;
 	private DyeColor color;
 
-	private ShopGUI gui;
-
 	protected AbstractShop(String traitName, String shopName, DyeColor color, List<Article<T>> articles) {
 		super(traitName);
 		this.shopName = shopName;
 		this.color = color;
 		this.articles = articles;
-		this.gui = new ShopGUI();
 	}
 
 	public abstract ItemStack getItemStack(T object);
@@ -38,13 +34,13 @@ public abstract class AbstractShop<T> extends Trait {
 
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent e) {
-		if (e.getNPC() == super.npc) gui.create(e.getClicker());
+		if (e.getNPC() == super.npc) new ShopGUI().create(e.getClicker());
 	}
 
 	class ShopGUI extends PagedGUI<Article<T>> {
 
 		public ShopGUI() {
-			super(shopName, color, new ObservableList<>(articles), true);
+			super(shopName, color, articles, 6);
 		}
 
 		@Override
