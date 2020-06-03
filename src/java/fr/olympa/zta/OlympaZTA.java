@@ -1,7 +1,6 @@
 package fr.olympa.zta;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -38,9 +37,7 @@ import fr.olympa.zta.enderchest.EnderChestCommand;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
-import fr.olympa.zta.lootchests.LootChest;
-import fr.olympa.zta.lootchests.LootChestCommand;
-import fr.olympa.zta.lootchests.LootChestsListener;
+import fr.olympa.zta.lootchests.LootChestsManager;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -105,13 +102,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	}
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
-	private LootChestsListener chestsListener = new LootChestsListener();
 	private MobsListener mobsListener = new MobsListener();
 	private ItemsListener itemsListener = new ItemsListener();
 
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
+	public LootChestsManager lootChestsManager;
 	public MobSpawning mobSpawning;
 	public ScoreboardManager<OlympaPlayerZTA> scoreboards;
 	public HubManager hub;
@@ -151,7 +148,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(weaponListener, this);
-		pluginManager.registerEvents(chestsListener, this);
 		pluginManager.registerEvents(mobsListener, this);
 		pluginManager.registerEvents(itemsListener, this);
 		pluginManager.registerEvents(hub, this);
@@ -186,12 +182,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		try {
 			auctionsManager = new AuctionsManager(this, "zta_auctions");
-		}catch (ClassNotFoundException | SQLException | IOException e1) {
-			e1.printStackTrace();
+		}catch (Exception ex) {
+			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors du chargement des ventes.");
 		}
 
-		new LootChestCommand().register();
+		try {
+			pluginManager.registerEvents(lootChestsManager = new LootChestsManager(), this);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			getLogger().severe("Une erreur est survenue lors du chargement des coffres de loot.");
+		}
+
 		new WeaponsCommand().register();
 		new MobsCommand().register();
 		new EnderChestCommand().register();
@@ -207,7 +209,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
 				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
 				.forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
-		ZTARegistry.registerObjectType(LootChest.class, LootChest.TABLE_NAME, LootChest.CREATE_TABLE_STATEMENT, LootChest::deserializeLootChest);
 
 		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();

@@ -78,6 +78,7 @@ public abstract class Gun extends Weapon {
 
 	public ItemStack createItemStack(boolean accessories) {
 		ItemStack item = ItemUtils.item(getItemMaterial(), getName());
+		updateItemCustomModel(item);
 		updateItemName(item);
 		updateItemLore(item, accessories);
 		return addIdentifier(item);
@@ -86,6 +87,12 @@ public abstract class Gun extends Weapon {
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
 		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		item.setItemMeta(im);
+	}
+
+	public void updateItemCustomModel(ItemStack item) {
+		ItemMeta im = item.getItemMeta();
+		im.setCustomModelData(zoomed ? 2 : 1);
 		item.setItemMeta(im);
 	}
 
@@ -113,10 +120,12 @@ public abstract class Gun extends Weapon {
 		onInteract(new PlayerInteractEvent(damager, Action.LEFT_CLICK_AIR, damager.getInventory().getItemInMainHand(), null, null));
 	}
 
-	public void itemHeld(Player p, ItemStack item) {}
+	public void itemHeld(Player p, ItemStack item) {
+		p.setCooldown(item.getType(), 0);
+	}
 
 	public void itemNoLongerHeld(Player p, ItemStack item) {
-		if (zoomed) toggleZoom(p);
+		if (zoomed) toggleZoom(p, item);
 		if (reloading != null) {
 			reloading.cancel();
 			reloading = null;
@@ -151,7 +160,6 @@ public abstract class Gun extends Weapon {
 			}else if (ready && fireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
 					ready = false;
-					int time = (int) (fireRate.getValue() / 3L);
 					task = new BukkitRunnable() {
 						byte left = 3;
 						@Override
@@ -174,7 +182,11 @@ public abstract class Gun extends Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, time);
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 3L));
+				}else if (fireRate.getValue() == -1) {
+					ready = false;
+					fire(p);
+					updateItemName(item);
 				}else {
 					ready = false;
 					task = new BukkitRunnable() {
@@ -225,7 +237,7 @@ public abstract class Gun extends Weapon {
 			updateItemName(item);
 			break;
 		case ZOOM:
-			toggleZoom(p);
+			toggleZoom(p, item);
 			break;
 		}
 	}
@@ -299,7 +311,7 @@ public abstract class Gun extends Weapon {
 		playChargeSound(p.getLocation());
 	}
 
-	private void toggleZoom(Player p) {
+	private void toggleZoom(Player p, ItemStack item) {
 		if (zoomed) {
 			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier());
 		}else {
@@ -307,6 +319,7 @@ public abstract class Gun extends Weapon {
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
+		updateItemCustomModel(item);
 	}
 
 	private void launchBullet(Bullet bullet, Player p) {

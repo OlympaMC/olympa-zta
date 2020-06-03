@@ -2,8 +2,10 @@ package fr.olympa.zta.registry;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.zta.weapons.guns.Gun;
 
 public class ItemStackableInstantiator<T extends ItemStackable> {
 
@@ -14,6 +16,11 @@ public class ItemStackableInstantiator<T extends ItemStackable> {
 		this.clazz = clazz;
 		try {
 			demoItem = ItemUtils.item((Material) clazz.getDeclaredField("TYPE").get(null), "§e" + clazz.getDeclaredField("NAME").get(null));
+			if (Gun.class.isAssignableFrom(clazz)) {
+				ItemMeta meta = demoItem.getItemMeta();
+				meta.setCustomModelData(1);
+				demoItem.setItemMeta(meta);
+			}
 		}catch (ReflectiveOperationException ex) {
 			ex.printStackTrace();
 		}

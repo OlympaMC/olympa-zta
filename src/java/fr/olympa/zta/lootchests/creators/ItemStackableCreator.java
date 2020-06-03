@@ -22,6 +22,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 				break;
 			}
 		}
+		if (instantiator == null) new IllegalArgumentException("No instantiator for class " + clazz.getName());
 	}
 
 	public ItemStackableCreator(double chance, ItemStackableInstantiator<T> inst) {

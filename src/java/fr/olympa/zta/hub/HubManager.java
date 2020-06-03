@@ -15,11 +15,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning;
@@ -45,6 +45,8 @@ public class HubManager implements Listener {
 		this.region = region;
 		this.spawnpoint = spawnpoint;
 		this.spawnRegions = new HashSet<>(spawnRegions);
+
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", new HubFlag());
 	}
 
 	public void addSpawnRegion(SpawnType region) {
@@ -117,7 +119,6 @@ public class HubManager implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
 		e.setRespawnLocation(spawnpoint);
-		DynmapLink.setPlayerVisiblity(e.getPlayer(), false);
 	}
 
 	@EventHandler
@@ -126,11 +127,6 @@ public class HubManager implements Listener {
 		Player p = (Player) e.getEntity();
 
 		startRandomTeleport(p);
-	}
-
-	@EventHandler
-	public void onTeleport(PlayerTeleportEvent e) {
-		DynmapLink.setPlayerVisiblity(e.getPlayer(), !region.isIn(e.getTo()));
 	}
 
 	@EventHandler

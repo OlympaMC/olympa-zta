@@ -1,8 +1,5 @@
 package fr.olympa.zta.lootchests;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +7,6 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
@@ -19,21 +15,18 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.gui.OlympaGUI;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
-import fr.olympa.zta.registry.Registrable;
-import fr.olympa.zta.registry.ZTARegistry;
+import fr.olympa.zta.lootchests.type.LootChestType;
+import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
-public class LootChest extends OlympaGUI implements Registrable, AbstractRandomizedPicker<LootCreator> {
-
-	public static final String TABLE_NAME = "`zta_lootchests`";
+public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<LootCreator> {
 
 	private final int id;
 
@@ -49,10 +42,10 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
 
-	public LootChest(Location lc, int id, LootChestType type) {
+	public LootChest(int id, Location lc, LootChestType type) {
 		super("Coffre " + type.getName(), InventoryType.CHEST);
-		this.location = lc;
 		this.id = id;
+		this.location = lc;
 
 		this.nmsPosition = new BlockPosition(lc.getX(), lc.getY(), lc.getZ());
 		this.nmsBlock = ((CraftBlock) lc.getBlock()).getNMS().getBlock();
@@ -105,7 +98,8 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 	}
 
 	public void register(Chest chest) {
-		chest.getInventory().setItem(0, ItemUtils.item(Material.DIRT, String.valueOf(ZTARegistry.registerObject(this))));
+		chest.getPersistentDataContainer().set(LootChestsManager.LOOTCHEST, PersistentDataType.INTEGER, id);
+		chest.getInventory().clear();
 	}
 
 	public void resetTimer() {
@@ -117,14 +111,23 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 		this.nextOpen = 0;
 	}
 
+	public LootChestType getLootType() {
+		return type;
+	}
+
 	public void setLootType(LootChestType type) {
 		this.type = type;
+		DynmapLink.showChest(this);
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
 	}
 
 	public int getID() {
 		return id;
+	}
+
+	public Location getLocation() {
+		return location;
 	}
 
 	public int getMinItems() {
@@ -143,63 +146,8 @@ public class LootChest extends OlympaGUI implements Registrable, AbstractRandomi
 		return type.getCreatorsAlways();
 	}
 
-	public static LootChest getLootChest(Chest chest) {
-		ItemStack item = chest.getInventory().getItem(0);
-		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return null;
-		try {
-			return ZTARegistry.getObject(Integer.parseInt(item.getItemMeta().getDisplayName()));
-		}catch (NumberFormatException ex) {
-			return null;
-		}
-	}
-
 	public Inventory getInventory() {
 		return inv;
-	}
-
-	private static OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?, ?)");
-	private static OlympaStatement updateStatement = new OlympaStatement("UPDATE " + TABLE_NAME + " SET "
-			+ "`world` = ?, "
-			+ "`x` = ?, "
-			+ "`y` = ?, "
-			+ "`z` = ?, "
-			+ "`loot_type` = ? "
-			+ "WHERE (`id` = ?)");
-
-	public void createDatas() throws SQLException {
-		PreparedStatement statement = createStatement.getStatement();
-		statement.setInt(1, getID());
-		statement.setString(2, location.getWorld().getName());
-		statement.setInt(3, location.getBlockX());
-		statement.setInt(4, location.getBlockY());
-		statement.setInt(5, location.getBlockZ());
-		statement.setString(6, LootChestType.chestTypes.inverse().get(type));
-		statement.executeUpdate();
-	}
-
-	public synchronized void updateDatas() throws SQLException {
-		PreparedStatement statement = updateStatement.getStatement();
-		statement.setString(1, location.getWorld().getName());
-		statement.setInt(2, location.getBlockX());
-		statement.setInt(3, location.getBlockY());
-		statement.setInt(4, location.getBlockZ());
-		statement.setString(5, LootChestType.chestTypes.inverse().get(type));
-		statement.setInt(6, getID());
-		statement.executeUpdate();
-	}
-
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
-			"  `id` INT NOT NULL," +
-			"  `world` VARCHAR(45) NULL," +
-			"  `x` INT NOT NULL," +
-			"  `y` INT NOT NULL," +
-			"  `z` INT NOT NULL," +
-			"  `loot_type` VARCHAR(45) NOT NULL," +
-			"  PRIMARY KEY (`id`))";
-
-	public static LootChest deserializeLootChest(ResultSet set, int id, Class<?> clazz) throws Exception {
-		LootChest chest = new LootChest(new Location(Bukkit.getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z")), id, LootChestType.chestTypes.get(set.getString("loot_type")));
-		return chest;
 	}
 
 }
