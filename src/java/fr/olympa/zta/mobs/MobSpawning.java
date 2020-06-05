@@ -138,7 +138,7 @@ public class MobSpawning {
 		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
 				averageQueueSize.add(spawnQueue.size());
-				if (averageQueueSize.size() > 24) averageQueueSize.remove();
+				if (averageQueueSize.size() > 24) averageQueueSize.poll();
 
 				if (!queueLock.tryLock()) return;
 				try {
@@ -157,7 +157,7 @@ public class MobSpawning {
 					queueLock.unlock();
 				}
 			}
-		}.runTaskTimer(OlympaZTA.getInstance(), 20L, 0L);
+		}.runTaskTimer(OlympaZTA.getInstance(), 20L, 50L);
 
 		enabled = true;
 	}
@@ -216,7 +216,7 @@ public class MobSpawning {
 	}
 
 	public double getAverageQueueSize() {
-		return averageQueueSize.stream().mapToInt(x -> x).average().orElse(0);
+		return averageQueueSize.stream().mapToInt(Integer::intValue).average().orElse(0);
 	}
 
 	public boolean isEnabled() {

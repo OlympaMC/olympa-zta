@@ -54,6 +54,7 @@ public class MobsListener implements Listener {
 				e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par §6" + damager.getName() + "§e.");
 			}
 		}else e.setDeathMessage("§6§l" + p.getName() + "§r§e est mort.");
+		p.setMetadata("lastDeath", new FixedMetadataValue(OlympaZTA.getInstance(), p.getLocation()));
 	}
 
 	@EventHandler

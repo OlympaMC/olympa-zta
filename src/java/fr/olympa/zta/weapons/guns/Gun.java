@@ -127,9 +127,7 @@ public abstract class Gun extends Weapon {
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		if (zoomed) toggleZoom(p, item);
 		if (reloading != null) {
-			reloading.cancel();
-			reloading = null;
-			updateItemName(item);
+			cancelReload(p, item);
 		}
 	}
 
@@ -151,8 +149,7 @@ public abstract class Gun extends Weapon {
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
 			if (reloading != null) {
 				if (isOneByOneCharge() && ammos > 0) {
-					reloading.cancel();
-					reloading = null;
+					cancelReload(p, item);
 				}else return;
 			}
 			if (ammos == 0) { // tentative de tir alors que le barillet est vide
@@ -254,6 +251,13 @@ public abstract class Gun extends Weapon {
 		}
 	}
 
+	private void cancelReload(Player p, ItemStack item) {
+		reloading.cancel();
+		reloading = null;
+		updateItemName(item);
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
+	}
+
 	private void reload(Player p, ItemStack item) {
 		if (reloading != null) return;
 
@@ -281,14 +285,17 @@ public abstract class Gun extends Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					reloading.cancel();
-					reloading = null;
 					ammos += getAmmoType().removeAmmos(p, toCharge);
 					if (ammos != 0) ready = true;
-					updateItemName(item);
 					playChargeCompleteSound(p.getLocation());
 
-					if (isOneByOneCharge()) reload(p, item); // relancer une charge
+					if (isOneByOneCharge()) {
+						reloading.cancel();
+						reloading = null;
+						reload(p, item); // relancer une charge
+					}else {
+						cancelReload(p, item);
+					}
 					return;
 				}
 				StringBuilder status = new StringBuilder("§bRechargement... ");

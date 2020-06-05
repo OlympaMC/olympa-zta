@@ -22,7 +22,10 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 				break;
 			}
 		}
-		if (instantiator == null) new IllegalArgumentException("No instantiator for class " + clazz.getName());
+		if (instantiator == null) {
+			System.out.println("No instantiator for class " + clazz.getName());
+			new IllegalArgumentException("No instantiator for class " + clazz.getName());
+		}
 	}
 
 	public ItemStackableCreator(double chance, ItemStackableInstantiator<T> inst) {
@@ -35,16 +38,13 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 	}
 
 	public Loot create(Player p, Random random) {
-		return new ItemStackableLoot(instantiator);
+		return new ItemStackableLoot();
 	}
 
 	class ItemStackableLoot extends Loot {
 
-		private ItemStackableInstantiator<T> instantiator;
-
-		public ItemStackableLoot(ItemStackableInstantiator<T> stackable) {
-			super(stackable.getDemoItem());
-			this.instantiator = stackable;
+		public ItemStackableLoot() {
+			super(instantiator.getDemoItem());
 		}
 
 		@Override

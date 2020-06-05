@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
+import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
@@ -55,6 +56,9 @@ import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.commands.BackCommand;
+import fr.olympa.zta.utils.commands.FeedCommand;
+import fr.olympa.zta.utils.commands.HealCommand;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -142,6 +146,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		DynmapLink.initialize();
 
+		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
+
+		Bukkit.clearRecipes();
+		AmmoType.CARTRIDGE.getName();
+
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		teleportationManager = new TeleportationManager();
 		
@@ -197,21 +207,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new WeaponsCommand().register();
 		new MobsCommand().register();
 		new EnderChestCommand().register();
-		new MoneyCommand().register();
 		new HubCommand().register();
 		new RegistryCommand().register();
 		new SpreadManageCommand().register();
-
-		Arrays.asList(
-				GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class)
-				.forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
-		Arrays.asList(
-				KnifeBatte.class, KnifeBiche.class, KnifeSurin.class,
-				CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class)
-				.forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
-
-		Bukkit.clearRecipes();
-		AmmoType.CARTRIDGE.getName();
+		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
+		new HealCommand(this).register();
+		new FeedCommand(this).register();
+		new BackCommand(this).register();
 
 		new Mobs(); // initalise les mobs custom
 		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));

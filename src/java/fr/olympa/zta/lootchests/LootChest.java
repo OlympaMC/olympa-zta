@@ -1,5 +1,6 @@
 package fr.olympa.zta.lootchests;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,10 @@ import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
 import fr.olympa.zta.lootchests.type.LootChestType;
-import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
@@ -48,9 +49,8 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 		this.location = lc;
 
 		this.nmsPosition = new BlockPosition(lc.getX(), lc.getY(), lc.getZ());
-		this.nmsBlock = ((CraftBlock) lc.getBlock()).getNMS().getBlock();
 
-		setLootType(type);
+		setLootType(type, false);
 	}
 
 	public void click(Player p) {
@@ -94,12 +94,14 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 	}
 
 	public void updateChestState(int viewers) {
+		if (nmsBlock == null) nmsBlock = ((CraftBlock) location.getBlock()).getNMS().getBlock();
 		((CraftWorld) location.getWorld()).getHandle().playBlockAction(nmsPosition, nmsBlock, 1, viewers);
 	}
 
 	public void register(Chest chest) {
 		chest.getPersistentDataContainer().set(LootChestsManager.LOOTCHEST, PersistentDataType.INTEGER, id);
 		chest.getInventory().clear();
+		chest.update();
 	}
 
 	public void resetTimer() {
@@ -115,11 +117,18 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 		return type;
 	}
 
-	public void setLootType(LootChestType type) {
+	public void setLootType(LootChestType type, boolean update) {
 		this.type = type;
-		DynmapLink.showChest(this);
+		//DynmapLink.showChest(this);
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
+		if (update) {
+			try {
+				OlympaZTA.getInstance().lootChestsManager.updateLootType(this);
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public int getID() {

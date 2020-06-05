@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs.custom;
 
 import java.util.Random;
 
+import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
@@ -38,6 +39,9 @@ public class CustomEntityZombie extends EntityZombie {
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
 		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
 	}
+
+	@Override
+	protected void a(DifficultyDamageScaler difficultydamagescaler) {} // populateDefaultEquipmentSlots
 
 	@Override
 	protected boolean et() { // convertsInWater

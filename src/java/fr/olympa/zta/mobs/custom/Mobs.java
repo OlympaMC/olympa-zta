@@ -5,13 +5,10 @@ import java.lang.reflect.Modifier;
 import java.util.Random;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 
 import net.citizensnpcs.nms.v1_15_R1.util.CustomEntityRegistry;
 import net.minecraft.server.v1_15_R1.BlockPosition;
@@ -33,15 +30,7 @@ public class Mobs {
 	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
-		Zombie zombie = spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
-		ItemStack empty = new ItemStack(Material.AIR);
-		EntityEquipment equipment = zombie.getEquipment();
-		equipment.setBoots(empty);
-		equipment.setLeggings(empty);
-		equipment.setChestplate(empty);
-		equipment.setHelmet(empty);
-		equipment.setItemInMainHand(empty);
-		equipment.setItemInOffHand(empty);
+		spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
 	}
 
 	public static Zombie spawnMomifiedZombie(Player p) {

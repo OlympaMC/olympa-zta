@@ -28,7 +28,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	protected void initAttributes() {
 		super.initAttributes();
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(8);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(9);
 		this.getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
 	}
 	

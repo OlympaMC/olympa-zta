@@ -33,6 +33,7 @@ public class LootChestsManager implements Listener {
 	private final String tableName = "`zta_lootchests`";
 	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + tableName + " (`world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?)", true);
 	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
+	private final OlympaStatement updateLootStatement = new OlympaStatement("UPDATE " + tableName + " SET `loot_type` = ? WHERE (`id` = ?)");
 
 	public final Map<Integer, LootChest> chests = new HashMap<>();
 
@@ -92,6 +93,13 @@ public class LootChestsManager implements Listener {
 		if (chests.remove(id) == null) throw new IllegalArgumentException("No lootchest with id " + id);
 		PreparedStatement statement = removeStatement.getStatement();
 		statement.setInt(1, id);
+		statement.executeUpdate();
+	}
+
+	public synchronized void updateLootType(LootChest chest) throws SQLException {
+		PreparedStatement statement = updateLootStatement.getStatement();
+		statement.setString(1, chest.getLootType().name());
+		statement.setInt(2, chest.getID());
 		statement.executeUpdate();
 	}
 
