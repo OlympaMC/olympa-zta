@@ -182,7 +182,8 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 		@Override
 		public ItemStack getItemStack(OlympaPlayerInformations object) {
-			return ItemUtils.skull("§e" + object.getName(), object.getName(), "§8> §oéjecter le joueur");
+			ItemUtils.skull(item -> super.updateObjectItem(object, item), "§e" + object.getName(), object.getName(), "§8> §oéjecter le joueur");
+			return ItemUtils.none;
 		}
 
 		@Override

@@ -20,7 +20,7 @@ public class HealCommand extends OlympaCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		getPlayer().setHealth(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-		sendSuccess("Tu as été heal.");
+		sendSuccess("Ta vie a été restaurée.");
 		return false;
 	}
 

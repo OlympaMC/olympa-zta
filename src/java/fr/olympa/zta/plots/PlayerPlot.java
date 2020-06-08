@@ -10,8 +10,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
@@ -171,14 +174,18 @@ public class PlayerPlot {
 		new Location(OlympaZTA.getInstance().plotsManager.getWorld(), loc.getWorldX() + innerX, PlotChunkGenerator.WORLD_LEVEL, loc.getWorldZ() + innerZ).getBlock().setType(type);
 	}
 
-	public boolean blockAction(Player p, Block block, boolean place) {
+	public boolean entityAction(Player p, Entity entity) {
+		return OlympaPlayerZTA.get(p).getPlot() != this;
+	}
+
+	public boolean blockAction(Player p, Event e, Block block) {
 		OlympaPlayerZTA oplayer = OlympaPlayerZTA.get(p);
 		if (oplayer.getPlot() != this) return true;
 		
 		boolean chest = false;
 		if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST) {
 			chest = true;
-			if (place && chests == chestsPerLevel[level - 1]) return true;
+			if (e instanceof BlockPlaceEvent && chests == chestsPerLevel[level - 1]) return true;
 		}
 
 		Location location = block.getLocation();
@@ -189,13 +196,13 @@ public class PlayerPlot {
 		}
 
 		if (chest) {
-			if (place) {
+			if (e instanceof BlockPlaceEvent) {
 				chests++;
 			}else chests--;
 			try {
 				OlympaZTA.getInstance().plotsManager.updateChests(this, chests);
-			}catch (SQLException e) {
-				e.printStackTrace();
+			}catch (SQLException ex) {
+				ex.printStackTrace();
 			}
 		}
 		return false;

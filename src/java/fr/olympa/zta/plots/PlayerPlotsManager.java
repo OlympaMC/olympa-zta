@@ -16,24 +16,28 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.region.tracking.flags.DamageFlag;
+import fr.olympa.api.region.tracking.flags.PhysicsFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
+import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.guns.NoGunFlag;
 
-public class PlayerPlotsManager implements Listener {
+public class PlayerPlotsManager {
 	
 	private static final String tableName = "`zta_player_plots`";
 
@@ -67,7 +71,27 @@ public class PlayerPlotsManager implements Listener {
 		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 5);
 		worldCrea.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 		worldCrea.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+		worldCrea.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+		worldCrea.setFullTime(10000);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
+
+		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new NoGunFlag(true), new DamageFlag(true), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
+			@Override
+			public <T extends Event & Cancellable> void blockEvent(T event, Player p, Block block) {
+				event.setCancelled(PlayerPlotsManager.this.blockEvent(p, event, block));
+			}
+			@Override
+			public <T extends Event & Cancellable> void entityEvent(T event, Player p, Entity entity) {
+				event.setCancelled(PlayerPlotsManager.this.entityAction(p, entity));
+			}
+		}, new PlayerInteractFlag(true) {
+			@Override
+			public void interactEvent(PlayerInteractEvent event) {
+				System.out.println("PlayerPlotsManager.PlayerPlotsManager(...).new PlayerInteractFlag() {...}.interactEvent()");
+				PlayerPlot plot = getPlot(event.getClickedBlock().getLocation());
+				event.setCancelled(plot == null ? true : plot.onInteract(event));
+			}
+		});
 
 		new PlotsCommand(this).register();
 		
@@ -184,9 +208,10 @@ public class PlayerPlotsManager implements Listener {
 	}
 
 	public PlayerPlotLocation getAvailable() {
+		PlayerPlotLocation loc = new PlayerPlotLocation(0, 0);
+		if (plotsByPosition.isEmpty()) return loc;
 		int side = Math.max((int) Math.sqrt(plotsByPosition.size()), 1);
 		int splitSide = (int) Math.ceil(side / 2D);
-		PlayerPlotLocation loc = new PlayerPlotLocation(0, 0);
 		for (int x = -splitSide; x <= splitSide; x++) {
 			for (int z = -splitSide; z <= splitSide; z++) {
 				loc.setX(x);
@@ -225,27 +250,16 @@ public class PlayerPlotsManager implements Listener {
 		return plotDatas == null ? null : plotDatas.loadedPlot;
 	}
 
-	private boolean blockEvent(Player p, Block block, boolean place) {
+	private boolean blockEvent(Player p, Event e, Block block) {
 		PlayerPlot plot = getPlot(block.getLocation());
 		if (plot == null) return true;
-		return plot.blockAction(p, block, place);
+		return plot.blockAction(p, e, block);
 	}
 
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
-		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock(), false));
-	}
-
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent e) {
-		e.setCancelled(blockEvent(e.getPlayer(), e.getBlock(), true));
-	}
-
-	@EventHandler
-	public void onInteract(PlayerInteractEvent e) {
-		if (e.getClickedBlock() == null) return;
-		PlayerPlot plot = getPlot(e.getClickedBlock().getLocation());
-		if (plot != null) e.setCancelled(plot.onInteract(e));
+	private boolean entityAction(Player p, Entity entity) {
+		PlayerPlot plot = getPlot(entity.getLocation());
+		if (plot == null) return true;
+		return plot.entityAction(p, entity);
 	}
 
 	class InternalPlotDatas {

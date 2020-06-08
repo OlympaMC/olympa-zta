@@ -1,10 +1,13 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 

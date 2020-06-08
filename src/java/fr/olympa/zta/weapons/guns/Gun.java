@@ -28,6 +28,7 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.Attribute;
@@ -217,8 +218,12 @@ public abstract class Gun extends Weapon {
 		}
 	}
 
+	private boolean fireEnabled;
 	public boolean fireEnabled(Player p) {
-		return !OlympaZTA.getInstance().hub.isInHub(p.getLocation()) && OlympaZTA.getInstance().mobSpawning.world == p.getWorld();
+		fireEnabled = true;
+		OlympaCore.getInstance().getRegionManager().fireEvent(p.getLocation(), NoGunFlag.class, x -> fireEnabled = x.isFireEnabled());
+		return fireEnabled;
+		//return !OlympaZTA.getInstance().hub.isInHub(p.getLocation()) && OlympaZTA.getInstance().mobSpawning.world == p.getWorld();
 	}
 
 	public void itemClick(Player p, ItemStack item) {

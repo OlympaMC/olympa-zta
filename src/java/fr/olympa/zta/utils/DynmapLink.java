@@ -13,6 +13,7 @@ import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cylinder;
+import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
@@ -76,5 +77,19 @@ public class DynmapLink {
 		Location location = chest.getLocation();
 		chestsMarkers.createMarker(id, "Coffre " + chest.getLootType().getName(), location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), chestIcon, false);
 	}*/
+
+	public static class DynmapHideFlag extends Flag {
+		@Override
+		public boolean enters(Player p) {
+			setPlayerVisiblity(p, false);
+			return super.enters(p);
+		}
+
+		@Override
+		public boolean leaves(Player p) {
+			setPlayerVisiblity(p, true);
+			return super.leaves(p);
+		}
+	}
 
 }

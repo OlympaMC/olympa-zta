@@ -1,17 +1,20 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunAK extends Gun{
+public class GunSDMR extends Gun{
 	
-	public static final String NAME = "AK-20";
-	public static final Material TYPE = Material.GOLDEN_PICKAXE;
+	public static final String NAME = "SDMR";
+	public static final Material TYPE = Material.IRON_PICKAXE;
 
-	public GunAK(int id) {
+	public GunSDMR(int id) {
 		super(id);
 	}
 
@@ -24,7 +27,7 @@ public class GunAK extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HANDWORKED;
+		return AmmoType.HEAVY;
 	}
 	
 	protected int getMaxAmmos(){
@@ -32,15 +35,15 @@ public class GunAK extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 15;
+		return 6;
 	}
 	
 	protected int getChargeTime(){
-		return 70;
+		return 50;
 	}
 	
 	protected float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_LOW;
+		return CommonGunConstants.KNOCKBACK_MEDIUM;
 	}
 	
 	protected float getBulletSpeed(){
@@ -52,13 +55,17 @@ public class GunAK extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 6, 3);
+		return new BulletSimple(this, 5, 6);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.AUTOMATIC;
 	}
 	
+	/*public GunMode getSecondaryMode(){
+		return GunMode.SEMI_AUTOMATIC;
+	}*/
+
 	public boolean isScopeAllowed(){
 		return true;
 	}

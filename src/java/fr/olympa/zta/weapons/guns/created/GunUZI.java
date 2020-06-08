@@ -1,17 +1,20 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class Gun870 extends Gun{
+public class GunUZI extends Gun{
 	
-	public static final String NAME = "Remington 870 Express";
-	public static final Material TYPE = Material.WOODEN_HOE;
+	public static final String NAME = "UZI";
+	public static final Material TYPE = Material.SLIME_BALL;
 
-	public Gun870(int id) {
+	public GunUZI(int id) {
 		super(id);
 	}
 
@@ -28,19 +31,19 @@ public class Gun870 extends Gun{
 	}
 	
 	public int getMaxAmmos(){
-		return 4;
+		return 25;
 	}
 	
 	public int getFireRate(){
-		return 30;
+		return 4;
 	}
 	
 	public int getChargeTime(){
-		return 70;
+		return 50;
 	}
 	
 	public float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_LOW;
+		return 0;
 	}
 	
 	public float getBulletSpeed(){
@@ -52,19 +55,11 @@ public class Gun870 extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 5);
+		return new BulletSimple(this, 3, 2);
 	}
 	
 	public GunMode getPrimaryMode(){
-		return GunMode.SINGLE;
-	}
-	
-	public boolean isCannonAllowed(){
-		return true;
-	}
-	
-	public boolean isScopeAllowed(){
-		return true;
+		return GunMode.AUTOMATIC;
 	}
 	
 }

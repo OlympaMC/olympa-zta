@@ -1,21 +1,20 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
-import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
+import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunM1897 extends Gun{
+public class Gun870 extends Gun{
 	
-	public static final String NAME = "M1897";
-	public static final Material TYPE = Material.WOODEN_SHOVEL;
+	public static final String NAME = "Remington 870 Express";
+	public static final Material TYPE = Material.WOODEN_HOE;
 
-	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
-	
-	public GunM1897(int id) {
+	public Gun870(int id) {
 		super(id);
 	}
 
@@ -28,11 +27,11 @@ public class GunM1897 extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.CARTRIDGE;
+		return AmmoType.LIGHT;
 	}
 	
 	public int getMaxAmmos(){
-		return 5;
+		return 4;
 	}
 	
 	public int getFireRate(){
@@ -40,15 +39,11 @@ public class GunM1897 extends Gun{
 	}
 	
 	public int getChargeTime(){
-		return 15;
-	}
-	
-	protected boolean isOneByOneCharge(){
-		return true;
+		return 70;
 	}
 	
 	public float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_MEDIUM;
+		return CommonGunConstants.KNOCKBACK_LOW;
 	}
 	
 	public float getBulletSpeed(){
@@ -60,14 +55,18 @@ public class GunM1897 extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 7, 10, effect);
+		return new BulletSimple(this, 4, 5);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.SINGLE;
 	}
 	
-	public boolean isStockAllowed(){
+	public boolean isCannonAllowed(){
+		return true;
+	}
+	
+	public boolean isScopeAllowed(){
 		return true;
 	}
 	

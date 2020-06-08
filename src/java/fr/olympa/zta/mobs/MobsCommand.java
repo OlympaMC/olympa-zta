@@ -21,15 +21,15 @@ public class MobsCommand extends ComplexCommand {
 	@Cmd
 	public void info(CommandContext cmd) {
 		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
-		sendInfo("Le spawn de mob est §l" + (spawning.isEnabled() ? "§aactif" : "§cinactif"));
+		sendInfo("Le spawn de mob est §l%s", spawning.isEnabled() ? "§aactif" : "§cinactif");
 		if (spawning.isEnabled()) {
-			sendInfo("Nombre de mobs moyen dans la queue de spawn : §l" + Utils.formatDouble(spawning.getAverageQueueSize(), 2));
+			sendInfo("Nombre de mobs moyen dans la queue de spawn : §l%f", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
 		}
-		sendInfo("Taille du tableau des inventaires : §l" + MobsListener.inventories.size());
-		sendInfo("Nombre d'entités vivantes sur le monde principal : §l" + spawning.world.getLivingEntities().size());
-		sendInfo("Quantité maximale d'entités sur le monde : §l" + spawning.maxEntities);
-		sendInfo("Quantité maximale d'entités par chunk : §l" + spawning.criticalEntitiesPerChunk);
-		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l" + SpawnType.getSpawnType(player.getLocation().getChunk()));
+		sendInfo("Taille du tableau des inventaires : §l%d", MobsListener.inventories.size());
+		sendInfo("Nombre d'entités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
+		sendInfo("Quantité maximale d'entités sur le monde : §l%d", spawning.maxEntities);
+		sendInfo("Quantité maximale d'entités par chunk : §l%d", spawning.criticalEntitiesPerChunk);
+		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getLocation().getChunk()));
 	}
 
 	@Cmd (player = true, args = "COMMON|DROWNED", min = 0, syntax = "[type]")

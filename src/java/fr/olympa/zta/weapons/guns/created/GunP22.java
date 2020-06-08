@@ -1,17 +1,20 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunSkorpion extends Gun{
+public class GunP22 extends Gun{
 	
-	public static final String NAME = "Skorpion VZ64";
-	public static final Material TYPE = Material.MAGMA_CREAM;
+	public static final String NAME = "P22";
+	public static final Material TYPE = Material.IRON_AXE;
 
-	public GunSkorpion(int id) {
+	public GunP22(int id) {
 		super(id);
 	}
 
@@ -24,19 +27,19 @@ public class GunSkorpion extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HANDWORKED;
+		return AmmoType.LIGHT;
 	}
 	
 	protected int getMaxAmmos(){
-		return 24;
+		return 8;
 	}
 	
 	protected int getFireRate(){
-		return 4;
+		return 10;
 	}
 	
 	protected int getChargeTime(){
-		return 50;
+		return 30;
 	}
 	
 	protected float getKnockback(){
@@ -44,19 +47,27 @@ public class GunSkorpion extends Gun{
 	}
 	
 	protected float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_LOW;
+		return CommonGunConstants.BULLET_SPEED_MEDIUM;
 	}
 	
 	protected GunAccuracy getAccuracy(){
-		return GunAccuracy.MEDIUM;
+		return GunAccuracy.HIGH;
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 1);
+		return new BulletSimple(this, 4, 3);
 	}
 	
 	public GunMode getPrimaryMode(){
-		return GunMode.AUTOMATIC;
+		return GunMode.SEMI_AUTOMATIC;
+	}
+	
+	public GunMode getSecondaryMode(){
+		return GunMode.BLAST;
+	}
+	
+	public boolean isCannonAllowed(){
+		return true;
 	}
 	
 }

@@ -27,13 +27,16 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
+import org.bukkit.entity.Drowned;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.api.region.tracking.Flag;
+import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -203,7 +206,7 @@ public class MobSpawning {
 	}
 
 	public void addSafeZone(Region region, String id, String title) {
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, new Flag(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR));
 		safeRegions.add(region);
 		DynmapLink.showSafeArea(region, id, title);
 	}
@@ -217,6 +220,20 @@ public class MobSpawning {
 
 	public double getAverageQueueSize() {
 		return averageQueueSize.stream().mapToInt(Integer::intValue).average().orElse(0);
+	}
+
+	public String getEntityCount() {
+		int players = 0, zombies = 0, drowned = 0, others = 0;
+		for (LivingEntity entity : world.getLivingEntities()) {
+			if (entity instanceof Drowned) {
+				drowned++;
+			}else if (entity instanceof Zombie) {
+				zombies++;
+			}else if (entity instanceof Player) {
+				players++;
+			}else others++;
+		}
+		return String.format("%dJ %dZ %dN %dA", players, zombies, drowned, others);
 	}
 
 	public boolean isEnabled() {
@@ -283,7 +300,7 @@ public class MobSpawning {
 
 		public void addRegions(Collection<Region> regions) {
 			for (Region region : regions) {
-				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), flag);
+				OlympaCore.getInstance().getRegionManager().registerRegion(region, name() + this.regions.size(), EventPriority.LOW, flag);
 				this.regions.add(region);
 				DynmapLink.showMobArea(region, this);
 			}
@@ -304,7 +321,7 @@ public class MobSpawning {
 			public final SpawnType type;
 
 			public SpawningFlag(SpawnType type) {
-				super(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
+				super.setMessages(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
 				this.type = type;
 			}
 

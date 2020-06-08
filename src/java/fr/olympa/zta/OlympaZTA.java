@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
+import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
@@ -25,6 +26,8 @@ import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.flags.PhysicsFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.scoreboard.sign.lines.AnimLine;
 import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
@@ -63,23 +66,6 @@ import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
-import fr.olympa.zta.weapons.guns.Gun870;
-import fr.olympa.zta.weapons.guns.GunAK;
-import fr.olympa.zta.weapons.guns.GunBarrett;
-import fr.olympa.zta.weapons.guns.GunBenelli;
-import fr.olympa.zta.weapons.guns.GunCobra;
-import fr.olympa.zta.weapons.guns.GunDragunov;
-import fr.olympa.zta.weapons.guns.GunG19;
-import fr.olympa.zta.weapons.guns.GunKSG;
-import fr.olympa.zta.weapons.guns.GunLupara;
-import fr.olympa.zta.weapons.guns.GunM16;
-import fr.olympa.zta.weapons.guns.GunM1897;
-import fr.olympa.zta.weapons.guns.GunM1911;
-import fr.olympa.zta.weapons.guns.GunP22;
-import fr.olympa.zta.weapons.guns.GunSDMR;
-import fr.olympa.zta.weapons.guns.GunSkorpion;
-import fr.olympa.zta.weapons.guns.GunStoner;
-import fr.olympa.zta.weapons.guns.GunUZI;
 import fr.olympa.zta.weapons.guns.accessories.CannonDamage;
 import fr.olympa.zta.weapons.guns.accessories.CannonPower;
 import fr.olympa.zta.weapons.guns.accessories.CannonSilent;
@@ -88,6 +74,23 @@ import fr.olympa.zta.weapons.guns.accessories.ScopeLight;
 import fr.olympa.zta.weapons.guns.accessories.ScopeStrong;
 import fr.olympa.zta.weapons.guns.accessories.StockLight;
 import fr.olympa.zta.weapons.guns.accessories.StockStrong;
+import fr.olympa.zta.weapons.guns.created.Gun870;
+import fr.olympa.zta.weapons.guns.created.GunAK;
+import fr.olympa.zta.weapons.guns.created.GunBarrett;
+import fr.olympa.zta.weapons.guns.created.GunBenelli;
+import fr.olympa.zta.weapons.guns.created.GunCobra;
+import fr.olympa.zta.weapons.guns.created.GunDragunov;
+import fr.olympa.zta.weapons.guns.created.GunG19;
+import fr.olympa.zta.weapons.guns.created.GunKSG;
+import fr.olympa.zta.weapons.guns.created.GunLupara;
+import fr.olympa.zta.weapons.guns.created.GunM16;
+import fr.olympa.zta.weapons.guns.created.GunM1897;
+import fr.olympa.zta.weapons.guns.created.GunM1911;
+import fr.olympa.zta.weapons.guns.created.GunP22;
+import fr.olympa.zta.weapons.guns.created.GunSDMR;
+import fr.olympa.zta.weapons.guns.created.GunSkorpion;
+import fr.olympa.zta.weapons.guns.created.GunStoner;
+import fr.olympa.zta.weapons.guns.created.GunUZI;
 import fr.olympa.zta.weapons.knives.KnifeBatte;
 import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
@@ -183,7 +186,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			if (!file.exists()) {
 				Files.copy(getResource(schemName), file.toPath());
 			}
-			pluginManager.registerEvents(plotsManager = new PlayerPlotsManager(file), this);
+			plotsManager = new PlayerPlotsManager(file);
 			checkForTrait(TomHookTrait.class, "plots", getConfig().getIntegerList("tomHookNPC"));
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -223,7 +226,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				FixedLine.EMPTY_LINE,
 				lineGroup,
 				FixedLine.EMPTY_LINE,
-				new TimerLine<OlympaPlayerZTA>(x -> "§7Nombre de mobs: §6" + mobSpawning.world.getLivingEntities().size(), this, 20),
+				new TimerLine<OlympaPlayerZTA>(x -> "§7Nombre de mobs: §6" + mobSpawning.getEntityCount(), this, 20),
 				FixedLine.EMPTY_LINE,
 				lineRadar,
 				FixedLine.EMPTY_LINE,
@@ -266,6 +269,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	@EventHandler
 	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
 		lineGroup.updatePlayer((OlympaPlayerZTA) e.getOlympaPlayer());
+	}
+
+	@EventHandler
+	public void onWorldLoad(WorldTrackingEvent e) {
+		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new PhysicsFlag(true), new PlayerBlocksFlag(true));
 	}
 
 	@Override

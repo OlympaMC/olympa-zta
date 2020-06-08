@@ -1,17 +1,23 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunM16 extends Gun{
+/**
+ * Colt M1911, revolver, munitions légères
+ */
+public class GunM1911 extends Gun{
 	
-	public static final String NAME = "M16";
-	public static final Material TYPE = Material.WOODEN_PICKAXE;
+	public static final String NAME = "Colt M1911";
+	public static final Material TYPE = Material.WOODEN_AXE;
 
-	public GunM16(int id) {
+	public GunM1911(int id) {
 		super(id);
 	}
 
@@ -24,11 +30,11 @@ public class GunM16 extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HEAVY;
+		return AmmoType.LIGHT;
 	}
 	
 	public int getMaxAmmos(){
-		return 20;
+		return 7;
 	}
 	
 	public int getFireRate(){
@@ -36,15 +42,15 @@ public class GunM16 extends Gun{
 	}
 	
 	public int getChargeTime(){
-		return 60;
+		return 40;
 	}
 	
 	public float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_MEDIUM;
+		return 0f;
 	}
 	
 	public float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_HIGH;
+		return CommonGunConstants.BULLET_SPEED_MEDIUM;
 	}
 	
 	protected GunAccuracy getAccuracy(){
@@ -52,22 +58,14 @@ public class GunM16 extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 5);
+		return new BulletSimple(this, 3, 2);
 	}
 	
 	public GunMode getPrimaryMode(){
-		return GunMode.AUTOMATIC;
-	}
-	
-	public GunMode getSecondaryMode(){
-		return GunMode.BLAST;
+		return GunMode.SINGLE;
 	}
 	
 	public boolean isCannonAllowed(){
-		return true;
-	}
-	
-	public boolean isStockAllowed(){
 		return true;
 	}
 	

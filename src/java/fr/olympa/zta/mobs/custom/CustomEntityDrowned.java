@@ -12,7 +12,11 @@ import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityDrowned;
 import net.minecraft.server.v1_15_R1.EntityLiving;
 import net.minecraft.server.v1_15_R1.EntityTypes;
+import net.minecraft.server.v1_15_R1.EnumMobSpawn;
+import net.minecraft.server.v1_15_R1.GeneratorAccess;
 import net.minecraft.server.v1_15_R1.GenericAttributes;
+import net.minecraft.server.v1_15_R1.GroupDataEntity;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_15_R1.World;
@@ -70,6 +74,16 @@ public class CustomEntityDrowned extends EntityDrowned {
 	@Override
 	public boolean i(EntityLiving entity) {
 		if (entity != null) return entity.isInWater();
+		return false;
+	}
+
+	@Override
+	public GroupDataEntity prepare(GeneratorAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
+		return null;
+	}
+
+	@Override
+	protected boolean K_() { // isSunSensitive
 		return false;
 	}
 

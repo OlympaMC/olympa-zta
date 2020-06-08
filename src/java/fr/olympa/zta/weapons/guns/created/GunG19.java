@@ -1,17 +1,20 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public class GunSDMR extends Gun{
+public class GunG19 extends Gun{
 	
-	public static final String NAME = "SDMR";
-	public static final Material TYPE = Material.IRON_PICKAXE;
+	public static final String NAME = "Glock 19";
+	public static final Material TYPE = Material.GOLDEN_AXE;
 
-	public GunSDMR(int id) {
+	public GunG19(int id) {
 		super(id);
 	}
 
@@ -24,27 +27,27 @@ public class GunSDMR extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.HEAVY;
+		return AmmoType.HANDWORKED;
 	}
 	
 	protected int getMaxAmmos(){
-		return 20;
+		return 16;
 	}
 	
 	protected int getFireRate(){
-		return 6;
+		return 10;
 	}
 	
 	protected int getChargeTime(){
-		return 50;
+		return 40;
 	}
 	
 	protected float getKnockback(){
-		return CommonGunConstants.KNOCKBACK_MEDIUM;
+		return 0;
 	}
 	
 	protected float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_HIGH;
+		return CommonGunConstants.BULLET_SPEED_MEDIUM;
 	}
 	
 	protected GunAccuracy getAccuracy(){
@@ -52,26 +55,18 @@ public class GunSDMR extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 5, 6);
+		return new BulletSimple(this, 4, 1);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.AUTOMATIC;
 	}
 	
-	/*public GunMode getSecondaryMode(){
+	public GunMode getSecondaryMode(){
 		return GunMode.SEMI_AUTOMATIC;
-	}*/
-
-	public boolean isScopeAllowed(){
-		return true;
 	}
 	
 	public boolean isCannonAllowed(){
-		return true;
-	}
-	
-	public boolean isStockAllowed(){
 		return true;
 	}
 	

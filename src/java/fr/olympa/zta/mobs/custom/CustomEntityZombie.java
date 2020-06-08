@@ -6,7 +6,11 @@ import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
+import net.minecraft.server.v1_15_R1.EnumMobSpawn;
+import net.minecraft.server.v1_15_R1.GeneratorAccess;
 import net.minecraft.server.v1_15_R1.GenericAttributes;
+import net.minecraft.server.v1_15_R1.GroupDataEntity;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
@@ -41,9 +45,6 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 
 	@Override
-	protected void a(DifficultyDamageScaler difficultydamagescaler) {} // populateDefaultEquipmentSlots
-
-	@Override
 	protected boolean et() { // convertsInWater
 		return false;
 	}
@@ -51,6 +52,11 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	protected boolean K_() { // isSunSensitive
 		return false;
+	}
+
+	@Override
+	public GroupDataEntity prepare(GeneratorAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
+		return null;
 	}
 
 	static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {

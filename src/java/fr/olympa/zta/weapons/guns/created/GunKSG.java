@@ -1,21 +1,24 @@
-package fr.olympa.zta.weapons.guns;
+package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.CommonGunConstants;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.BulletEffect;
 
-public class GunBenelli extends Gun{
+public class GunKSG extends Gun{
 	
-	public static final String NAME = "Benelli M5 Super";
-	public static final Material TYPE = Material.STONE_SHOVEL;
+	public static final String NAME = "KSG";
+	public static final Material TYPE = Material.IRON_SHOVEL;
 
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
-	public GunBenelli(int id) {
+	public GunKSG(int id) {
 		super(id);
 	}
 
@@ -32,7 +35,7 @@ public class GunBenelli extends Gun{
 	}
 	
 	protected int getMaxAmmos(){
-		return 8;
+		return 10;
 	}
 	
 	protected int getFireRate(){
@@ -40,11 +43,7 @@ public class GunBenelli extends Gun{
 	}
 	
 	protected int getChargeTime(){
-		return 15;
-	}
-	
-	protected boolean isOneByOneCharge(){
-		return true;
+		return 50;
 	}
 	
 	protected float getKnockback(){
@@ -56,15 +55,19 @@ public class GunBenelli extends Gun{
 	}
 	
 	protected GunAccuracy getAccuracy(){
-		return GunAccuracy.LOW;
+		return GunAccuracy.MEDIUM;
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 5, 8, effect);
+		return new BulletEffect(this, 3, 6, effect);
 	}
 	
 	public GunMode getPrimaryMode(){
 		return GunMode.SEMI_AUTOMATIC;
+	}
+	
+	public boolean isStockAllowed(){
+		return true;
 	}
 	
 }

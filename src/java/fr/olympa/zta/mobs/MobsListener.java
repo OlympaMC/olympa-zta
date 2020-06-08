@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -44,16 +45,20 @@ public class MobsListener implements Listener {
 		momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
 		momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
 		EntityDamageEvent cause = p.getLastDamageCause();
+		String reason = "est mort.";
 		if (cause instanceof EntityDamageByEntityEvent) {
 			Entity damager = ((EntityDamageByEntityEvent) cause).getDamager();
 			if (damager instanceof Zombie) {
 				if (damager.hasMetadata("player")) {
-					e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.");
-				}else e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par un §6infecté§e.");
+					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
+				}else reason = "s'est fait tuer par un §6infecté§e.";
 			}else {
-				e.setDeathMessage("§6§l" + p.getName() + "§r§e s'est fait tuer par §6" + damager.getName() + "§e.");
+				reason = "s'est fait tuer par §6" + damager.getName() + "§e.";
 			}
-		}else e.setDeathMessage("§6§l" + p.getName() + "§r§e est mort.");
+		}else if (cause.getCause() == DamageCause.DROWNING) {
+			reason = "s'est noyé.";
+		}
+		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
 		p.setMetadata("lastDeath", new FixedMetadataValue(OlympaZTA.getInstance(), p.getLocation()));
 	}
 
