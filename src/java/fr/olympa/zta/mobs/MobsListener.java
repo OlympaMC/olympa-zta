@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -20,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
@@ -35,6 +38,8 @@ public class MobsListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		int id = lastId++;
 		Player p = e.getEntity();
+		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
+		op.deaths++;
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
@@ -65,9 +70,20 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
 		e.getDrops().clear();
-		if (e.getEntity().hasMetadata("inventory")) {
-			int id = e.getEntity().getMetadata("inventory").get(0).asInt();
+		e.setDroppedExp(0);
+		
+		LivingEntity entity = e.getEntity();
+		if (entity.hasMetadata("inventory")) {
+			int id = entity.getMetadata("inventory").get(0).asInt();
 			Collections.addAll(e.getDrops(), inventories.remove(id));
+		}
+		if (entity.getKiller() != null) {
+			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
+			if (entity instanceof Player) {
+				killer.killedPlayers++;
+			}else if (entity.getType() == EntityType.ZOMBIE) {
+				killer.killedZombies++;
+			}
 		}
 	}
 

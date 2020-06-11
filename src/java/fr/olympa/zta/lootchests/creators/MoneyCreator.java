@@ -2,12 +2,9 @@ package fr.olympa.zta.lootchests.creators;
 
 import java.util.Random;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.zta.OlympaPlayerZTA;
+import fr.olympa.zta.utils.PhysicalMoney;
 
 public class MoneyCreator implements LootCreator {
 
@@ -27,25 +24,7 @@ public class MoneyCreator implements LootCreator {
 
 	@Override
 	public Loot create(Player p, Random random) {
-		return new MoneyLoot(random.nextInt(max - min) + min);
-	}
-
-	static class MoneyLoot extends Loot {
-
-		private int amount;
-
-		public MoneyLoot(int amount) {
-			super(ItemUtils.item(Material.GOLD_INGOT, "§6§l" + amount + "§e Omegas"));
-			this.amount = amount;
-		}
-
-		@Override
-		public boolean onTake(Player p, Inventory inv, int slot) {
-			OlympaPlayerZTA.get(p).getGameMoney().give(amount);
-			inv.setItem(slot, null);
-			return true;
-		}
-
+		return new Loot(PhysicalMoney.getBanknote(PhysicalMoney.BANKNOTE_1, random.nextInt(max - min) + min));
 	}
 
 }

@@ -20,6 +20,7 @@ import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
+import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
@@ -28,6 +29,7 @@ import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
+import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.scoreboard.sign.lines.AnimLine;
 import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
@@ -58,6 +60,7 @@ import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
+import fr.olympa.zta.utils.BeautyQuestsLink;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.commands.BackCommand;
 import fr.olympa.zta.utils.commands.FeedCommand;
@@ -66,6 +69,7 @@ import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
+import fr.olympa.zta.weapons.guns.accessories.CannonCaC;
 import fr.olympa.zta.weapons.guns.accessories.CannonDamage;
 import fr.olympa.zta.weapons.guns.accessories.CannonPower;
 import fr.olympa.zta.weapons.guns.accessories.CannonSilent;
@@ -120,6 +124,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ScoreboardManager<OlympaPlayerZTA> scoreboards;
 	public HubManager hub;
 	public ClansManagerZTA clansManager;
+	public TaxManager taxManager;
 	public AuctionsManager auctionsManager;
 	
 	public DynamicLine<OlympaPlayerZTA> lineRadar = new DynamicLine<OlympaPlayerZTA>(x -> {
@@ -147,10 +152,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
-		DynmapLink.initialize();
+		if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
+		if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) BeautyQuestsLink.initialize();
 
 		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
-		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
+		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 
 		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();
@@ -168,16 +174,10 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
-
-			try {
-				pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
-			}catch (Exception ex) {
-				ex.printStackTrace();
-				getLogger().severe("Une erreur est survenue lors de l'initialisation du système de parcelles de clans.");
-			}
+			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
 		}catch (Exception ex) {
 			ex.printStackTrace();
-			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans.");
+			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
 		}
 
 		try {
@@ -194,10 +194,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			auctionsManager = new AuctionsManager(this, "zta_auctions");
+			taxManager = new TaxManager(this, null, "zta_tax", 0);
+			auctionsManager = new AuctionsManager(this, "zta_auctions", taxManager);
 		}catch (Exception ex) {
 			ex.printStackTrace();
-			getLogger().severe("Une erreur est survenue lors du chargement des ventes.");
+			getLogger().severe("Une erreur est survenue lors du chargement de la taxe et des ventes.");
 		}
 
 		try {
@@ -273,7 +274,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 	@EventHandler
 	public void onWorldLoad(WorldTrackingEvent e) {
-		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new PhysicsFlag(true), new PlayerBlocksFlag(true));
+		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new PhysicsFlag(true), new PlayerBlocksFlag(true), new PlayerInteractFlag(false, true, true));
 	}
 
 	@Override
@@ -283,6 +284,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
+
+		try {
+			taxManager.update();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		ZTARegistry.saveDatabase();
 	}

@@ -56,6 +56,7 @@ public abstract class Gun extends Weapon {
 	protected BukkitTask reloading = null;
 
 	public float damageAdded = 0;
+	public float damageCaC = 0;
 	public AttributeModifier zoomModifier = null;
 	public final Attribute maxAmmos = new Attribute(getMaxAmmos());
 	public final Attribute chargeTime = new Attribute(getChargeTime());
@@ -118,7 +119,12 @@ public abstract class Gun extends Weapon {
 
 	public void onEntityHit(EntityDamageByEntityEvent e) {
 		Player damager = (Player) e.getDamager();
-		onInteract(new PlayerInteractEvent(damager, Action.LEFT_CLICK_AIR, damager.getInventory().getItemInMainHand(), null, null));
+		if (damageCaC == 0) {
+			onInteract(new PlayerInteractEvent(damager, Action.LEFT_CLICK_AIR, damager.getInventory().getItemInMainHand(), null, null));
+			e.setCancelled(true);
+		}else {
+			e.setDamage(damageCaC);
+		}
 	}
 
 	public void itemHeld(Player p, ItemStack item) {

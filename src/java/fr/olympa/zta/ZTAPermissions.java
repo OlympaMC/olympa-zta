@@ -5,11 +5,12 @@ import fr.olympa.api.permission.OlympaPermission;
 
 public class ZTAPermissions{
 	
+	public static final OlympaPermission TAX_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission LOOT_CHEST_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission WEAPONS_COMMAND = new OlympaPermission(OlympaGroup.BUILDER); // TODO change
 	public static final OlympaPermission MOBS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission UTILS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission REGISTRY_COMMAND = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission REGISTRY_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission PLAYER_SPREAD_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaPermission(OlympaGroup.DEV);

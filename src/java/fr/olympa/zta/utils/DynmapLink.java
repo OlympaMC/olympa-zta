@@ -35,6 +35,7 @@ public class DynmapLink {
 				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");*/
 			}
 		}catch (Exception ex) {
+			ex.printStackTrace();
 			api = null;
 		}
 		OlympaZTA.getInstance().sendMessage("Dynmap integration " + (api == null ? "disabled." : "enabled."));

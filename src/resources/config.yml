@@ -109,7 +109,7 @@ seaLevel: 22
 
 spawn: world 5632.5 5.0 5632.5 180 0
 
-spawnRegionTypes: [EASY]
+spawnRegionTypes: [SAFE, EASY]
 
 firstBuildSchem: "tente.schem"
 
