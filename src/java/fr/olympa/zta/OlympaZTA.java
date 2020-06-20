@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -22,19 +23,22 @@ import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.hook.ProtocolAction;
+import fr.olympa.api.lines.AnimLine;
+import fr.olympa.api.lines.DynamicLine;
+import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.flags.GameModeFlag;
+import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
-import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
+import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
-import fr.olympa.api.scoreboard.sign.lines.AnimLine;
-import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
-import fr.olympa.api.scoreboard.sign.lines.FixedLine;
-import fr.olympa.api.scoreboard.sign.lines.TimerLine;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -127,8 +131,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public TaxManager taxManager;
 	public AuctionsManager auctionsManager;
 	
-	public DynamicLine<OlympaPlayerZTA> lineRadar = new DynamicLine<OlympaPlayerZTA>(x -> {
-		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getPlayer());
+	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
+		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
 		String title = "§c§kdddddddd";
 		for (TrackedRegion region : regions) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);
@@ -139,8 +143,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		return "§7Radar: " + title;
 	});
-	public DynamicLine<OlympaPlayerZTA> lineMoney = new DynamicLine<OlympaPlayerZTA>(x -> "§7Monnaie: §6" + x.getGameMoney().getFormatted());
-	public DynamicLine<OlympaPlayerZTA> lineGroup = new DynamicLine<OlympaPlayerZTA>(x -> "§7Rang: §b" + x.getGroupNameColored());
+	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineMoney = new DynamicLine<>(x -> "§7Monnaie: §6" + x.getOlympaPlayer().getGameMoney().getFormatted());
+	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineGroup = new DynamicLine<>(x -> "§7Rang: §b" + x.getOlympaPlayer().getGroupNameColored());
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
 
@@ -227,14 +231,14 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				FixedLine.EMPTY_LINE,
 				lineGroup,
 				FixedLine.EMPTY_LINE,
-				new TimerLine<OlympaPlayerZTA>(x -> "§7Nombre de mobs: §6" + mobSpawning.getEntityCount(), this, 20),
+				new TimerLine<Scoreboard<OlympaPlayerZTA>>(x -> "§7Nombre de mobs: §6" + mobSpawning.getEntityCount(), this, 20),
 				FixedLine.EMPTY_LINE,
 				lineRadar,
 				FixedLine.EMPTY_LINE,
 				lineMoney)
 				.addFooters(
 				FixedLine.EMPTY_LINE,
-				new AnimLine(this, "play.olympa.fr", 1, 10 * 20));
+				AnimLine.olympaAnimation());
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
@@ -269,12 +273,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 	@EventHandler
 	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
-		lineGroup.updatePlayer((OlympaPlayerZTA) e.getOlympaPlayer());
+		lineGroup.updateHolder(scoreboards.getPlayerScoreboard((OlympaPlayerZTA) e.getOlympaPlayer()));
 	}
 
 	@EventHandler
 	public void onWorldLoad(WorldTrackingEvent e) {
-		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new PhysicsFlag(true), new PlayerBlocksFlag(true), new PlayerInteractFlag(false, true, true));
+		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new ItemDurabilityFlag(true), new PhysicsFlag(true), new PlayerBlocksFlag(true), new GameModeFlag(GameMode.ADVENTURE), new PlayerBlockInteractFlag(false, true, true));
 	}
 
 	@Override

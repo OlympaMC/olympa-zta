@@ -36,6 +36,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+			<classifier>javadoc</classifier>
+		</dependency>
+		<dependency>
 			<groupId>fr.olympa</groupId>
 			<artifactId>olympa-api</artifactId>
 			<version>[0.0.1-SNAPSHOT,)</version>

@@ -2,8 +2,10 @@ package fr.olympa.zta.mobs.custom;
 
 import java.util.Random;
 
+import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
+import net.minecraft.server.v1_15_R1.EntityLiving;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
 import net.minecraft.server.v1_15_R1.EnumMobSpawn;
@@ -51,6 +53,17 @@ public class CustomEntityZombie extends EntityZombie {
 
 	@Override
 	protected boolean K_() { // isSunSensitive
+		return false;
+	}
+
+	@Override
+	public boolean damageEntity(DamageSource damagesource, float f) {
+		if (super.damageEntity(damagesource, f)) {
+			if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {
+				setGoalTarget((EntityLiving) damagesource.getEntity());
+			}
+			return true;
+		}
 		return false;
 	}
 

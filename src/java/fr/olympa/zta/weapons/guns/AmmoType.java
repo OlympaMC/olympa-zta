@@ -1,6 +1,7 @@
 package fr.olympa.zta.weapons.guns;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -51,6 +52,7 @@ public enum AmmoType{
 	 * @return Nombre de munitions que le joueur a dans son inventaire
 	 */
 	public int getAmmos(Player p){
+		if (p.getGameMode() == GameMode.CREATIVE) return Integer.MAX_VALUE;
 		int i = 0;
 		for (ItemStack is : p.getInventory().getContents()) {
 			if (is != null && is.getType() == fill) i += is.getAmount();
@@ -66,6 +68,7 @@ public enum AmmoType{
 	 * @return Quantité de munitions retirées
 	 */
 	public int removeAmmos(Player p, int amount){
+		if (p.getGameMode() == GameMode.CREATIVE) return amount;
 		int removed = 0;
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {

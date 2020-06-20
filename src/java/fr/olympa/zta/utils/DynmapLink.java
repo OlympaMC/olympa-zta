@@ -1,6 +1,7 @@
 package fr.olympa.zta.utils;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -13,6 +14,7 @@ import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cylinder;
+import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
@@ -81,15 +83,15 @@ public class DynmapLink {
 
 	public static class DynmapHideFlag extends Flag {
 		@Override
-		public boolean enters(Player p) {
+		public boolean enters(Player p, Set<TrackedRegion> to) {
 			setPlayerVisiblity(p, false);
-			return super.enters(p);
+			return super.enters(p, to);
 		}
 
 		@Override
-		public boolean leaves(Player p) {
+		public boolean leaves(Player p, Set<TrackedRegion> to) {
 			setPlayerVisiblity(p, true);
-			return super.leaves(p);
+			return super.leaves(p, to);
 		}
 	}
 

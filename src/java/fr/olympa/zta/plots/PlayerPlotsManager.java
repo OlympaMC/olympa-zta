@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,9 +27,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
+import fr.olympa.api.region.tracking.flags.GameModeFlag;
+import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
-import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
@@ -75,7 +78,7 @@ public class PlayerPlotsManager {
 		worldCrea.setFullTime(10000);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
 
-		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new NoGunFlag(true), new DamageFlag(true), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
+		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new ItemDurabilityFlag(true), new NoGunFlag(true), new DamageFlag(true), new GameModeFlag(GameMode.SURVIVAL), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
 			@Override
 			public <T extends Event & Cancellable> void blockEvent(T event, Player p, Block block) {
 				event.setCancelled(PlayerPlotsManager.this.blockEvent(p, event, block));
@@ -84,7 +87,7 @@ public class PlayerPlotsManager {
 			public <T extends Event & Cancellable> void entityEvent(T event, Player p, Entity entity) {
 				event.setCancelled(PlayerPlotsManager.this.entityAction(p, entity));
 			}
-		}, new PlayerInteractFlag(true) {
+		}, new PlayerBlockInteractFlag(true) {
 			@Override
 			public void interactEvent(PlayerInteractEvent event) {
 				System.out.println("PlayerPlotsManager.PlayerPlotsManager(...).new PlayerInteractFlag() {...}.interactEvent()");

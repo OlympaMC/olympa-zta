@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.clans.Clan;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
+import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.scoreboard.sign.lines.FixedLine;
-import fr.olympa.api.scoreboard.sign.lines.TimerLine;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -20,17 +20,17 @@ import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTA extends Clan<ClanZTA> {
 
-	private static FixedLine<OlympaPlayerZTA> header = new FixedLine<>("§7§oMon clan:");
-	private static TimerLine<OlympaPlayerZTA> players = new TimerLine<>((x) -> {
-		ClanZTA clan = x.getClan();
-		Player p = x.getPlayer();
+	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7§oMon clan:");
+	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
+		ClanZTA clan = x.getOlympaPlayer().getClan();
+		Player p = x.getOlympaPlayer().getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
 		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<ClanZTA>> member : clan.getMembers()) {
 			String memberName = member.getKey().getName();
 			if (member.getValue() == null) {
 				joiner.add("§c○ " + memberName);
-			}else if (member.getValue() == x) {
+			}else if (member.getValue() == x.getOlympaPlayer()) {
 				joiner.add("§6● §l" + memberName);
 			}else {
 				Location loc = member.getValue().getPlayer().getLocation();

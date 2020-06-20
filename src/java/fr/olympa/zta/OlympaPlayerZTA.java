@@ -47,7 +47,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
-		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updatePlayer(this));
+		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(this)));
 	}
 
 	public Inventory getEnderChest() {
