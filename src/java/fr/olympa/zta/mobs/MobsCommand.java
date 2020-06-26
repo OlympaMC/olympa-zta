@@ -29,7 +29,7 @@ public class MobsCommand extends ComplexCommand {
 		sendInfo("Nombre d'entités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
 		sendInfo("Quantité maximale d'entités sur le monde : §l%d", spawning.maxEntities);
 		sendInfo("Quantité maximale d'entités par chunk : §l%d", spawning.criticalEntitiesPerChunk);
-		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getLocation().getChunk()));
+		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
 	}
 
 	@Cmd (player = true, args = "COMMON|DROWNED", min = 0, syntax = "[type]")

@@ -174,7 +174,7 @@ public class MobSpawning {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
 			if (!processedChunks.add(centralChunk)) continue;
-			if (SpawnType.getSpawnType(centralChunk) == null) continue;
+			if (SpawnType.getSpawnType(world, centralChunk.getX() * 16, centralChunk.getZ() * 16) == null) continue;
 			if (entityCount(centralChunk) > criticalEntitiesPerChunk) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
@@ -185,7 +185,7 @@ public class MobSpawning {
 					SpawnType type;
 					if (world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() == Material.WATER) {
 						type = SpawnType.NONE;
-					}else type = SpawnType.getSpawnType(chunk);
+					}else type = SpawnType.getSpawnType(world, chunk.getX() * 16, chunk.getZ() * 16);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
 						if (isInSafeZone(chunk)) continue;
@@ -292,9 +292,9 @@ public class MobSpawning {
 			return lootchests;
 		}
 
-		public boolean isInto(Chunk chunk) {
+		public boolean isInto(World world, int x, int z) {
 			for (Region region : regions) {
-				if (region.isIn(chunk.getWorld(), chunk.getX() * 16, region.getMin().getBlockY(), chunk.getZ() * 16)) return true;
+				if (region.isIn(world, x, region.getMin().getBlockY(), z)) return true;
 			}
 			return false;
 		}
@@ -311,9 +311,9 @@ public class MobSpawning {
 			return regions;
 		}
 
-		public static SpawnType getSpawnType(Chunk chunk) {
+		public static SpawnType getSpawnType(World world, int x, int z) {
 			for (SpawnType type : values()) {
-				if (type.isInto(chunk)) return type;
+				if (type.isInto(world, x, z)) return type;
 			}
 			return null;
 		}

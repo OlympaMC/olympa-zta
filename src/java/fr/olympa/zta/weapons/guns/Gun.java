@@ -271,6 +271,7 @@ public abstract class Gun extends Weapon {
 
 	private void reload(Player p, ItemStack item) {
 		if (reloading != null) return;
+		if (zoomed) toggleZoom(p, item);
 
 		int max = (int) maxAmmos.getValue();
 		if (max == ammos) return;

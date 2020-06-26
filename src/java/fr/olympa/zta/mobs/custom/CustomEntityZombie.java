@@ -2,6 +2,8 @@ package fr.olympa.zta.mobs.custom;
 
 import java.util.Random;
 
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
+
 import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
@@ -60,7 +62,7 @@ public class CustomEntityZombie extends EntityZombie {
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
 			if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {
-				setGoalTarget((EntityLiving) damagesource.getEntity());
+				setGoalTarget((EntityLiving) damagesource.getEntity(), TargetReason.TARGET_ATTACKED_ENTITY, true);
 			}
 			return true;
 		}

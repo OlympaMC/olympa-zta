@@ -18,7 +18,6 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.lootchests.type.LootChestType;
-import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 
 public class LootChestCommand extends ComplexCommand {
@@ -40,7 +39,6 @@ public class LootChestCommand extends ComplexCommand {
 			LootChest chest = manager.getLootChest(chestBlock);
 			if (chest == null) {
 				chest = OlympaZTA.getInstance().lootChestsManager.createLootChest(chestBlock.getLocation(), type);
-				chest.register(chestBlock);
 				sendSuccess("Le coffre de loot a été créé ! ID: " + chest.getID() + ", type: " + type.getName());
 			}else {
 				chest.setLootType(type, true);
@@ -54,6 +52,44 @@ public class LootChestCommand extends ComplexCommand {
 		}
 	}
 	
+	@Cmd (player = true)
+	public void fix(CommandContext cmd) {
+		Chest chest = getTargetChest(player);
+		if (chest == null) return;
+		
+		sendSuccess("Left chest %s", manager.getLeftChest(chest).getLocation().toString());
+	}
+	
+	@Cmd (player = true)
+	public void remove(CommandContext cmd) {
+		LootChest chest = getTargetLootChest(getPlayer());
+		if (chest == null) return;
+
+		try {
+			OlympaZTA.getInstance().lootChestsManager.removeLootChest(chest.getID());
+			sendSuccess("Le coffre %d a été supprimé.", chest.getID());
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+			sendError("Une erreur est survenue lors de la suppression du coffre : §l%s", ex.getMessage());
+		}
+	}
+
+	@Cmd
+	public void clearAllChests(CommandContext cmd) {
+		int removed = 0;
+		int errors = 0;
+		for (Integer chest : new ArrayList<>(OlympaZTA.getInstance().lootChestsManager.chests.keySet())) {
+			try {
+				OlympaZTA.getInstance().lootChestsManager.removeLootChest(chest);
+				removed++;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+				errors++;
+			}
+		}
+		sendSuccess("%d coffres supprimés avec succès, %d erreurs.", removed, errors);
+	}
+
 	@Cmd (player = true)
 	public void resetTimer(CommandContext cmd) {
 		LootChest chest = getTargetLootChest(getPlayer());
@@ -72,11 +108,10 @@ public class LootChestCommand extends ComplexCommand {
 		sendSuccess("Le compte à rebours de ce coffre a été mis à 0.");
 	}
 
-	@Cmd (args = "HARD|MEDIUM|EASY|SAFE", min = 1)
-	public void scan(CommandContext cmd) {
+	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %]")
+	public void globalScan(CommandContext cmd) {
 		try {
-			SpawnType spawn = SpawnType.valueOf(cmd.<String>getArgument(0).toUpperCase());
-			new Scan().start(sender, spawn);
+			new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
 		}catch (IllegalArgumentException ex) {
 			sendError("Il n'y a pas de zone avec le nom %s.", cmd.getArgument(0));
 		}
@@ -138,7 +173,7 @@ public class LootChestCommand extends ComplexCommand {
 	}
 
 	private Chest getTargetChest(Player p) {
-		Block targetBlock = p.getTargetBlockExact(2);
+		Block targetBlock = p.getTargetBlockExact(3);
 		if (targetBlock == null || targetBlock.getType() != Material.CHEST) {
 			sendError("Vous devez regarder un coffre.");
 			return null;

@@ -1,18 +1,20 @@
 package fr.olympa.zta.lootchests;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
+import org.bukkit.HeightMap;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.region.Region;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.type.LootChestCreator;
@@ -20,6 +22,8 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
 public class Scan {
 
+	private static final double DIVIDE = 5D;
+	
 	private final LootChestsManager manager = OlympaZTA.getInstance().lootChestsManager;
 
 	private int processed = 0;
@@ -27,52 +31,86 @@ public class Scan {
 	private int chestsAlreadyPresent = 0;
 	private BukkitTask messages = null;
 
-	public void start(CommandSender sender, SpawnType spawn) {
+	private Map<Integer, Thread> threads = new HashMap<>();
+
+	private CommandSender sender;
+
+	public void start(CommandSender sender, int minX, int minZ, int maxX, int maxZ, double forward) {
+		this.sender = sender;
+		
+		Prefix.INFO.sendMessage(sender, "Démarrage du scan des blocs %d %d à %d %d, avec un pourcentage d'avancée initial de %f%%.", minX, minZ, maxX, maxZ, forward);
+
+		World world = OlympaZTA.getInstance().mobSpawning.world;
+		int xD = (int) Math.ceil((maxX - minX) / DIVIDE);
+		int zD = (int) Math.ceil((maxZ - minZ) / DIVIDE);
+		int xForward = (int) (xD * forward / 100D);
+		int zForward = (int) (zD * forward / 100D);
+		int id = 0;
+		for (int x = minX; x < maxX; x += xD) {
+			for (int z = minZ; z < maxZ; z += zD) {
+				startThread(id++, world, x + xForward, z + zForward, x + xD, z + zD);
+			}
+		}
+
+		messages = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
+			Prefix.INFO.sendMessage(sender, "Scan en cours... %d blocs traités, %d coffres créés, %d coffres déjà présents.", processed, chestsCreated, chestsAlreadyPresent);
+		}, 100, 600);
+	}
+
+	private void startThread(int id, World world, int minX, int minZ, int maxX, int maxZ) {
+		Prefix.INFO.sendMessage(sender, "Démarrage du thread #%d pour le scan des blocs de %d %d à %d %d.", id, minX, minZ, maxX, maxZ);
 		Random random = new Random();
+		Thread thread = new Thread(() -> {
+			for (int x = minX; x < maxX; x++) {
+				for (int z = minZ; z < maxZ; z++) {
+					SpawnType spawn = SpawnType.getSpawnType(world, x, z);
+					if (spawn == null) continue;
+					Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
+					if (!chunk.isForceLoaded()) {
+						Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+							chunk.setForceLoaded(true);
+							chunk.load();
+						});
+						Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
+							chunk.setForceLoaded(false);
+							chunk.unload();
+						}, 6000);
+					}
 
-		Prefix.INFO.sendMessage(sender, "Démarrage de l'opération...");
-
-		new Thread(() -> {
-			for (Region region : spawn.getRegions()) {
-				Location min = region.getMin();
-				Location max = region.getMax();
-				for (int x = min.getBlockX(); x < max.getBlockX(); x++) {
-					for (int z = min.getBlockZ(); z < max.getBlockZ(); z++) {
-						if (!region.isIn(min.getWorld(), x, min.getBlockY(), z)) continue;
-						for (int y = 1; y < 150; y++) {
-							Block block = min.getWorld().getBlockAt(x, y, z);
-							if (block.getType() == Material.CHEST) {
-								Chunk chunk = block.getChunk();
-								if (!chunk.isForceLoaded()) {
-									Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> chunk.setForceLoaded(true));
-									Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> chunk.setForceLoaded(false), 6000);
+					for (int y = 1; y <= world.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE); y++) {
+						Block block = world.getBlockAt(x, y, z);
+						if (block.getType() == Material.CHEST) {
+							Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+								Chest chestBlock = (Chest) block.getState();
+								LootChest lootChest = manager.getLootChest(chestBlock);
+								if (lootChest != null) {
+									if (lootChest.getLocation().equals(block.getLocation())) lootChest = null; // misplaced chest
 								}
-								Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-									Chest chestBlock = (Chest) block.getState();
-									if (manager.getLootChest(chestBlock) == null) {
-										LootChestCreator creator = spawn.getLootChests().pick(random).get(0);
-										try {
-											LootChest chest = manager.createLootChest(chestBlock.getLocation(), creator.getType());
-											chest.register(chestBlock);
-											chestsCreated++;
-										}catch (SQLException e) {
-											e.printStackTrace();
-										}
-									}else chestsAlreadyPresent++;
-								});
-							}
-							processed++;
+								if (lootChest == null) {
+									LootChestCreator creator = spawn.getLootChests().pick(random).get(0);
+									try {
+										manager.createLootChest(chestBlock.getLocation(), creator.getType());
+										chestsCreated++;
+									}catch (SQLException e) {
+										e.printStackTrace();
+									}
+								}else chestsAlreadyPresent++;
+							});
 						}
+						processed++;
 					}
 				}
 			}
-			Prefix.DEFAULT_GOOD.sendMessage(sender, "Scan %s terminé ! %d blocs traités, %d coffres créés, %d coffres déjà présents.", spawn.name, processed, chestsCreated, chestsAlreadyPresent);
-			messages.cancel();
-			messages = null;
-		}).start();
-		messages = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
-			Prefix.INFO.sendMessage(sender, "Scan %s en cours... %d blocs traités, %d coffres créés, %d coffres déjà présents.", spawn.name, processed, chestsCreated, chestsAlreadyPresent);
-		}, 100, 600);
+			threads.remove(id);
+			Prefix.INFO.sendMessage(sender, "Thread #%d terminé (restants : %d).", id, threads.size());
+			if (threads.isEmpty()) {
+				Prefix.DEFAULT_GOOD.sendMessage(sender, "Scan terminé ! %d blocs traités, %d coffres créés, %d coffres déjà présents.", processed, chestsCreated, chestsAlreadyPresent);
+				messages.cancel();
+				messages = null;
+			}
+		}, "Scan #" + id);
+		thread.start();
+		threads.put(id, thread);
 	}
 
 }

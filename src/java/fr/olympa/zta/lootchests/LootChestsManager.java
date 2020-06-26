@@ -11,13 +11,17 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.block.data.type.Chest.Type;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.sql.OlympaStatement;
@@ -70,11 +74,52 @@ public class LootChestsManager implements Listener {
 	}
 
 	public LootChest getLootChest(Chest chest) {
+		chest = getLeftChest(chest);
 		if (chest.getPersistentDataContainer().has(LOOTCHEST, PersistentDataType.INTEGER)) return chests.get(chest.getPersistentDataContainer().get(LOOTCHEST, PersistentDataType.INTEGER));
 		return null;
 	}
 
+	Chest getLeftChest(Chest chest) {
+		while (true) {
+			InventoryHolder holder = chest.getInventory().getHolder();
+			if (holder instanceof DoubleChest) return (Chest) ((DoubleChest) holder).getLeftSide();
+			
+			org.bukkit.block.data.type.Chest chestBlockData = (org.bukkit.block.data.type.Chest) chest.getBlock().getBlockData();
+			Type type = chestBlockData.getType();
+			if (type == Type.SINGLE) return chest;
+			
+			BlockFace face = chestBlockData.getFacing();
+			BlockFace relative;
+			if (face == BlockFace.EAST) {
+				relative = type == Type.LEFT ? BlockFace.SOUTH : BlockFace.NORTH;
+			}else if (face == BlockFace.SOUTH) {
+				relative = type == Type.LEFT ? BlockFace.WEST : BlockFace.EAST;
+			}else if (face == BlockFace.WEST) {
+				relative = type == Type.LEFT ? BlockFace.NORTH : BlockFace.SOUTH;
+			}else {
+				relative = type == Type.LEFT ? BlockFace.EAST : BlockFace.WEST;
+			}
+			Block otherBlock = chest.getBlock().getRelative(relative);
+			if (otherBlock.getType() == Material.CHEST) {
+				org.bukkit.block.data.type.Chest otherData = (org.bukkit.block.data.type.Chest) otherBlock.getBlockData();
+				otherData.setFacing(face);
+				Type otherType = type == Type.LEFT ? Type.RIGHT : Type.LEFT;
+				otherData.setType(otherType);
+				otherBlock.setBlockData(otherData);
+				chest = (Chest) otherBlock.getState();
+				continue;
+			}else {
+				chestBlockData.setType(Type.SINGLE);
+				chest.getBlock().setBlockData(chestBlockData);
+				return chest;
+			}
+		}
+	}
+
 	public synchronized LootChest createLootChest(Location location, LootChestType type) throws SQLException {
+		Chest chestState = getLeftChest((Chest) location.getBlock().getState());
+		location = chestState.getLocation();
+
 		PreparedStatement statement = createStatement.getStatement();
 		statement.setString(1, location.getWorld().getName());
 		statement.setInt(2, location.getBlockX());
@@ -85,15 +130,18 @@ public class LootChestsManager implements Listener {
 		ResultSet generatedKeys = statement.getGeneratedKeys();
 		generatedKeys.next();
 		LootChest chest = new LootChest(generatedKeys.getInt(1), location, type);
+		chest.register(chestState);
 		chests.put(chest.getID(), chest);
 		return chest;
 	}
 
 	public synchronized void removeLootChest(int id) throws SQLException {
-		if (chests.remove(id) == null) throw new IllegalArgumentException("No lootchest with id " + id);
+		LootChest chest = chests.remove(id);
+		if (chest == null) throw new IllegalArgumentException("No lootchest with id " + id);
 		PreparedStatement statement = removeStatement.getStatement();
 		statement.setInt(1, id);
 		statement.executeUpdate();
+		chest.unregister((Chest) chest.getLocation().getBlock().getState());
 	}
 
 	public synchronized void updateLootType(LootChest chest) throws SQLException {

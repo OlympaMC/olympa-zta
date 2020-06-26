@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
@@ -54,7 +55,10 @@ public abstract class AbstractShop<T> extends Trait {
 			if (player.getGameMoney().withdraw(existing.price)) {
 				AbstractShop.this.click(existing.object, p);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
-			}else p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+			}else {
+				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour acheter cet objet.");
+			}
 		}
 
 	}

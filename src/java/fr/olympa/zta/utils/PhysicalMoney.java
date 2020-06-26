@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import net.md_5.bungee.api.ChatMessageType;
@@ -14,9 +15,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PhysicalMoney {
 
-	public static final ItemStack BANKNOTE_1 = ItemUtils.item(Material.BRICK, "§eBillet de 1");
-	public static final ItemStack BANKNOTE_10 = ItemUtils.item(Material.NETHER_BRICK, "§eBillet de 10");
-	public static final ItemStack BANKNOTE_100 = ItemUtils.item(Material.PHANTOM_MEMBRANE, "§eBillet de 100");
+	public static final ItemStack BANKNOTE_1 = ItemUtils.item(Material.BRICK, "§eBillet de " + OlympaMoney.format(1));
+	public static final ItemStack BANKNOTE_10 = ItemUtils.item(Material.NETHER_BRICK, "§eBillet de " + OlympaMoney.format(10));
+	public static final ItemStack BANKNOTE_100 = ItemUtils.item(Material.PHANTOM_MEMBRANE, "§eBillet de " + OlympaMoney.format(100));
 	
 	public static boolean withdraw(Player p, int amount, boolean checkAmount) {
 		if (amount == 0) return true;

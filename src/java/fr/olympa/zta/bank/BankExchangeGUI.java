@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
@@ -26,6 +27,7 @@ public class BankExchangeGUI extends OlympaGUI {
 	public BankExchangeGUI(OlympaPlayerZTA player) {
 		super("Échanger ma monnaie", 1);
 		this.player = player;
+		this.player.getGameMoney().observe("bank_gui", this::updateMoney);
 
 		inv.setItem(0, ItemUtils.item(Material.EMERALD, "§e§lMa monnaie"));
 		updateMoney();
@@ -40,7 +42,7 @@ public class BankExchangeGUI extends OlympaGUI {
 	}
 
 	private void updateCounter() {
-		ItemUtils.name(inv.getItem(3), "§eTransaction: §6§l" + amount);
+		ItemUtils.name(inv.getItem(3), "§eTransaction: §6§l" + OlympaMoney.format(amount));
 	}
 
 	private void updateMoney() {
@@ -70,22 +72,28 @@ public class BankExchangeGUI extends OlympaGUI {
 		}else if (slot == 7) {
 			if (amount == 0) return true;
 			int money = PhysicalMoney.getPlayerMoney(p);
+			int amount = this.amount;
 			if (money < amount) amount = money;
 			PhysicalMoney.withdraw(p, amount, false);
 			player.getGameMoney().give(amount);
-			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as transféré %s sur ton compte en banque.", amount);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as transféré %s sur ton compte en banque.", OlympaMoney.format(amount));
 			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
-			updateMoney();
 		}else if (slot == 8) {
 			if (amount == 0) return true;
 			int money = (int) player.getGameMoney().get();
+			int amount = this.amount;
 			if (money < amount) amount = money;
 			player.getGameMoney().withdraw(amount);
 			PhysicalMoney.give(p, amount);
-			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as retiré %s de ton compte en banque.", amount);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as retiré %s de ton compte en banque.", OlympaMoney.format(amount));
 			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
-			updateMoney();
 		}
+		return true;
+	}
+
+	@Override
+	public boolean onClose(Player p) {
+		player.getGameMoney().unobserve("bank_gui");
 		return true;
 	}
 

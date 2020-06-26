@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
+import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
 import fr.olympa.api.region.Region;
@@ -17,14 +19,15 @@ import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
 public class DynmapLink {
 
 	private static DynmapAPI api;
 	private static MarkerSet areasMarkers;
-	/*private static MarkerSet chestsMarkers;
-	private static MarkerIcon chestIcon;*/
+	private static MarkerSet chestsMarkers;
+	private static MarkerIcon chestIcon;
 
 	public static void initialize() {
 		try {
@@ -32,9 +35,9 @@ public class DynmapLink {
 			if (api != null) {
 				areasMarkers = api.getMarkerAPI().getMarkerSet("regions");
 				if (areasMarkers == null) areasMarkers = api.getMarkerAPI().createMarkerSet("regions", "Radar", null, false);
-				/*chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
+				chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
 				if (chestsMarkers == null) chestsMarkers = api.getMarkerAPI().createMarkerSet("chests", "Coffres", null, false);
-				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");*/
+				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -70,7 +73,7 @@ public class DynmapLink {
 		}
 	}
 	
-	/*public static void showChest(LootChest chest) {
+	public static void showChest(LootChest chest) {
 		if (api == null) return;
 		
 		String id = "chest" + chest.getID();
@@ -79,7 +82,11 @@ public class DynmapLink {
 	
 		Location location = chest.getLocation();
 		chestsMarkers.createMarker(id, "Coffre " + chest.getLootType().getName(), location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), chestIcon, false);
-	}*/
+	}
+
+	public static void hideChest(LootChest chest) {
+		chestsMarkers.findMarker("chest" + chest.getID()).deleteMarker();
+	}
 
 	public static class DynmapHideFlag extends Flag {
 		@Override

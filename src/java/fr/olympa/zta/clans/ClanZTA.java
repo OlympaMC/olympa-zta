@@ -1,12 +1,12 @@
 package fr.olympa.zta.clans;
 
-import java.util.Map.Entry;
 import java.util.StringJoiner;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.clans.Clan;
+import fr.olympa.api.clans.ClanPlayerData;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.lines.FixedLine;
@@ -26,14 +26,14 @@ public class ClanZTA extends Clan<ClanZTA> {
 		Player p = x.getOlympaPlayer().getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
-		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<ClanZTA>> member : clan.getMembers()) {
-			String memberName = member.getKey().getName();
-			if (member.getValue() == null) {
+		for (ClanPlayerData<ClanZTA> member : clan.getMembers()) {
+			String memberName = member.getPlayerInformations().getName();
+			if (member.isConnected()) {
 				joiner.add("§c○ " + memberName);
-			}else if (member.getValue() == x.getOlympaPlayer()) {
+			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
 				joiner.add("§6● §l" + memberName);
 			}else {
-				Location loc = member.getValue().getPlayer().getLocation();
+				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
 				joiner.add("§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
 			}
 		}
@@ -42,11 +42,11 @@ public class ClanZTA extends Clan<ClanZTA> {
 	
 	public ClanPlot cachedPlot;
 
-	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize, double money, long created) {
+	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
 		super(manager, id, name, chief, maxSize, money, created);
 	}
 
-	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, long chief, int maxSize) {
+	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
 		super(manager, id, name, chief, maxSize);
 	}
 

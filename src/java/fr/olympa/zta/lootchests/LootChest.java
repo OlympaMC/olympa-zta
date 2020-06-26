@@ -24,6 +24,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
 import fr.olympa.zta.lootchests.type.LootChestType;
+import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
@@ -104,6 +105,12 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 		chest.update();
 	}
 
+	public void unregister(Chest chest) {
+		chest.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
+		chest.update();
+		DynmapLink.hideChest(this);
+	}
+
 	public void resetTimer() {
 		this.nextOpen = 0;
 	}
@@ -119,7 +126,7 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 
 	public void setLootType(LootChestType type, boolean update) {
 		this.type = type;
-		//DynmapLink.showChest(this);
+		DynmapLink.showChest(this);
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
 		if (update) {
