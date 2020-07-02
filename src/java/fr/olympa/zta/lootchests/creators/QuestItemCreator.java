@@ -48,7 +48,7 @@ public class QuestItemCreator implements LootCreator {
 		private final ItemStack item;
 
 		private QuestItems(Material type, String name, String... lore) {
-			this.item = ItemUtils.item(type, name, lore);
+			this.item = ItemUtils.item(type, "§b" + name, lore);
 		}
 
 		public ItemStack getItem() {

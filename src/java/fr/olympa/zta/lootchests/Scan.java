@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -15,16 +16,27 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.type.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
+import fr.olympa.zta.utils.DynmapLink;
 
 public class Scan {
 
 	private static final double DIVIDE = 5D;
 	
 	private final LootChestsManager manager = OlympaZTA.getInstance().lootChestsManager;
+	private final Cache<Integer, Chunk> loadedChunks = CacheBuilder.newBuilder().expireAfterWrite(3, TimeUnit.MINUTES).<Integer, Chunk>removalListener(notif -> {
+		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+			notif.getValue().setForceLoaded(false);
+			notif.getValue().unload();
+		});
+	}).build();
+	private int chunkLast = 0;
 
 	private int processed = 0;
 	private int chestsCreated = 0;
@@ -71,17 +83,18 @@ public class Scan {
 							chunk.setForceLoaded(true);
 							chunk.load();
 						});
-						Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
-							chunk.setForceLoaded(false);
-							chunk.unload();
-						}, 6000);
+						loadedChunks.put(chunkLast++, chunk);
 					}
 
-					for (int y = 1; y <= world.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE); y++) {
+					int highestY = world.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE);
+					for (int y = 1; y <= highestY; y++) {
 						Block block = world.getBlockAt(x, y, z);
 						if (block.getType() == Material.CHEST) {
 							Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 								Chest chestBlock = (Chest) block.getState();
+								//chestBlock.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
+								chestBlock.getBlockInventory().clear();
+								chestBlock.update();
 								LootChest lootChest = manager.getLootChest(chestBlock);
 								if (lootChest != null) {
 									if (lootChest.getLocation().equals(block.getLocation())) lootChest = null; // misplaced chest
@@ -96,6 +109,8 @@ public class Scan {
 									}
 								}else chestsAlreadyPresent++;
 							});
+						}else if (block.getType() == Material.ENDER_CHEST) {
+							DynmapLink.showEnderChest(block.getLocation());
 						}
 						processed++;
 					}
@@ -107,6 +122,9 @@ public class Scan {
 				Prefix.DEFAULT_GOOD.sendMessage(sender, "Scan terminé ! %d blocs traités, %d coffres créés, %d coffres déjà présents.", processed, chestsCreated, chestsAlreadyPresent);
 				messages.cancel();
 				messages = null;
+				Prefix.INFO.sendMessage(sender, "Déchargement de %d chunks...", loadedChunks.size());
+				loadedChunks.invalidateAll();
+				Prefix.DEFAULT_GOOD.sendMessage(sender, "Les chunks ont été déchargés avec succès.");
 			}
 		}, "Scan #" + id);
 		thread.start();

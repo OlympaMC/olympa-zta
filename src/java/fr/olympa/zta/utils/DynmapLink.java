@@ -18,6 +18,7 @@ import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
@@ -28,6 +29,8 @@ public class DynmapLink {
 	private static MarkerSet areasMarkers;
 	private static MarkerSet chestsMarkers;
 	private static MarkerIcon chestIcon;
+	private static MarkerSet enderChestsMarkers;
+	private static MarkerIcon enderChestIcon;
 
 	public static void initialize() {
 		try {
@@ -38,6 +41,9 @@ public class DynmapLink {
 				chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
 				if (chestsMarkers == null) chestsMarkers = api.getMarkerAPI().createMarkerSet("chests", "Coffres", null, false);
 				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");
+				enderChestsMarkers = api.getMarkerAPI().getMarkerSet("enderchests");
+				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, true);
+				enderChestIcon = api.getMarkerAPI().getMarkerIcon("portal");
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -85,9 +91,19 @@ public class DynmapLink {
 	}
 
 	public static void hideChest(LootChest chest) {
+		if (api == null) return;
+		
 		chestsMarkers.findMarker("chest" + chest.getID()).deleteMarker();
 	}
 
+	public static void showEnderChest(Location location) {
+		if (api == null) return;
+		
+		String loc = SpigotUtils.convertLocationToString(location);
+		if (enderChestsMarkers.findMarker(loc) != null) return;
+		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, true);
+	}
+	
 	public static class DynmapHideFlag extends Flag {
 		@Override
 		public boolean enters(Player p, Set<TrackedRegion> to) {

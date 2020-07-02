@@ -23,7 +23,7 @@ public class MobsCommand extends ComplexCommand {
 		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
 		sendInfo("Le spawn de mob est §l%s", spawning.isEnabled() ? "§aactif" : "§cinactif");
 		if (spawning.isEnabled()) {
-			sendInfo("Nombre de mobs moyen dans la queue de spawn : §l%f", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
+			sendInfo("Nombre de mobs moyen dans la queue de spawn : §l%s", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
 		}
 		sendInfo("Taille du tableau des inventaires : §l%d", MobsListener.inventories.size());
 		sendInfo("Nombre d'entités vivantes sur le monde principal : §l%s", spawning.getEntityCount());

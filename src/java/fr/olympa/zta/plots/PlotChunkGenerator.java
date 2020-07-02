@@ -14,8 +14,8 @@ public class PlotChunkGenerator extends ChunkGenerator {
 	public static final int WORLD_LEVEL = 10;
 	public static final int PLOT_WIDTH = PLOT_CHUNK_SIZE * 16 - ROAD_WIDTH;
 
-	private Material[] materials = { Material.GRASS_BLOCK, Material.PODZOL, Material.COARSE_DIRT };
-	private float[] chances = { 0.55f, 0.25f, 0.2f };
+	private Material[] materials = { Material.GRASS_BLOCK, Material.PODZOL, Material.COARSE_DIRT, Material.WATER };
+	private float[] chances = { 0.55f, 0.25f, 0.2f, 0.02f };
 
 	@Override
 	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {

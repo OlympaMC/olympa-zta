@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs.custom;
 
+import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.GenericAttributes;
@@ -38,7 +39,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 		int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
 		this.lastTick = MinecraftServer.currentTick;
 		dieTime -= elapsedTicks;
-		if (dieTime < 0) this.die();
+		if (dieTime < 0) this.die(DamageSource.OUT_OF_WORLD);
 	}
 
 	@Override

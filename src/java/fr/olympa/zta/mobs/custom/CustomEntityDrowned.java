@@ -36,7 +36,7 @@ public class CustomEntityDrowned extends EntityDrowned {
 	private static BiFunction<EntityDrowned, Integer, PathfinderGoal> supplyDrownedSwipUp = (mob, seaLevel) -> {
 		try {
 			drownedSwimUpConstructor.setAccessible(true);
-			return drownedSwimUpConstructor.newInstance(mob, 1.0, seaLevel);
+			return drownedSwimUpConstructor.newInstance(mob, 1.0, seaLevel + 1);
 		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}

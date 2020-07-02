@@ -35,7 +35,7 @@ public class GunAK extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 15;
+		return 10;
 	}
 	
 	protected int getChargeTime(){

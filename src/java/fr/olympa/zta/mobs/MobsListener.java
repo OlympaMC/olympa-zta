@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -94,6 +95,7 @@ public class MobsListener implements Listener {
 		PacketInjector.addPlayer(p, PacketHandlers.ITEM_DROP);
 
 		p.setHealth(p.getHealth());
+		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 
 		if (!p.hasPlayedBefore()) ArmorType.CIVIL.setFull(p);
 	}

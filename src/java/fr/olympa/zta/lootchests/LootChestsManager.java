@@ -17,14 +17,17 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.block.data.type.Chest.Type;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -64,7 +67,7 @@ public class LootChestsManager implements Listener {
 						continue;
 					}
 				}
-				OlympaZTA.getInstance().getLogger().info(chests.size() + " coffres de loot chargés !");
+				OlympaZTA.getInstance().sendMessage("§e" + chests.size() + "§7 coffres de loot chargés !");
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -80,39 +83,37 @@ public class LootChestsManager implements Listener {
 	}
 
 	Chest getLeftChest(Chest chest) {
-		while (true) {
-			InventoryHolder holder = chest.getInventory().getHolder();
-			if (holder instanceof DoubleChest) return (Chest) ((DoubleChest) holder).getLeftSide();
-			
-			org.bukkit.block.data.type.Chest chestBlockData = (org.bukkit.block.data.type.Chest) chest.getBlock().getBlockData();
-			Type type = chestBlockData.getType();
-			if (type == Type.SINGLE) return chest;
-			
-			BlockFace face = chestBlockData.getFacing();
-			BlockFace relative;
-			if (face == BlockFace.EAST) {
-				relative = type == Type.LEFT ? BlockFace.SOUTH : BlockFace.NORTH;
-			}else if (face == BlockFace.SOUTH) {
-				relative = type == Type.LEFT ? BlockFace.WEST : BlockFace.EAST;
-			}else if (face == BlockFace.WEST) {
-				relative = type == Type.LEFT ? BlockFace.NORTH : BlockFace.SOUTH;
-			}else {
-				relative = type == Type.LEFT ? BlockFace.EAST : BlockFace.WEST;
-			}
-			Block otherBlock = chest.getBlock().getRelative(relative);
-			if (otherBlock.getType() == Material.CHEST) {
-				org.bukkit.block.data.type.Chest otherData = (org.bukkit.block.data.type.Chest) otherBlock.getBlockData();
-				otherData.setFacing(face);
-				Type otherType = type == Type.LEFT ? Type.RIGHT : Type.LEFT;
-				otherData.setType(otherType);
-				otherBlock.setBlockData(otherData);
-				chest = (Chest) otherBlock.getState();
-				continue;
-			}else {
-				chestBlockData.setType(Type.SINGLE);
-				chest.getBlock().setBlockData(chestBlockData);
-				return chest;
-			}
+		InventoryHolder holder = chest.getInventory().getHolder();
+		if (holder instanceof DoubleChest) return (Chest) ((DoubleChest) holder).getLeftSide();
+		
+		org.bukkit.block.data.type.Chest chestBlockData = (org.bukkit.block.data.type.Chest) chest.getBlock().getBlockData();
+		Type type = chestBlockData.getType();
+		if (type == Type.SINGLE) return chest;
+		
+		BlockFace face = chestBlockData.getFacing();
+		BlockFace relative;
+		if (face == BlockFace.EAST) {
+			relative = type == Type.LEFT ? BlockFace.SOUTH : BlockFace.NORTH;
+		}else if (face == BlockFace.SOUTH) {
+			relative = type == Type.LEFT ? BlockFace.WEST : BlockFace.EAST;
+		}else if (face == BlockFace.WEST) {
+			relative = type == Type.LEFT ? BlockFace.NORTH : BlockFace.SOUTH;
+		}else {
+			relative = type == Type.LEFT ? BlockFace.EAST : BlockFace.WEST;
+		}
+		Block otherBlock = chest.getBlock().getRelative(relative);
+		if (otherBlock.getType() == Material.CHEST) {
+			org.bukkit.block.data.type.Chest otherData = (org.bukkit.block.data.type.Chest) otherBlock.getBlockData();
+			otherData.setFacing(face);
+			Type otherType = type == Type.LEFT ? Type.RIGHT : Type.LEFT;
+			otherData.setType(otherType);
+			otherBlock.setBlockData(otherData);
+			if (otherType == Type.LEFT) return (Chest) otherBlock.getState();
+			return chest;
+		}else {
+			chestBlockData.setType(Type.SINGLE);
+			chest.getBlock().setBlockData(chestBlockData);
+			return chest;
 		}
 	}
 
@@ -167,6 +168,23 @@ public class LootChestsManager implements Listener {
 		}else if (block.getType() == Material.ENDER_CHEST) {
 			e.setCancelled(true);
 			player.openInventory(OlympaPlayerZTA.get(player).getEnderChest());
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onBlockBreak(BlockBreakEvent e) {
+		if (e.isCancelled()) return;
+		if (e.getBlock().getType() != Material.CHEST) return;
+		Chest chest = (Chest) e.getBlock().getState();
+		if (chest.getPersistentDataContainer().has(LOOTCHEST, PersistentDataType.INTEGER)) {
+			Integer id = chest.getPersistentDataContainer().get(LOOTCHEST, PersistentDataType.INTEGER);
+			try {
+				removeLootChest(id);
+				Prefix.INFO.sendMessage(e.getPlayer(), "Tu as supprimé le coffre de loot %d.", id);
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				Prefix.ERROR.sendMessage(e.getPlayer(), "Une erreur est survenue lors de la suppresion du coffre de loot %d.", id);
+			}
 		}
 	}
 

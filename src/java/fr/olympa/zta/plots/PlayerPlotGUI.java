@@ -65,7 +65,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					startProgress();
 				}else center = ItemUtils.item(Material.STONE
 						, "§e§lClic droit : §eAcheter ma parcelle", "§8> §o" + PlayerPlot.questsRequiredPerLevel[0] + " quêtes nécessaires"
-						, "§e§lClic gauche : §eVoir mes invitations", "§8> §o " + manager.getInvitations(player).size() + " invitations");
+						, "§e§lClic gauche : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
 			}else {
 				color = Material.LIME_STAINED_GLASS_PANE;
 				center = ItemUtils.item(Material.DIAMOND, "§e§lClic droit : §eMe téléporter", "§8> §oVous transporte à votre parcelle");

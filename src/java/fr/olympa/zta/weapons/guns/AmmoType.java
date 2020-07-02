@@ -28,11 +28,11 @@ public enum AmmoType{
 		this.empty = empty;
 		this.fill = fill;
 
-		this.itemFilled = ItemUtils.item(fill, name);
-		this.itemEmpty = ItemUtils.item(empty, name + " vides", "Associez-y de la", "poudre à canon.");
+		this.itemFilled = ItemUtils.item(fill, "§a" + name);
+		this.itemEmpty = ItemUtils.item(empty, "§b" + name + " vides", "§8> §7Associez-y de la", "§7poudre à canon.");
 
 		Bukkit.addRecipe(new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(empty).addIngredient(Material.WHITE_DYE));
-		OlympaZTA.getInstance().getLogger().info("Une nouvelle recette a été enregistrée pour : " + name);
+		OlympaZTA.getInstance().sendMessage("§7La recette des §e" + name + "§7 a été créée.");
 	}
 	
 	public String getName(){
