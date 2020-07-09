@@ -18,20 +18,20 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.auctions.AuctionsManager;
-import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
-import fr.olympa.api.hook.ProtocolAction;
+import fr.olympa.api.hook.IProtocolSupport;
 import fr.olympa.api.lines.AnimLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.lines.TimerLine;
+import fr.olympa.api.lines.PlayerObservableLine;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.flags.FishFlag;
 import fr.olympa.api.region.tracking.flags.GameModeFlag;
 import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
@@ -144,7 +144,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		return "§7Radar: " + title;
 	});
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineMoney = new DynamicLine<>(x -> "§7Monnaie: §6" + x.getOlympaPlayer().getGameMoney().getFormatted());
-	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineGroup = new DynamicLine<>(x -> "§7Rang: §b" + x.getOlympaPlayer().getGroupNameColored());
+	public PlayerObservableLine<Scoreboard<OlympaPlayerZTA>> lineDeaths = new PlayerObservableLine<>(x -> "§7Morts: §6" + x.getOlympaPlayer().deaths.get(), (x) -> x.getOlympaPlayer().deaths);
+	//public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineGroup = new DynamicLine<>(x -> "§7Rang: §b" + x.getOlympaPlayer().getGroupNameColored());
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
 
@@ -229,13 +230,10 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(
 				FixedLine.EMPTY_LINE,
-				lineGroup,
+				lineMoney,
+				lineDeaths,
 				FixedLine.EMPTY_LINE,
-				new TimerLine<Scoreboard<OlympaPlayerZTA>>(x -> "§7Nombre de mobs: §6" + mobSpawning.getEntityCount(), this, 20),
-				FixedLine.EMPTY_LINE,
-				lineRadar,
-				FixedLine.EMPTY_LINE,
-				lineMoney)
+				lineRadar)
 				.addFooters(
 				FixedLine.EMPTY_LINE,
 				AnimLine.olympaAnimation());
@@ -252,7 +250,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			e.printStackTrace();
 		}
 
-		ProtocolAction protocolSupport = OlympaCore.getInstance().getProtocolSupport();
+		IProtocolSupport protocolSupport = OlympaCore.getInstance().getProtocolSupport();
 		if (protocolSupport != null) {
 			protocolSupport.disable1_8();
 		}
@@ -271,14 +269,20 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		});
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
 		lineGroup.updateHolder(scoreboards.getPlayerScoreboard((OlympaPlayerZTA) e.getOlympaPlayer()));
-	}
+	}*/
 
 	@EventHandler
 	public void onWorldLoad(WorldTrackingEvent e) {
-		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(new ItemDurabilityFlag(true), new PhysicsFlag(true), new PlayerBlocksFlag(true), new GameModeFlag(GameMode.ADVENTURE), new PlayerBlockInteractFlag(false, true, true));
+		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(
+				new ItemDurabilityFlag(true),
+				new PhysicsFlag(true),
+				new PlayerBlocksFlag(true),
+				new FishFlag(true),
+				new GameModeFlag(GameMode.ADVENTURE),
+				new PlayerBlockInteractFlag(false, true, true));
 	}
 
 	@Override
@@ -288,12 +292,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
-
-		try {
-			taxManager.update();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
 
 		ZTARegistry.saveDatabase();
 	}

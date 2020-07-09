@@ -1,5 +1,6 @@
 package fr.olympa.zta.plots;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -15,7 +16,7 @@ public class PlotChunkGenerator extends ChunkGenerator {
 	public static final int PLOT_WIDTH = PLOT_CHUNK_SIZE * 16 - ROAD_WIDTH;
 
 	private Material[] materials = { Material.GRASS_BLOCK, Material.PODZOL, Material.COARSE_DIRT, Material.WATER };
-	private float[] chances = { 0.55f, 0.25f, 0.2f, 0.02f };
+	private double[] chances = { 0.55, 0.25, 0.2, 0.005 };
 
 	@Override
 	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
@@ -81,9 +82,9 @@ public class PlotChunkGenerator extends ChunkGenerator {
 		return true;
 	}
 
-	private <T> T randomObject(Random randomG, T[] objects, float[] chances) {
-		float random = randomG.nextFloat();
-		float acumulatedChance = 0f;
+	private <T> T randomObject(Random randomG, T[] objects, double[] chances) {
+		double random = randomG.nextDouble() * Arrays.stream(chances).sum();
+		double acumulatedChance = 0f;
 
 		for (int i = 0; i < chances.length; i++) {
 			acumulatedChance += chances[i];

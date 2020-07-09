@@ -8,6 +8,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
 
@@ -39,6 +40,7 @@ public class BulletSimple extends Bullet{
 			if (isHeadShot(e.getEntity(), hitEntity)) {
 				damage *= 1.5;
 				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
+				OlympaPlayerZTA.get(shooter).headshots.add(1);
 			}
 			damage(hitEntity, shooter, damage);
 		}

@@ -36,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.ActionResult;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
@@ -327,7 +328,7 @@ public class MobSpawning {
 			}
 
 			@Override
-			public boolean enters(Player p, Set<TrackedRegion> to) {
+			public ActionResult enters(Player p, Set<TrackedRegion> to) {
 				OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p)));
 				return super.enters(p, to);
 			}

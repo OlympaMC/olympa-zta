@@ -2,9 +2,7 @@ package fr.olympa.zta.lootchests;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Random;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -13,12 +11,9 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.lootchests.type.LootChestType;
-import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 
 public class LootChestCommand extends ComplexCommand {
 	
@@ -27,15 +22,16 @@ public class LootChestCommand extends ComplexCommand {
 	public LootChestCommand(LootChestsManager manager) {
 		super(OlympaZTA.getInstance(), "lootchest", "configuration des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
 		this.manager = manager;
+		super.addArgumentParser("CHESTTYPE", LootChestType.class);
 	}
 	
-	@Cmd (player = true, args = "civil|military|contraband", min = 1, syntax = "<type de coffre>")
+	@Cmd (player = true, args = "CHESTTYPE", syntax = "[type de coffre]")
 	public void create(CommandContext cmd) {
 		Chest chestBlock = getTargetChest(getPlayer());
 		if (chestBlock == null) return;
 		
 		try {
-			LootChestType type = LootChestType.valueOf(cmd.<String>getArgument(0).toUpperCase());
+			LootChestType type = cmd.getArgument(0, manager.pickRandomChestType(chestBlock.getLocation()));
 			LootChest chest = manager.getLootChest(chestBlock);
 			if (chest == null) {
 				chest = OlympaZTA.getInstance().lootChestsManager.createLootChest(chestBlock.getLocation(), type);
@@ -126,12 +122,12 @@ public class LootChestCommand extends ComplexCommand {
 			}
 			LootChest chest = getTargetLootChest(getPlayer());
 			if (chest == null) return;
-			LootChestType type = pickRandomChestType(chest.getLocation());
+			LootChestType type = manager.pickRandomChestType(chest.getLocation());
 			chest.setLootType(type, true);
 			sendSuccess("Le coffre est devenu un coffre %s.", type.getName());
 		}else {
 			for (LootChest lootChest : manager.chests.values()) {
-				lootChest.setLootType(pickRandomChestType(lootChest.getLocation()), true);
+				lootChest.setLootType(manager.pickRandomChestType(lootChest.getLocation()), true);
 			}
 			sendSuccess("Les %d coffres de loot ont été randomisé.", manager.chests.size());
 		}
@@ -160,16 +156,6 @@ public class LootChestCommand extends ComplexCommand {
 			}
 		}
 		sendSuccess("%d coffres corrigés, %d coffres supprimés.", missing, removed);
-	}
-
-	private Random random = new Random();
-	private LootChestType pickRandomChestType(Location location) {
-		for (TrackedRegion region : OlympaCore.getInstance().getRegionManager().getApplicableRegions(location)) {
-			SpawningFlag flag = region.getFlag(SpawningFlag.class);
-			if (flag == null) continue;
-			return flag.type.getLootChests().pick(random).get(0).getType();
-		}
-		return null;
 	}
 
 	private Chest getTargetChest(Player p) {

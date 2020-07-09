@@ -19,6 +19,7 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
+import fr.olympa.api.utils.observable.ObservableInt;
 import fr.olympa.zta.clans.ClanZTA;
 import fr.olympa.zta.plots.PlayerPlot;
 
@@ -30,9 +31,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.put("money", "DOUBLE NULL DEFAULT 0")
 			.put("clan", "INT NOT NULL DEFAULT -1")
 			.put("plot", "INT NOT NULL DEFAULT -1")
-			.put("killedZombies", "INT NOT NULL DEFAULT 0")
-			.put("killedPlayers", "INT NOT NULL DEFAULT 0")
+			.put("killed_zombies", "INT NOT NULL DEFAULT 0")
+			.put("killed_players", "INT NOT NULL DEFAULT 0")
 			.put("deaths", "INT NOT NULL DEFAULT 0")
+			.put("headshots", "INT NOT NULL DEFAULT 0")
 			.build();
 
 	private Inventory enderChest = Bukkit.createInventory(null, 9, "Enderchest de " + getName());
@@ -41,9 +43,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private PlayerPlot plot = null;
 	public BukkitTask plotFind = null; // pas persistant
 	/* Stats */
-	public int killedZombies = 0;
-	public int killedPlayers = 0;
-	public int deaths = 0;
+	public ObservableInt killedZombies = new ObservableInt(0);
+	public ObservableInt killedPlayers = new ObservableInt(0);
+	public ObservableInt deaths = new ObservableInt(0);
+	public ObservableInt headshots = new ObservableInt(0);
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
@@ -82,9 +85,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			int clanID = resultSet.getInt("clan");
 			if (clanID != -1) clan = OlympaZTA.getInstance().clansManager.getClan(clanID);
 			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true);
-			killedZombies = resultSet.getInt("killedZombies");
-			killedPlayers = resultSet.getInt("killedPlayers");
-			deaths = resultSet.getInt("deaths");
+			killedZombies.set(resultSet.getInt("killed_zombies"));
+			killedPlayers.set(resultSet.getInt("killed_players"));
+			deaths.set(resultSet.getInt("deaths"));
+			headshots.set(resultSet.getInt("headshots"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
@@ -96,9 +100,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			statement.setDouble(2, money.get());
 			statement.setInt(3, clan == null ? -1 : clan.getID());
 			statement.setInt(4, plot == null ? -1 : plot.getID());
-			statement.setInt(5, killedZombies);
-			statement.setInt(6, killedPlayers);
-			statement.setInt(7, deaths);
+			statement.setInt(5, killedZombies.get());
+			statement.setInt(6, killedPlayers.get());
+			statement.setInt(7, deaths.get());
+			statement.setInt(8, headshots.get());
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -20,7 +20,7 @@ import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class ClanZTA extends Clan<ClanZTA> {
 
-	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7§oMon clan:");
+	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7Mon clan:");
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getOlympaPlayer().getClan();
 		Player p = x.getOlympaPlayer().getPlayer();
@@ -28,7 +28,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
 		for (ClanPlayerData<ClanZTA> member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
-			if (member.isConnected()) {
+			if (!member.isConnected()) {
 				joiner.add("§c○ " + memberName);
 			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
 				joiner.add("§6● §l" + memberName);
@@ -71,6 +71,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 	@Override
 	public void disband() {
 		super.disband();
+		
 		if (cachedPlot != null) {
 			ClanPlot plot = cachedPlot;
 			plot.setClan(null, true);

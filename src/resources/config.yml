@@ -96,6 +96,33 @@ safeRegions:
       xMax: 1390
       zMax: 788
     title: "Zone neutre"
+  neutral4:
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: -414
+      zMin: 143
+      xMax: -327
+      zMax: 214
+    title: "Zone neutre"
+  neutral5:
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: -903
+      zMin: -1326
+      xMax: -867
+      zMax: -1290
+    title: "Zone neutre"
+  neutral6:
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: 275
+      zMin: -202
+      xMax: 308
+      zMax: -175
+    title: "Zone neutre"
 
 hub:
   ==: fr.olympa.api.region.shapes.ExpandedCuboid

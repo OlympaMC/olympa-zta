@@ -2,7 +2,9 @@ package fr.olympa.zta.weapons;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -55,8 +57,9 @@ public class WeaponsListener implements Listener {
 		}catch (ClassCastException | NullPointerException ex) {} // ça arrive quand des balles étaient présentes dans des chunks qui ont été unloadé pendant le runtime
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent e) {
+		if (e.useItemInHand() == Result.DENY) return;
 		if (e.getItem() == null || e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
 
 		Registrable object = ZTARegistry.getItemStackable(e.getItem());

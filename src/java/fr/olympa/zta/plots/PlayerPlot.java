@@ -85,7 +85,7 @@ public class PlayerPlot {
 
 	public void kick(OlympaPlayerInformations player) {
 		if (!players.remove(player.getId())) return;
-		OlympaPlayerZTA oplayer = (OlympaPlayerZTA) AccountProvider.cache.get(player.getUUID());
+		OlympaPlayerZTA oplayer = AccountProvider.get(player.getUUID());
 		if (oplayer == null) {
 			try {
 				OlympaZTA.getInstance().plotsManager.removePlayerPlot(player);

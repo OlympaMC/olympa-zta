@@ -90,7 +90,6 @@ public class PlayerPlotsManager {
 		}, new PlayerBlockInteractFlag(true) {
 			@Override
 			public void interactEvent(PlayerInteractEvent event) {
-				System.out.println("PlayerPlotsManager.PlayerPlotsManager(...).new PlayerInteractFlag() {...}.interactEvent()");
 				PlayerPlot plot = getPlot(event.getClickedBlock().getLocation());
 				event.setCancelled(plot == null ? true : plot.onInteract(event));
 			}

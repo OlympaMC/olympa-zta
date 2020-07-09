@@ -40,7 +40,7 @@ public class MobsListener implements Listener {
 		int id = lastId++;
 		Player p = e.getEntity();
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
-		op.deaths++;
+		op.deaths.add(1);
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
@@ -81,9 +81,9 @@ public class MobsListener implements Listener {
 		if (entity.getKiller() != null) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
-				killer.killedPlayers++;
+				killer.killedPlayers.add(1);
 			}else if (entity.getType() == EntityType.ZOMBIE) {
-				killer.killedZombies++;
+				killer.killedZombies.add(1);
 			}
 		}
 	}

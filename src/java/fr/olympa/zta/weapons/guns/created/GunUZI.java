@@ -35,7 +35,7 @@ public class GunUZI extends Gun{
 	}
 	
 	public int getFireRate(){
-		return 4;
+		return 3;
 	}
 	
 	public int getChargeTime(){

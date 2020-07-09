@@ -1,6 +1,5 @@
 package fr.olympa.zta.plots;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
@@ -111,13 +110,17 @@ public class PlayerPlotGUI extends OlympaGUI {
 			}else if (slot == 6) {
 				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur que tu souhaites inviter.");
 				new TextEditor<>(p, (target) -> {
-					manager.invite(target, plot);
-					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
-					Prefix.DEFAULT_GOOD.sendMessage(target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
+					if (target == player) {
+						Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas t'inviter toi-même...");
+					}else {
+						manager.invite(target, plot);
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
+						Prefix.DEFAULT_GOOD.sendMessage(target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
+					}
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			}else if (slot == 8) {
-				new PlotGuestsGUI(plot.getPlayers().stream().map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList())).create(p);
+				new PlotGuestsGUI(plot).create(p);
 			}
 			return true;
 		}
@@ -175,14 +178,14 @@ public class PlayerPlotGUI extends OlympaGUI {
 	}
 
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
-		private PlotGuestsGUI(List<OlympaPlayerInformations> list) {
-			super("Liste des invités", DyeColor.MAGENTA, list, 5);
+		private PlotGuestsGUI(PlayerPlot plot) {
+			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 5);
 			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
 		}
 
 		@Override
 		public ItemStack getItemStack(OlympaPlayerInformations object) {
-			ItemUtils.skull(item -> super.updateObjectItem(object, item), "§e" + object.getName(), object.getName(), "§8> §oéjecter le joueur");
+			ItemUtils.skull(item -> super.updateObjectItem(object, item), "§e" + object.getName(), object.getName(), "§8> §oÉjecter le joueur");
 			return ItemUtils.none;
 		}
 
