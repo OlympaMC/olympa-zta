@@ -21,6 +21,7 @@ import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlot;
 import fr.olympa.zta.lootchests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
@@ -32,6 +33,8 @@ public class DynmapLink {
 	private static MarkerIcon chestIcon;
 	private static MarkerSet enderChestsMarkers;
 	private static MarkerIcon enderChestIcon;
+	private static MarkerSet plotsMarkers;
+	private static MarkerIcon plotIcon;
 
 	public static void initialize() {
 		try {
@@ -45,6 +48,9 @@ public class DynmapLink {
 				enderChestsMarkers = api.getMarkerAPI().getMarkerSet("enderchests");
 				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, true);
 				enderChestIcon = api.getMarkerAPI().getMarkerIcon("portal");
+				plotsMarkers = api.getMarkerAPI().getMarkerSet("plots");
+				if (plotsMarkers == null) plotsMarkers = api.getMarkerAPI().createMarkerSet("plots", "Parcelles de Clans", null, false);
+				plotIcon = api.getMarkerAPI().getMarkerIcon("house");
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -103,6 +109,12 @@ public class DynmapLink {
 		String loc = SpigotUtils.convertLocationToString(location);
 		if (enderChestsMarkers.findMarker(loc) != null) return;
 		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, true);
+	}
+	
+	public static void showClanPlot(ClanPlot plot) {
+		if (api == null) return;
+		
+		plotsMarkers.createMarker(String.valueOf(plot.getID()), "Parcelle de clan", plot.getSign().getWorld().getName(), plot.getSign().getX(), plot.getSign().getY(), plot.getSign().getZ(), plotIcon, false);
 	}
 	
 	public static class DynmapHideFlag extends Flag {

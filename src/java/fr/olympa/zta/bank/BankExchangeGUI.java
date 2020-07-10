@@ -83,8 +83,8 @@ public class BankExchangeGUI extends OlympaGUI {
 			int money = (int) player.getGameMoney().get();
 			int amount = this.amount;
 			if (money < amount) amount = money;
-			player.getGameMoney().withdraw(amount);
 			PhysicalMoney.give(p, amount);
+			player.getGameMoney().withdraw(amount);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as retiré %s de ton compte en banque.", OlympaMoney.format(amount));
 			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 		}

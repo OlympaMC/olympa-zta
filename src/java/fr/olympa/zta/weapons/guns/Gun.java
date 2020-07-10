@@ -80,7 +80,6 @@ public abstract class Gun extends Weapon {
 
 	public ItemStack createItemStack(boolean accessories) {
 		ItemStack item = ItemUtils.item(getItemMaterial(), getName());
-		updateItemCustomModel(item);
 		updateItemName(item);
 		updateItemLore(item, accessories);
 		return addIdentifier(item);
@@ -255,7 +254,7 @@ public abstract class Gun extends Weapon {
 		launchBullet(bullet, p);
 		ammos--;
 
-		float distance = fireVolume.getValue() * 16;
+		float distance = (fireVolume.getValue() - 1.5f) * 16;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
 			Zombie zombie = (Zombie) en;
 			if (zombie.getTarget() == null) zombie.setTarget(p);
@@ -497,7 +496,7 @@ public abstract class Gun extends Weapon {
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
 	protected float getFireVolume() {
-		return 2;
+		return 3;
 	}
 
 	/**

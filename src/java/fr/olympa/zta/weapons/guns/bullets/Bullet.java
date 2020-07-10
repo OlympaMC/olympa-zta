@@ -40,13 +40,18 @@ public abstract class Bullet{
 		boolean highVelocity = speed > 4.5;
 		Projectile projectile = p.launchProjectile(highVelocity ? LlamaSpit.class : Snowball.class, velocity);
 		projectile.setMetadata("bullet", metadata);
+		projectile.setBounce(false);
+		projectile.setPersistent(false);
 
 		if (highVelocity) { // nécessaire ? à supprimer peut-être
 			new BukkitRunnable() {
 				World world = projectile.getWorld();
-
+				int previousTicksLived;
+				
 				public void run() {
 					if (projectile.isValid()) {
+						if (projectile.getTicksLived() == previousTicksLived) return;
+						previousTicksLived = projectile.getTicksLived();
 						Vector velocity = projectile.getVelocity();
 						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
 					}else cancel();

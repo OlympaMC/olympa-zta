@@ -8,6 +8,8 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
@@ -20,6 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
@@ -69,10 +72,10 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 				currentLoots.put(slot, loot);
 				inv.setItem(slot, loot.getItem());
 			}
-		}
+		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
 
 		super.create(p);
-		updateChestState(inv.getViewers().size());
+		updateChestState(inv.getViewers().size(), true);
 	}
 
 	public void clearInventory() {
@@ -90,12 +93,16 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 
 	@Override
 	public boolean onClose(Player p) {
-		updateChestState(inv.getViewers().size() - 1);
+		updateChestState(inv.getViewers().size() - 1, false);
 		return true;
 	}
 
-	public void updateChestState(int viewers) {
+	public void updateChestState(int viewers, boolean open) {
 		if (nmsBlock == null) nmsBlock = ((CraftBlock) location.getBlock()).getNMS().getBlock();
+		Sound sound = null;
+		if (viewers == 0) sound = Sound.BLOCK_CHEST_CLOSE;
+		if (viewers == 1 && open) sound = Sound.BLOCK_CHEST_OPEN;
+		if (sound != null) location.getWorld().playSound(location, sound, SoundCategory.BLOCKS, 1, 1);
 		((CraftWorld) location.getWorld()).getHandle().playBlockAction(nmsPosition, nmsBlock, 1, viewers);
 	}
 

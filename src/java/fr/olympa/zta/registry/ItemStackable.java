@@ -43,6 +43,7 @@ public interface ItemStackable extends Registrable{
 	public default ItemStack addIdentifier(ItemStack item) {
 		ItemMeta itemMeta = item.getItemMeta();
 		itemMeta.getPersistentDataContainer().set(PERISTENT_DATA_KEY, PersistentDataType.INTEGER, getID());
+		itemMeta.setCustomModelData(1);
 		item.setItemMeta(itemMeta);
 		return item;
 	}

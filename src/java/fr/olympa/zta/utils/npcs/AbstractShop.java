@@ -1,4 +1,4 @@
-package fr.olympa.zta.utils;
+package fr.olympa.zta.utils.npcs;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public abstract class AbstractShop<T> extends Trait {
 
 		@Override
 		public ItemStack getItemStack(Article<T> object) {
-			return ItemUtils.loreAdd(AbstractShop.this.getItemStack(object.object), "", "§e§m     §e[ §6§l" + object.price + "§e ]§m     §r");
+			return ItemUtils.loreAdd(AbstractShop.this.getItemStack(object.object), "", "§e§m      §e[ §6§l" + object.price + "§e ]§m      §r");
 		}
 
 		@Override

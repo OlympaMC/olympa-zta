@@ -31,7 +31,7 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
 		if (plot == null) {
 			plotLore = new String[] { "§8> §oVotre clan n'a pas de parcelle" };
 		}else {
-			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPrice(), "§8> §oDate d'expiration : §l" + plot.getExpirationDate(), "", "§e§lClique pour t'y téléporter" };
+			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPriceFormatted(), "§8> §oDate d'expiration : §l" + plot.getExpirationDate(), "", "§e§lClique pour t'y téléporter" };
 		}
 		inv.setItem(1, ItemUtils.item(Material.STONE, "§6Parcelle du clan", plotLore));
 	}

@@ -22,7 +22,7 @@ import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.hook.IProtocolSupport;
-import fr.olympa.api.lines.AnimLine;
+import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.PlayerObservableLine;
@@ -69,6 +69,7 @@ import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.commands.BackCommand;
 import fr.olympa.zta.utils.commands.FeedCommand;
 import fr.olympa.zta.utils.commands.HealCommand;
+import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -236,7 +237,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				lineRadar)
 				.addFooters(
 				FixedLine.EMPTY_LINE,
-				AnimLine.olympaAnimation());
+				CyclingLine.olympaAnimation());
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
@@ -258,7 +259,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {
 		if (CitizensAPI.getTraitFactory().getTraitClass(name) == null) CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(trait).withName(name));
-		npcs.forEach(x -> traitsToAdd.put(x, trait));
+		if (npcs != null) npcs.forEach(x -> traitsToAdd.put(x, trait));
 	}
 
 	@EventHandler

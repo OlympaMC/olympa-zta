@@ -48,13 +48,13 @@ public class PhysicalMoney {
 			return true;
 		}
 		
-		amount -= remove(inv, 10, amount);
+		amount -= remove(inv, 10, amount / 10) * 10;
 		if (amount <= 0){
 			give(p, Math.abs(amount)); // si enlevé plus que nécessaire, rendre la monnaie manquante
 			return true;
 		}
 		
-		amount -= remove(inv, 100, amount);
+		amount -= remove(inv, 100, amount / 100) * 100;
 		if (amount <= 0){
 			give(p, Math.abs(amount));
 			return true;
@@ -120,7 +120,7 @@ public class PhysicalMoney {
 			if (item == null) continue;
 			if (!item.hasItemMeta()) continue;
 			PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
-			if (data.has(BANKNOTE_KEY, PersistentDataType.INTEGER)) money += data.get(BANKNOTE_KEY, PersistentDataType.INTEGER).intValue();
+			if (data.has(BANKNOTE_KEY, PersistentDataType.INTEGER)) money += data.get(BANKNOTE_KEY, PersistentDataType.INTEGER).intValue() * item.getAmount();
 		}
 		return money;
 	}

@@ -1,5 +1,8 @@
 package fr.olympa.zta.lootchests.creators;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -29,30 +32,39 @@ public class QuestItemCreator implements LootCreator {
 	}
 	
 	public enum QuestItems {
-		DECHET(Material.IRON_NUGGET, "Déchet métallique"),
-		PIECE(Material.IRON_INGOT, "Pièce métallique"),
-		AIMANT(Material.CLAY_BALL, "Aimant"),
-		PILE(Material.RABBIT_HIDE, "Pile magnétique"),
-		IEM_MATERIEL(Material.LEATHER, "Matériel I.E.M."),
-		IEM_BROUILLEUR(Material.SCUTE, "Brouilleur I.E.M."),
-		SLIMEBALL(Material.CLAY_BALL, "Brouilleur BioTech"),
+		DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
+		PIECE(Material.IRON_INGOT, "Pièce métallique", 1),
+		AIMANT(Material.CLAY_BALL, "Aimant", 1),
+		PILE(Material.RABBIT_HIDE, "Pile magnétique", 1),
+		IEM_MATERIEL(Material.LEATHER, "Matériel I.E.M.", 1),
+		IEM_BROUILLEUR(Material.SCUTE, "Brouilleur I.E.M.", 1),
+		SLIMEBALL(Material.CLAY_BALL, "Brouilleur BioTech.", 1),
 
-		AMAS(Material.GOLD_NUGGET, "Amas technologique"),
-		COMPOSANT(Material.GOLD_INGOT, "Composant"),
-		CARTE(Material.GLOWSTONE_DUST, "Carte"),
-		BOITIER_ELEC(Material.PRISMARINE_CRYSTALS, "Boîtier éléctronique"),
-		BOITIER_PROG(Material.PRISMARINE_SHARD, "Boîtier de programme"),
-		GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé"),
-		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit");
+		AMAS(Material.GOLD_NUGGET, "Amas technologique", 2),
+		COMPOSANT(Material.GOLD_INGOT, "Composant", 2),
+		CARTE(Material.GLOWSTONE_DUST, "Carte", 2),
+		BOITIER_ELEC(Material.PRISMARINE_CRYSTALS, "Boîtier éléctronique", 2),
+		BOITIER_PROG(Material.PRISMARINE_SHARD, "Boîtier de programme", 2),
+		GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé", 2),
+		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2);
 		
 		private final ItemStack item;
+		private final int segment;
 
-		private QuestItems(Material type, String name, String... lore) {
-			this.item = ItemUtils.item(type, "§b" + name, lore);
+		private QuestItems(Material type, String name, int segment, String... lore) {
+			this.segment = segment;
+			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
+			loreList.add("");
+			loreList.add("§8> §7Ressource de segment §l" + segment);
+			this.item = ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new));
 		}
 
 		public ItemStack getItem() {
 			return item;
+		}
+
+		public int getSegment() {
+			return segment;
 		}
 	}
 

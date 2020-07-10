@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -21,12 +22,14 @@ import fr.olympa.zta.clans.ClanZTA;
 
 public class ClanPlot {
 
-	private static final long PAYMENT_DURATION_MILLIS = 7 * 24 * 3600 * 1000;
+	private static final int PAYMENT_DURATION_DAYS = 7;
+	private static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000;
 	private static final DateFormat paymentDateFormat = new SimpleDateFormat("dd/MM");
 
 	private final int id;
 	private final Region region;
 	private final int price;
+	private final String priceFormatted;
 	private final Location sign;
 	private final Location spawn;
 
@@ -38,6 +41,7 @@ public class ClanPlot {
 		this.id = id;
 		this.region = region;
 		this.price = price;
+		this.priceFormatted = OlympaMoney.format(price);
 		this.sign = sign;
 		this.spawn = spawn;
 	}
@@ -76,6 +80,10 @@ public class ClanPlot {
 
 	public int getPrice() {
 		return price;
+	}
+	
+	public String getPriceFormatted() {
+		return priceFormatted;
 	}
 
 	public Location getSign() {
@@ -137,7 +145,7 @@ public class ClanPlot {
 	public void updateSign() {
 		Sign sign = (Sign) this.sign.getBlock().getState();
 
-		sign.setLine(0, "[" + price + "/semaine]");
+		sign.setLine(0, "[" + priceFormatted + "/semaine]");
 		if (clan == null) {
 			sign.setLine(2, "Parcelle à");
 			sign.setLine(3, "vendre");
@@ -162,7 +170,7 @@ public class ClanPlot {
 					return;
 				}
 				if (!clan.getMoney().withdraw(price)) {
-					Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour payer la parcelle (" + clan.getMoney().get() + "/" + price + ").");
+					Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour payer la parcelle (" + clan.getMoney().getFormatted() + "/" + priceFormatted + ").");
 					return;
 				}
 				setNextPayment(nextPayment + PAYMENT_DURATION_MILLIS, true);
@@ -192,7 +200,7 @@ public class ClanPlot {
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
 			calendar.set(Calendar.SECOND, 0);
-			calendar.add(Calendar.DATE, 1);
+			calendar.add(Calendar.DATE, PAYMENT_DURATION_DAYS);
 			setNextPayment(calendar.getTimeInMillis(), true);
 			updateSign();
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
