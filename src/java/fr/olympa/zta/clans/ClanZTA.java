@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.clans.Clan;
-import fr.olympa.api.clans.ClanPlayerData;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.lines.FixedLine;
@@ -16,9 +15,10 @@ import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
 
-public class ClanZTA extends Clan<ClanZTA> {
+public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 
 	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7Mon clan:");
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
@@ -26,7 +26,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 		Player p = x.getOlympaPlayer().getPlayer();
 		StringJoiner joiner = new StringJoiner("\n");
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
-		for (ClanPlayerData<ClanZTA> member : clan.getMembers()) {
+		for (ClanPlayerDataZTA member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
 			if (!member.isConnected()) {
 				joiner.add("§c○ " + memberName);
@@ -42,16 +42,16 @@ public class ClanZTA extends Clan<ClanZTA> {
 	
 	public ClanPlot cachedPlot;
 
-	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
 		super(manager, id, name, chief, maxSize, money, created);
 	}
 
-	public ClanZTA(ClansManager<ClanZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
 		super(manager, id, name, chief, maxSize);
 	}
 
 	@Override
-	protected void removedOnlinePlayer(ClanPlayerInterface<ClanZTA> oplayer) {
+	protected void removedOnlinePlayer(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> oplayer) {
 		super.removedOnlinePlayer(oplayer);
 		
 		OlympaZTA.getInstance().scoreboards.removePlayerScoreboard((OlympaPlayerZTA) oplayer);
@@ -59,7 +59,7 @@ public class ClanZTA extends Clan<ClanZTA> {
 	}
 
 	@Override
-	public void memberJoin(ClanPlayerInterface<ClanZTA> member) {
+	public void memberJoin(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> member) {
 		super.memberJoin(member);
 
 		Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard((OlympaPlayerZTA) member);

@@ -224,7 +224,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new HealCommand(this).register();
 		new FeedCommand(this).register();
 		new BackCommand(this).register();
-
+		
 		new Mobs(); // initalise les mobs custom
 		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();

@@ -31,8 +31,8 @@ import net.md_5.bungee.api.ChatMessageType;
 
 public class HubManager implements Listener {
 
-	private Region region;
-	private Location spawnpoint;
+	private final Region region;
+	private final Location spawnpoint;
 	private Set<SpawnType> spawnRegions;
 
 	private List<Region> cachedRegions = null;
@@ -66,12 +66,16 @@ public class HubManager implements Listener {
 		return spawnRegions;
 	}
 
+	public Location getSpawnpoint() {
+		return spawnpoint;
+	}
+
 	public boolean isInHub(Location loc) {
 		return region.isIn(loc);
 	}
 
 	public void teleport(Player p) {
-		OlympaZTA.getInstance().teleportationManager.teleport(p, spawnpoint, Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au hub."), () -> DynmapLink.setPlayerVisiblity(p, false));
+		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au hub."), () -> DynmapLink.setPlayerVisiblity(p, false));
 	}
 
 	public void startRandomTeleport(Player p) {
@@ -113,7 +117,7 @@ public class HubManager implements Listener {
 				
 				Prefix.DEFAULT_BAD.sendMessage(p, "Une erreur est survenue lors de votre envoi aléatoire.");
 				ZTAPermissions.PROBLEM_MONITORING.sendMessage(Prefix.ERROR.toString() + "L'envoi aléatoire du joueur " + p.getName() + " a échoué. Plus petite distance trouvée : " + minFoundDistance);
-				p.teleport(spawnpoint);
+				p.teleport(getSpawnpoint());
 				inRandomTP.remove(p);
 			}
 		}.runTaskAsynchronously(OlympaZTA.getInstance());
@@ -121,7 +125,7 @@ public class HubManager implements Listener {
 
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
-		e.setRespawnLocation(spawnpoint);
+		e.setRespawnLocation(getSpawnpoint());
 	}
 
 	@EventHandler

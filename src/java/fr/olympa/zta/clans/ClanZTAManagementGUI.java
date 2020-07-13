@@ -11,13 +11,14 @@ import fr.olympa.api.clans.gui.ClanManagementGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
 
-public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA> {
+public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerDataZTA> {
 
 	private ClanPlot plot;
 
-	public ClanZTAManagementGUI(ClanPlayerInterface<ClanZTA> p, ClansManager<ClanZTA> manager) {
+	public ClanZTAManagementGUI(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p, ClansManager<ClanZTA, ClanPlayerDataZTA> manager) {
 		super(p, manager, 2);
 	}
 

@@ -21,15 +21,15 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.api.utils.observable.ObservableInt;
 import fr.olympa.zta.clans.ClanZTA;
+import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.plots.PlayerPlot;
 
-public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA> {
+public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> {
 
 	public static final int MAX_SLOTS = 27;
 	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder()
 			.put("ender_chest", "VARBINARY(8000) NULL")
 			.put("money", "DOUBLE NULL DEFAULT 0")
-			.put("clan", "INT NOT NULL DEFAULT -1")
 			.put("plot", "INT NOT NULL DEFAULT -1")
 			.put("killed_zombies", "INT NOT NULL DEFAULT 0")
 			.put("killed_players", "INT NOT NULL DEFAULT 0")
@@ -82,8 +82,6 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		try {
 			enderChest.setContents(ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest")));
 			money.set(resultSet.getDouble("money"));
-			int clanID = resultSet.getInt("clan");
-			if (clanID != -1) clan = OlympaZTA.getInstance().clansManager.getClan(clanID);
 			plot = OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true);
 			killedZombies.set(resultSet.getInt("killed_zombies"));
 			killedPlayers.set(resultSet.getInt("killed_players"));
@@ -96,14 +94,14 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public void saveDatas(PreparedStatement statement) throws SQLException {
 		try {
-			statement.setBytes(1, ItemUtils.serializeItemsArray(enderChest.getContents()));
-			statement.setDouble(2, money.get());
-			statement.setInt(3, clan == null ? -1 : clan.getID());
-			statement.setInt(4, plot == null ? -1 : plot.getID());
-			statement.setInt(5, killedZombies.get());
-			statement.setInt(6, killedPlayers.get());
-			statement.setInt(7, deaths.get());
-			statement.setInt(8, headshots.get());
+			int i = 1;
+			statement.setBytes(i++, ItemUtils.serializeItemsArray(enderChest.getContents()));
+			statement.setDouble(i++, money.get());
+			statement.setInt(i++, plot == null ? -1 : plot.getID());
+			statement.setInt(i++, killedZombies.get());
+			statement.setInt(i++, killedPlayers.get());
+			statement.setInt(i++, deaths.get());
+			statement.setInt(i++, headshots.get());
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

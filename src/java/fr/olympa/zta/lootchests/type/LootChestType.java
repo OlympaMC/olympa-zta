@@ -46,13 +46,12 @@ import fr.olympa.zta.weapons.knives.KnifeSurin;
 
 public enum LootChestType {
 
-	CIVIL("civil", new ItemStackableCreator<>(1.485, GunM1911.class), new ItemStackableCreator<>(1.430, GunCobra.class), new ItemStackableCreator<>(1.485, Gun870.class), new ItemStackableCreator<>(1.485, GunUZI.class), new ItemStackableCreator<>(1.430, GunM16.class), new ItemStackableCreator<>(1.485, GunM1897.class), new ItemStackableCreator<>(2.2, KnifeBatte.class),
-			new ItemStackableCreator<>(1.0, StockLight.class), new ItemStackableCreator<>(0.4, CannonCaC.class), new ItemStackableCreator<>(0.4, ScopeLight.class),
-			new AmmoCreator(5.25, AmmoType.LIGHT, 1, 2, true), new AmmoCreator(1.75, AmmoType.CARTRIDGE, 1, 2, true), new AmmoCreator(5.6, 1, 3), new AmmoCreator(5.6, AmmoType.HANDWORKED, 1, 1, false), new AmmoCreator(5.6, AmmoType.LIGHT, 1, 1, false), new AmmoCreator(5.6, AmmoType.CARTRIDGE, 1, 1, false), new AmmoCreator(5.6, AmmoType.HEAVY, 1, 1, false),
+	CIVIL("civil", new ItemStackableCreator<>(1.755, GunM1911.class), new ItemStackableCreator<>(1.690, GunCobra.class), new ItemStackableCreator<>(1.755, Gun870.class), new ItemStackableCreator<>(1.755, GunUZI.class), new ItemStackableCreator<>(1.690, GunM16.class), new ItemStackableCreator<>(1.755, GunM1897.class), new ItemStackableCreator<>(2.6, KnifeBatte.class),
+			new ItemStackableCreator<>(1.0, StockLight.class), new ItemStackableCreator<>(0.6, CannonCaC.class), new ItemStackableCreator<>(0.4, ScopeLight.class), new AmmoCreator(6, AmmoType.LIGHT, 1, 2, true), new AmmoCreator(2, AmmoType.CARTRIDGE, 1, 2, true), new AmmoCreator(8, 1, 3), new AmmoCreator(6, AmmoType.HANDWORKED, 1, 1, false), new AmmoCreator(6, AmmoType.LIGHT, 1, 1, false), new AmmoCreator(6, AmmoType.CARTRIDGE, 1, 1, false), new AmmoCreator(6, AmmoType.HEAVY, 1, 1, false),
 			new FoodCreator(7, Food.BREAD, 1, 3), new FoodCreator(7, Food.BAKED_POTATO, 1, 2), new FoodCreator(7, Food.CARROT, 1, 3), new FoodCreator(7, Food.COOKED_RABBIT, 1, 2), new FoodCreator(7, Food.COOKED_COD, 1, 2),
 			new ArmorCreator(12, ArmorType.ANTIRIOT),
-			new QuestItemCreator(2.25, QuestItems.DECHET), new QuestItemCreator(2.25, QuestItems.AMAS),
-			new MoneyCreator(0.5, 1, 3)),
+			new QuestItemCreator(3.6, QuestItems.DECHET), new QuestItemCreator(3.6, QuestItems.AMAS),
+			new MoneyCreator(0.8, 1, 3)),
 	MILITARY("militaire", new ItemStackableCreator<>(2.09, GunP22.class), new ItemStackableCreator<>(2.035, GunSDMR.class), new ItemStackableCreator<>(1.32, GunStoner.class), new ItemStackableCreator<>(1.32, GunBarrett.class), new ItemStackableCreator<>(2.035, GunKSG.class), new ItemStackableCreator<>(2.2, KnifeSurin.class),
 			new ItemStackableCreator<>(0.8, StockStrong.class), new ItemStackableCreator<>(0.5, CannonPower.class), new ItemStackableCreator<>(0.5, CannonSilent.class), new ItemStackableCreator<>(0.2, ScopeStrong.class),
 			new AmmoCreator(5.25, AmmoType.HEAVY, 1, 2, true), new AmmoCreator(1.75, AmmoType.CARTRIDGE, 1, 2, true), new AmmoCreator(5.6, 1, 3), new AmmoCreator(5.6, AmmoType.HANDWORKED, 1, 1, false), new AmmoCreator(5.6, AmmoType.LIGHT, 1, 1, false), new AmmoCreator(5.6, AmmoType.CARTRIDGE, 1, 1, false), new AmmoCreator(5.6, AmmoType.HEAVY, 1, 1, false),

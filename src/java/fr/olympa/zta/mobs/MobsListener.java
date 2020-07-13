@@ -97,7 +97,11 @@ public class MobsListener implements Listener {
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 
-		if (!p.hasPlayedBefore()) ArmorType.CIVIL.setFull(p);
+		if (!p.hasPlayedBefore()) {
+			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
+			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
+			ArmorType.CIVIL.setFull(p);
+		}
 	}
 
 	@EventHandler
