@@ -20,9 +20,14 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
 		super(OlympaZTA.getInstance(), "zta_clans", 5);
 
-		new ClansCommandZTA(this, "clan", "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
+		new ClansCommandZTA(this, "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
 	}
 
+	@Override
+	protected String getClansCommand() {
+		return "clan";
+	}
+	
 	@Override
 	protected ClanZTA provideClan(int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException {
 		return new ClanZTA(this, id, name, chief, maxSize, money, created, resultSet.getInt("plot_expiration_reset"));

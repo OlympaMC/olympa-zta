@@ -8,8 +8,8 @@ import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 
 public class ClansCommandZTA extends ClansCommand<ClanZTA, ClanPlayerDataZTA> {
 	
-	public ClansCommandZTA(ClansManagerZTA manager, String command, String description, OlympaPermission permission, String... aliases) {
-		super(manager, command, description, permission, aliases);
+	public ClansCommandZTA(ClansManagerZTA manager, String description, OlympaPermission permission, String... aliases) {
+		super(manager, description, permission, aliases);
 	}
 	
 	@Cmd (player = true)
