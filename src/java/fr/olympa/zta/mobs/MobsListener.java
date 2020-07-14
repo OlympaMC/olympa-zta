@@ -29,6 +29,7 @@ import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
 import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class MobsListener implements Listener {
 
@@ -101,6 +102,9 @@ public class MobsListener implements Listener {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
 			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
 			ArmorType.CIVIL.setFull(p);
+			for (AmmoType ammoType : AmmoType.values()) {
+				p.discoverRecipe(ammoType.getRecipe().getKey());
+			}
 		}
 	}
 

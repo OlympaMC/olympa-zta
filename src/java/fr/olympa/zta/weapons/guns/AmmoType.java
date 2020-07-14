@@ -22,6 +22,7 @@ public enum AmmoType{
 	private Material empty, fill;
 	
 	private ItemStack itemFilled, itemEmpty;
+	private ShapelessRecipe recipe;
 
 	private AmmoType(String name, Material empty, Material fill){
 		this.name = name;
@@ -31,7 +32,7 @@ public enum AmmoType{
 		this.itemFilled = ItemUtils.item(fill, "§a" + name);
 		this.itemEmpty = ItemUtils.item(empty, "§b" + name + " vides", "§8> §7Associez-y de la", "§7poudre à canon.");
 
-		Bukkit.addRecipe(new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(empty).addIngredient(Material.WHITE_DYE));
+		Bukkit.addRecipe(recipe = new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(empty).addIngredient(Material.WHITE_DYE));
 		OlympaZTA.getInstance().sendMessage("§7La recette des §e" + name + "§7 a été créée.");
 	}
 	
@@ -45,6 +46,10 @@ public enum AmmoType{
 	
 	public Material getFilledAmmoType(){
 		return fill;
+	}
+	
+	public ShapelessRecipe getRecipe() {
+		return recipe;
 	}
 	
 	/**
