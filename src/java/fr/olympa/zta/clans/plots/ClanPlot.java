@@ -52,11 +52,11 @@ public class ClanPlot {
 
 	public void setClan(ClanZTA clan, boolean updateDB) {
 		if (this.clan != null) {
-			this.clan.cachedPlot = null;
+			this.clan.setCachedPlot(null);
 		}else setNextPayment(-1, true);
 
 		this.clan = clan;
-		if (clan != null) clan.cachedPlot = this;
+		if (clan != null) clan.setCachedPlot(this);
 
 		if (updateDB) {
 			try {
@@ -103,6 +103,7 @@ public class ClanPlot {
 		if (nextPayment != -1) {
 			long timeBeforeExpiration = getSecondsBeforeExpiration();
 			if (timeBeforeExpiration < 0) {
+				clan.setResetExpirationTime();
 				setClan(null, true);
 				updateSign();
 			}else {
@@ -110,7 +111,8 @@ public class ClanPlot {
 				paymentExpiration = new BukkitRunnable() {
 					@Override
 					public void run() {
-						clan.broadcast("Vous n'avez pas renouvelé le paiement, votre parcelle est donc arrivée à expiration.'");
+						clan.broadcast("Vous n'avez pas renouvelé le paiement, votre parcelle est donc arrivée à expiration.");
+						clan.setResetExpirationTime();
 						setClan(null, true);
 						updateSign();
 					}
@@ -186,7 +188,7 @@ public class ClanPlot {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Cette parcelle n'est louable qu'à un clan.");
 			return;
 		}
-		if (targetClan.cachedPlot != null) {
+		if (targetClan.getCachedPlot() != null) {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Ton clan loue déjà une parcelle !");
 			return;
 		}
@@ -196,10 +198,12 @@ public class ClanPlot {
 		}
 		if (targetClan.getMoney().withdraw(price)) {
 			setClan(targetClan, true);
+			targetClan.resetExpirationTime();
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
 			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
 			calendar.add(Calendar.DATE, PAYMENT_DURATION_DAYS);
 			setNextPayment(calendar.getTimeInMillis(), true);
 			updateSign();

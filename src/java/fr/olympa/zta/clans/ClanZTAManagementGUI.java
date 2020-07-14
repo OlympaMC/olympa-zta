@@ -26,7 +26,7 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 	protected void refreshInventory() {
 		super.refreshInventory();
 
-		plot = clan.cachedPlot;
+		plot = clan.getCachedPlot();
 
 		String[] plotLore;
 		if (plot == null) {
