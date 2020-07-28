@@ -50,10 +50,11 @@ public class PlayerPlotGUI extends OlympaGUI {
 		Material color = Material.CYAN_STAINED_GLASS_PANE;
 		if (manage) {
 			if (plot.getLevel() < PlayerPlot.questsRequiredPerLevel.length) {
-				inv.setItem(1, ItemUtils.item(Material.GOLD_INGOT, "§eMonter de niveau", "§8> §o" + PlayerPlot.questsRequiredPerLevel[plot.getLevel()] + " quêtes nécessaires"));
-			}else inv.setItem(1, ItemUtils.item(Material.GOLD_INGOT, "§c§mMonter de niveau", "§8> §o vous avez atteint le niveau maximal"));
-			inv.setItem(6, ItemUtils.item(Material.PAPER, "§eInviter un joueur"));
-			inv.setItem(8, ItemUtils.item(Material.FILLED_MAP, "§cÉjecter des joueurs"));
+				inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§eMonter de niveau", "§8> §o" + PlayerPlot.questsRequiredPerLevel[plot.getLevel()] + " quêtes nécessaires"));
+			}else inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§c§mMonter de niveau", "§8> §o vous avez atteint le niveau maximal"));
+			inv.setItem(1, ItemUtils.item(Material.PAPER, "§eInviter un joueur"));
+			inv.setItem(2, ItemUtils.item(Material.FILLED_MAP, "§cÉjecter des joueurs"));
+			inv.setItem(4, ItemUtils.item(Material.ARROW, "§a← Revenir au menu"));
 			color = Material.MAGENTA_STAINED_GLASS_PANE;
 		}else {
 			ItemStack center = null;
@@ -63,13 +64,12 @@ public class PlayerPlotGUI extends OlympaGUI {
 					center = ItemUtils.item(Material.REDSTONE, "§aNous préparons ta parcelle...");
 					startProgress();
 				}else center = ItemUtils.item(Material.STONE
-						, "§e§lClic droit : §eAcheter ma parcelle", "§8> §o" + PlayerPlot.questsRequiredPerLevel[0] + " quêtes nécessaires"
-						, "§e§lClic gauche : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
+						, "§e§lClic gauche : §eAcheter ma parcelle", "§8> §o" + PlayerPlot.questsRequiredPerLevel[0] + " quêtes nécessaires", "§e§lClic droit : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
 			}else {
 				color = Material.LIME_STAINED_GLASS_PANE;
-				center = ItemUtils.item(Material.DIAMOND, "§e§lClic droit : §eMe téléporter", "§8> §oVous transporte à votre parcelle");
+				center = ItemUtils.item(Material.DIAMOND, "§e§lClic gauche : §eMe téléporter", "§8> §oVous transporte à votre parcelle");
 				if (isChief) {
-					ItemUtils.loreAdd(center, "§e§lClic gauche : §eGérer ma parcelle", "§8> §o monter de niveau, inviter des joueurs");
+					ItemUtils.loreAdd(center, "§e§lClic droit : §eGérer ma parcelle", "§8> §oMonter de niveau, inviter ou exclure des joueurs");
 				}
 			}
 			inv.setItem(4, center);
@@ -102,12 +102,12 @@ public class PlayerPlotGUI extends OlympaGUI {
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (manage) {
-			if (slot == 1 && plot.getLevel() < PlayerPlot.questsRequiredPerLevel.length) {
+			if (slot == 0 && plot.getLevel() < PlayerPlot.questsRequiredPerLevel.length) {
 				plot.setLevel(plot.getLevel() + 1, true);
 				Prefix.DEFAULT_GOOD.sendMessage(p, "Ta parcelle a monté de niveau !");
 				manage = false;
 				setState();
-			}else if (slot == 6) {
+			}else if (slot == 1) {
 				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur que tu souhaites inviter.");
 				new TextEditor<>(p, (target) -> {
 					if (target == player) {
@@ -119,25 +119,28 @@ public class PlayerPlotGUI extends OlympaGUI {
 					}
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
-			}else if (slot == 8) {
+			}else if (slot == 2) {
 				new PlotGuestsGUI(plot).create(p);
+			}else if (slot == 4) {
+				manage = false;
+				setState();
 			}
 			return true;
 		}
 
 		if (slot != 4) return true;
 		if (plot == null && progress == null) {
-			if (click.isRightClick()) {
+			if (click.isLeftClick()) {
 				manager.initSearch(player);
 				setState();
-			}else if (click.isLeftClick()) {
+			}else if (click.isRightClick()) {
 				new PlotInvitationsGUI(manager.getInvitations(player)).create(p);
 			}
 		}else {
-			if (click.isRightClick() || !isChief) {
+			if (click.isLeftClick() || !isChief) {
 				p.closeInventory();
 				p.teleport(plot.getSpawnLocation());
-			}else if (click.isLeftClick()) {
+			}else if (click.isRightClick()) {
 				manage = true;
 				setState();
 			}
@@ -153,7 +156,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
 		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
-			super("Liste des invités", DyeColor.CYAN, objects, 5);
+			super("Liste des invitations", DyeColor.CYAN, objects, 3);
 			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
 		}
 

@@ -15,8 +15,8 @@ import fr.olympa.zta.utils.PhysicalMoney;
 
 public class BankExchangeGUI extends OlympaGUI {
 
-	private static ItemStack add = ItemUtils.item(Material.GREEN_WOOL, "§aAugmenter le montant de la transaction", "§e§l> Clic droit : §eAugmenter de 1", "§e§l> Clic gauche : §eAugmenter de 10", "§e§l> Clic central : §eAugmenter de 100");
-	private static ItemStack remove = ItemUtils.item(Material.RED_WOOL, "§cDiminuer le montant de la transaction", "§e§l> Clic droit : §eBaisser de 1", "§e§l> Clic gauche : §eBaisser de 10", "§e§l> Clic central : §eBaisser de 100");
+	private static ItemStack add = ItemUtils.item(Material.GREEN_WOOL, "§a↑ Augmenter le montant de la transaction", "§e§l> Clic droit : §eAugmenter de 1", "§e§l> Clic gauche : §eAugmenter de 10", "§e§l> Clic central : §eAugmenter de 100");
+	private static ItemStack remove = ItemUtils.item(Material.RED_WOOL, "§c↓ Diminuer le montant de la transaction", "§e§l> Clic droit : §eBaisser de 1", "§e§l> Clic gauche : §eBaisser de 10", "§e§l> Clic central : §eBaisser de 100");
 	private static ItemStack transfer = ItemUtils.item(Material.REDSTONE, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", "  §8§o inventaire à votre compte");
 	private static ItemStack withdraw = ItemUtils.item(Material.GOLD_NUGGET, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "  §8§o compte sous forme de billets");
 
