@@ -48,10 +48,12 @@ public class QuestItemCreator implements LootCreator {
 		GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé", 2),
 		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2);
 		
-		private final ItemStack item;
+		private final String name;
 		private final int segment;
+		private final ItemStack item;
 
 		private QuestItems(Material type, String name, int segment, String... lore) {
+			this.name = name;
 			this.segment = segment;
 			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
 			loreList.add("");
@@ -59,6 +61,10 @@ public class QuestItemCreator implements LootCreator {
 			this.item = ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new));
 		}
 
+		public String getName() {
+			return name;
+		}
+		
 		public ItemStack getItem() {
 			return item;
 		}

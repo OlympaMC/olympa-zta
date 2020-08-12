@@ -35,6 +35,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.put("killed_players", "INT NOT NULL DEFAULT 0")
 			.put("deaths", "INT NOT NULL DEFAULT 0")
 			.put("headshots", "INT NOT NULL DEFAULT 0")
+			.put("other_shots", "INT NOT NULL DEFAULT 0")
 			.put("opened_chests", "INT NOT NULL DEFAULT 0")
 			.build();
 
@@ -48,6 +49,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt killedPlayers = new ObservableInt(0);
 	public ObservableInt deaths = new ObservableInt(0);
 	public ObservableInt headshots = new ObservableInt(0);
+	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
@@ -89,6 +91,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			killedPlayers.set(resultSet.getInt("killed_players"));
 			deaths.set(resultSet.getInt("deaths"));
 			headshots.set(resultSet.getInt("headshots"));
+			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -105,6 +108,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			statement.setInt(i++, killedPlayers.get());
 			statement.setInt(i++, deaths.get());
 			statement.setInt(i++, headshots.get());
+			statement.setInt(i++, otherShots.get());
 			statement.setInt(i++, openedChests.get());
 		}catch (IOException e) {
 			e.printStackTrace();

@@ -1,5 +1,6 @@
 package fr.olympa.zta;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -9,6 +10,8 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.OlympaCommand;
 
 public class StatsCommand extends OlympaCommand {
+	
+	private final DecimalFormat ratioFormat = new DecimalFormat("0.00");
 	
 	public StatsCommand(Plugin plugin) {
 		super(plugin, "stats");
@@ -20,7 +23,9 @@ public class StatsCommand extends OlympaCommand {
 		sendSuccess("Nombre de morts: §e%d", olympaPlayer.deaths.get());
 		sendSuccess("Joueurs tués: §e%d", olympaPlayer.killedPlayers.get());
 		sendSuccess("Zombies tués: §e%d", olympaPlayer.killedZombies.get());
-		sendSuccess("Headshots effectués: §e%d", olympaPlayer.headshots.get());
+		double head = olympaPlayer.headshots.get();
+		double other = olympaPlayer.otherShots.get();
+		sendSuccess("Ratio de headshots: §e%s", ratioFormat.format(olympaPlayer.otherShots.get() == 0 ? head : head / other));
 		sendSuccess("Coffres ouverts: §e%d", olympaPlayer.openedChests.get());
 		return false;
 	}

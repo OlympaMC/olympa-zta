@@ -23,6 +23,7 @@ import org.bukkit.persistence.PersistentDataType;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
@@ -60,6 +61,7 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 	public void click(Player p) {
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
+			OlympaPlayerZTA.get(p).openedChests.add(1);
 			nextOpen = time + minutesToWait * 60000;
 			clearInventory();
 			for (LootCreator creator : pick(random)) {

@@ -41,7 +41,7 @@ public class BulletSimple extends Bullet{
 				damage *= 1.5;
 				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
 				OlympaPlayerZTA.get(shooter).headshots.add(1);
-			}
+			}else OlympaPlayerZTA.get(shooter).otherShots.add(1);
 			damage(hitEntity, shooter, damage);
 		}
 	}
