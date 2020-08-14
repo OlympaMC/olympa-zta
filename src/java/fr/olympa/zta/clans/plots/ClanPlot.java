@@ -10,12 +10,17 @@ import java.util.Date;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClanZTA;
@@ -27,7 +32,7 @@ public class ClanPlot {
 	private static final DateFormat paymentDateFormat = new SimpleDateFormat("dd/MM");
 
 	private final int id;
-	private final Region region;
+	private final TrackedRegion region;
 	private final int price;
 	private final String priceFormatted;
 	private final Location sign;
@@ -39,11 +44,12 @@ public class ClanPlot {
 
 	public ClanPlot(int id, Region region, int price, Location sign, Location spawn) {
 		this.id = id;
-		this.region = region;
 		this.price = price;
 		this.priceFormatted = OlympaMoney.format(price);
 		this.sign = sign;
 		this.spawn = spawn;
+		
+		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag());
 	}
 
 	public ClanZTA getClan() {
@@ -74,7 +80,7 @@ public class ClanPlot {
 		return id;
 	}
 
-	public Region getRegion() {
+	public TrackedRegion getTrackedRegion() {
 		return region;
 	}
 
@@ -138,10 +144,6 @@ public class ClanPlot {
 
 	public long getSecondsBeforeExpiration() {
 		return (nextPayment - System.currentTimeMillis()) / 1000;
-	}
-
-	public boolean onInteract(Player player) {
-		return OlympaPlayerZTA.get(player).getClan() != clan;
 	}
 
 	public void updateSign() {
@@ -209,6 +211,19 @@ public class ClanPlot {
 			updateSign();
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour louer cette parcelle.");
+	}
+	
+	class ClanPlotFlag extends PlayerBlockInteractFlag {
+		
+		public ClanPlotFlag() {
+			super(true, true, true);
+		}
+		
+		@Override
+		public void interactEvent(PlayerInteractEvent event) {
+			handleCancellable(event, null, OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
+		}
+		
 	}
 
 }

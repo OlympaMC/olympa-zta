@@ -97,34 +97,34 @@ public class MobSpawning {
 					List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
 					if (entities.size() > maxEntities) return;
 					Map<Chunk, SpawnType> activeChunks = getActiveChunks();
-					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) {
+					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
 						Chunk chunk = entry.getKey();
 						SpawnType spawn = entry.getValue();
 						int mobs = random.nextInt(spawn.spawnAmount + 1);
-						mobs: for (int i = 0; i < mobs; i++) {
+						mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
 							int x = random.nextInt(16);
-							int z = random.nextInt(16);
-							if (spawn == SpawnType.NONE) {
+							int z = random.nextInt(16); // random position dans le chunk
+							if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
 								Block block = chunk.getBlock(x, seaLevel, z);
-								if (block.getType() == Material.WATER) {
+								if (block.getType() == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
 									for (Location loc : entities) {
-										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs;
+										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs; // trop proche d'entité = abandon
 									}
 									spawnQueue.add(new AbstractMap.SimpleEntry<>(block.getLocation(), Zombies.DROWNED));
 								}
 							}else {
 								int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
 								Block prev = chunk.getBlock(x, y, z);
-								y: for (; y < 140; y++) {
+								y: for (; y < 140; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
 									boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
 									prev = chunk.getBlock(x, y, z);
-									if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) {
+									if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
 										Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
-										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue;
+										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
 										Block block = location.getBlock();
-										if (block.getLightLevel() > 10 && !world.isThundering()) continue;
+										if (block.getLightLevel() > 10 && !world.isThundering()) continue; // si trop de lumière et pas en mode tempête pas possible
 										for (Location loc : entities) {
-											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y;
+											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 										}
 										Location lc = block.getLocation();
 										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, Zombies.COMMON));
@@ -174,7 +174,7 @@ public class MobSpawning {
 		for (Player p : players) {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
-			if (!processedChunks.add(centralChunk)) continue;
+			if (!processedChunks.add(centralChunk)) continue; // chunk déjà calculé
 			if (SpawnType.getSpawnType(world, centralChunk.getX() * 16, centralChunk.getZ() * 16) == null) continue;
 			if (entityCount(centralChunk) > criticalEntitiesPerChunk) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
