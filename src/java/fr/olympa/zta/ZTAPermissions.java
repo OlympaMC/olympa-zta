@@ -13,6 +13,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission REGISTRY_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission PLAYER_SPREAD_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission MOD_COMMANDS = new OlympaPermission(OlympaGroup.ASSISTANT);
 	

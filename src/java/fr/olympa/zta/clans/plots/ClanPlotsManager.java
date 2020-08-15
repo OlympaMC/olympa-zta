@@ -28,7 +28,7 @@ import fr.olympa.zta.utils.DynmapLink;
 public class ClanPlotsManager implements Listener {
 
 	private static final String tableName = "`zta_clan_plots`";
-	private static final NamespacedKey signKey = new NamespacedKey(OlympaZTA.getInstance(), "plotID");
+	public static final NamespacedKey SIGN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "plotID");
 
 	private static final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`region`, `price`, `sign`, `spawn`) VALUES (?, ?, ?, ?)", true);
 	public static final OlympaStatement updatePlotClan = new OlympaStatement("UPDATE " + tableName + " SET `clan` = ? WHERE (`id` = ?)");
@@ -62,6 +62,8 @@ public class ClanPlotsManager implements Listener {
 				continue;
 			}
 		}
+		
+		new ClanPlotsCommand(this).register();
 	}
 
 	public ClanPlot create(Region region, int price, Block sign, Location spawn) throws SQLException, IOException {
@@ -82,10 +84,6 @@ public class ClanPlotsManager implements Listener {
 		plots.put(plot.getID(), plot);
 		resultSet.close();
 
-		Sign signState = (Sign) sign.getState();
-		signState.getPersistentDataContainer().set(signKey, PersistentDataType.INTEGER, plot.getID());
-		signState.update();
-
 		return plot;
 	}
 
@@ -96,6 +94,10 @@ public class ClanPlotsManager implements Listener {
 		return null;
 	}
 	
+	public Map<Integer, ClanPlot> getPlots() {
+		return plots;
+	}
+	
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent e) {
 		Block clickedBlock = e.getClickedBlock();
@@ -103,7 +105,7 @@ public class ClanPlotsManager implements Listener {
 
 		if (clickedBlock.getType().name().contains("_SIGN")) {
 			Sign sign = (Sign) clickedBlock.getState();
-			if (sign.getPersistentDataContainer().has(signKey, PersistentDataType.INTEGER)) plots.get(sign.getPersistentDataContainer().get(signKey, PersistentDataType.INTEGER)).signClick(e.getPlayer());
+			if (sign.getPersistentDataContainer().has(SIGN_KEY, PersistentDataType.INTEGER)) plots.get(sign.getPersistentDataContainer().get(SIGN_KEY, PersistentDataType.INTEGER)).signClick(e.getPlayer());
 		}
 	}
 

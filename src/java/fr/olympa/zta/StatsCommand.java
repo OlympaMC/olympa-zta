@@ -11,7 +11,7 @@ import fr.olympa.api.command.OlympaCommand;
 
 public class StatsCommand extends OlympaCommand {
 	
-	private final DecimalFormat ratioFormat = new DecimalFormat("0.00");
+	private final DecimalFormat ratioFormat = new DecimalFormat("00.#");
 	
 	public StatsCommand(Plugin plugin) {
 		super(plugin, "stats");
@@ -25,7 +25,7 @@ public class StatsCommand extends OlympaCommand {
 		sendSuccess("Zombies tués: §e%d", olympaPlayer.killedZombies.get());
 		double head = olympaPlayer.headshots.get();
 		double other = olympaPlayer.otherShots.get();
-		sendSuccess("Ratio de headshots: §e%s", ratioFormat.format(olympaPlayer.otherShots.get() == 0 ? head : head / (other + head)));
+		sendSuccess("Headshots: %s", head == 0 && other == 0 ? "§cx" : "§e" + ratioFormat.format(head / (other + head) * 100));
 		sendSuccess("Coffres ouverts: §e%d", olympaPlayer.openedChests.get());
 		return false;
 	}

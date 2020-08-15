@@ -44,6 +44,7 @@ public class DynmapLink {
 				if (areasMarkers == null) areasMarkers = api.getMarkerAPI().createMarkerSet("regions", "Radar", null, false);
 				chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
 				if (chestsMarkers == null) chestsMarkers = api.getMarkerAPI().createMarkerSet("chests", "Coffres", null, false);
+				chestsMarkers.setHideByDefault(true);
 				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");
 				enderChestsMarkers = api.getMarkerAPI().getMarkerSet("enderchests");
 				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, true);

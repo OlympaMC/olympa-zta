@@ -108,7 +108,7 @@ public enum AmmoType{
 	}
 
 	public static ItemStack getPowder(int amount) {
-		ItemStack item = ItemUtils.item(Material.WHITE_DYE, "§7Poudre à canon", "§8> §7Permet de charger", "§7des cartouches vides.");
+		ItemStack item = ItemUtils.item(Material.WHITE_DYE, "§aPoudre à canon", "§8> §7Permet de charger", "§7des cartouches vides.");
 		item.setAmount(amount);
 		return item;
 	}

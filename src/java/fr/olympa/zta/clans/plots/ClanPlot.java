@@ -12,6 +12,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -148,6 +149,8 @@ public class ClanPlot {
 
 	public void updateSign() {
 		Sign sign = (Sign) this.sign.getBlock().getState();
+		
+		sign.getPersistentDataContainer().set(ClanPlotsManager.SIGN_KEY, PersistentDataType.INTEGER, id);
 
 		sign.setLine(0, "[" + priceFormatted + "/semaine]");
 		if (clan == null) {
