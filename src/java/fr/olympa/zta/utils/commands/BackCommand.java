@@ -14,7 +14,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class BackCommand extends OlympaCommand {
 
 	public BackCommand(Plugin plugin) {
-		super(plugin, "back", ZTAPermissions.MOD_COMMANDS);
+		super(plugin, "back", "Renvoie l'utilisateur au lieu de sa dernière mort.", ZTAPermissions.MOD_COMMANDS);
 		setAllowConsole(false);
 	}
 

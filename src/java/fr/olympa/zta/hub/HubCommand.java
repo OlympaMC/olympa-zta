@@ -12,7 +12,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class HubCommand extends OlympaCommand {
 
 	public HubCommand() {
-		super(OlympaZTA.getInstance(), "hub", ZTAPermissions.HUB_COMMAND, "spawn");
+		super(OlympaZTA.getInstance(), "hub", "Téléporte au hub ZTA.", ZTAPermissions.HUB_COMMAND, "spawn");
 		super.allowConsole = false;
 	}
 

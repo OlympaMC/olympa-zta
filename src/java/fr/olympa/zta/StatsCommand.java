@@ -15,6 +15,7 @@ public class StatsCommand extends OlympaCommand {
 	
 	public StatsCommand(Plugin plugin) {
 		super(plugin, "stats");
+		super.description = "Affiche les statistiques de son personnage ZTA.";
 	}
 	
 	@Override

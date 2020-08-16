@@ -12,7 +12,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class FeedCommand extends OlympaCommand {
 
 	public FeedCommand(Plugin plugin) {
-		super(plugin, "feed", ZTAPermissions.MOD_COMMANDS);
+		super(plugin, "feed", "Restaure entièrement la barre de faim de l'utilisateur.", ZTAPermissions.MOD_COMMANDS);
 		setAllowConsole(false);
 	}
 

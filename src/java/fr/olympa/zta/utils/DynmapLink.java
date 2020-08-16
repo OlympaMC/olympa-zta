@@ -115,7 +115,10 @@ public class DynmapLink {
 	public static void showClanPlot(ClanPlot plot) {
 		if (api == null) return;
 		
-		plotsMarkers.createMarker(String.valueOf(plot.getID()), "Parcelle de clan", plot.getSign().getWorld().getName(), plot.getSign().getX(), plot.getSign().getY(), plot.getSign().getZ(), plotIcon, false);
+		plotsMarkers.createMarker(Integer.toString(plot.getID()), "Parcelle de clan", plot.getSign().getWorld().getName(), plot.getSign().getX(), plot.getSign().getY(), plot.getSign().getZ(), plotIcon, false);
+		
+		//List<Location> points = plot.getTrackedRegion().getRegion().getLocations();
+		//plotsMarkers.createAreaMarker(Integer.toString(plot.getID()), "Parcelle du clan" + plot.getID(), true, plot.getTrackedRegion().getRegion().getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), true);
 	}
 	
 	public static class DynmapHideFlag extends Flag {

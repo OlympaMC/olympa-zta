@@ -220,6 +220,7 @@ public class ClanPlot {
 		
 		public ClanPlotFlag() {
 			super(true, true, true);
+			//setMessages("Vous entrez dans la parcelle " + id, "Vous sortez de la parcelle " + id, ChatMessageType.CHAT);
 		}
 		
 		@Override

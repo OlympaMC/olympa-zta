@@ -13,7 +13,7 @@ import fr.olympa.zta.ZTAPermissions;
 public class HealCommand extends OlympaCommand {
 
 	public HealCommand(Plugin plugin) {
-		super(plugin, "heal", ZTAPermissions.MOD_COMMANDS);
+		super(plugin, "heal", "Restaure entièrement la vie de l'utilisateur.", ZTAPermissions.MOD_COMMANDS);
 		setAllowConsole(false);
 	}
 

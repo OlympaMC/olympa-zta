@@ -157,7 +157,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
 		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
 			super("Liste des invitations", DyeColor.CYAN, objects, 3);
-			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
+			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
@@ -182,13 +182,13 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
 		private PlotGuestsGUI(PlayerPlot plot) {
-			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 5);
-			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aRevenir au menu"));
+			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 3);
+			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
 		public ItemStack getItemStack(OlympaPlayerInformations object) {
-			ItemUtils.skull(item -> super.updateObjectItem(object, item), "§e" + object.getName(), object.getName(), "§8> §oÉjecter le joueur");
+			ItemUtils.skull(item -> super.updateObjectItem(object, item), "§e" + object.getName(), object.getName(), "§8> §7Éjecter le joueur");
 			return ItemUtils.none;
 		}
 
