@@ -254,7 +254,7 @@ public abstract class Gun extends Weapon {
 		launchBullet(bullet, p);
 		ammos--;
 
-		float distance = (fireVolume.getValue() - 1.5f) * 16;
+		float distance = (fireVolume.getValue() - 0.5f) * 16;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
 			Zombie zombie = (Zombie) en;
 			if (zombie.getTarget() == null) zombie.setTarget(p);

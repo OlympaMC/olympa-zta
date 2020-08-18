@@ -12,7 +12,7 @@ public class ClansCommandZTA extends ClansCommand<ClanZTA, ClanPlayerDataZTA> {
 		super(manager, description, permission, aliases);
 	}
 	
-	@Cmd (player = true)
+	@Cmd (player = true, hide = true)
 	public void dismissExpirationMessage(CommandContext cmd) {
 		ClanZTA clan = getPlayerClan(true);
 		if (clan == null) return;
