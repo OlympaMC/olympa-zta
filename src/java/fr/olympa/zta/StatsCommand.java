@@ -26,7 +26,7 @@ public class StatsCommand extends OlympaCommand {
 		sendSuccess("Zombies tués: §e%d", olympaPlayer.killedZombies.get());
 		double head = olympaPlayer.headshots.get();
 		double other = olympaPlayer.otherShots.get();
-		sendSuccess("Headshots: %s", head == 0 && other == 0 ? "§cx" : "§e" + ratioFormat.format(head / (other + head) * 100));
+		sendSuccess("Headshots: %s%%", head == 0 && other == 0 ? "§cx" : "§e" + ratioFormat.format(head / (other + head) * 100));
 		sendSuccess("Coffres ouverts: §e%d", olympaPlayer.openedChests.get());
 		return false;
 	}

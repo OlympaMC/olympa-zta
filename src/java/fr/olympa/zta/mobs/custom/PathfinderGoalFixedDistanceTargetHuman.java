@@ -20,7 +20,7 @@ public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget
 	}
 
 	public boolean a() { // shouldExecute
-		if (this.chance > 0 && this.e.getRandom().nextInt(this.chance) != 0) {
+		if (this.chance > 1 && this.e.getRandom().nextInt(this.chance) != 0) {
 			return false;
 		}
 		target = null;

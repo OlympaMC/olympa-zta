@@ -15,6 +15,7 @@ import fr.olympa.api.editor.WaitClick;
 import fr.olympa.api.editor.parsers.NumberParser;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
@@ -59,10 +60,33 @@ public class ClanPlotsCommand extends ComplexCommand {
 	}
 	
 	@Cmd (args = "PLOT", min = 1, syntax = "<plot ID>")
-	public void updateSign(CommandContext cmd) {
+	public void info(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
-		plot.updateSign();
-		sendSuccess("Le panneau a été mis à jour.");
+		sendSuccess("Parcelle de clan %d:", plot.getID());
+		sendInfo("Point d'apparition: §6%s", SpigotUtils.convertLocationToString(plot.getSpawn()));
+		sendInfo("Pancarte informative: §6%s", SpigotUtils.convertLocationToString(plot.getSign()));
+		sendInfo("Prix: §6%s", plot.getPriceFormatted());
+		if (plot.getClan() != null) {
+			sendInfo("Louée au clan: §6%s", plot.getClan().getName() + " §e(" + plot.getClan().getID() + ")");
+			sendInfo("Expire le §6%s", plot.getExpirationDate());
+		}else sendInfo("Actuellement §6non louée");
+	}
+	
+	@Cmd
+	public void updateSigns(CommandContext cmd) {
+		int i = 0;
+		for (ClanPlot plot : manager.getPlots().values()) {
+			plot.updateSign();
+			i++;
+		}
+		sendSuccess("%d panneaux ont été mis à jour.", i);
+	}
+	
+	@Cmd (player = true, args = "PLOT", min = 1, syntax = "<plot ID>")
+	public void teleport(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		player.teleport(plot.getSpawn());
+		sendSuccess("Tu as été téléporté au spawn du plot %d.", plot.getID());
 	}
 	
 }
