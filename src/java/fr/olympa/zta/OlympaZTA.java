@@ -18,6 +18,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.auctions.AuctionsManager;
+import fr.olympa.api.command.essentials.BackCommand;
+import fr.olympa.api.command.essentials.FeedCommand;
+import fr.olympa.api.command.essentials.HealCommand;
+import fr.olympa.api.command.essentials.tp.TpaHandler;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
@@ -66,9 +70,6 @@ import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.utils.BeautyQuestsLink;
 import fr.olympa.zta.utils.DynmapLink;
-import fr.olympa.zta.utils.commands.BackCommand;
-import fr.olympa.zta.utils.commands.FeedCommand;
-import fr.olympa.zta.utils.commands.HealCommand;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
@@ -177,7 +178,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(itemsListener, this);
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
-
+		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
+		
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
 			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
@@ -221,9 +223,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new RegistryCommand().register();
 		new SpreadManageCommand().register();
 		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
-		new HealCommand(this).register();
-		new FeedCommand(this).register();
-		new BackCommand(this).register();
+		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
+		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
+		new BackCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new StatsCommand(this).registerPreProcess();
 		
 		new Mobs(); // initalise les mobs custom

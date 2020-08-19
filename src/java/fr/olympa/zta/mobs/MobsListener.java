@@ -66,7 +66,6 @@ public class MobsListener implements Listener {
 			reason = "s'est noyé.";
 		}
 		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
-		p.setMetadata("lastDeath", new FixedMetadataValue(OlympaZTA.getInstance(), p.getLocation()));
 	}
 
 	@EventHandler
@@ -97,6 +96,7 @@ public class MobsListener implements Listener {
 
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
+		p.setWalkSpeed(0.25f);
 
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());

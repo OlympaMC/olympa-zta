@@ -122,7 +122,7 @@ public class MobSpawning {
 										Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
 										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
 										Block block = location.getBlock();
-										if (block.getLightLevel() > 12 && !world.isThundering()) continue; // si trop de lumière et pas en mode tempête pas possible
+										if (block.getLightFromBlocks() > 10 && !world.isThundering()) continue; // si trop de lumière et pas en mode tempête pas possible
 										for (Location loc : entities) {
 											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 										}
