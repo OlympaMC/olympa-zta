@@ -1,14 +1,17 @@
 package fr.olympa.zta.weapons.guns;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
 
 public enum AmmoType{
@@ -29,10 +32,20 @@ public enum AmmoType{
 		this.empty = empty;
 		this.fill = fill;
 
-		this.itemFilled = ItemUtils.item(fill, "§a" + name);
-		this.itemEmpty = ItemUtils.item(empty, "§b" + name + " vides", "§8> §7Associez-y de la", "§7poudre à canon.");
+		itemFilled = new ItemStack(fill);
+		ItemMeta meta = itemFilled.getItemMeta();
+		meta.setCustomModelData(1);
+		meta.setDisplayName("§a" + name);
+		itemFilled.setItemMeta(meta);
+		
+		itemEmpty = new ItemStack(empty);
+		meta = itemEmpty.getItemMeta();
+		meta.setCustomModelData(1);
+		meta.setDisplayName("§b" + name + " vides");
+		meta.setLore(Arrays.asList("§8> §7Associez-y de la", "§7poudre à canon."));
+		itemEmpty.setItemMeta(meta);
 
-		Bukkit.addRecipe(recipe = new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(empty).addIngredient(Material.WHITE_DYE));
+		Bukkit.addRecipe(recipe = new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), name()), itemFilled).addIngredient(new RecipeChoice.ExactChoice(itemEmpty)).addIngredient(new RecipeChoice.ExactChoice(getPowder(1))));
 		OlympaZTA.getInstance().sendMessage("§7La recette des §e" + name + "§7 a été créée.");
 	}
 	
@@ -108,8 +121,13 @@ public enum AmmoType{
 	}
 
 	public static ItemStack getPowder(int amount) {
-		ItemStack item = ItemUtils.item(Material.WHITE_DYE, "§aPoudre à canon", "§8> §7Permet de charger", "§7des cartouches vides.");
+		ItemStack item = new ItemStack(Material.WHITE_DYE);
 		item.setAmount(amount);
+		ItemMeta meta = item.getItemMeta();
+		meta.setCustomModelData(1);
+		meta.setDisplayName("§aPoudre à canon");
+		meta.setLore(Arrays.asList("§8> §7Permet de charger", "§7des cartouches vides."));
+		item.setItemMeta(meta);
 		return item;
 	}
 

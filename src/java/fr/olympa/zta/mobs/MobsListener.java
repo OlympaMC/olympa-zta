@@ -20,9 +20,11 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs;
@@ -45,7 +47,7 @@ public class MobsListener implements Listener {
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
-			if (itemStack != null && itemStack.getType().name().startsWith("LEATHER_")) contents[i] = null;
+			if (itemStack != null && itemStack.getType().name().startsWith("LEATHER_")) contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
 		}
 		inventories.put(id, contents);
 		Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
@@ -96,7 +98,7 @@ public class MobsListener implements Listener {
 
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
-		p.setWalkSpeed(0.25f);
+		p.setWalkSpeed(0.22f);
 
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
@@ -111,6 +113,26 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		PacketInjector.removePlayer(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onResourcePack(PlayerResourcePackStatusEvent e) {
+		switch (e.getStatus()) {
+		case ACCEPTED:
+			Prefix.DEFAULT.sendMessage(e.getPlayer(), "§eChargement du pack de resources §6§lOlympa ZTA§e...");
+			break;
+		case DECLINED:
+			Prefix.BAD.sendMessage(e.getPlayer(), "Tu as désactivé l'utilisation du pack de resources. Pour plus de fun et une meilleure expérience de jeu, accepte-le depuis ton menu Multijoueur !");
+			break;
+		case FAILED_DOWNLOAD:
+			Prefix.ERROR.sendMessage(e.getPlayer(), "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !");
+			break;
+		case SUCCESSFULLY_LOADED:
+			Prefix.DEFAULT_GOOD.sendMessage(e.getPlayer(), "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+			break;
+		default:
+			break;
+		}
 	}
 
 }
