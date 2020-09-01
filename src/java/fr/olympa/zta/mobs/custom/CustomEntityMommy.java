@@ -21,7 +21,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	@Override
 	protected void initTargetGoals() {
-		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 1, 12, true, false));
+		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 1, 20, true, false));
 	}
 
 	@Override

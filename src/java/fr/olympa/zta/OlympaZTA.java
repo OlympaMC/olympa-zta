@@ -22,7 +22,6 @@ import fr.olympa.api.command.essentials.BackCommand;
 import fr.olympa.api.command.essentials.FeedCommand;
 import fr.olympa.api.command.essentials.HealCommand;
 import fr.olympa.api.command.essentials.tp.TpaHandler;
-import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.hook.IProtocolSupport;
@@ -232,6 +231,14 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();
 		
+		OlympaCore.getInstance().getRegionManager().awaitWorldTracking("world", e -> e.getRegion().registerFlags(
+				new ItemDurabilityFlag(true),
+				new PhysicsFlag(true),
+				new PlayerBlocksFlag(true),
+				new FishFlag(true),
+				new GameModeFlag(GameMode.ADVENTURE),
+				new PlayerBlockInteractFlag(false, true, true)));
+		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(
 				FixedLine.EMPTY_LINE,
 				lineMoney,
@@ -277,17 +284,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
 		lineGroup.updateHolder(scoreboards.getPlayerScoreboard((OlympaPlayerZTA) e.getOlympaPlayer()));
 	}*/
-
-	@EventHandler
-	public void onWorldLoad(WorldTrackingEvent e) {
-		if (e.getWorld().getName().equals("world")) e.getRegion().registerFlags(
-				new ItemDurabilityFlag(true),
-				new PhysicsFlag(true),
-				new PlayerBlocksFlag(true),
-				new FishFlag(true),
-				new GameModeFlag(GameMode.ADVENTURE),
-				new PlayerBlockInteractFlag(false, true, true));
-	}
 
 	@Override
 	public void onDisable(){

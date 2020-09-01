@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs.custom;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.AbstractMap;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -34,11 +35,13 @@ public class Mobs {
 	}
 
 	public static Zombie spawnMomifiedZombie(Player p) {
-		Zombie zombie = spawnMob(customMommy, p.getLocation(), SpawnReason.CUSTOM);
+		Location location = p.getLocation();
+		Zombie zombie = spawnMob(customMommy, location, SpawnReason.CUSTOM);
 		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
 		zombie.setCustomName(p.getName() + " momifié");
 		zombie.setCustomNameVisible(true);
-		if (p.getKiller() != null) zombie.setTarget(p.getKiller());
+		//if (p.getKiller() != null) zombie.setTarget(p.getKiller());
+		zombie.getWorld().getEntitiesByClass(Player.class).stream().map(player -> new AbstractMap.SimpleEntry<>(player, location.distanceSquared(player.getLocation()))).filter(entry -> entry.getValue() <= 900).sorted((o1, o2) -> Double.compare(o1.getValue(), o2.getValue())).findFirst().ifPresent(entry -> zombie.setTarget(entry.getKey()));
 		return zombie;
 	}
 
@@ -62,7 +65,7 @@ public class Mobs {
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(entityTypesField, entityTypesField.getModifiers() & ~Modifier.FINAL);
 			entityTypesField.set(null, type);
-
+			
 			return type;
 		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
