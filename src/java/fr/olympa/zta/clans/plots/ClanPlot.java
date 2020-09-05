@@ -153,6 +153,7 @@ public class ClanPlot {
 		sign.getPersistentDataContainer().set(ClanPlotsManager.SIGN_KEY, PersistentDataType.INTEGER, id);
 
 		sign.setLine(0, "[" + priceFormatted + "/semaine]");
+		sign.setLine(1, "");
 		if (clan == null) {
 			sign.setLine(2, "Parcelle à");
 			sign.setLine(3, "vendre");

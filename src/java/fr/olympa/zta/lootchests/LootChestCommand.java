@@ -20,7 +20,7 @@ public class LootChestCommand extends ComplexCommand {
 	private LootChestsManager manager;
 
 	public LootChestCommand(LootChestsManager manager) {
-		super(OlympaZTA.getInstance(), "lootchest", "configuration des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
+		super(OlympaZTA.getInstance(), "lootchest", "Permet de configurer des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
 		this.manager = manager;
 		super.addArgumentParser("CHESTTYPE", LootChestType.class);
 	}

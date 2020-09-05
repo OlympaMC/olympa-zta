@@ -10,11 +10,15 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.lootchests.creators.QuestItemCreator.QuestItems;
+import fr.olympa.zta.lootchests.creators.QuestItemCreator.QuestItem;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.editors.TextEditor;
+import fr.skytasul.quests.editors.checkers.NumberParser;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
 import fr.skytasul.quests.gui.templates.PagedGUI;
+import fr.skytasul.quests.utils.Lang;
 
 public class BeautyQuestsLink {
 	
@@ -24,47 +28,55 @@ public class BeautyQuestsLink {
 	
 	public static class QuestItemReward extends AbstractReward {
 		
-		private QuestItems item;
+		private QuestItem item;
+		private int amount;
 		
 		public QuestItemReward() {
 			super("ztaItem");
 		}
 		
-		public QuestItemReward(QuestItems item) {
+		public QuestItemReward(QuestItem item, int amount) {
 			this();
 			this.item = item;
+			this.amount = amount;
 		}
 		
 		@Override
 		public String give(Player p) {
-			SpigotUtils.giveItems(p, item.getItem());
+			SpigotUtils.giveItems(p, item.getItem(amount));
 			return null;
 		}
 		
 		@Override
 		public AbstractReward clone() {
-			return new QuestItemReward(item);
+			return new QuestItemReward(item, amount);
 		}
 		
 		@Override
 		public String[] getLore() {
-			return new String[] { "§8> §7" + item.getName() };
+			return new String[] { "§8> §7" + item == null ? null : item.getName(), Lang.Amount.format(amount) };
 		}
 		
 		@Override
-		public void itemClick(Player p, QuestObjectGUI gui, ItemStack clicked) {
-			new PagedGUI<QuestItems>("Liste des items de quête", DyeColor.ORANGE, Arrays.asList(QuestItems.values())) {
+		public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
+			new PagedGUI<QuestItem>("Liste des items de quête", DyeColor.ORANGE, Arrays.asList(QuestItem.values())) {
 				
 				@Override
-				public ItemStack getItemStack(QuestItems object) {
-					return object.getItem();
+				public ItemStack getItemStack(QuestItem object) {
+					return object.getOriginalItem();
 				}
 				
 				@Override
-				public void click(QuestItems existing) {
-					item = existing;
-					ItemUtils.lore(clicked, getLore());
-					gui.reopen(p);
+				public void click(QuestItem existing) {
+					new TextEditor<>(p, () -> {
+						if (item == null) gui.remove(QuestItemReward.this);
+						gui.reopen();
+					}, obj -> {
+						item = existing;
+						amount = obj;
+						ItemUtils.lore(clicked, getLore());
+						gui.reopen();
+					}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).enterOrLeave(p);
 				}
 				
 			}.create(p);
@@ -72,12 +84,14 @@ public class BeautyQuestsLink {
 		
 		@Override
 		protected void load(Map<String, Object> map) {
-			item = QuestItems.valueOf((String) map.get("item"));
+			item = QuestItem.valueOf((String) map.get("item"));
+			amount = (int) map.get("amount");
 		}
 		
 		@Override
 		protected void save(Map<String, Object> map) {
 			map.put("item", item.name());
+			map.put("amount", amount);
 		}
 		
 	}

@@ -59,14 +59,15 @@ import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
-import fr.olympa.zta.plots.shops.CivilBlockShop;
-import fr.olympa.zta.plots.shops.CorporationBlockShop;
-import fr.olympa.zta.plots.shops.FraterniteBlockShop;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
+import fr.olympa.zta.shops.CivilBlockShop;
+import fr.olympa.zta.shops.CorporationBlockShop;
+import fr.olympa.zta.shops.FraterniteBlockShop;
+import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.BeautyQuestsLink;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
@@ -254,6 +255,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
 		checkForTrait(FraterniteBlockShop.class, "blockshopfraternite", getConfig().getIntegerList("blockShopFraternite"));
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
+		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
@@ -276,7 +278,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public void onCitizensEnable(CitizensEnableEvent e) {
 		traitsToAdd.forEach((npcID, trait) -> {
 			NPC npc = CitizensAPI.getNPCRegistry().getById(npcID);
-			if (!npc.hasTrait(trait)) npc.addTrait(trait);
+			if (npc == null) {
+				getLogger().warning("Le NPC " + npcID + " n'existe pas. (trait " + trait.getSimpleName() + ")");
+			}else if (!npc.hasTrait(trait)) npc.addTrait(trait);
 		});
 	}
 

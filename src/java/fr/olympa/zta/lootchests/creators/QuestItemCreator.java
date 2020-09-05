@@ -14,9 +14,9 @@ import fr.olympa.api.item.ItemUtils;
 public class QuestItemCreator implements LootCreator {
 
 	private double chance;
-	private QuestItems questItem;
+	private QuestItem questItem;
 
-	public QuestItemCreator(double chance, QuestItems questItem) {
+	public QuestItemCreator(double chance, QuestItem questItem) {
 		this.chance = chance;
 		this.questItem = questItem;
 	}
@@ -28,17 +28,17 @@ public class QuestItemCreator implements LootCreator {
 
 	@Override
 	public Loot create(Player p, Random random) {
-		return new Loot(questItem.getItem());
+		return new Loot(questItem.getItem(1));
 	}
 	
-	public enum QuestItems {
+	public enum QuestItem {
 		DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
 		PIECE(Material.IRON_INGOT, "Pièce métallique", 1),
 		AIMANT(Material.CLAY_BALL, "Aimant", 1),
 		PILE(Material.RABBIT_HIDE, "Pile magnétique", 1),
 		IEM_MATERIEL(Material.LEATHER, "Matériel I.E.M.", 1),
 		IEM_BROUILLEUR(Material.SCUTE, "Brouilleur I.E.M.", 1),
-		SLIMEBALL(Material.CLAY_BALL, "Brouilleur BioTech.", 1),
+		BIOTECH_BROUILLER(Material.SLIME_BALL, "Brouilleur BioTech.", 1),
 
 		AMAS(Material.GOLD_NUGGET, "Amas technologique", 2),
 		COMPOSANT(Material.GOLD_INGOT, "Composant", 2),
@@ -52,7 +52,7 @@ public class QuestItemCreator implements LootCreator {
 		private final int segment;
 		private final ItemStack item;
 
-		private QuestItems(Material type, String name, int segment, String... lore) {
+		private QuestItem(Material type, String name, int segment, String... lore) {
 			this.name = name;
 			this.segment = segment;
 			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
@@ -65,7 +65,13 @@ public class QuestItemCreator implements LootCreator {
 			return name;
 		}
 		
-		public ItemStack getItem() {
+		public ItemStack getItem(int amount) {
+			ItemStack item = this.item.clone();
+			item.setAmount(amount);
+			return item;
+		}
+		
+		public ItemStack getOriginalItem() {
 			return item;
 		}
 

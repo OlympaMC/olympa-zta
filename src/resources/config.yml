@@ -41,6 +41,15 @@ safeRegions:
       maxY: 256
       points: ["-486|-764", "-486|-758", "-635|-709", "-661|-709", "-908|-724", "-905|-818", "-890|-1086", "-497|-1034"]
     title: "Zone de la Fraternité"
+  fraternite3:
+    region:
+      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      world: "world"
+      xMin: -28
+      zMin: 636
+      xMax: 48
+      zMax: 710
+    title: "Zone de la Fraternité"
   corporation1:
     region:
       ==: fr.olympa.api.region.shapes.Cylinder
@@ -146,3 +155,4 @@ tomHookNPC: [2]
 blockShopCivil: [3]
 blockShopFraternite: [4]
 blockShopCorporation: [5]
+questItemShop: [8]
