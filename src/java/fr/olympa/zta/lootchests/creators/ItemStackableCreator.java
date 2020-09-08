@@ -5,6 +5,7 @@ import java.util.Random;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import fr.olympa.zta.lootchests.creators.LootCreator.Loot.InventoryLoot;
 import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ZTARegistry;
@@ -41,7 +42,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 		return new ItemStackableLoot();
 	}
 
-	class ItemStackableLoot extends Loot {
+	class ItemStackableLoot extends Loot implements InventoryLoot {
 
 		public ItemStackableLoot() {
 			super(instantiator.getDemoItem());

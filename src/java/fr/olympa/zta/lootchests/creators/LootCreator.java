@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.utils.AbstractRandomizedPicker.Chanced;
+import fr.olympa.api.utils.RandomizedPicker.Chanced;
 
 public interface LootCreator extends Chanced {
 
@@ -24,11 +24,13 @@ public interface LootCreator extends Chanced {
 			return item;
 		}
 
-		public boolean onTake(Player p, Inventory inv, int slot) {
-			return false;
-		}
-
 		public void onRemove() {}
+		
+		public interface InventoryLoot {
+			
+			public boolean onTake(Player p, Inventory inv, int slot);
+			
+		}
 
 	}
 

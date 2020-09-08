@@ -1,8 +1,10 @@
 package fr.olympa.zta.mobs;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -25,8 +27,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.lootchests.creators.AmmoCreator;
+import fr.olympa.zta.lootchests.creators.LootCreator;
+import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.packetslistener.PacketInjector;
@@ -35,8 +41,9 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class MobsListener implements Listener {
 
-	private static int lastId = 0;
-	static Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
+	private int lastId = 0;
+	public Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, Arrays.asList(new AmmoCreator(50, 1, 3), new MoneyCreator(20, 1, 5)));
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
@@ -72,20 +79,24 @@ public class MobsListener implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
+		LivingEntity entity = e.getEntity();
 		e.getDrops().clear();
 		e.setDroppedExp(0);
 		
-		LivingEntity entity = e.getEntity();
 		if (entity.hasMetadata("inventory")) {
 			int id = entity.getMetadata("inventory").get(0).asInt();
 			Collections.addAll(e.getDrops(), inventories.remove(id));
 		}
+		
 		if (entity.getKiller() != null) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
 				killer.killedPlayers.add(1);
 			}else if (entity.getType() == EntityType.ZOMBIE) {
 				killer.killedZombies.add(1);
+				for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
+					e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
+				}
 			}
 		}
 	}

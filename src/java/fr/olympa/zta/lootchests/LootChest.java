@@ -21,18 +21,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.gui.OlympaGUI;
-import fr.olympa.api.utils.AbstractRandomizedPicker;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
+import fr.olympa.zta.lootchests.creators.LootCreator.Loot.InventoryLoot;
 import fr.olympa.zta.lootchests.type.LootChestType;
 import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
-public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<LootCreator> {
+public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator> {
 
 	private final int id;
 
@@ -90,7 +91,8 @@ public class LootChest extends OlympaGUI implements AbstractRandomizedPicker<Loo
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		Loot loot = currentLoots.remove(slot);
 		if (loot == null) throw new RuntimeException("No loot at slot for chest " + getID());
-		return loot.onTake(p, inv, slot);
+		if (loot instanceof InventoryLoot) return ((InventoryLoot) loot).onTake(p, inv, slot);
+		return false;
 	}
 
 	@Override

@@ -3,9 +3,9 @@ package fr.olympa.zta.lootchests.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.olympa.api.utils.AbstractRandomizedPicker;
+import fr.olympa.api.utils.RandomizedPicker;
 
-public class LootChestPicker implements AbstractRandomizedPicker<LootChestCreator> {
+public class LootChestPicker implements RandomizedPicker<LootChestCreator> {
 
 	private List<LootChestCreator> creatorsSimple = new ArrayList<>();
 	private List<LootChestCreator> creatorsAlways = new ArrayList<>();

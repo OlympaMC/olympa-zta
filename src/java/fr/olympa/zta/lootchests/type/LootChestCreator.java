@@ -1,6 +1,6 @@
 package fr.olympa.zta.lootchests.type;
 
-import fr.olympa.api.utils.AbstractRandomizedPicker.Chanced;
+import fr.olympa.api.utils.RandomizedPicker.Chanced;
 
 public class LootChestCreator implements Chanced {
 

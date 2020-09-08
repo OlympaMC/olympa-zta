@@ -54,7 +54,7 @@ public class BeautyQuestsLink {
 		
 		@Override
 		public String[] getLore() {
-			return new String[] { "§8> §7" + item == null ? null : item.getName(), Lang.Amount.format(amount) };
+			return new String[] { "§8> §7" + (item == null ? null : item.getName()), Lang.Amount.format(amount) };
 		}
 		
 		@Override

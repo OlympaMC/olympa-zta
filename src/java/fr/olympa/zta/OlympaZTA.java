@@ -119,7 +119,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	}
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
-	private MobsListener mobsListener = new MobsListener();
+	public MobsListener mobsListener = new MobsListener();
 	private ItemsListener itemsListener = new ItemsListener();
 
 	public TeleportationManager teleportationManager;
