@@ -62,7 +62,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 	public void click(Player p) {
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
-			OlympaPlayerZTA.get(p).openedChests.add(1);
+			OlympaPlayerZTA.get(p).openedChests.increment();
 			nextOpen = time + minutesToWait * 60000;
 			clearInventory();
 			for (LootCreator creator : pick(random)) {

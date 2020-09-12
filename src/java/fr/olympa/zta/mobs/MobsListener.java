@@ -31,6 +31,8 @@ import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.AmmoCreator;
+import fr.olympa.zta.lootchests.creators.FoodCreator;
+import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
@@ -43,14 +45,14 @@ public class MobsListener implements Listener {
 
 	private int lastId = 0;
 	public Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, Arrays.asList(new AmmoCreator(50, 1, 3), new MoneyCreator(20, 1, 5)));
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 30, Arrays.asList(new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO)));
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		int id = lastId++;
 		Player p = e.getEntity();
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
-		op.deaths.add(1);
+		op.deaths.increment();
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
@@ -91,9 +93,9 @@ public class MobsListener implements Listener {
 		if (entity.getKiller() != null) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
-				killer.killedPlayers.add(1);
+				killer.killedPlayers.increment();
 			}else if (entity.getType() == EntityType.ZOMBIE) {
-				killer.killedZombies.add(1);
+				killer.killedZombies.increment();
 				for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
 					e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
 				}
@@ -109,7 +111,7 @@ public class MobsListener implements Listener {
 
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
-		p.setWalkSpeed(0.22f);
+		p.setWalkSpeed(0.21f);
 
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());

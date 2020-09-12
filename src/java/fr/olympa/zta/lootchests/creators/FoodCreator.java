@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.ImmutableItemStack;
 import fr.olympa.api.item.ItemUtils;
 
 public class FoodCreator implements LootCreator {
@@ -49,10 +50,14 @@ public class FoodCreator implements LootCreator {
 
 		private Material type;
 		private String name;
+		
+		public final ImmutableItemStack item;
 
 		private Food(String name) {
 			this.name = name;
 			this.type = Material.valueOf(name());
+			
+			item = new ImmutableItemStack(get(1));
 		}
 
 		public ItemStack get(int amount) {

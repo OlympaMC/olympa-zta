@@ -41,7 +41,7 @@ public abstract class AbstractShop<T> extends Trait {
 	class ShopGUI extends PagedGUI<Article<T>> {
 
 		public ShopGUI() {
-			super(shopName, color, articles, 6);
+			super(shopName, color, articles, Math.min(6, Math.max((int) Math.ceil(articles.size() / 9D), 3)));
 		}
 
 		@Override

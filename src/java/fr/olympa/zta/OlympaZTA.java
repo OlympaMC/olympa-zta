@@ -11,9 +11,13 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -51,6 +55,7 @@ import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.lootchests.LootChestsManager;
+import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -66,6 +71,7 @@ import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
+import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.BeautyQuestsLink;
@@ -256,6 +262,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(FraterniteBlockShop.class, "blockshopfraternite", getConfig().getIntegerList("blockShopFraternite"));
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
+		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
 
 		try {
 			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
@@ -282,6 +289,23 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				getLogger().warning("Le NPC " + npcID + " n'existe pas. (trait " + trait.getSimpleName() + ")");
 			}else if (!npc.hasTrait(trait)) npc.addTrait(trait);
 		});
+	}
+	
+	@EventHandler
+	public void onBlockDrop(BlockDropItemEvent e) {
+		for (Item item : e.getItems()) {
+			ItemStack originalItem = item.getItemStack();
+			Material type = originalItem.getType();
+			Food food = null;
+			if (type == Material.WHEAT) {
+				food = Food.BREAD;
+			}else if (type == Material.POTATO) {
+				food = Food.BAKED_POTATO;
+			}else if (type == Material.CARROT) {
+				food = Food.CARROT;
+			}else continue;
+			item.setItemStack(food.get(originalItem.getAmount()));
+		}
 	}
 
 	/*@EventHandler

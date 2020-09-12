@@ -3,7 +3,6 @@ package fr.olympa.zta.utils.npcs;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.holograms.Hologram;
 import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.core.spigot.OlympaCore;
@@ -13,7 +12,7 @@ import net.citizensnpcs.api.trait.Trait;
 
 public abstract class HologramTrait extends Trait {
 
-	private Hologram hologram;
+	private int hologramID = -1;
 
 	public HologramTrait(String name) {
 		super(name);
@@ -21,7 +20,7 @@ public abstract class HologramTrait extends Trait {
 
 	protected void showHologram() {
 		removeHologram();
-		hologram = OlympaCore.getInstance().getHologramsManager().createHologram(getHologramLocation(npc.getStoredLocation()), false, getLines());
+		hologramID = OlympaCore.getInstance().getHologramsManager().createHologram(getHologramLocation(npc.getStoredLocation()), false, getLines()).getID();
 	}
 	
 	private Location getHologramLocation(Location npcLocation) {
@@ -31,16 +30,16 @@ public abstract class HologramTrait extends Trait {
 	protected abstract AbstractLine<HologramLine>[] getLines();
 	
 	protected void removeHologram() {
-		if (hologram != null) {
-			hologram.remove();
-			hologram = null;
+		if (hologramID != -1) {
+			OlympaCore.getInstance().getHologramsManager().deleteHologram(hologramID);
+			hologramID = -1;
 		}
 	}
 	
 	@EventHandler
 	public void onNPCTeleport(NPCTeleportEvent e) {
 		if (e.getNPC() == npc) {
-			if (hologram != null) hologram.move(getHologramLocation(e.getTo()));
+			if (hologramID != -1) OlympaCore.getInstance().getHologramsManager().getHologram(hologramID).move(getHologramLocation(e.getTo()));
 		}
 	}
 	

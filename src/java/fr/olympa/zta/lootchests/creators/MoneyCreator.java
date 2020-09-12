@@ -24,7 +24,7 @@ public class MoneyCreator implements LootCreator {
 
 	@Override
 	public Loot create(Player p, Random random) {
-		return new Loot(PhysicalMoney.getBanknote(PhysicalMoney.BANKNOTE_1, random.nextInt(max - min) + min));
+		return new Loot(PhysicalMoney.getBanknote(PhysicalMoney.BANKNOTE_1, random.nextInt(max - min + 1) + min));
 	}
 
 }
