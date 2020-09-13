@@ -20,7 +20,9 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 			new Article<>(Food.COOKED_BEEF, 12),
 			new Article<>(Food.COOKED_PORKCHOP, 12),
 			new Article<>(Food.BREAD, 10),
-			new Article<>(Food.CARROT, 8));
+			new Article<>(Food.CARROT, 8),
+			new Article<>(Food.COOKED_COD, 10),
+			new Article<>(Food.COOKED_SALMON, 12));
 	
 	public FoodBuyingShop() {
 		super("foodshop", "Vente de nourriture", DyeColor.CYAN, ARTICLES);

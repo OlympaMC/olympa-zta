@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -18,15 +19,19 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
+import fr.olympa.api.region.tracking.flags.FishFlag;
 import fr.olympa.api.region.tracking.flags.GameModeFlag;
 import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
@@ -38,6 +43,7 @@ import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
 import fr.olympa.zta.weapons.guns.NoGunFlag;
 
 public class PlayerPlotsManager {
@@ -92,6 +98,16 @@ public class PlayerPlotsManager {
 			public void interactEvent(PlayerInteractEvent event) {
 				PlayerPlot plot = getPlot(event.getClickedBlock().getLocation());
 				event.setCancelled(plot == null ? true : plot.onInteract(event));
+			}
+		}, new FishFlag(false) {
+			@Override
+			public void fishEvent(PlayerFishEvent event) {
+				if (event.getState() == State.CAUGHT_FISH && event.getCaught() instanceof Item) {
+					Item item = (Item) event.getCaught();
+					Food food = ThreadLocalRandom.current().nextDouble() < 0.4 ? Food.COOKED_SALMON : Food.COOKED_COD;
+					item.setItemStack(food.item);
+				}
+				super.fishEvent(event);
 			}
 		});
 

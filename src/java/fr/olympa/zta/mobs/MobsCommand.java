@@ -38,16 +38,16 @@ public class MobsCommand extends ComplexCommand {
 	}
 
 	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")
-	public void removeZombies(CommandContext cmd) {
-		boolean kill = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("kill");
+	public void killZombies(CommandContext cmd) {
+		boolean remove = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("remove");
 		int amount = 0;
 		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
-			if (kill) {
-				zombie.damage(1000000);
-			}else zombie.remove();
+			if (remove) {
+				zombie.remove();
+			}else zombie.damage(1000000);
 			amount++;
 		}
-		sendSuccess(amount + " zombies " + (kill ? "tués." : "supprimés."));
+		sendSuccess(amount + " zombies " + (remove ? "supprimés." : "tués."));
 	}
 
 	@Cmd

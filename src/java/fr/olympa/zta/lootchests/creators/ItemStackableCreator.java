@@ -37,6 +37,10 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 	public double getChance() {
 		return chance;
 	}
+	
+	public ItemStackableInstantiator<T> getInstantiator() {
+		return instantiator;
+	}
 
 	public Loot create(Player p, Random random) {
 		return new ItemStackableLoot();

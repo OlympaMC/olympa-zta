@@ -8,22 +8,22 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public class BulletExplosive extends Bullet{
 	
-	private float speed;
 	private float power;
 	
-	public BulletExplosive(Gun gun, float speed, float power){
+	public BulletExplosive(Gun gun, float power) {
 		super(gun);
-		this.speed = speed;
 		this.power = power;
 	}
 	
 	public void hit(ProjectileHitEvent e){
-		Location lc = e.getHitEntity() != null ? e.getHitEntity().getLocation() : e.getHitBlock().getLocation();
+		Location lc;
+		if (e.getHitEntity() != null) {
+			lc = e.getHitEntity().getLocation();
+		}else {
+			lc = e.getHitBlock().getLocation();
+			if (e.getHitBlockFace() != null) lc.add(e.getHitBlockFace().getModX(), e.getHitBlockFace().getModY(), e.getHitBlockFace().getModZ());
+		}
 		lc.getWorld().createExplosion(lc.getX(), lc.getY(), lc.getZ(), power, false, false, (Entity) e.getEntity().getShooter());
-	}
-	
-	public float getBulletSpeed(){
-		return speed;
 	}
 	
 }

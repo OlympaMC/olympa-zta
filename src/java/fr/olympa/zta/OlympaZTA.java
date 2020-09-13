@@ -74,9 +74,9 @@ import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
-import fr.olympa.zta.utils.BeautyQuestsLink;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
+import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -93,6 +93,7 @@ import fr.olympa.zta.weapons.guns.accessories.StockStrong;
 import fr.olympa.zta.weapons.guns.created.Gun870;
 import fr.olympa.zta.weapons.guns.created.GunAK;
 import fr.olympa.zta.weapons.guns.created.GunBarrett;
+import fr.olympa.zta.weapons.guns.created.GunBazooka;
 import fr.olympa.zta.weapons.guns.created.GunBenelli;
 import fr.olympa.zta.weapons.guns.created.GunCobra;
 import fr.olympa.zta.weapons.guns.created.GunDragunov;
@@ -168,7 +169,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
 		if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) BeautyQuestsLink.initialize();
 
-		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 
 		Bukkit.clearRecipes();
