@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.ImmutableItemStack;
 import fr.olympa.api.item.ItemUtils;
 
 public class QuestItemCreator implements LootCreator {
@@ -50,7 +51,7 @@ public class QuestItemCreator implements LootCreator {
 		
 		private final String name;
 		private final int segment;
-		private final ItemStack item;
+		private final ImmutableItemStack item;
 
 		private QuestItem(Material type, String name, int segment, String... lore) {
 			this.name = name;
@@ -58,7 +59,7 @@ public class QuestItemCreator implements LootCreator {
 			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
 			loreList.add("");
 			loreList.add("§8> §7Ressource de segment §l" + segment);
-			this.item = ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new));
+			this.item = new ImmutableItemStack(ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new)));
 		}
 
 		public String getName() {
@@ -71,7 +72,7 @@ public class QuestItemCreator implements LootCreator {
 			return item;
 		}
 		
-		public ItemStack getOriginalItem() {
+		public ImmutableItemStack getOriginalItem() {
 			return item;
 		}
 

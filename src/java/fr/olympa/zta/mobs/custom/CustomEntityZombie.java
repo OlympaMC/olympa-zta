@@ -10,10 +10,14 @@ import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityLiving;
 import net.minecraft.server.v1_15_R1.EntityTypes;
 import net.minecraft.server.v1_15_R1.EntityZombie;
+import net.minecraft.server.v1_15_R1.EnumItemSlot;
 import net.minecraft.server.v1_15_R1.EnumMobSpawn;
+import net.minecraft.server.v1_15_R1.Explosion.Effect;
 import net.minecraft.server.v1_15_R1.GeneratorAccess;
 import net.minecraft.server.v1_15_R1.GenericAttributes;
 import net.minecraft.server.v1_15_R1.GroupDataEntity;
+import net.minecraft.server.v1_15_R1.ItemStack;
+import net.minecraft.server.v1_15_R1.Items;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
@@ -24,6 +28,8 @@ import net.minecraft.server.v1_15_R1.World;
 public class CustomEntityZombie extends EntityZombie {
 
 	private static final Random random = new Random();
+	
+	private boolean explosive = false;
 
 	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
 		super(type, world);
@@ -61,7 +67,10 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
-			if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {
+			if (explosive) {
+				killEntity();
+				world.createExplosion(null, super.locX(), super.locY(), super.locZ(), 3, false, Effect.NONE);
+			}else if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {
 				setGoalTarget((EntityLiving) damagesource.getEntity(), TargetReason.TARGET_ATTACKED_ENTITY, true);
 			}
 			return true;
@@ -72,6 +81,11 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	public GroupDataEntity prepare(GeneratorAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
 		return null;
+	}
+	
+	public void setExplosive() {
+		explosive = true;
+		setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
 	}
 
 	static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {

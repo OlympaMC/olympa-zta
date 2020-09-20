@@ -1,14 +1,18 @@
 package fr.olympa.zta.mobs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -23,6 +27,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -37,7 +42,7 @@ import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
-import fr.olympa.zta.packetslistener.PacketInjector;
+import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
@@ -46,22 +51,34 @@ public class MobsListener implements Listener {
 	private int lastId = 0;
 	public Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 30, Arrays.asList(new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO)));
-
+	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
+	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		int id = lastId++;
 		Player p = e.getEntity();
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
+		List<ItemStack> kept = new ArrayList<>();
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
-			if (itemStack != null && itemStack.getType().name().startsWith("LEATHER_")) contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+			if (itemStack != null) {
+				if (BeautyQuestsLink.isEnabled() && BeautyQuestsLink.isQuestItem(itemStack)) {
+					kept.add(itemStack);
+					contents[i] = null;
+				}else if (itemStack.getType().name().startsWith("LEATHER_")) {
+					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+				}
+			}
 		}
+		keptItems.put(p, kept);
 		inventories.put(id, contents);
-		Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
-		momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
-		momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
+		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
+			momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
+			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
+		});
 		EntityDamageEvent cause = p.getLastDamageCause();
 		String reason = "est mort.";
 		if (cause instanceof EntityDamageByEntityEvent) {
@@ -102,12 +119,30 @@ public class MobsListener implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e) {
+		List<ItemStack> items = keptItems.remove(e.getPlayer());
+		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
+	}
+	
+	@EventHandler
+	public void onDamage(EntityDamageEvent e) {
+		if (e.getCause() == DamageCause.FALL) {
+			e.setDamage(e.getDamage() / 2);
+		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
+			if (e.getEntity() instanceof Item) {
+				e.setCancelled(true);
+			}else if (e.getEntity() instanceof Player) {
+				e.setDamage(e.getDamage() / 2);
+			}
+		}
+	}
 
 	@EventHandler (priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		PacketInjector.addPlayer(p, PacketHandlers.REMOVE_SNOWBALLS);
-		PacketInjector.addPlayer(p, PacketHandlers.ITEM_DROP);
+		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
@@ -125,7 +160,8 @@ public class MobsListener implements Listener {
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		PacketInjector.removePlayer(e.getPlayer());
+		Player p = e.getPlayer();
+		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
 	}
 	
 	@EventHandler

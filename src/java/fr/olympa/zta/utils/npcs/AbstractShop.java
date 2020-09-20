@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
@@ -46,7 +47,7 @@ public abstract class AbstractShop<T> extends Trait {
 
 		@Override
 		public ItemStack getItemStack(Article<T> object) {
-			return ItemUtils.loreAdd(AbstractShop.this.getItemStack(object.object), "", "§e§m      §e[ §6§l" + object.price + "§e ]§m      §r");
+			return ItemUtils.loreAdd(AbstractShop.this.getItemStack(object.object), "", "§e§m      §e[ §6§l" + OlympaMoney.format(object.price) + "§e ]§m      §r");
 		}
 
 		@Override

@@ -1,5 +1,7 @@
 package fr.olympa.zta.weapons;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -24,6 +26,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.Registrable;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Gun;
@@ -102,7 +105,17 @@ public class WeaponsListener implements Listener {
 
 	@EventHandler
 	public void onPickup(EntityPickupItemEvent e) {
-		if (e.getEntity() instanceof Player) checkHeld((Player) e.getEntity(), e.getItem().getItemStack(), true);
+		if (e.getEntity() instanceof Player) {
+			Player p = (Player) e.getEntity();
+			if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
+				ItemStack item = e.getItem().getItemStack();
+				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+					if (p.getInventory().getItemInMainHand().isSimilar(item)) {
+						checkHeld(p, item, true);
+					}
+				});
+			}
+		}
 	}
 
 	@EventHandler

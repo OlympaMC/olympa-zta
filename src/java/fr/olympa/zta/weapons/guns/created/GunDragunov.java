@@ -62,7 +62,7 @@ public class GunDragunov extends Gun{
 	}
 	
 	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 10, 7, effect);
+		return new BulletEffect(this, 14, 10, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

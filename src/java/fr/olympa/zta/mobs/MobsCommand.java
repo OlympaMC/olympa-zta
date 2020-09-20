@@ -16,6 +16,7 @@ public class MobsCommand extends ComplexCommand {
 
 	public MobsCommand() {
 		super(OlympaZTA.getInstance(), "mobs", "Gestion des mobs", ZTAPermissions.MOBS_COMMAND);
+		super.addArgumentParser("MOBTYPE", Zombies.class);
 	}
 
 	@Cmd
@@ -32,9 +33,9 @@ public class MobsCommand extends ComplexCommand {
 		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
 	}
 
-	@Cmd (player = true, args = "COMMON|DROWNED", min = 0, syntax = "[type]")
+	@Cmd (player = true, args = "MOBTYPE", min = 0, syntax = "[type]")
 	public void spawnZombie(CommandContext cmd) {
-		Mobs.spawnCommonZombie(Zombies.valueOf(cmd.getArgument(0, "COMMON")), getPlayer().getLocation());
+		Mobs.spawnCommonZombie(cmd.getArgument(0, Zombies.COMMON), getPlayer().getLocation());
 	}
 
 	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")

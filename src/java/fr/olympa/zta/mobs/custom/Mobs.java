@@ -31,12 +31,15 @@ public class Mobs {
 	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
-		spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
+		EntityZombie zombie = spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
+		if (zombieType == Zombies.TNT) {
+			((CustomEntityZombie) zombie).setExplosive();
+		}
 	}
 
 	public static Zombie spawnMomifiedZombie(Player p) {
 		Location location = p.getLocation();
-		Zombie zombie = spawnMob(customMommy, location, SpawnReason.CUSTOM);
+		Zombie zombie = (Zombie) spawnMob(customMommy, location, SpawnReason.CUSTOM).getBukkitEntity();
 		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
 		zombie.setCustomName(p.getName() + " momifié");
 		zombie.setCustomNameVisible(true);
@@ -45,10 +48,10 @@ public class Mobs {
 		return zombie;
 	}
 
-	private static <T extends EntityZombie> Zombie spawnMob(EntityTypes<T> entityType, Location location, SpawnReason reason) {
-		Zombie zombie = (Zombie) entityType.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), EnumMobSpawn.TRIGGERED, false, false, reason).getBukkitEntity();
-		if (zombie.isBaby()) zombie.setBaby(false);
-		if (zombie.isInsideVehicle()) zombie.getVehicle().remove();
+	private static <T extends EntityZombie> T spawnMob(EntityTypes<T> entityType, Location location, SpawnReason reason) {
+		T zombie = entityType.spawnCreature(((CraftWorld) location.getWorld()).getHandle(), null, null, null, new BlockPosition(location.getX(), location.getY(), location.getZ()), EnumMobSpawn.TRIGGERED, false, false, reason);
+		zombie.setBaby(false);
+		if (zombie.isPassenger()) zombie.getVehicle().die();
 		return zombie;
 	}
 
@@ -74,7 +77,7 @@ public class Mobs {
 	}
 
 	public enum Zombies {
-		COMMON(customZombie), DROWNED(customDrowned);
+		COMMON(customZombie), TNT(customZombie), DROWNED(customDrowned);
 
 		private final EntityTypes<? extends EntityZombie> type;
 

@@ -30,7 +30,7 @@ public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	
 	@Override
 	public ItemStack getItemStack(QuestItem object) {
-		return object.getOriginalItem();
+		return object.getOriginalItem().toMutableStack();
 	}
 	
 }

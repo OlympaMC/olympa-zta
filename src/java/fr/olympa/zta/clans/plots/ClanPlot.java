@@ -152,14 +152,14 @@ public class ClanPlot {
 		
 		sign.getPersistentDataContainer().set(ClanPlotsManager.SIGN_KEY, PersistentDataType.INTEGER, id);
 
-		sign.setLine(0, "[" + priceFormatted + "/semaine]");
+		sign.setLine(0, "§e[§l" + priceFormatted + "§e/semaine§e]");
 		sign.setLine(1, "");
 		if (clan == null) {
-			sign.setLine(2, "Parcelle à");
-			sign.setLine(3, "vendre");
+			sign.setLine(2, "§eParcelle à");
+			sign.setLine(3, "§evendre");
 		}else {
-			sign.setLine(2, clan.getName());
-			sign.setLine(3, "Expire le " + getExpirationDate());
+			sign.setLine(2, "§6" + clan.getName());
+			sign.setLine(3, "§eExpire le §n" + getExpirationDate());
 		}
 		sign.update();
 	}

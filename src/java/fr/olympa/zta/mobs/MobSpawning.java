@@ -127,7 +127,7 @@ public class MobSpawning {
 											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 										}
 										Location lc = block.getLocation();
-										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, Zombies.COMMON));
+										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn == SpawnType.HARD || spawn == SpawnType.MEDIUM) && random.nextDouble() < 0.1 ? Zombies.TNT : Zombies.COMMON));
 										break y;
 									}
 								}
@@ -235,7 +235,7 @@ public class MobSpawning {
 				players++;
 			}else others++;
 		}
-		return String.format("%dJ %dZ %dN %dA", players, zombies, drowned, others);
+		return String.format("%d joueurs %d zombies %d noyés %d autres", players, zombies, drowned, others);
 	}
 
 	public boolean isEnabled() {
