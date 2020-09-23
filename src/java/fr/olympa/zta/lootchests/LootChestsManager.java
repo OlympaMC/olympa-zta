@@ -29,7 +29,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;

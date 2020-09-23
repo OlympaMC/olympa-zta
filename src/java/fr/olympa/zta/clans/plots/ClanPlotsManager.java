@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;

@@ -27,7 +27,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ZTARegistry;
