@@ -70,7 +70,7 @@ public class DynmapLink {
 		List<Location> points = region.getLocations();
 		AreaMarker area = areasMarkers.createAreaMarker(spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.3, spawn.color.asRGB());
-		area.setDescription(spawn.description);
+		area.setDescription(spawn.name + "\n\n" + spawn.description);
 	}
 	
 	public static void showSafeArea(Region region, String id, String title) {

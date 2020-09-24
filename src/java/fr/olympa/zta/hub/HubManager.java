@@ -13,12 +13,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
+import fr.olympa.api.region.tracking.flags.FoodFlag;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -49,7 +49,7 @@ public class HubManager implements Listener {
 		this.spawnpoint = spawnpoint;
 		this.spawnRegions = new HashSet<>(spawnRegions);
 
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new NoGunFlag(true), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new FoodFlag(true, false), new NoGunFlag(true), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
 	}
 
 	public void addSpawnRegion(SpawnType region) {
@@ -134,11 +134,6 @@ public class HubManager implements Listener {
 		Player p = (Player) e.getEntity();
 
 		startRandomTeleport(p);
-	}
-
-	@EventHandler
-	public void onFood(FoodLevelChangeEvent e) {
-		if (region.isIn(e.getEntity().getLocation())) e.setCancelled(true);
 	}
 
 }

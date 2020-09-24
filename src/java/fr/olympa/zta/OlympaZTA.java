@@ -65,7 +65,6 @@ import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
-import fr.olympa.zta.registry.ItemsListener;
 import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
@@ -127,7 +126,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	
 	private WeaponsListener weaponListener = new WeaponsListener();
 	public MobsListener mobsListener = new MobsListener();
-	private ItemsListener itemsListener = new ItemsListener();
 
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
@@ -182,7 +180,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(weaponListener, this);
 		pluginManager.registerEvents(mobsListener, this);
-		pluginManager.registerEvents(itemsListener, this);
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);

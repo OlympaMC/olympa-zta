@@ -37,7 +37,7 @@ import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
@@ -105,7 +105,7 @@ public class PlayerPlotsManager {
 				if (event.getState() == State.CAUGHT_FISH && event.getCaught() instanceof Item) {
 					Item item = (Item) event.getCaught();
 					Food food = ThreadLocalRandom.current().nextDouble() < 0.4 ? Food.COOKED_SALMON : Food.COOKED_COD;
-					item.setItemStack(food.item);
+					item.setItemStack(food.getOriginalItem());
 				}
 				super.fishEvent(event);
 			}

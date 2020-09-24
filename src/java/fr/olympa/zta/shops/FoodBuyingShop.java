@@ -30,8 +30,8 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 	
 	@Override
 	protected boolean take(Food object, Player p) {
-		if (SpigotUtils.containsItems(p.getInventory(), object.item, 1)) {
-			SpigotUtils.removeItems(p.getInventory(), object.item, 1);
+		if (SpigotUtils.containsItems(p.getInventory(), object.getOriginalItem(), 1)) {
+			SpigotUtils.removeItems(p.getInventory(), object.getOriginalItem(), 1);
 			return true;
 		}
 		return false;

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -23,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -42,6 +44,8 @@ import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
+import fr.olympa.zta.registry.ItemStackable;
+import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -74,8 +78,10 @@ public class MobsListener implements Listener {
 		}
 		keptItems.put(p, kept);
 		inventories.put(id, contents);
+		Location loc = p.getLocation();
+		ItemStack[] armor = p.getInventory().getArmorContents();
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(p);
+			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, "§7" + p.getName() + " momifié");
 			momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
 			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
 		});
@@ -126,7 +132,7 @@ public class MobsListener implements Listener {
 		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onDamage(EntityDamageEvent e) {
 		if (e.getCause() == DamageCause.FALL) {
 			e.setDamage(e.getDamage() / 2);
@@ -136,6 +142,10 @@ public class MobsListener implements Listener {
 			}else if (e.getEntity() instanceof Player) {
 				e.setDamage(e.getDamage() / 2);
 			}
+		}
+		if (!e.isCancelled() && e.getEntity() instanceof Item) {
+			ItemStackable itemStackable = ZTARegistry.getItemStackable(((Item) e.getEntity()).getItemStack());
+			if (itemStackable != null) ZTARegistry.removeObject(itemStackable);
 		}
 	}
 
@@ -184,4 +194,10 @@ public class MobsListener implements Listener {
 		}
 	}
 
+	@EventHandler
+	public void onItemRemove(ItemDespawnEvent e) {
+		ItemStackable itemStackable = ZTARegistry.getItemStackable(e.getEntity().getItemStack());
+		if (itemStackable != null) ZTARegistry.removeObject(itemStackable);
+	}
+	
 }

@@ -157,7 +157,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
 		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
 			super("Liste des invitations", DyeColor.CYAN, objects, 3);
-			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
@@ -183,7 +183,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
 		private PlotGuestsGUI(PlayerPlot plot) {
 			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 3);
-			setBarItem(2, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override

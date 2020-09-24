@@ -118,7 +118,7 @@ public class PlayerPlot {
 				for (int z = min; z <= max; z++) {
 					if (oldMin != -1 && oldMax != -1 && x >= oldMin && x <= oldMax && z >= oldMin && z <= oldMax) continue;
 					Block block = new Location(OlympaZTA.getInstance().plotsManager.getWorld(), loc.getWorldX() + x, PlotChunkGenerator.WORLD_LEVEL, loc.getWorldZ() + z).getBlock();
-					if (block.getType() != Material.GRASS_BLOCK) block.setType(Material.GRASS_BLOCK);
+					if (block.getType() != Material.GRASS_BLOCK && block.getType() != Material.WATER) block.setType(Material.GRASS_BLOCK);
 				}
 			}
 

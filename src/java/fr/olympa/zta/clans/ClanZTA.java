@@ -2,7 +2,8 @@ package fr.olympa.zta.clans;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.StringJoiner;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,20 +31,25 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getOlympaPlayer().getClan();
 		Player p = x.getOlympaPlayer().getPlayer();
-		StringJoiner joiner = new StringJoiner("\n");
+		List<String> players = new ArrayList<>(5);
+		int first = 0;
+		int offline = 0;
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
 		for (ClanPlayerDataZTA member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
 			if (!member.isConnected()) {
-				joiner.add("§c○ " + memberName);
+				players.add(offline, "§c○ " + memberName);
 			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
-				joiner.add("§6● §l" + memberName);
+				players.add(0, "§6● §l" + memberName);
+				first = 1;
+				offline++;
 			}else {
 				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
-				joiner.add("§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				players.add(first, "§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				offline++;
 			}
 		}
-		return joiner.toString();
+		return String.join("\n", players);
 	}, OlympaZTA.getInstance(), 10);
 	
 	private long plotExpirationReset = -1;

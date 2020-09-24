@@ -53,16 +53,20 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
-	@Cmd (player = true, min = 2, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "<type de munition> <quantité> [vide ?]")
+	@Cmd (player = true, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "[type de munition] [quantité] [vide ?]")
 	public void giveAmmo(CommandContext cmd) {
-		try {
-			boolean empty = cmd.getArgument(2, false);
-			int amount = cmd.getArgument(1);
-			if ("powder".equalsIgnoreCase(cmd.getArgument(0))) {
-				getPlayer().getInventory().addItem(AmmoType.getPowder(amount));
-			}else getPlayer().getInventory().addItem(AmmoType.valueOf(cmd.<String>getArgument(0).toUpperCase()).getAmmo(amount, !empty));
-		}catch (IllegalArgumentException ex) {
-			sendError("Ce type de munition n'existe pas.");
+		if (cmd.getArgumentsLength() == 0) {
+			new WeaponsAmmosGUI().create(player);
+		}else {
+			try {
+				boolean empty = cmd.getArgument(2, false);
+				int amount = cmd.getArgument(1, 1);
+				if ("powder".equalsIgnoreCase(cmd.getArgument(0))) {
+					getPlayer().getInventory().addItem(AmmoType.getPowder(amount));
+				}else getPlayer().getInventory().addItem(AmmoType.valueOf(cmd.<String>getArgument(0).toUpperCase()).getAmmo(amount, !empty));
+			}catch (IllegalArgumentException ex) {
+				sendError("Ce type de munition n'existe pas.");
+			}
 		}
 	}
 

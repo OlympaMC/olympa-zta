@@ -60,7 +60,7 @@ public class ClanPlot {
 	public void setClan(ClanZTA clan, boolean updateDB) {
 		if (this.clan != null) {
 			this.clan.setCachedPlot(null);
-		}else setNextPayment(-1, true);
+		}else setNextPayment(-1, updateDB);
 
 		this.clan = clan;
 		if (clan != null) clan.setCachedPlot(this);

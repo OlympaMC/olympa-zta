@@ -10,6 +10,7 @@ import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.ItemStack;
 
 import net.citizensnpcs.nms.v1_15_R1.util.CustomEntityRegistry;
 import net.minecraft.server.v1_15_R1.BlockPosition;
@@ -37,14 +38,12 @@ public class Mobs {
 		}
 	}
 
-	public static Zombie spawnMomifiedZombie(Player p) {
-		Location location = p.getLocation();
-		Zombie zombie = (Zombie) spawnMob(customMommy, location, SpawnReason.CUSTOM).getBukkitEntity();
-		zombie.getEquipment().setArmorContents(p.getInventory().getArmorContents());
-		zombie.setCustomName(p.getName() + " momifié");
+	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, String name) {
+		Zombie zombie = (Zombie) spawnMob(customMommy, loc, SpawnReason.CUSTOM).getBukkitEntity();
+		zombie.getEquipment().setArmorContents(armor);
+		zombie.setCustomName(name);
 		zombie.setCustomNameVisible(true);
-		//if (p.getKiller() != null) zombie.setTarget(p.getKiller());
-		zombie.getWorld().getEntitiesByClass(Player.class).stream().map(player -> new AbstractMap.SimpleEntry<>(player, location.distanceSquared(player.getLocation()))).filter(entry -> entry.getValue() <= 900).sorted((o1, o2) -> Double.compare(o1.getValue(), o2.getValue())).findFirst().ifPresent(entry -> zombie.setTarget(entry.getKey()));
+		zombie.getWorld().getEntitiesByClass(Player.class).stream().map(player -> new AbstractMap.SimpleEntry<>(player, loc.distanceSquared(player.getLocation()))).filter(entry -> entry.getValue() <= 900).sorted((o1, o2) -> Double.compare(o1.getValue(), o2.getValue())).findFirst().ifPresent(entry -> zombie.setTarget(entry.getKey()));
 		return zombie;
 	}
 

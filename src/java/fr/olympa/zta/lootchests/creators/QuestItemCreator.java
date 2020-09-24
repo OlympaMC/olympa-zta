@@ -67,7 +67,7 @@ public class QuestItemCreator implements LootCreator {
 		}
 		
 		public ItemStack getItem(int amount) {
-			ItemStack item = this.item.clone();
+			ItemStack item = this.item.toMutableStack();
 			item.setAmount(amount);
 			return item;
 		}
