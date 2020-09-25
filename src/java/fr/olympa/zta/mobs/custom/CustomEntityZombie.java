@@ -23,6 +23,8 @@ import net.minecraft.server.v1_15_R1.PathfinderGoal;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
+import net.minecraft.server.v1_15_R1.SoundCategory;
+import net.minecraft.server.v1_15_R1.SoundEffects;
 import net.minecraft.server.v1_15_R1.World;
 
 public class CustomEntityZombie extends EntityZombie {
@@ -30,6 +32,7 @@ public class CustomEntityZombie extends EntityZombie {
 	private static final Random random = new Random();
 	
 	private boolean explosive = false;
+	private int primed = -1;
 
 	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
 		super(type, world);
@@ -53,7 +56,7 @@ public class CustomEntityZombie extends EntityZombie {
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
 		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
 	}
-
+	
 	@Override
 	protected boolean et() { // convertsInWater
 		return false;
@@ -65,11 +68,22 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 
 	@Override
+	public void tick() {
+		super.tick();
+		if (primed != -1 && --primed == 0) {
+			killEntity();
+			world.createExplosion(null, super.locX(), super.locY(), super.locZ(), 3, false, Effect.NONE);
+		}
+	}
+	
+	@Override
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
 			if (explosive) {
-				killEntity();
-				world.createExplosion(null, super.locX(), super.locY(), super.locZ(), 3, false, Effect.NONE);
+				if (primed == -1) {
+					primed = 10;
+					world.playSound(null, locX(), locY(), locZ(), SoundEffects.ENTITY_CREEPER_PRIMED, SoundCategory.HOSTILE, 1, 1);
+				}
 			}else if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {
 				setGoalTarget((EntityLiving) damagesource.getEntity(), TargetReason.TARGET_ATTACKED_ENTITY, true);
 			}
@@ -88,6 +102,18 @@ public class CustomEntityZombie extends EntityZombie {
 		setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
 	}
 
+	@Override
+	public void b(NBTTagCompound nbttagcompound) {
+		super.b(nbttagcompound);
+		if (explosive) nbttagcompound.setBoolean("Explosive", this.explosive);
+	}
+	
+	@Override
+	public void a(NBTTagCompound nbttagcompound) {
+		super.a(nbttagcompound);
+		if (nbttagcompound.hasKey("Explosive")) this.explosive = nbttagcompound.getBoolean("Explosive");
+	}
+	
 	static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {
 
 		private EntityZombie zombie;

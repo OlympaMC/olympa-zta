@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -34,6 +33,8 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.google.common.collect.EvictingQueue;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.ActionResult;
@@ -63,7 +64,9 @@ public class MobSpawning {
 
 	private Lock queueLock = new ReentrantLock();
 	private LinkedList<Entry<Location, Zombies>> spawnQueue = new LinkedList<>();
-	private Queue<Integer> averageQueueSize = new LinkedList<>();
+	
+	private EvictingQueue<Integer> queueSize = EvictingQueue.create(24);
+	private EvictingQueue<Long> computeTimes = EvictingQueue.create(12);
 
 	private Set<Region> safeRegions = new HashSet<>();
 
@@ -92,6 +95,7 @@ public class MobSpawning {
 	public void start() {
 		tasks[0] = new BukkitRunnable() {
 			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
+				long time = System.currentTimeMillis();
 				queueLock.lock();
 				try {
 					List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
@@ -122,12 +126,12 @@ public class MobSpawning {
 										Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
 										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
 										Block block = location.getBlock();
-										if (block.getLightFromBlocks() > 10 && !world.isThundering()) continue; // si trop de lumière et pas en mode tempête pas possible
+										if (block.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
 										for (Location loc : entities) {
 											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 										}
 										Location lc = block.getLocation();
-										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn == SpawnType.HARD || spawn == SpawnType.MEDIUM) && random.nextDouble() < 0.1 ? Zombies.TNT : Zombies.COMMON));
+										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
 										break y;
 									}
 								}
@@ -136,14 +140,14 @@ public class MobSpawning {
 					}
 				}finally {
 					queueLock.unlock();
+					computeTimes.add(System.currentTimeMillis() - time);
 				}
 			}
-		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 102L);
+		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 101L);
 
 		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
-				averageQueueSize.add(spawnQueue.size());
-				if (averageQueueSize.size() > 24) averageQueueSize.poll();
+				queueSize.add(spawnQueue.size());
 
 				if (!queueLock.tryLock()) return;
 				try {
@@ -221,7 +225,11 @@ public class MobSpawning {
 	}
 
 	public double getAverageQueueSize() {
-		return averageQueueSize.stream().mapToInt(Integer::intValue).average().orElse(0);
+		return queueSize.stream().mapToInt(Integer::intValue).average().orElse(0);
+	}
+	
+	public Collection<Long> getLastComputeTimes() {
+		return computeTimes;
 	}
 
 	public String getEntityCount() {
@@ -251,21 +259,22 @@ public class MobSpawning {
 		}
 
 		spawnQueue.clear();
-		averageQueueSize.clear();
+		queueSize.clear();
 
 		enabled = false;
 	}
 	
 	public enum SpawnType {
-		NONE(20, 1, 5, "§cerreur", null, null, null, null),
-		HARD(11, 3, 12, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
-		MEDIUM(13, 2, 10, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
-		EASY(16, 1, 8, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
-		SAFE(24, 1, 3, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+		NONE(20, 1, 5, 0, "§cerreur", null, null, null, null),
+		HARD(11, 3, 12, 0.1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+		MEDIUM(13, 2, 10, 0.08, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+		EASY(16, 1, 8, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+		SAFE(24, 1, 3, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private int minDistanceSquared;
 		private int spawnAmount;
 		private int maxEntitiesPerChunk;
+		private double explosiveProb;
 
 		public final Color color;
 		public final String name;
@@ -277,9 +286,11 @@ public class MobSpawning {
 		private List<Region> regions = new ArrayList<>();
 		private Flag flag;
 
-		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, String title, Color color, String name, String description, LootChestPicker lootchests) {
+		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, String title, Color color, String name, String description, LootChestPicker lootchests) {
 			this.minDistanceSquared = minDistance * minDistance;
 			this.spawnAmount = spawnAmount;
+			this.maxEntitiesPerChunk = maxEntitiesPerChunk;
+			this.explosiveProb = explosiveProb;
 			this.color = color;
 			this.name = name;
 			this.description = description;
