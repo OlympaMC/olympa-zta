@@ -7,11 +7,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -297,12 +300,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			Food food = null;
 			if (type == Material.WHEAT) {
 				food = Food.BREAD;
-			}else if (type == Material.POTATO) {
-				food = Food.BAKED_POTATO;
+			}else if (type == Material.POTATO || type == Material.POISONOUS_POTATO) {
+				BlockData data = e.getBlock().getBlockData();
+				if (data instanceof Ageable) {
+					Ageable ageable = (Ageable) data;
+					if (ageable.getAge() == ageable.getMaximumAge() && ThreadLocalRandom.current().nextBoolean()) {
+						food = Food.BAKED_POTATO;
+					}
+				}
 			}else if (type == Material.CARROT) {
 				food = Food.CARROT;
-			}else continue;
-			item.setItemStack(food.get(originalItem.getAmount()));
+			}
+			if (food != null) item.setItemStack(food.get(originalItem.getAmount()));
 		}
 	}
 

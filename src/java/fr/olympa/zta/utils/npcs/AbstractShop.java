@@ -7,6 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.templates.PagedGUI;
@@ -47,7 +48,15 @@ public abstract class AbstractShop<T> extends Trait {
 
 		@Override
 		public ItemStack getItemStack(Article<T> object) {
-			return ItemUtils.loreAdd(AbstractShop.this.getItemStack(object.object), "", "§e§m      §e[ §6§l" + OlympaMoney.format(object.price) + "§e ]§m      §r");
+			ItemStack item = AbstractShop.this.getItemStack(object.object);
+			int size = -1;
+			if (item.hasItemMeta()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasLore()) size = meta.getLore().stream().mapToInt(String::length).max().getAsInt();
+			}
+			if (size == -1) size = ItemUtils.getName(item).length() - 4;
+			String bar = "§m" + " ".repeat(size / 2);
+			return ItemUtils.loreAdd(item, "", "§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");
 		}
 
 		@Override
