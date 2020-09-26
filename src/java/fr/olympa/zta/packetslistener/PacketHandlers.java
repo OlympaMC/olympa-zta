@@ -14,6 +14,7 @@ public enum PacketHandlers {
 	
 	REMOVE_SNOWBALLS(new BulletRemovalHandler()),
 	ITEM_DROP(new DropHandler()),
+	BED_MESSAGE(new BedMessageHandler())
 	;
 	
 	private ChannelHandler handler;

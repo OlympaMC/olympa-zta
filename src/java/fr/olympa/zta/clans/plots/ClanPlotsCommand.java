@@ -27,7 +27,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		super(OlympaZTA.getInstance(), "clanplots", "Permet de gérer les parcelles de clan.", ZTAPermissions.CLAN_PLOTS_MANAGE_COMMAND);
 		this.manager = manager;
 		
-		super.addArgumentParser("PLOT", sender -> manager.getPlots().keySet().stream().map(x -> x.toString()).collect(Collectors.toList()), x -> manager.getPlots().get(Integer.parseInt(x)));
+		super.addArgumentParser("PLOT", sender -> manager.getPlots().keySet().stream().map(x -> x.toString()).collect(Collectors.toList()), x -> manager.getPlots().get(Integer.parseInt(x)), x -> String.format("Le plot %s n'existe pas.", x));
 	}
 	
 	@Cmd (player = true)

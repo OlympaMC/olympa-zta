@@ -1,8 +1,10 @@
 package fr.olympa.zta.weapons;
 
+import java.lang.reflect.Field;
 import java.util.Map.Entry;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
@@ -14,6 +16,7 @@ import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.registry.ZTARegistry.RegistryType;
+import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
@@ -90,6 +93,37 @@ public class WeaponsCommand extends ComplexCommand {
 		}catch (IllegalArgumentException ex) {
 			sendError("Ce type d'armure n'existe pas.");
 		}
+	}
+	
+	@Cmd (player = true, min = 1, args = { "maxAmmos|chargeTime|bulletSpeed|bulletSpread|knockback|fireRate|fireVolume", "DOUBLE" }, syntax = "<attribut> [valeur]")
+	public void attribute(CommandContext cmd) {
+		ItemStack item = player.getInventory().getItemInMainHand();
+		if (item != null) {
+			ItemStackable stackable = ZTARegistry.getItemStackable(item);
+			if (stackable != null) {
+				String attributeName = cmd.getFrom(0);
+				try {
+					Field attributeField = stackable.getClass().getField(attributeName);
+					if (attributeField.getType() == Attribute.class) {
+						Attribute attribute = (Attribute) attributeField.get(stackable);
+						if (cmd.getArgumentsLength() == 1) {
+							sendSuccess("La valeur de base de l'attribut %s est %f.", attributeName, attribute.getBaseValue());
+						}else {
+							float old = attribute.getBaseValue();
+							attribute.setBaseValue(cmd.getArgument(1));
+							sendSuccess("La valeur de base de l'attribut %s a été modifiée (%f à %f).", attributeName, old, attribute.getBaseValue());
+						}
+						return;
+					}
+				}catch (ReflectiveOperationException e) {
+					sendError("Une erreur est survenue: %s", e.getMessage());
+					e.printStackTrace();
+				}
+				sendError("L'attribut %s n'existe pas.", attributeName);
+				return;
+			}
+		}
+		sendError("L'objet que tu tiens en main n'est pas une arme.");
 	}
 
 	@Cmd

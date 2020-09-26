@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Attribute{
 	
-	private final float baseValue;
+	private float baseValue;
 	private final Map<String, AttributeModifier> modifiers = new HashMap<>();
 	
 	private float cachedValue = -666;
@@ -16,6 +16,10 @@ public class Attribute{
 	
 	public float getBaseValue(){
 		return baseValue;
+	}
+	
+	public void setBaseValue(float newValue) {
+		this.baseValue = newValue;
 	}
 	
 	public void addModifier(AttributeModifier modifier){
