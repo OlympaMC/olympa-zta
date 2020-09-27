@@ -60,8 +60,18 @@ public class GunStoner extends Gun{
 		return GunAccuracy.MEDIUM;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 2, 3, effect);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 2;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 3;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

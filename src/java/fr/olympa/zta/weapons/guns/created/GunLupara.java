@@ -58,8 +58,18 @@ public class GunLupara extends Gun{
 		return GunAccuracy.LOW;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 5, 8, effect);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 5;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 8;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

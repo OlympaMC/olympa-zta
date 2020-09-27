@@ -19,6 +19,7 @@ import fr.olympa.zta.registry.ZTARegistry.RegistryType;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.Gun;
 
 public class WeaponsCommand extends ComplexCommand {
 
@@ -101,7 +102,7 @@ public class WeaponsCommand extends ComplexCommand {
 		if (item != null) {
 			ItemStackable stackable = ZTARegistry.getItemStackable(item);
 			if (stackable != null) {
-				String attributeName = cmd.getFrom(0);
+				String attributeName = cmd.getArgument(0);
 				try {
 					Field attributeField = stackable.getClass().getField(attributeName);
 					if (attributeField.getType() == Attribute.class) {
@@ -110,14 +111,13 @@ public class WeaponsCommand extends ComplexCommand {
 							sendSuccess("La valeur de base de l'attribut %s est %f.", attributeName, attribute.getBaseValue());
 						}else {
 							float old = attribute.getBaseValue();
-							attribute.setBaseValue(cmd.getArgument(1));
+							attribute.setBaseValue(cmd.<Double>getArgument(1).floatValue());
 							sendSuccess("La valeur de base de l'attribut %s a été modifiée (%f à %f).", attributeName, old, attribute.getBaseValue());
 						}
 						return;
 					}
 				}catch (ReflectiveOperationException e) {
-					sendError("Une erreur est survenue: %s", e.getMessage());
-					e.printStackTrace();
+					sendError("Une erreur est survenue: %s", e.toString());
 				}
 				sendError("L'attribut %s n'existe pas.", attributeName);
 				return;
@@ -125,7 +125,26 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 		sendError("L'objet que tu tiens en main n'est pas une arme.");
 	}
-
+	
+	@Cmd (player = true, min = 1, args = { "DOUBLE", "player|entity" })
+	public void damage(CommandContext cmd) {
+		ItemStack item = player.getInventory().getItemInMainHand();
+		if (item != null) {
+			ItemStackable stackable = ZTARegistry.getItemStackable(item);
+			if (stackable != null && stackable instanceof Gun) {
+				Gun gun = (Gun) stackable;
+				boolean entity = cmd.getArgument(1, "player").equalsIgnoreCase("entity");
+				float damage = cmd.<Double>getArgument(0).floatValue();
+				if (entity) {
+					gun.customDamageEntity = damage;
+				}else gun.customDamagePlayer = damage;
+				sendSuccess("Votre arme fait désormais un dégât de %f aux %s.", damage, entity ? "entités" : "joueurs");
+				return;
+			}
+		}
+		sendError("L'objet que tu tiens en main n'est pas une arme à feu.");
+	}
+	
 	@Cmd
 	public void list(CommandContext cmd) {
 		for (Entry<String, RegistryType<?>> type : ZTARegistry.registrable.entrySet()) {

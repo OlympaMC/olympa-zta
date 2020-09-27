@@ -64,7 +64,17 @@ public class GunBazooka extends Gun {
 	}
 	
 	@Override
-	public Bullet getFiredBullet(Player p) {
+	protected float getBulletPlayerDamage() {
+		return 0;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 0;
+	}
+	
+	@Override
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage) {
 		return new BulletExplosive(this, 5);
 	}
 	

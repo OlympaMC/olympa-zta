@@ -68,8 +68,18 @@ public class GunBarrett extends Gun{
 		return zoomModifier;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 9, 10, effect);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 9;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 10;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

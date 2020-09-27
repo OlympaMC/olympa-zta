@@ -54,8 +54,18 @@ public class GunUZI extends Gun{
 		return GunAccuracy.MEDIUM;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 3, 2);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 3;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 2;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletSimple(this, playerDamage, entityDamage);
 	}
 	
 	public GunMode getPrimaryMode(){

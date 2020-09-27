@@ -55,7 +55,7 @@ public class ClanPlotsManager implements Listener {
 				DynmapLink.showClanPlot(plot);
 				int clanID = resultSet.getInt("clan");
 				if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
-				plot.setNextPayment(resultSet.getLong("next_payment"), false);
+				plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
 			}catch (Exception ex) {
 				OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
 				ex.printStackTrace();

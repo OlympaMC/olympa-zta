@@ -58,8 +58,18 @@ public class GunCobra extends Gun{
 		return GunAccuracy.EXTREME;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 4, 5, effect);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 4;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 5;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

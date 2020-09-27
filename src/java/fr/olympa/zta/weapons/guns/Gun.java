@@ -69,6 +69,8 @@ public abstract class Gun extends Weapon {
 	public Scope scope;
 	public Cannon cannon;
 	public Stock stock;
+	
+	public float customDamagePlayer, customDamageEntity;
 
 	public Gun(int id) {
 		super(id);
@@ -250,7 +252,7 @@ public abstract class Gun extends Weapon {
 	}
 
 	private void fire(Player p) {
-		Bullet bullet = getFiredBullet(p);
+		Bullet bullet = getFiredBullet(p, (customDamagePlayer == 0 ? getBulletPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? getBulletEntityDamage() : customDamageEntity) + damageAdded);
 		launchBullet(bullet, p);
 		ammos--;
 
@@ -400,10 +402,22 @@ public abstract class Gun extends Weapon {
 	protected abstract GunAccuracy getAccuracy();
 
 	/**
+	 * @return Dommages donnés aux joueurs par la balle tirée
+	 */
+	protected abstract float getBulletPlayerDamage();
+	
+	/**
+	 * @return Dommages donnés aux entités par la balle tirée
+	 */
+	protected abstract float getBulletEntityDamage();
+	
+	/**
 	 * @param p Player qui tire la balle
+	 * @param playerDamage Dommages aux joueurs
+	 * @param entityDamage Dommages aux entités
 	 * @return instance de {@link Bullet}
 	 */
-	public abstract Bullet getFiredBullet(Player p);
+	public abstract Bullet getFiredBullet(Player p, float playerDamage, float entityDamage);
 
 	/**
 	 * @return Mode de tir principal

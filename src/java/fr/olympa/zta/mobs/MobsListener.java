@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -157,6 +158,14 @@ public class MobsListener implements Listener {
 		p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 		p.setWalkSpeed(0.21f);
+		
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
+			try {
+				OlympaZTA.getInstance().sendMessage("%d objet(s) chargés depuis l'inventaire de %s.", ZTARegistry.loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
+			}catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		});
 
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());

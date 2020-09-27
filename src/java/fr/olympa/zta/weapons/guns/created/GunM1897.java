@@ -62,8 +62,18 @@ public class GunM1897 extends Gun{
 		return GunAccuracy.MEDIUM;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletEffect(this, 7, 10, effect);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 7;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 10;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
 	public GunMode getPrimaryMode(){

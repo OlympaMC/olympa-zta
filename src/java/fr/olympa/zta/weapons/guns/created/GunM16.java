@@ -54,8 +54,18 @@ public class GunM16 extends Gun{
 		return GunAccuracy.HIGH;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 5);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 4;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 5;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletSimple(this, playerDamage, entityDamage);
 	}
 	
 	public GunMode getPrimaryMode(){

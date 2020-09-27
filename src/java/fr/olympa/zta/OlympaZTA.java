@@ -302,9 +302,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				food = Food.BREAD;
 			}else if (type == Material.POTATO || type == Material.POISONOUS_POTATO) {
 				BlockData data = e.getBlock().getBlockData();
+				System.out.println(data.getClass().getName());
 				if (data instanceof Ageable) {
 					Ageable ageable = (Ageable) data;
-					if (ageable.getAge() == ageable.getMaximumAge() && ThreadLocalRandom.current().nextBoolean()) {
+					System.out.println(ageable.getAge() + " " + ageable.getMaximumAge());
+					if ((ageable.getAge() == ageable.getMaximumAge()) && ThreadLocalRandom.current().nextBoolean()) {
 						food = Food.BAKED_POTATO;
 					}
 				}

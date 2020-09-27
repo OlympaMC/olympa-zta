@@ -60,7 +60,7 @@ public class ClanPlot {
 	public void setClan(ClanZTA clan, boolean updateDB) {
 		if (this.clan != null) {
 			this.clan.setCachedPlot(null);
-		}else setNextPayment(-1, updateDB);
+		}else setNextPayment(-1, updateDB, false);
 
 		this.clan = clan;
 		if (clan != null) clan.setCachedPlot(this);
@@ -105,14 +105,15 @@ public class ClanPlot {
 		return nextPayment;
 	}
 
-	public void setNextPayment(long nextPayment, boolean updateDB) {
+	public void setNextPayment(long nextPayment, boolean updateDB, boolean updateReset) {
 		this.nextPayment = nextPayment;
 		if (nextPayment != -1) {
 			long timeBeforeExpiration = getSecondsBeforeExpiration();
 			if (timeBeforeExpiration < 0) {
-				clan.setResetExpirationTime();
+				if (clan != null) clan.setResetExpirationTime();
 				setClan(null, true);
 				updateSign();
+				if (updateReset) updateDB = true;
 			}else {
 				if (paymentExpiration != null) paymentExpiration.cancel();
 				paymentExpiration = new BukkitRunnable() {
@@ -181,7 +182,7 @@ public class ClanPlot {
 					Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour payer la parcelle (" + clan.getMoney().getFormatted() + "/" + priceFormatted + ").");
 					return;
 				}
-				setNextPayment(nextPayment + PAYMENT_DURATION_MILLIS, true);
+				setNextPayment(nextPayment + PAYMENT_DURATION_MILLIS, true, false);
 				updateSign();
 				clan.broadcast("La parcelle a été payée pour une nouvelle semaine !");
 				return;
@@ -211,7 +212,7 @@ public class ClanPlot {
 			calendar.set(Calendar.SECOND, 0);
 			calendar.set(Calendar.MILLISECOND, 0);
 			calendar.add(Calendar.DATE, PAYMENT_DURATION_DAYS);
-			setNextPayment(calendar.getTimeInMillis(), true);
+			setNextPayment(calendar.getTimeInMillis(), true, false);
 			updateSign();
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour louer cette parcelle.");

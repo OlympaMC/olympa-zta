@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -131,13 +132,13 @@ public class ZTARegistry{
 		int id = im.getPersistentDataContainer().getOrDefault(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
 		if (id != 0) return (ItemStackable) registry.get(id);
 		
-		for (String s : im.getLore()) {
+		/*for (String s : im.getLore()) {
 			int index = s.indexOf("[I");
 			if (index != -1) {
 				OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
 				return (ItemStackable) registry.get(Integer.parseInt(s.substring(index + 2, s.indexOf("]"))));
 			}
-		}
+		}*/
 		
 		return null;
 	}
@@ -160,7 +161,7 @@ public class ZTARegistry{
 				"  `id` INT NOT NULL," + 
 				"  `type` VARCHAR(45) NOT NULL," + 
 				"  PRIMARY KEY (`id`))");
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
+		/*ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
 		while (resultSet.next()){
 			int id = resultSet.getInt("id");
 			try {
@@ -176,8 +177,56 @@ public class ZTARegistry{
 				e.printStackTrace();
 				continue;
 			}
-		}
+		}*/
+		statement.close();
 		return registry.size();
+	}
+	
+	public static int loadFromItems(ItemStack[] items) throws SQLException {
+		List<Integer> ids = new ArrayList<>();
+		for (ItemStack item : items) {
+			if (item == null) continue;
+			if (!item.hasItemMeta()) continue;
+			ItemMeta im = item.getItemMeta();
+			int id = im.getPersistentDataContainer().getOrDefault(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
+			if (id == 0 && im.hasLore()) {
+				for (String s : im.getLore()) {
+					int index = s.indexOf("[I");
+					if (index != -1) {
+						OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
+						id = Integer.parseInt(s.substring(index + 2, s.indexOf("]")));
+						im.getPersistentDataContainer().set(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, id);
+						item.setItemMeta(im);
+						break;
+					}
+				}
+			}
+			if (id != 0) ids.add(id);
+		}
+		if (ids.isEmpty()) return 0;
+		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ids.stream().filter(id -> !registry.containsKey(id)).map(x -> "id = '" + x + "'").collect(Collectors.joining(" OR ")));
+		int i = 0;
+		while (resultSet.next()) {
+			int id = resultSet.getInt("id");
+			try {
+				RegistryType<?> type = registrable.get(resultSet.getString("type"));
+				ResultSet objectSet = null;
+				if (type.tableName != null) {
+					objectSet = statement.executeQuery("SELECT * FROM " + type.tableName + " WHERE (`id` = '" + id + "')");
+					objectSet.next();
+				}
+				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
+				i++;
+			}catch (Exception e) {
+				OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
+				e.printStackTrace();
+				continue;
+			}
+		}
+		statement.close();
+		resultSet.close();
+		return i;
 	}
 
 	public static void saveDatabase() {

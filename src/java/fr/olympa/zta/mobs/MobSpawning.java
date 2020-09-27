@@ -340,7 +340,8 @@ public class MobSpawning {
 
 			@Override
 			public ActionResult enters(Player p, Set<TrackedRegion> to) {
-				OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p)));
+				OlympaZTA zta = OlympaZTA.getInstance();
+				Bukkit.getScheduler().runTask(zta, () -> zta.lineRadar.updateHolder(zta.scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p))));
 				return super.enters(p, to);
 			}
 		}

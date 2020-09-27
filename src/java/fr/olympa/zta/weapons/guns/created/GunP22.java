@@ -54,8 +54,18 @@ public class GunP22 extends Gun{
 		return GunAccuracy.HIGH;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 3);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 4;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 3;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletSimple(this, playerDamage, entityDamage);
 	}
 	
 	public GunMode getPrimaryMode(){

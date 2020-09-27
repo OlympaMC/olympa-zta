@@ -20,6 +20,7 @@ public class Attribute{
 	
 	public void setBaseValue(float newValue) {
 		this.baseValue = newValue;
+		cachedValue = -666;
 	}
 	
 	public void addModifier(AttributeModifier modifier){

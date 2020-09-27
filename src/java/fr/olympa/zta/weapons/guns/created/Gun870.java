@@ -54,8 +54,18 @@ public class Gun870 extends Gun{
 		return GunAccuracy.MEDIUM;
 	}
 	
-	public Bullet getFiredBullet(Player p){
-		return new BulletSimple(this, 4, 5);
+	@Override
+	protected float getBulletPlayerDamage() {
+		return 4;
+	}
+	
+	@Override
+	protected float getBulletEntityDamage() {
+		return 5;
+	}
+	
+	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
+		return new BulletSimple(this, playerDamage, entityDamage);
 	}
 	
 	public GunMode getPrimaryMode(){

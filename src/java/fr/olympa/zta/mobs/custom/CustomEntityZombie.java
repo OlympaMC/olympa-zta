@@ -81,7 +81,7 @@ public class CustomEntityZombie extends EntityZombie {
 		if (super.damageEntity(damagesource, f)) {
 			if (explosive) {
 				if (primed == -1) {
-					primed = 10;
+					primed = 11;
 					world.playSound(null, locX(), locY(), locZ(), SoundEffects.ENTITY_CREEPER_PRIMED, SoundCategory.HOSTILE, 1, 1);
 				}
 			}else if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {

@@ -29,13 +29,7 @@ public class BulletSimple extends Bullet{
 		if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
 			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
 			WeaponsListener.cancelDamageEvent = true;
-			float damage;
-			if (e.getHitEntity() instanceof Player) {
-				damage = playerDamage;
-			}else {
-				damage = entityDamage;
-			}
-			damage += gun.damageAdded;
+			float damage = e.getHitEntity() instanceof Player ? playerDamage : entityDamage;
 
 			if (isHeadShot(e.getEntity(), hitEntity)) {
 				damage *= 1.5;
