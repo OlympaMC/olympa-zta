@@ -2,7 +2,6 @@ package fr.olympa.zta.mobs;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,7 @@ public class MobsListener implements Listener {
 
 	private int lastId = 0;
 	public Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 30, Arrays.asList(new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO)));
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO));
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
 	@EventHandler
