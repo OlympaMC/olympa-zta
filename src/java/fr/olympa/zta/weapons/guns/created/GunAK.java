@@ -35,7 +35,7 @@ public class GunAK extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 10;
+		return 5;
 	}
 	
 	protected int getChargeTime(){
@@ -47,7 +47,7 @@ public class GunAK extends Gun{
 	}
 	
 	protected float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_HIGH;
+		return CommonGunConstants.BULLET_SPEED_MEDIUM;
 	}
 	
 	protected GunAccuracy getAccuracy(){

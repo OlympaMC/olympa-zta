@@ -27,7 +27,7 @@ public class Gun870 extends Gun{
 	}
 	
 	public AmmoType getAmmoType(){
-		return AmmoType.LIGHT;
+		return AmmoType.CARTRIDGE;
 	}
 	
 	public int getMaxAmmos(){
@@ -40,6 +40,11 @@ public class Gun870 extends Gun{
 	
 	public int getChargeTime(){
 		return 70;
+	}
+	
+	@Override
+	protected boolean isOneByOneCharge() {
+		return true;
 	}
 	
 	public float getKnockback(){

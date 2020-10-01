@@ -343,11 +343,9 @@ public abstract class Gun extends Weapon {
 	}
 
 	private void launchBullet(Bullet bullet, Player p) {
-		if (getAmmoType() == AmmoType.CARTRIDGE) {
-			for (int i = 0; i < 5; i++) {
-				bullet.launchProjectile(p);
-			}
-		}else bullet.launchProjectile(p);
+		for (int i = 0; i < getFiredBulletsAmount(); i++) {
+			bullet.launchProjectile(p);
+		}
 		playFireSound(p.getLocation());
 
 		float knockback = this.knockback.getValue();
@@ -419,6 +417,10 @@ public abstract class Gun extends Weapon {
 	 */
 	public abstract Bullet getFiredBullet(Player p, float playerDamage, float entityDamage);
 
+	public int getFiredBulletsAmount() {
+		return 1;
+	}
+	
 	/**
 	 * @return Mode de tir principal
 	 */

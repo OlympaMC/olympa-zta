@@ -35,11 +35,11 @@ public class GunLupara extends Gun{
 	}
 	
 	protected int getMaxAmmos(){
-		return 2;
+		return 1;
 	}
 	
 	protected int getFireRate(){
-		return 8;
+		return -1;
 	}
 	
 	protected int getChargeTime(){
@@ -70,6 +70,11 @@ public class GunLupara extends Gun{
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
 		return new BulletEffect(this, playerDamage, entityDamage, effect);
+	}
+	
+	@Override
+	public int getFiredBulletsAmount() {
+		return 2;
 	}
 	
 	public GunMode getPrimaryMode(){

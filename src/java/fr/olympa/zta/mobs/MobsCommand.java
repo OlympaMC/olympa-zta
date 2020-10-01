@@ -36,9 +36,14 @@ public class MobsCommand extends ComplexCommand {
 		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
 	}
 
-	@Cmd (player = true, args = "MOBTYPE", min = 0, syntax = "[type]")
+	@Cmd (player = true, args = { "MOBTYPE", "INTEGER" }, min = 0, syntax = "[type] [quantité]")
 	public void spawnZombie(CommandContext cmd) {
-		Mobs.spawnCommonZombie(cmd.getArgument(0, Zombies.COMMON), getPlayer().getLocation());
+		Zombies zombieType = cmd.getArgument(0, Zombies.COMMON);
+		int amount = cmd.getArgument(1, 1);
+		for (int i = 0; i < amount; i++) {
+			Mobs.spawnCommonZombie(zombieType, getPlayer().getLocation());
+		}
+		sendSuccess("Vous avez fait spawn %d zombie de type %s.", amount, zombieType.name());
 	}
 
 	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")

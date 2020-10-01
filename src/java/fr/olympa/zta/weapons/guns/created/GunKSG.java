@@ -15,7 +15,7 @@ public class GunKSG extends Gun{
 	
 	public static final String NAME = "KSG";
 	public static final Material TYPE = Material.IRON_SHOVEL;
-
+	
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.WITHER, 40, 1);
 	
 	public GunKSG(int id) {
@@ -39,11 +39,11 @@ public class GunKSG extends Gun{
 	}
 	
 	protected int getFireRate(){
-		return 30;
+		return 14;
 	}
 	
 	protected int getChargeTime(){
-		return 50;
+		return 100;
 	}
 	
 	protected float getKnockback(){
@@ -51,7 +51,7 @@ public class GunKSG extends Gun{
 	}
 	
 	protected float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_LOW;
+		return CommonGunConstants.BULLET_SPEED_ULTRA_LOW;
 	}
 	
 	protected GunAccuracy getAccuracy(){
@@ -70,6 +70,11 @@ public class GunKSG extends Gun{
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
 		return new BulletEffect(this, playerDamage, entityDamage, effect);
+	}
+	
+	@Override
+	public int getFiredBulletsAmount() {
+		return 5;
 	}
 	
 	public GunMode getPrimaryMode(){

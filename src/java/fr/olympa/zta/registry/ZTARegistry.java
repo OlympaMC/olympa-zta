@@ -201,11 +201,11 @@ public class ZTARegistry{
 					}
 				}
 			}
-			if (id != 0) ids.add(id);
+			if (id != 0 && !registry.containsKey(id)) ids.add(id);
 		}
 		if (ids.isEmpty()) return 0;
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ids.stream().filter(id -> !registry.containsKey(id)).map(x -> "id = '" + x + "'").collect(Collectors.joining(" OR ")));
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ids.stream().map(x -> "id = '" + x.intValue() + "'").collect(Collectors.joining(" OR ")));
 		int i = 0;
 		while (resultSet.next()) {
 			int id = resultSet.getInt("id");

@@ -55,11 +55,11 @@ public class GunM1897 extends Gun{
 	}
 	
 	public float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_LOW;
+		return CommonGunConstants.BULLET_SPEED_ULTRA_LOW;
 	}
 	
 	protected GunAccuracy getAccuracy(){
-		return GunAccuracy.MEDIUM;
+		return GunAccuracy.LOW;
 	}
 	
 	@Override
@@ -74,6 +74,11 @@ public class GunM1897 extends Gun{
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){
 		return new BulletEffect(this, playerDamage, entityDamage, effect);
+	}
+	
+	@Override
+	public int getFiredBulletsAmount() {
+		return 5;
 	}
 	
 	public GunMode getPrimaryMode(){

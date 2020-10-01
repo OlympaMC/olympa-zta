@@ -37,7 +37,7 @@ public abstract class Bullet{
 			velocity.add(new Vector(random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf));
 		}
 
-		boolean highVelocity = speed > 4.5;
+		boolean highVelocity = speed >= 4.5;
 		Projectile projectile = p.launchProjectile(highVelocity ? LlamaSpit.class : Snowball.class, velocity);
 		projectile.setMetadata("bullet", metadata);
 		projectile.setBounce(false);
