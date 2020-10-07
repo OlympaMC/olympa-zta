@@ -68,7 +68,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
 		if (current.getType() == Material.RED_STAINED_GLASS_PANE) return true; // si le slot est indisponible : cancel
 		
-		ItemStackable object = ZTARegistry.getItemStackable(cursor);
+		ItemStackable object = ZTARegistry.get().getItemStackable(cursor);
 		if (!(object instanceof Accessory)) return true; // si l'objet en main n'est pas un accessoire : cancel
 		Accessory accessory = (Accessory) object;
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel

@@ -6,14 +6,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
@@ -21,24 +26,45 @@ import fr.olympa.zta.OlympaZTA;
 
 public class ZTARegistry{
 
-	public static final String TABLE_NAME = "`zta_registry`";
+	public final String TABLE_NAME = "`zta_registry`";
 
-	public static final Map<String, RegistryType<?>> registrable = new HashMap<>();
-	public static final Map<Integer, Registrable> registry = new HashMap<>(200);
+	public final Map<String, RegistryType<?>> registrable = new HashMap<>();
+	public final Map<Integer, Registrable> registry = new ConcurrentHashMap<>(200);
+	private final List<Integer> toEvict = new ArrayList<>();
 
-	public static final List<ItemStackableInstantiator<?>> itemStackables = new ArrayList<>(20);
+	public final List<ItemStackableInstantiator<?>> itemStackables = new ArrayList<>(20);
 
-	private static final Random idGen = new Random();
+	private final Random idGen = new Random();
+	private final BukkitTask evictingTask;
 	
-	private static OlympaStatement insertRegistrable = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `type`) VALUES (?, ?)");
-	private static OlympaStatement removeRegistrable = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
+	private OlympaStatement insertRegistrable = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `type`) VALUES (?, ?)");
+	private OlympaStatement removeRegistrable = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
 
+	public ZTARegistry() {
+		evictingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
+			synchronized (toEvict) {
+				for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
+					Integer idToEvict = iterator.next();
+					Registrable evicted = registry.remove(idToEvict);
+					if (evicted != null) {
+						try {
+							evicted.updateDatas();
+						}catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+					iterator.remove();
+				}
+			}
+		}, 20 * 60, 20 * 60 * 5);
+	}
+	
 	/**
 	 * Enregistrer un type d'objet pouvant être enregistré dans le registre
 	 * @param objectClass Classe de l'objet à enregistrer
 	 * @throws SQLException 
 	 */
-	public static <T extends ItemStackable> void registerItemStackableType(ItemStackableInstantiator<T> creator, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
+	public <T extends ItemStackable> void registerItemStackableType(ItemStackableInstantiator<T> creator, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
 		itemStackables.add(creator);
 		registerObjectType(creator.clazz, tableName, tableCreatorStatement, deserialize);
 	}
@@ -48,7 +74,7 @@ public class ZTARegistry{
 	 * @param objectClass Classe de l'objet à enregistrer
 	 * @throws SQLException 
 	 */
-	public static <T extends Registrable> void registerObjectType(Class<T> objectClass, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
+	public <T extends Registrable> void registerObjectType(Class<T> objectClass, String tableName, String tableCreatorStatement, DeserializeDatas<T> deserialize) {
 		if (tableName != null) {
 			try {
 				OlympaCore.getInstance().getDatabase().createStatement().executeUpdate(tableCreatorStatement);
@@ -65,7 +91,7 @@ public class ZTARegistry{
 	 * @param object Objet à enregistrer
 	 * @return ID de l'objet enregistré (renvoie {@link Registrable#getID()})
 	 */
-	public static synchronized int registerObject(Registrable object) {
+	public synchronized int registerObject(Registrable object) {
 		if (!registrable.containsKey(object.getClass().getSimpleName())) throw new IllegalArgumentException("Registrable object \"" + object.getClass().getName() + "\" has not been registered!");
 		registry.put(object.getID(), object);
 		try {
@@ -81,7 +107,7 @@ public class ZTARegistry{
 		return object.getID();
 	}
 
-	public static boolean removeObject(Registrable object) {
+	public boolean removeObject(Registrable object) {
 		if (!registry.containsKey(object.getID())) return false;
 		try {
 			System.out.println("ZTARegistry.removeObject()");
@@ -100,7 +126,7 @@ public class ZTARegistry{
 		return false;
 	}
 
-	public static int generateID() {
+	public int generateID() {
 		int id = idGen.nextInt();
 		if (registry.containsKey(id) || id == 0) id = generateID();
 		return id;
@@ -111,11 +137,11 @@ public class ZTARegistry{
 	 * @param id ID de l'objet
 	 * @return objet correspondant à l'ID spécifié
 	 */
-	public static <T extends Registrable> T getObject(int id) {
+	public <T extends Registrable> T getObject(int id) {
 		return (T) registry.get(id);
 	}
 
-	public static int getRegistrySize() {
+	public int getRegistrySize() {
 		return registry.size();
 	}
 
@@ -124,7 +150,7 @@ public class ZTARegistry{
 	 * @param is Item pour lequel récupérer l'objet. Doit contenir une ligne de lore <code>[Ixxxxxx]</code>
 	 * @return Objet correspondant à l'immatriculation de l'item. Peut renvoyer <i>null</i>.
 	 */
-	public static ItemStackable getItemStackable(ItemStack is){
+	public ItemStackable getItemStackable(ItemStack is) {
 		if (!is.hasItemMeta()) return null;
 		ItemMeta im = is.getItemMeta();
 		if (!im.hasLore()) return null;
@@ -132,15 +158,12 @@ public class ZTARegistry{
 		int id = im.getPersistentDataContainer().getOrDefault(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
 		if (id != 0) return (ItemStackable) registry.get(id);
 		
-		/*for (String s : im.getLore()) {
-			int index = s.indexOf("[I");
-			if (index != -1) {
-				OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
-				return (ItemStackable) registry.get(Integer.parseInt(s.substring(index + 2, s.indexOf("]"))));
-			}
-		}*/
-		
 		return null;
+	}
+	
+	public void ifStackable(ItemStack item, Consumer<ItemStackable> consumer) {
+		ItemStackable stackable = getItemStackable(item);
+		if (stackable != null) consumer.accept(stackable);
 	}
 	
 	/**
@@ -149,94 +172,101 @@ public class ZTARegistry{
 	 * @param object Objet pour lequel sera créé l'item et qui sera enregistré dans le registre.
 	 * @return Item créé
 	 */
-	public static <T extends ItemStackable> ItemStack createItem(T object) {
+	public <T extends ItemStackable> ItemStack createItem(T object) {
 		ItemStack is = object.createItemStack();
-		ZTARegistry.registerObject(object);
+		registerObject(object);
 		return is;
 	}
 
-	public static int loadFromDatabase() throws SQLException {
+	public int loadFromDatabase() throws SQLException {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 				"  `id` INT NOT NULL," + 
 				"  `type` VARCHAR(45) NOT NULL," + 
 				"  PRIMARY KEY (`id`))");
-		/*ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
-		while (resultSet.next()){
-			int id = resultSet.getInt("id");
-			try {
-				RegistryType<?> type = registrable.get(resultSet.getString("type"));
-				ResultSet objectSet = null;
-				if (type.tableName != null) {
-					objectSet = statement.executeQuery("SELECT * FROM " + type.tableName + " WHERE (`id` = '" + id + "')");
-					objectSet.next();
-				}
-				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
-			}catch (Exception e) {
-				OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
-				e.printStackTrace();
-				continue;
-			}
-		}*/
 		statement.close();
 		return registry.size();
 	}
 	
-	public static int loadFromItems(ItemStack[] items) throws SQLException {
-		List<Integer> ids = new ArrayList<>();
-		for (ItemStack item : items) {
-			if (item == null) continue;
-			if (!item.hasItemMeta()) continue;
-			ItemMeta im = item.getItemMeta();
-			int id = im.getPersistentDataContainer().getOrDefault(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
-			if (id == 0 && im.hasLore()) {
-				for (String s : im.getLore()) {
-					int index = s.indexOf("[I");
-					if (index != -1) {
-						OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
-						id = Integer.parseInt(s.substring(index + 2, s.indexOf("]")));
-						im.getPersistentDataContainer().set(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, id);
-						item.setItemMeta(im);
-						break;
+	public int loadFromItems(ItemStack[] items) throws SQLException {
+		synchronized (toEvict) {
+			List<Integer> ids = new ArrayList<>();
+			for (ItemStack item : items) {
+				if (item == null) continue;
+				if (!item.hasItemMeta()) continue;
+				ItemMeta im = item.getItemMeta();
+				int id = im.getPersistentDataContainer().getOrDefault(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
+				if (id == 0 && im.hasLore()) {
+					for (String s : im.getLore()) {
+						int index = s.indexOf("[I");
+						if (index != -1) {
+							OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
+							id = Integer.parseInt(s.substring(index + 2, s.indexOf("]")));
+							im.getPersistentDataContainer().set(ItemStackable.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, id);
+							item.setItemMeta(im);
+							break;
+						}
+					}
+				}
+				if (id != 0) {
+					if (registry.containsKey(id)) {
+						toEvict.remove(id);
+					}else {
+						ids.add(id);
 					}
 				}
 			}
-			if (id != 0 && !registry.containsKey(id)) ids.add(id);
-		}
-		if (ids.isEmpty()) return 0;
-		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ids.stream().map(x -> "id = '" + x.intValue() + "'").collect(Collectors.joining(" OR ")));
-		int i = 0;
-		while (resultSet.next()) {
-			int id = resultSet.getInt("id");
-			try {
-				RegistryType<?> type = registrable.get(resultSet.getString("type"));
-				ResultSet objectSet = null;
-				if (type.tableName != null) {
-					objectSet = statement.executeQuery("SELECT * FROM " + type.tableName + " WHERE (`id` = '" + id + "')");
-					objectSet.next();
+			if (ids.isEmpty()) return 0;
+			Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ids.stream().map(x -> "id = '" + x.intValue() + "'").collect(Collectors.joining(" OR ")));
+			int i = 0;
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				try {
+					RegistryType<?> type = registrable.get(resultSet.getString("type"));
+					ResultSet objectSet = null;
+					if (type.tableName != null) {
+						objectSet = statement.executeQuery("SELECT * FROM " + type.tableName + " WHERE (`id` = '" + id + "')");
+						objectSet.next();
+					}
+					registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
+					i++;
+				}catch (Exception e) {
+					OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
+					e.printStackTrace();
+					continue;
 				}
-				registry.put(id, type.deserialize.deserialize(objectSet, id, type.clazz));
-				i++;
-			}catch (Exception e) {
-				OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
-				e.printStackTrace();
-				continue;
+			}
+			statement.close();
+			resultSet.close();
+			return i;
+		}
+	}
+	
+	public void launchEvictItems(ItemStack[] items) {
+		synchronized (toEvict) {
+			for (ItemStack item : items) {
+				ifStackable(item, stackable -> toEvict.add(stackable.getID()));
 			}
 		}
-		statement.close();
-		resultSet.close();
-		return i;
 	}
 
-	public static void saveDatabase() {
-		for (Registrable object : registry.values()) {
+	public void unload() {
+		evictingTask.cancel();
+		toEvict.clear();
+		for (Iterator<Registrable> iterator = registry.values().iterator(); iterator.hasNext();) {
+			Registrable object = iterator.next();
 			try {
 				object.updateDatas();
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
+			iterator.remove();
 		}
+	}
+	
+	public static ZTARegistry get() {
+		return OlympaZTA.getInstance().registry;
 	}
 	
 	public static class RegistryType<T extends Registrable> {

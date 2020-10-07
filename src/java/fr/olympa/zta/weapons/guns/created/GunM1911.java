@@ -42,7 +42,7 @@ public class GunM1911 extends Gun{
 	}
 	
 	public int getChargeTime(){
-		return 40;
+		return 60;
 	}
 	
 	public float getKnockback(){
@@ -64,7 +64,7 @@ public class GunM1911 extends Gun{
 	
 	@Override
 	protected float getBulletEntityDamage() {
-		return 2;
+		return 3;
 	}
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){

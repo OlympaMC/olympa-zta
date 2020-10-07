@@ -2,7 +2,6 @@ package fr.olympa.zta.mobs;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,6 @@ import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
-import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
@@ -52,14 +50,11 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class MobsListener implements Listener {
 
-	private int lastId = 0;
-	public Map<Integer, ItemStack[]> inventories = new HashMap<>(50);
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO));
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		int id = lastId++;
 		Player p = e.getEntity();
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
@@ -77,12 +72,10 @@ public class MobsListener implements Listener {
 			}
 		}
 		keptItems.put(p, kept);
-		inventories.put(id, contents);
 		Location loc = p.getLocation();
 		ItemStack[] armor = p.getInventory().getArmorContents();
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, "§7" + p.getName() + " momifié");
-			momifiedZombie.setMetadata("inventory", new FixedMetadataValue(OlympaZTA.getInstance(), id));
+			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, contents, "§7" + p.getName() + " momifié");
 			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
 		});
 		EntityDamageEvent cause = p.getLastDamageCause();
@@ -100,18 +93,12 @@ public class MobsListener implements Listener {
 			reason = "s'est noyé.";
 		}
 		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
+		e.getDrops().clear();
 	}
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
 		LivingEntity entity = e.getEntity();
-		e.getDrops().clear();
-		e.setDroppedExp(0);
-		
-		if (entity.hasMetadata("inventory")) {
-			int id = entity.getMetadata("inventory").get(0).asInt();
-			Collections.addAll(e.getDrops(), inventories.remove(id));
-		}
 		
 		if (entity.getKiller() != null) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
@@ -144,8 +131,7 @@ public class MobsListener implements Listener {
 			}
 		}
 		if (!e.isCancelled() && e.getEntity() instanceof Item) {
-			ItemStackable itemStackable = ZTARegistry.getItemStackable(((Item) e.getEntity()).getItemStack());
-			if (itemStackable != null) ZTARegistry.removeObject(itemStackable);
+			ZTARegistry.get().ifStackable(((Item) e.getEntity()).getItemStack(), ZTARegistry.get()::removeObject);
 		}
 	}
 
@@ -160,7 +146,7 @@ public class MobsListener implements Listener {
 		
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				OlympaZTA.getInstance().sendMessage("%d objet(s) chargés depuis l'inventaire de %s.", ZTARegistry.loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
+				OlympaZTA.getInstance().sendMessage("%d objet(s) chargés depuis l'inventaire de %s.", ZTARegistry.get().loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
 			}catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -180,6 +166,7 @@ public class MobsListener implements Listener {
 	public void onQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> ZTARegistry.get().launchEvictItems(e.getPlayer().getInventory().getContents()));
 	}
 	
 	@EventHandler
@@ -204,8 +191,7 @@ public class MobsListener implements Listener {
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
-		ItemStackable itemStackable = ZTARegistry.getItemStackable(e.getEntity().getItemStack());
-		if (itemStackable != null) ZTARegistry.removeObject(itemStackable);
+		ZTARegistry.get().ifStackable(e.getEntity().getItemStack(), ZTARegistry.get()::removeObject);
 	}
 	
 }

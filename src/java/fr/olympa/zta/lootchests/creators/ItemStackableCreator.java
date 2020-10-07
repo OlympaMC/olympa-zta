@@ -17,7 +17,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 
 	public ItemStackableCreator(double chance, Class<T> clazz) {
 		this.chance = chance;
-		for (ItemStackableInstantiator<?> inst : ZTARegistry.itemStackables) {
+		for (ItemStackableInstantiator<?> inst : ZTARegistry.get().itemStackables) {
 			if (inst.clazz == clazz) {
 				this.instantiator = (ItemStackableInstantiator<T>) inst;
 				break;
@@ -55,7 +55,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 		@Override
 		public boolean onTake(Player p, Inventory inv, int slot) {
 			try {
-				inv.setItem(slot, ZTARegistry.createItem(instantiator.create()));
+				inv.setItem(slot, ZTARegistry.get().createItem(instantiator.create()));
 			}catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}

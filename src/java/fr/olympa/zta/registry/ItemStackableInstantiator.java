@@ -26,7 +26,7 @@ public class ItemStackableInstantiator<T extends ItemStackable> {
 	}
 
 	public T create() throws ReflectiveOperationException {
-		return clazz.getDeclaredConstructor(int.class).newInstance(ZTARegistry.generateID());
+		return clazz.getDeclaredConstructor(int.class).newInstance(ZTARegistry.get().generateID());
 	}
 
 	public ItemStack getDemoItem() {

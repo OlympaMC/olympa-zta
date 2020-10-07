@@ -23,7 +23,7 @@ public class DropHandler extends ChannelDuplexHandler{
 			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
 				ItemStack item = p.getInventory().getItemInMainHand();
-				ItemStackable object = ZTARegistry.getItemStackable(item);
+				ItemStackable object = ZTARegistry.get().getItemStackable(item);
 				if (object instanceof Weapon) {
 					if (((Weapon) object).drop(p, item)) {
 						p.updateInventory();

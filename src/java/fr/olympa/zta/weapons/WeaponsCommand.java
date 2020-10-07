@@ -38,7 +38,7 @@ public class WeaponsCommand extends ComplexCommand {
 	@Cmd (player = true, min = 1, syntax = "<nom de l'arme>")
 	public void give(CommandContext cmd) {
 		ItemStackableInstantiator<?> type = null;
-		for (ItemStackableInstantiator<?> stackable : ZTARegistry.itemStackables) {
+		for (ItemStackableInstantiator<?> stackable : ZTARegistry.get().itemStackables) {
 			if (stackable.clazz.getSimpleName().equalsIgnoreCase(cmd.getArgument(0))) {
 				type = stackable;
 				break;
@@ -49,7 +49,7 @@ public class WeaponsCommand extends ComplexCommand {
 			return;
 		}
 		try {
-			getPlayer().getInventory().addItem(ZTARegistry.createItem(type.create()));
+			getPlayer().getInventory().addItem(ZTARegistry.get().createItem(type.create()));
 			sendSuccess("Vous avez obtenu une instance de " + cmd.getArgument(0) + ".");
 		}catch (ReflectiveOperationException ex) {
 			sendError("Une erreur est survenue lors du don de l'objet.");
@@ -100,7 +100,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void attribute(CommandContext cmd) {
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item != null) {
-			ItemStackable stackable = ZTARegistry.getItemStackable(item);
+			ItemStackable stackable = ZTARegistry.get().getItemStackable(item);
 			if (stackable != null) {
 				String attributeName = cmd.getArgument(0);
 				try {
@@ -130,7 +130,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void damage(CommandContext cmd) {
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item != null) {
-			ItemStackable stackable = ZTARegistry.getItemStackable(item);
+			ItemStackable stackable = ZTARegistry.get().getItemStackable(item);
 			if (stackable != null && stackable instanceof Gun) {
 				Gun gun = (Gun) stackable;
 				boolean entity = cmd.getArgument(1, "player").equalsIgnoreCase("entity");
@@ -147,7 +147,7 @@ public class WeaponsCommand extends ComplexCommand {
 	
 	@Cmd
 	public void list(CommandContext cmd) {
-		for (Entry<String, RegistryType<?>> type : ZTARegistry.registrable.entrySet()) {
+		for (Entry<String, RegistryType<?>> type : ZTARegistry.get().registrable.entrySet()) {
 			if (ItemStackable.class.isAssignableFrom(type.getValue().clazz)) {
 				sendMessage(Prefix.NONE, "§d● " + type.getKey());
 			}

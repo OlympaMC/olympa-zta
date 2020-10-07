@@ -89,7 +89,7 @@ public abstract class Gun extends Weapon {
 
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "ᐊ▶ " : "◀ᐅ ") + getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
 		item.setItemMeta(im);
 	}
 
@@ -253,9 +253,20 @@ public abstract class Gun extends Weapon {
 
 	private void fire(Player p) {
 		Bullet bullet = getFiredBullet(p, (customDamagePlayer == 0 ? getBulletPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? getBulletEntityDamage() : customDamageEntity) + damageAdded);
-		launchBullet(bullet, p);
+		for (int i = 0; i < getFiredBulletsAmount(); i++) {
+			bullet.launchProjectile(p);
+		}
+		
+		float knockback = this.knockback.getValue();
+		if (knockback != 0) {
+			if (p.isSneaking()) knockback /= 2;
+			Vector velocity = p.getLocation().getDirection().multiply(-knockback).add(p.getVelocity()); // TODO test
+			velocity.setY(velocity.getY() / 3);
+			p.setVelocity(velocity);
+		}
 		ammos--;
 
+		playFireSound(p.getLocation());
 		float distance = (fireVolume.getValue() - 0.5f) * 16;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
 			Zombie zombie = (Zombie) en;
@@ -302,7 +313,7 @@ public abstract class Gun extends Weapon {
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
-					if (isOneByOneCharge()) {
+					if (isOneByOneCharge() && maxAmmos.getValue() > ammos) {
 						reloading.cancel();
 						reloading = null;
 						reload(p, item); // relancer une charge
@@ -340,21 +351,6 @@ public abstract class Gun extends Weapon {
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
 		updateItemCustomModel(item);
-	}
-
-	private void launchBullet(Bullet bullet, Player p) {
-		for (int i = 0; i < getFiredBulletsAmount(); i++) {
-			bullet.launchProjectile(p);
-		}
-		playFireSound(p.getLocation());
-
-		float knockback = this.knockback.getValue();
-		if (knockback != 0) {
-			if (p.isSneaking()) knockback /= 2;
-			Vector velocity = p.getLocation().getDirection().multiply(-knockback);
-			velocity.setY(velocity.getY() / 3);
-			p.setVelocity(velocity);
-		}
 	}
 
 	/**
@@ -649,9 +645,10 @@ public abstract class Gun extends Weapon {
 		int stockID = set.getInt("stock_id");
 		new BukkitRunnable() {
 			public void run() {
-				if (scopeID != -1) gun.setAccessory(AccessoryType.SCOPE, ZTARegistry.getObject(scopeID));
-				if (cannonID != -1) gun.setAccessory(AccessoryType.CANNON, ZTARegistry.getObject(cannonID));
-				if (stockID != -1) gun.setAccessory(AccessoryType.STOCK, ZTARegistry.getObject(stockID));
+				ZTARegistry registry = ZTARegistry.get();
+				if (scopeID != -1) gun.setAccessory(AccessoryType.SCOPE, registry.getObject(scopeID));
+				if (cannonID != -1) gun.setAccessory(AccessoryType.CANNON, registry.getObject(cannonID));
+				if (stockID != -1) gun.setAccessory(AccessoryType.STOCK, registry.getObject(stockID));
 			}
 		}.runTaskLater(OlympaZTA.getInstance(), 20L);
 		return gun;

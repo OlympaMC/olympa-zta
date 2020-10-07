@@ -31,7 +31,7 @@ public class GunG19 extends Gun{
 	}
 	
 	protected int getMaxAmmos(){
-		return 16;
+		return 15;
 	}
 	
 	protected int getFireRate(){
@@ -61,7 +61,7 @@ public class GunG19 extends Gun{
 	
 	@Override
 	protected float getBulletEntityDamage() {
-		return 1;
+		return 4;
 	}
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){

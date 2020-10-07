@@ -48,7 +48,7 @@ public class WeaponsListener implements Listener {
 		ItemStack item = damager.getInventory().getItemInMainHand();
 		if (item == null) return;
 
-		Registrable object = ZTARegistry.getItemStackable(item);
+		Registrable object = ZTARegistry.get().getItemStackable(item);
 		if (object != null && object instanceof Weapon) ((Weapon) object).onEntityHit(e);
 	}
 
@@ -65,7 +65,7 @@ public class WeaponsListener implements Listener {
 		if (e.useItemInHand() == Result.DENY) return;
 		if (e.getItem() == null || e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
 
-		Registrable object = ZTARegistry.getItemStackable(e.getItem());
+		Registrable object = ZTARegistry.get().getItemStackable(e.getItem());
 		if (object != null && object instanceof Weapon) ((Weapon) object).onInteract(e);
 	}
 
@@ -77,7 +77,7 @@ public class WeaponsListener implements Listener {
 		ItemStack item = e.getCurrentItem();
 		if (item == null) return;
 
-		Registrable object = ZTARegistry.getItemStackable(item);
+		Registrable object = ZTARegistry.get().getItemStackable(item);
 		if (object instanceof Gun) {
 			((Gun) object).itemClick((Player) e.getWhoClicked(), item);
 			e.setCancelled(true);
@@ -135,7 +135,7 @@ public class WeaponsListener implements Listener {
 
 	private void checkHeld(Player p, ItemStack item, boolean held) {
 		if (item != null) {
-			Registrable object = ZTARegistry.getItemStackable(item);
+			Registrable object = ZTARegistry.get().getItemStackable(item);
 			if (object instanceof Gun) {
 				Gun gun = (Gun) object;
 				if (held) {

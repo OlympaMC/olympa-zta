@@ -56,12 +56,12 @@ public class GunSkorpion extends Gun{
 	
 	@Override
 	protected float getBulletPlayerDamage() {
-		return 4;
+		return 3;
 	}
 	
 	@Override
 	protected float getBulletEntityDamage() {
-		return 1;
+		return 7;
 	}
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){

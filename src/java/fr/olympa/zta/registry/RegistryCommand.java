@@ -15,8 +15,9 @@ public class RegistryCommand extends ComplexCommand {
 	@Cmd (syntax = "<id>", args = "INTEGER")
 	public void info(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			sendInfo("Objets actuellement chargés dans le registre : §l" + ZTARegistry.registry.size());
-			sendInfo("Types d'objets disponible : §l" + ZTARegistry.registrable.size());
+			ZTARegistry registry = ZTARegistry.get();
+			sendInfo("Objets actuellement chargés dans le registre : §l" + registry.registry.size());
+			sendInfo("Types d'objets disponible : §l" + registry.registrable.size());
 		}else {
 			Registrable obj = getObject(cmd.getArgument(0));
 			if (obj == null) return;
@@ -43,12 +44,12 @@ public class RegistryCommand extends ComplexCommand {
 	public void remove(CommandContext cmd) {
 		Registrable obj = getObject(cmd.getArgument(0));
 		if (obj == null) return;
-		ZTARegistry.removeObject(obj);
+		ZTARegistry.get().removeObject(obj);
 		sendSuccess("L'objet a été correctement supprimé du registre.");
 	}
 
 	private Registrable getObject(int id) {
-		Registrable obj = ZTARegistry.registry.get(id);
+		Registrable obj = ZTARegistry.get().registry.get(id);
 		if (obj == null) sendError("§cL'objet avec l'ID " + id + " est introuvable dans le registre.");
 		return obj;
 	}

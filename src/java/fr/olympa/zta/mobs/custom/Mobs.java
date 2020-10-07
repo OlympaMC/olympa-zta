@@ -38,8 +38,10 @@ public class Mobs {
 		}
 	}
 
-	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, String name) {
-		Zombie zombie = (Zombie) spawnMob(customMommy, loc, SpawnReason.CUSTOM).getBukkitEntity();
+	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, ItemStack contents[], String name) {
+		CustomEntityMommy entityZombie = spawnMob(customMommy, loc, SpawnReason.CUSTOM);
+		entityZombie.setContents(contents);
+		Zombie zombie = (Zombie) entityZombie.getBukkitEntity();
 		zombie.getEquipment().setArmorContents(armor);
 		zombie.setCustomName(name);
 		zombie.setCustomNameVisible(true);

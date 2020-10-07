@@ -77,6 +77,9 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 	
 	@Override
+	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {}
+	
+	@Override
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
 			if (explosive) {

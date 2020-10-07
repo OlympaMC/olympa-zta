@@ -11,7 +11,7 @@ import fr.olympa.zta.registry.ZTARegistry;
 public class WeaponsGiveGUI extends PagedGUI<ItemStackableInstantiator<?>> {
 
 	public WeaponsGiveGUI() {
-		super("Don d'arme", DyeColor.CYAN, ZTARegistry.itemStackables, 6);
+		super("Don d'arme", DyeColor.CYAN, ZTARegistry.get().itemStackables, 6);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class WeaponsGiveGUI extends PagedGUI<ItemStackableInstantiator<?>> {
 	@Override
 	public void click(ItemStackableInstantiator<?> existing, Player p) {
 		try {
-			p.getInventory().addItem(ZTARegistry.createItem(existing.create()));
+			p.getInventory().addItem(ZTARegistry.get().createItem(existing.create()));
 		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}

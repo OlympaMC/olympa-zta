@@ -47,7 +47,7 @@ public class GunUZI extends Gun{
 	}
 	
 	public float getBulletSpeed(){
-		return CommonGunConstants.BULLET_SPEED_LOW;
+		return CommonGunConstants.BULLET_SPEED_ULTRA_LOW;
 	}
 	
 	protected GunAccuracy getAccuracy(){
@@ -56,12 +56,12 @@ public class GunUZI extends Gun{
 	
 	@Override
 	protected float getBulletPlayerDamage() {
-		return 3;
+		return 2;
 	}
 	
 	@Override
 	protected float getBulletEntityDamage() {
-		return 2;
+		return 7;
 	}
 	
 	public Bullet getFiredBullet(Player p, float playerDamage, float entityDamage){

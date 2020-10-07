@@ -31,7 +31,6 @@ import fr.olympa.api.command.essentials.HealCommand;
 import fr.olympa.api.command.essentials.tp.TpaHandler;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.tax.TaxManager;
-import fr.olympa.api.hook.IProtocolSupport;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
@@ -140,6 +139,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ClansManagerZTA clansManager;
 	public TaxManager taxManager;
 	public AuctionsManager auctionsManager;
+	public ZTARegistry registry;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -170,8 +170,10 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
 		if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) BeautyQuestsLink.initialize();
 
-		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
-		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> ZTARegistry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
+		registry = new ZTARegistry();
+		
+		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
+		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 
 		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();
@@ -266,14 +268,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
 
 		try {
-			sendMessage(ZTARegistry.loadFromDatabase() + " objets chargés dans le registre.");
+			sendMessage(registry.loadFromDatabase() + " objets chargés dans le registre.");
 		}catch (SQLException e) {
 			e.printStackTrace();
-		}
-
-		IProtocolSupport protocolSupport = OlympaCore.getInstance().getProtocolSupport();
-		if (protocolSupport != null) {
-			protocolSupport.disable1_8();
 		}
 	}
 
@@ -330,7 +327,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning.end();
 		scoreboards.unload();
 
-		ZTARegistry.saveDatabase();
+		registry.unload();
 	}
 	
 }

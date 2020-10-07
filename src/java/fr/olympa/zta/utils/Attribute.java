@@ -8,10 +8,10 @@ public class Attribute{
 	private float baseValue;
 	private final Map<String, AttributeModifier> modifiers = new HashMap<>();
 	
-	private float cachedValue = -666;
+	private float cachedValue;
 
 	public Attribute(float baseValue){
-		this.baseValue = baseValue;
+		setBaseValue(baseValue);
 	}
 	
 	public float getBaseValue(){
@@ -20,40 +20,45 @@ public class Attribute{
 	
 	public void setBaseValue(float newValue) {
 		this.baseValue = newValue;
-		cachedValue = -666;
+		computeValue();
 	}
 	
 	public void addModifier(AttributeModifier modifier){
 		modifiers.put(modifier.getName(), modifier);
-		cachedValue = -666;
+		computeValue();
 	}
 	
 	public void removeModifier(String name) {
 		modifiers.remove(name);
-		cachedValue = -666;
+		computeValue();
 	}
 	
 	public float getValue(){
-		if (cachedValue != -666) return cachedValue;
-		if (modifiers.isEmpty()) return cachedValue = baseValue;
-		float value = baseValue;
-		float multiplicator = 1;
-		for (AttributeModifier modifier : modifiers.values()) {
-			switch (modifier.getOperation()){
-			case ADD_NUMBER:
-				value += modifier.getAmount();
-				break;
-			case MULTIPLY_VALUE:
-				value *= modifier.getAmount();
-				break;
-			case ADD_MULTIPLICATOR:
-				multiplicator += modifier.getAmount();
-				break;
+		return cachedValue;
+	}
+	
+	private void computeValue() {
+		if (modifiers.isEmpty()) {
+			cachedValue = baseValue;
+		}else {
+			float value = baseValue;
+			float multiplicator = 1;
+			for (AttributeModifier modifier : modifiers.values()) {
+				switch (modifier.getOperation()) {
+				case ADD_NUMBER:
+					value += modifier.getAmount();
+					break;
+				case MULTIPLY_VALUE:
+					value *= modifier.getAmount();
+					break;
+				case ADD_MULTIPLICATOR:
+					multiplicator += modifier.getAmount();
+					break;
+				}
 			}
+			value *= multiplicator;
+			cachedValue = value;
 		}
-		value *= multiplicator;
-		cachedValue = value;
-		return value;
 	}
 	
 }
