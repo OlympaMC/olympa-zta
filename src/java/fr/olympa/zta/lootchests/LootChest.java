@@ -158,7 +158,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 	}
 
 	public int getMinItems() {
-		return 1;
+		return 2;
 	}
 
 	public int getMaxItems() {

@@ -77,6 +77,11 @@ public class Gun870 extends Gun{
 		return GunMode.SINGLE;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

@@ -75,6 +75,11 @@ public class GunSDMR extends Gun{
 	/*public GunMode getSecondaryMode(){
 		return GunMode.SEMI_AUTOMATIC;
 	}*/
+	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
 
 	public boolean isScopeAllowed(){
 		return true;

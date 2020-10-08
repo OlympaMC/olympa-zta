@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ImmutableItemStack;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.Utils;
 
 public class FoodCreator implements LootCreator {
 
@@ -32,7 +33,7 @@ public class FoodCreator implements LootCreator {
 	}
 
 	public Loot create(Player p, Random random) {
-		return new Loot(type.get(random.nextInt(max - min + 1) + min));
+		return new Loot(type.get(Utils.getRandomAmount(random, min, max)));
 	}
 
 	public enum Food {

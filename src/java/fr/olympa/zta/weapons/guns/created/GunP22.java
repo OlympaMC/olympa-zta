@@ -76,6 +76,11 @@ public class GunP22 extends Gun{
 		return GunMode.BLAST;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_LOW;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

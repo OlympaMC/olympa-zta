@@ -83,6 +83,11 @@ public class GunDragunov extends Gun{
 		return zoomModifier;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_HIGH;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

@@ -81,6 +81,11 @@ public class GunLupara extends Gun{
 		return GunMode.AUTOMATIC;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_LOW;
+	}
+	
 	public boolean isStockAllowed(){
 		return true;
 	}

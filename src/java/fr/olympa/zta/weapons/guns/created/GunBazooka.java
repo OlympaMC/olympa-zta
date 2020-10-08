@@ -79,6 +79,11 @@ public class GunBazooka extends Gun {
 	}
 	
 	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
+	@Override
 	public GunMode getPrimaryMode() {
 		return GunMode.SINGLE;
 	}

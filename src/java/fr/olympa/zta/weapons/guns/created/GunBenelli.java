@@ -76,6 +76,11 @@ public class GunBenelli extends Gun{
 		return new BulletEffect(this, playerDamage, entityDamage, effect);
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public GunMode getPrimaryMode(){
 		return GunMode.SEMI_AUTOMATIC;
 	}

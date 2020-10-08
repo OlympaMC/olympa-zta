@@ -81,6 +81,11 @@ public class GunKSG extends Gun{
 		return GunMode.SEMI_AUTOMATIC;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public boolean isStockAllowed(){
 		return true;
 	}

@@ -85,6 +85,11 @@ public class GunM1897 extends Gun{
 		return GunMode.SINGLE;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public boolean isStockAllowed(){
 		return true;
 	}

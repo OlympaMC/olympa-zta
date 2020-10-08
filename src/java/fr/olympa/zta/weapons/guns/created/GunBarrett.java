@@ -86,6 +86,11 @@ public class GunBarrett extends Gun{
 		return GunMode.SINGLE;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_HIGH;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

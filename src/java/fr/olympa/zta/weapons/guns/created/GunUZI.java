@@ -68,6 +68,11 @@ public class GunUZI extends Gun{
 		return new BulletSimple(this, playerDamage, entityDamage);
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public GunMode getPrimaryMode(){
 		return GunMode.AUTOMATIC;
 	}

@@ -507,9 +507,7 @@ public abstract class Gun extends Weapon {
 	/**
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
-	protected float getFireVolume() {
-		return 3;
-	}
+	protected abstract float getFireVolume();
 
 	/**
 	 * Jouer le son de tir

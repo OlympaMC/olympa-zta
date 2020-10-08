@@ -78,6 +78,11 @@ public class GunStoner extends Gun{
 		return GunMode.AUTOMATIC;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

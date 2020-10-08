@@ -76,6 +76,11 @@ public class GunM16 extends Gun{
 		return GunMode.BLAST;
 	}
 	
+	@Override
+	protected float getFireVolume() {
+		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}
