@@ -2,7 +2,6 @@ package fr.olympa.zta;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,8 +125,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		return (OlympaZTA) instance;
 	}
 	
-	private WeaponsListener weaponListener = new WeaponsListener();
-	public MobsListener mobsListener = new MobsListener();
+	public MobsListener mobsListener;
 
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
@@ -170,7 +168,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
 		if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) BeautyQuestsLink.initialize();
 
-		registry = new ZTARegistry();
+		try {
+			registry = new ZTARegistry();
+		}catch (Exception ex) {
+			throw new RuntimeException("Registry failed to load", ex);
+		}
 		
 		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
@@ -183,8 +185,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
-		pluginManager.registerEvents(weaponListener, this);
-		pluginManager.registerEvents(mobsListener, this);
+		pluginManager.registerEvents(new WeaponsListener(), this);
+		pluginManager.registerEvents(mobsListener = new MobsListener(), this);
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
@@ -266,12 +268,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
-
-		try {
-			sendMessage(registry.loadFromDatabase() + " objets chargés dans le registre.");
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {

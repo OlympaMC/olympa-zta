@@ -81,6 +81,11 @@ public class GunBenelli extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.pump";
+	}
+	
 	public GunMode getPrimaryMode(){
 		return GunMode.SEMI_AUTOMATIC;
 	}

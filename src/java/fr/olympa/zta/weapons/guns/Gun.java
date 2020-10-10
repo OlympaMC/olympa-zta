@@ -508,13 +508,17 @@ public abstract class Gun extends Weapon {
 	 * @return Volume lors du tir de la balle (distance = 16*x)
 	 */
 	protected abstract float getFireVolume();
+	
+	protected String getFireSound() {
+		return "zta.guns.generic";
+	}
 
 	/**
 	 * Jouer le son de tir
 	 * @param lc location où est jouée le son
 	 */
 	public void playFireSound(Location lc) {
-		lc.getWorld().playSound(lc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, fireVolume.getValue(), 1);
+		lc.getWorld().playSound(lc, getFireSound(), SoundCategory.PLAYERS, fireVolume.getValue(), 1);
 	}
 
 	/**

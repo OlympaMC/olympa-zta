@@ -30,19 +30,30 @@ public class ZTARegistry{
 
 	public final Map<String, RegistryType<?>> registrable = new HashMap<>();
 	public final Map<Integer, Registrable> registry = new ConcurrentHashMap<>(200);
-	private final List<Integer> toEvict = new ArrayList<>();
+	public final List<Integer> toEvict = new ArrayList<>();
 
 	public final List<ItemStackableInstantiator<?>> itemStackables = new ArrayList<>(20);
 
 	private final Random idGen = new Random();
 	private final BukkitTask evictingTask;
+	public long nextEviction = 0;
 	
 	private OlympaStatement insertRegistrable = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`, `type`) VALUES (?, ?)");
 	private OlympaStatement removeRegistrable = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
 
-	public ZTARegistry() {
+	public ZTARegistry() throws SQLException {
+		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
+		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+				"  `id` INT NOT NULL," +
+				"  `type` VARCHAR(45) NOT NULL," +
+				"  PRIMARY KEY (`id`))");
+		statement.close();
+		
+		int period = 20 * 60 * 5;
 		evictingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
+			nextEviction = System.currentTimeMillis() + period * 50;
 			synchronized (toEvict) {
+				int evictedAmount = 0;
 				for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
 					Integer idToEvict = iterator.next();
 					Registrable evicted = registry.remove(idToEvict);
@@ -54,9 +65,11 @@ public class ZTARegistry{
 						}
 					}
 					iterator.remove();
+					evictedAmount++;
 				}
+				OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
 			}
-		}, 20 * 60, 20 * 60 * 5);
+		}, 0, period);
 	}
 	
 	/**
@@ -151,6 +164,7 @@ public class ZTARegistry{
 	 * @return Objet correspondant à l'immatriculation de l'item. Peut renvoyer <i>null</i>.
 	 */
 	public ItemStackable getItemStackable(ItemStack is) {
+		if (is == null) return null;
 		if (!is.hasItemMeta()) return null;
 		ItemMeta im = is.getItemMeta();
 		if (!im.hasLore()) return null;
@@ -177,16 +191,6 @@ public class ZTARegistry{
 		registerObject(object);
 		return is;
 	}
-
-	public int loadFromDatabase() throws SQLException {
-		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
-		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
-				"  `id` INT NOT NULL," + 
-				"  `type` VARCHAR(45) NOT NULL," + 
-				"  PRIMARY KEY (`id`))");
-		statement.close();
-		return registry.size();
-	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
 		synchronized (toEvict) {
@@ -210,7 +214,7 @@ public class ZTARegistry{
 				}
 				if (id != 0) {
 					if (registry.containsKey(id)) {
-						toEvict.remove(id);
+						toEvict.remove((Object) id);
 					}else {
 						ids.add(id);
 					}

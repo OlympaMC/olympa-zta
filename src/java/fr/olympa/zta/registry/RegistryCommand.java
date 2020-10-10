@@ -1,5 +1,8 @@
 package fr.olympa.zta.registry;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -8,6 +11,8 @@ import fr.olympa.zta.ZTAPermissions;
 
 public class RegistryCommand extends ComplexCommand {
 
+	private DateFormat evictionFormat = new SimpleDateFormat("HH:mm:ss");
+	
 	public RegistryCommand() {
 		super(OlympaZTA.getInstance(), "registry", "Gestion du registre", ZTAPermissions.REGISTRY_COMMAND);
 	}
@@ -16,8 +21,10 @@ public class RegistryCommand extends ComplexCommand {
 	public void info(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
 			ZTARegistry registry = ZTARegistry.get();
-			sendInfo("Objets actuellement chargés dans le registre : §l" + registry.registry.size());
 			sendInfo("Types d'objets disponible : §l" + registry.registrable.size());
+			sendInfo("Objets chargés dans le registre : §l" + registry.registry.size());
+			sendInfo("Objets en attente d'être déchargés : §l" + registry.toEvict.size());
+			sendInfo("Prochain déchargement : §l" + evictionFormat.format(registry.nextEviction));
 		}else {
 			Registrable obj = getObject(cmd.getArgument(0));
 			if (obj == null) return;

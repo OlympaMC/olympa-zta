@@ -82,6 +82,11 @@ public class Gun870 extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.pump";
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

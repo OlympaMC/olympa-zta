@@ -86,6 +86,11 @@ public class GunKSG extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.pump";
+	}
+	
 	public boolean isStockAllowed(){
 		return true;
 	}

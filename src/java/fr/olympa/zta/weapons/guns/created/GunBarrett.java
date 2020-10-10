@@ -91,6 +91,11 @@ public class GunBarrett extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_HIGH;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.barrett";
+	}
+	
 	public boolean isCannonAllowed(){
 		return true;
 	}

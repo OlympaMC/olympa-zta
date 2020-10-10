@@ -50,7 +50,15 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class MobsListener implements Listener {
 
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, new AmmoCreator(20, 1, 3), new MoneyCreator(50, 1, 5), new FoodCreator(5, Food.BAKED_POTATO));
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, 
+			new AmmoCreator(20, 1, 3),
+			new MoneyCreator(50, 1, 5),
+			new FoodCreator(5, Food.BAKED_POTATO),
+			new AmmoCreator(10, AmmoType.LIGHT, 2, 3, false),
+			new AmmoCreator(10, AmmoType.HEAVY, 2, 3, false),
+			new AmmoCreator(10, AmmoType.HANDWORKED, 2, 3, false),
+			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false)
+			);
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
 	@EventHandler
@@ -146,7 +154,7 @@ public class MobsListener implements Listener {
 		
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				OlympaZTA.getInstance().sendMessage("%d objet(s) chargés depuis l'inventaire de %s.", ZTARegistry.get().loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
+				OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargés depuis l'inventaire de §6%s§e.", ZTARegistry.get().loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
 			}catch (SQLException e1) {
 				e1.printStackTrace();
 			}

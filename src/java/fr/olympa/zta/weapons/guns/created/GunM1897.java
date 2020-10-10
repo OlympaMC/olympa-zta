@@ -86,6 +86,11 @@ public class GunM1897 extends Gun{
 	}
 	
 	@Override
+	protected String getFireSound() {
+		return "zta.guns.pump";
+	}
+	
+	@Override
 	protected float getFireVolume() {
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}

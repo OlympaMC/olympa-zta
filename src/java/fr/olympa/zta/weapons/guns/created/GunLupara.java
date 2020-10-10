@@ -86,6 +86,11 @@ public class GunLupara extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_LOW;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.pump";
+	}
+	
 	public boolean isStockAllowed(){
 		return true;
 	}
