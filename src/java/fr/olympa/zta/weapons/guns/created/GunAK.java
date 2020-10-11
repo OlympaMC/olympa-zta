@@ -77,6 +77,11 @@ public class GunAK extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.auto";
+	}
+	
 	public boolean isScopeAllowed(){
 		return true;
 	}

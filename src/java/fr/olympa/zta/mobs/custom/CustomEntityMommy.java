@@ -30,7 +30,8 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	}
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
-		contents = Arrays.stream(bukkitItems).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
+		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
+		System.out.println("CustomEntityMommy.setContents() " + contents.length);
 	}
 	
 	@Override
@@ -59,10 +60,10 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	@Override
 	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {
+		System.out.println("drop " + (contents == null ? "null" : contents.length));
 		if (contents != null) {
 			for (ItemStack item : contents) {
 				a(item);
-				System.out.println("drop" + item.toString());
 			}
 		}
 	}

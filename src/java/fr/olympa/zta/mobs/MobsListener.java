@@ -51,7 +51,7 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 public class MobsListener implements Listener {
 
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, 
-			new AmmoCreator(20, 1, 3),
+			new AmmoCreator(20, 2, 3),
 			new MoneyCreator(50, 1, 5),
 			new FoodCreator(5, Food.BAKED_POTATO),
 			new AmmoCreator(10, AmmoType.LIGHT, 2, 3, false),

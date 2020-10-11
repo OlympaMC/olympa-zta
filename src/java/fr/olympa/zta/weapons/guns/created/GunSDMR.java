@@ -80,6 +80,11 @@ public class GunSDMR extends Gun{
 	protected float getFireVolume() {
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
+	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.auto";
+	}
 
 	public boolean isScopeAllowed(){
 		return true;

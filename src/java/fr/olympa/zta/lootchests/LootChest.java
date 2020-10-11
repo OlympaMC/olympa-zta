@@ -23,6 +23,7 @@ import org.bukkit.persistence.PersistentDataType;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
@@ -39,7 +40,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 
 	private Location location;
 	private LootChestType type;
-	private int minutesToWait = 8;
+	private int waitMin = 6 * 60000, waitMax = 8 * 60000; // 60'000ticks = 1min
 	private long nextOpen = 0;
 
 	private Map<Integer, Loot> currentLoots = new HashMap<>();
@@ -63,7 +64,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
 			OlympaPlayerZTA.get(p).openedChests.increment();
-			nextOpen = time + minutesToWait * 60000;
+			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
 			clearInventory();
 			for (LootCreator creator : pick(random)) {
 				int slot;
@@ -127,7 +128,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 	}
 
 	public void setTimer(int minutesToWait) {
-		this.minutesToWait = minutesToWait;
+		this.waitMin = this.waitMax = 0;
 		this.nextOpen = 0;
 	}
 

@@ -10,16 +10,16 @@ import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.ZTARegistry;
 
-public class ItemStackableCreator<T extends ItemStackable> implements LootCreator {
+public class ItemStackableCreator implements LootCreator {
 
 	private double chance;
-	private ItemStackableInstantiator<T> instantiator;
+	private ItemStackableInstantiator<? extends ItemStackable> instantiator;
 
-	public ItemStackableCreator(double chance, Class<T> clazz) {
+	public ItemStackableCreator(double chance, Class<? extends ItemStackable> clazz) {
 		this.chance = chance;
 		for (ItemStackableInstantiator<?> inst : ZTARegistry.get().itemStackables) {
 			if (inst.clazz == clazz) {
-				this.instantiator = (ItemStackableInstantiator<T>) inst;
+				this.instantiator = inst;
 				break;
 			}
 		}
@@ -29,7 +29,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 		}
 	}
 
-	public ItemStackableCreator(double chance, ItemStackableInstantiator<T> inst) {
+	public ItemStackableCreator(double chance, ItemStackableInstantiator<? extends ItemStackable> inst) {
 		this.chance = chance;
 		this.instantiator = inst;
 	}
@@ -38,7 +38,7 @@ public class ItemStackableCreator<T extends ItemStackable> implements LootCreato
 		return chance;
 	}
 	
-	public ItemStackableInstantiator<T> getInstantiator() {
+	public ItemStackableInstantiator<? extends ItemStackable> getInstantiator() {
 		return instantiator;
 	}
 

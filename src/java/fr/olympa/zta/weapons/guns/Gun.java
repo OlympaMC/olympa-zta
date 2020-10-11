@@ -628,9 +628,9 @@ public abstract class Gun extends Weapon {
 	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 			"  `id` INT NOT NULL," +
 			"  `ammos` SMALLINT(2) UNSIGNED DEFAULT 0," +
-			"  `ready` TINYINT DEFAULT 1," +
-			"  `zoomed` TINYINT DEFAULT 0," +
-			"  `secondary_mode` TINYINT DEFAULT 0," +
+			"  `ready` TINYINT(1) DEFAULT 1," +
+			"  `zoomed` TINYINT(1) DEFAULT 0," +
+			"  `secondary_mode` TINYINT(1) DEFAULT 0," +
 			"  `scope_id` INT(11) DEFAULT -1," +
 			"  `cannon_id` INT(11) DEFAULT -1," +
 			"  `stock_id` INT(11) DEFAULT -1," +

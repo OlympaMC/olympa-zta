@@ -73,6 +73,11 @@ public class GunUZI extends Gun{
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
 	}
 	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.auto";
+	}
+	
 	public GunMode getPrimaryMode(){
 		return GunMode.AUTOMATIC;
 	}

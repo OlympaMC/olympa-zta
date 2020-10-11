@@ -67,7 +67,7 @@ public class ZTARegistry{
 					iterator.remove();
 					evictedAmount++;
 				}
-				OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
+				if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
 			}
 		}, 0, period);
 	}

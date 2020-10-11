@@ -35,7 +35,7 @@ public class GunM16 extends Gun{
 	}
 	
 	public int getFireRate(){
-		return 10;
+		return 8;
 	}
 	
 	public int getChargeTime(){
@@ -79,6 +79,11 @@ public class GunM16 extends Gun{
 	@Override
 	protected float getFireVolume() {
 		return CommonGunConstants.SOUND_VOLUME_MEDIUM;
+	}
+	
+	@Override
+	protected String getFireSound() {
+		return "zta.guns.auto";
 	}
 	
 	public boolean isCannonAllowed(){
