@@ -16,32 +16,34 @@ import fr.olympa.zta.OlympaZTA;
 
 public enum AmmoType{
 	
-	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE),
-	HEAVY("Munitions lourdes", Material.LAPIS_LAZULI, Material.LIGHT_BLUE_DYE),
-	HANDWORKED("Munitions artisanales", Material.RED_DYE, Material.PINK_DYE),
-	CARTRIDGE("Cartouches", Material.GRAY_DYE, Material.LIGHT_GRAY_DYE);
+	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE, 3),
+	HEAVY("Munitions lourdes", Material.LAPIS_LAZULI, Material.LIGHT_BLUE_DYE, 3),
+	HANDWORKED("Munitions artisanales", Material.RED_DYE, Material.PINK_DYE, 3),
+	CARTRIDGE("Cartouches", Material.GRAY_DYE, Material.LIGHT_GRAY_DYE, 1);
 	
 	private String name;
 	private Material empty, fill;
+	private int ammosPerItem;
 	
 	private ItemStack itemFilled, itemEmpty;
 	private ShapelessRecipe recipe;
 
-	private AmmoType(String name, Material empty, Material fill){
+	private AmmoType(String name, Material empty, Material fill, int ammosPerItem) {
 		this.name = name;
 		this.empty = empty;
 		this.fill = fill;
+		this.ammosPerItem = ammosPerItem;
 
 		itemFilled = new ItemStack(fill);
 		ItemMeta meta = itemFilled.getItemMeta();
 		meta.setCustomModelData(1);
-		meta.setDisplayName("§a" + name);
+		meta.setDisplayName("§a" + name + " (x" + ammosPerItem + ")");
 		itemFilled.setItemMeta(meta);
 		
 		itemEmpty = new ItemStack(empty);
 		meta = itemEmpty.getItemMeta();
 		meta.setCustomModelData(1);
-		meta.setDisplayName("§b" + name + " vides");
+		meta.setDisplayName("§b" + name + " vides (x" + ammosPerItem + ")");
 		meta.setLore(Arrays.asList("§8> §7Associez-y de la", "§7poudre à canon."));
 		itemEmpty.setItemMeta(meta);
 
@@ -59,6 +61,10 @@ public enum AmmoType{
 	
 	public Material getFilledAmmoType(){
 		return fill;
+	}
+	
+	public int getAmmosPerItem() {
+		return ammosPerItem;
 	}
 	
 	public ShapelessRecipe getRecipe() {

@@ -296,7 +296,7 @@ public abstract class Gun extends Weapon {
 		}
 		if (isOneByOneCharge()) {
 			toCharge = 1;
-		}else toCharge = Math.min(max - ammos, availableAmmos);
+		}else toCharge = Math.min((int) Math.ceil((max - ammos) / (double) getAmmoType().getAmmosPerItem()), availableAmmos);
 
 		reloading = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), new Runnable() {
 			final short max = 13;
@@ -309,7 +309,7 @@ public abstract class Gun extends Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos += getAmmoType().removeAmmos(p, toCharge);
+					ammos = Math.min(ammos + getAmmoType().removeAmmos(p, toCharge) * getAmmoType().getAmmosPerItem(), max);
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
