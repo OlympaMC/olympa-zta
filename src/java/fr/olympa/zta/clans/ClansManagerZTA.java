@@ -2,19 +2,55 @@ package fr.olympa.zta.clans;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.clans.gui.ClanManagementGUI;
+import fr.olympa.api.customevents.ScoreboardCreateEvent;
+import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.sql.Column;
+import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 
 public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 
+	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7Mon clan:");
+	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
+		ClanZTA clan = x.getOlympaPlayer().getClan();
+		Player p = x.getOlympaPlayer().getPlayer();
+		List<String> players = new ArrayList<>(5);
+		int first = 0;
+		int offline = 0;
+		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
+		for (ClanPlayerDataZTA member : clan.getMembers()) {
+			String memberName = member.getPlayerInformations().getName();
+			if (!member.isConnected()) {
+				players.add(offline, "§c○ " + memberName);
+			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
+				players.add(0, "§6● §l" + memberName);
+				first = 1;
+				offline++;
+			}else {
+				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
+				players.add(first, "§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				offline++;
+			}
+		}
+		return String.join("\n", players);
+	}, OlympaZTA.getInstance(), 10);
+	
 	protected Column<ClanZTA> plotExpirationResetColumn;
 	
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
@@ -58,6 +94,17 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 		columns = super.addDBClansCollums(columns);
 		columns.add(plotExpirationResetColumn = new Column<ClanZTA>("plot_expiration_reset", "BIGINT NOT NULL DEFAULT -1").setUpdatable(true));
 		return columns;
+	}
+	
+	@EventHandler
+	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
+		addLines(e.getScoreboard());
+	}
+	
+	public void addLines(Scoreboard<OlympaPlayerZTA> scoreboard) {
+		scoreboard.addLine(FixedLine.EMPTY_LINE);
+		scoreboard.addLine(header);
+		scoreboard.addLine(players);
 	}
 	
 }

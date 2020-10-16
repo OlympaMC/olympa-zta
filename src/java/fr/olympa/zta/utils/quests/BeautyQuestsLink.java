@@ -1,8 +1,8 @@
 package fr.olympa.zta.utils.quests;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -28,7 +30,16 @@ import fr.skytasul.quests.utils.Utils;
 
 public class BeautyQuestsLink implements Listener {
 	
-	private List<Player> scoreboards = new ArrayList<>();
+	private Map<Player, Integer> scoreboards = new HashMap<>();
+	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<Scoreboard<OlympaPlayerZTA>>(scoreboard -> {
+		Player player = scoreboard.getOlympaPlayer().getPlayer();
+		List<Quest> started = QuestsAPI.getQuestsStarteds(PlayersManager.getPlayerAccount(player), true);
+		int id = scoreboards.get(player).intValue();
+		if (id >= started.size()) id = 0;
+		Quest quest = started.get(id++);
+		scoreboards.put(player, id);
+		return "§7Quête" + (started.size() > 1 ? "s" : "") + ": §e" + quest.getName();
+	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(QuestItemReward.class, ItemUtils.item(Material.GOLD_INGOT, "§eOlympa ZTA - Item de quête"), QuestItemReward::new));
@@ -61,25 +72,24 @@ public class BeautyQuestsLink implements Listener {
 		checkScoreboard(e.getPlayerAccount().getPlayer());
 	}
 	
+	@EventHandler
+	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
+		checkScoreboard(e.getPlayer());
+	}
+	
 	private void checkScoreboard(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-		if (QuestsAPI.getQuestsStarteds(acc).size() > 1) {
-			if (scoreboards.contains(p)) return;
+		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {
+			if (scoreboards.containsKey(p)) return;
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
 			
-			scoreboard.addLine(new TimerLine<Scoreboard<OlympaPlayerZTA>>(new Function<Scoreboard<OlympaPlayerZTA>, String>() {
-				int id = 0;
-				
-				@Override
-				public String apply(Scoreboard<OlympaPlayerZTA> scoreboard) {
-					List<Quest> started = QuestsAPI.getQuestsStarteds(acc);
-					if (id >= started.size()) id = 0;
-					return "§7Quête" + (started.size() > 1 ? "s" : "") + "§e" + started.get(id++).getName();
-				}
-			}, OlympaZTA.getInstance(), 100));
+			scoreboard.addLine(FixedLine.EMPTY_LINE);
+			
+			scoreboard.addLine(line);
 		}else {
-			if (!scoreboards.remove(p)) return;
+			if (!scoreboards.containsKey(p)) return;
+			scoreboards.remove(p);
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			OlympaZTA.getInstance().scoreboards.create(player); // reset le scoreboard
 		}
