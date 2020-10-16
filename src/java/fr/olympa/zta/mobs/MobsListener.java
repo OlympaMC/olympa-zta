@@ -44,9 +44,9 @@ import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.knives.KnifeBatte;
 
 public class MobsListener implements Listener {
 
@@ -71,7 +71,7 @@ public class MobsListener implements Listener {
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
 			if (itemStack != null) {
-				if (BeautyQuestsLink.isEnabled() && BeautyQuestsLink.isQuestItem(itemStack)) {
+				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
 					kept.add(itemStack);
 					contents[i] = null;
 				}else if (itemStack.getType().name().startsWith("LEATHER_")) {
@@ -123,6 +123,7 @@ public class MobsListener implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
+		giveStartItems(e.getPlayer());
 		List<ItemStack> items = keptItems.remove(e.getPlayer());
 		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
 	}
@@ -163,10 +164,10 @@ public class MobsListener implements Listener {
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
 			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
-			ArmorType.CIVIL.setFull(p);
 			for (AmmoType ammoType : AmmoType.values()) {
 				p.discoverRecipe(ammoType.getRecipe().getKey());
 			}
+			giveStartItems(p);
 		}
 	}
 
@@ -200,6 +201,11 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
 		ZTARegistry.get().ifStackable(e.getEntity().getItemStack(), ZTARegistry.get()::removeObject);
+	}
+	
+	private void giveStartItems(Player p) {
+		ArmorType.CIVIL.setFull(p);
+		p.getInventory().addItem(Food.BAKED_POTATO.get(5), ZTARegistry.get().createItem(new KnifeBatte(ZTARegistry.get().generateID())));
 	}
 	
 }

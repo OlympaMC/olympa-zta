@@ -31,7 +31,6 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
 		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
-		System.out.println("CustomEntityMommy.setContents() " + contents.length);
 	}
 	
 	@Override
@@ -60,7 +59,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	@Override
 	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {
-		System.out.println("drop " + (contents == null ? "null" : contents.length));
+		System.out.println("Dropped " + (contents == null ? "null" : contents.length) + " items");
 		if (contents != null) {
 			for (ItemStack item : contents) {
 				a(item);
@@ -93,6 +92,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 			if (item != null) {
 				NBTTagCompound nbtItem = new NBTTagCompound();
 				item.save(nbtItem);
+				nbtList.add(nbtItem);
 			}
 		}
 		nbttagcompound.set("PlayerInventory", nbtList);
@@ -103,9 +103,10 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 		super.a(nbttagcompound);
 		if (nbttagcompound.hasKey("MommyDieTime")) this.dieTime = nbttagcompound.getInt("MommyDieTime");
 		
-		if (nbttagcompound.hasKeyOfType("PlayerInventory", NBT.TAG_LIST)) {
+		if (nbttagcompound.hasKey("PlayerInventory")) {
 			NBTTagList nbtList = nbttagcompound.getList("PlayerInventory", NBT.TAG_COMPOUND);
 			contents = nbtList.stream().map(x -> ItemStack.a((NBTTagCompound) x)).toArray(ItemStack[]::new);
+			System.out.println("Loaded " + contents.length + " contents from NBT");
 		}
 	}
 	

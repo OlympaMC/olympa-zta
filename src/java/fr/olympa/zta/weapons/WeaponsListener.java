@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -85,11 +84,6 @@ public class WeaponsListener implements Listener {
 	}
 
 	@EventHandler
-	public void onRespawn(PlayerRespawnEvent e) {
-		ArmorType.CIVIL.setFull(e.getPlayer());
-	}
-
-	@EventHandler
 	public void onHeld(PlayerItemHeldEvent e) {
 		Player p = e.getPlayer();
 		Inventory inv = p.getInventory();
@@ -136,11 +130,11 @@ public class WeaponsListener implements Listener {
 	private void checkHeld(Player p, ItemStack item, boolean held) {
 		if (item != null) {
 			Registrable object = ZTARegistry.get().getItemStackable(item);
-			if (object instanceof Gun) {
-				Gun gun = (Gun) object;
+			if (object instanceof Weapon) {
+				Weapon weapon = (Weapon) object;
 				if (held) {
-					gun.itemHeld(p, item);
-				}else gun.itemNoLongerHeld(p, item);
+					weapon.itemHeld(p, item);
+				}else weapon.itemNoLongerHeld(p, item);
 			}
 		}
 	}

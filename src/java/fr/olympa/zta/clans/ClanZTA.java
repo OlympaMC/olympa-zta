@@ -101,7 +101,6 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	protected void removedOnlinePlayer(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> oplayer) {
 		super.removedOnlinePlayer(oplayer);
 		
-		OlympaZTA.getInstance().scoreboards.removePlayerScoreboard((OlympaPlayerZTA) oplayer);
 		OlympaZTA.getInstance().scoreboards.create((OlympaPlayerZTA) oplayer);
 	}
 

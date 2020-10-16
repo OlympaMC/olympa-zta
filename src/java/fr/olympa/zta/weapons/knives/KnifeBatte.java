@@ -24,7 +24,7 @@ public class KnifeBatte extends Knife{
 	}
 	
 	public float getEntityDamage(){
-		return 4;
+		return 3;
 	}
 	
 }

@@ -126,6 +126,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	}
 	
 	public MobsListener mobsListener;
+	
+	public BeautyQuestsLink beautyQuestsLink;
 
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
@@ -165,8 +167,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
-		if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
-		if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) BeautyQuestsLink.initialize();
+		try {
+			if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
+			if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) beautyQuestsLink = new BeautyQuestsLink();
+		}catch (Exception ex) {
+			sendMessage("Une erreur est survenue durant le chargement d'un plugin externe.");
+			ex.printStackTrace();
+		}
 
 		try {
 			registry = new ZTARegistry();
@@ -190,6 +197,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
+		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);

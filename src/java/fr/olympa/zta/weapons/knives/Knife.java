@@ -8,11 +8,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.weapons.Weapon;
 
 public abstract class Knife extends Weapon{
+	
+	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false);
 	
 	public Knife(int id) {
 		super(id);
@@ -36,6 +40,16 @@ public abstract class Knife extends Weapon{
 	
 	public boolean drop(Player p, ItemStack item){
 		return false;
+	}
+	
+	@Override
+	public void itemHeld(Player p, ItemStack item) {
+		p.addPotionEffect(SPEED_EFFECT);
+	}
+	
+	@Override
+	public void itemNoLongerHeld(Player p, ItemStack item) {
+		p.removePotionEffect(PotionEffectType.SPEED);
 	}
 	
 	public abstract float getPlayerDamage();

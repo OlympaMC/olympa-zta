@@ -128,10 +128,12 @@ public abstract class Gun extends Weapon {
 		}
 	}
 
+	@Override
 	public void itemHeld(Player p, ItemStack item) {
 		p.setCooldown(item.getType(), 0);
 	}
 
+	@Override
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		if (zoomed) toggleZoom(p, item);
 		if (reloading != null) {
@@ -260,7 +262,7 @@ public abstract class Gun extends Weapon {
 		float knockback = this.knockback.getValue();
 		if (knockback != 0) {
 			if (p.isSneaking()) knockback /= 2;
-			Vector velocity = p.getLocation().getDirection().multiply(-knockback).add(p.getVelocity()); // TODO test
+			Vector velocity = p.getLocation().getDirection().multiply(-knockback).add(p.getVelocity());
 			velocity.setY(velocity.getY() / 3);
 			p.setVelocity(velocity);
 		}
@@ -286,7 +288,7 @@ public abstract class Gun extends Weapon {
 		if (zoomed) toggleZoom(p, item);
 
 		int max = (int) maxAmmos.getValue();
-		if (max == ammos) return;
+		if (max >= ammos) return;
 
 		int toCharge;
 		int availableAmmos = getAmmoType().getAmmos(p);
@@ -299,11 +301,11 @@ public abstract class Gun extends Weapon {
 		}else toCharge = Math.min((int) Math.ceil((max - ammos) / (double) getAmmoType().getAmmosPerItem()), availableAmmos);
 
 		reloading = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), new Runnable() {
-			final short max = 13;
+			final short animationMax = 13;
 			final char character = '░'; //'█';
 
 			short time = (short) chargeTime.getValue();
-			float add = (float) max / (float) time;
+			float add = (float) animationMax / (float) time;
 			float current = 0;
 
 			@Override
@@ -324,7 +326,7 @@ public abstract class Gun extends Weapon {
 				}
 				StringBuilder status = new StringBuilder("§bRechargement... ");
 				boolean changed = false;
-				for (int i = 0; i < max; i++) {
+				for (int i = 0; i < animationMax; i++) {
 					if (i >= current && !changed) {
 						status.append("§c");
 						changed = true;
