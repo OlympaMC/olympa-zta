@@ -78,14 +78,22 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 		Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard((OlympaPlayerZTA) member);
 		if (scoreboard != null) getClansManager().addLines(scoreboard); // has not been loaded
 		
-		if (getChief().equals(member.getInformation()) && cachedPlot == null && plotExpirationReset != -1) {
-			if (plotExpirationReset > System.currentTimeMillis()) {
-				BaseComponent[] components = TextComponent.fromLegacyText(format("§cLe paiement de la parcelle n'a pas été réitéré, celle-ci est donc arrivée à expiration."));
-				BaseComponent lastCompo = components[components.length - 1];
-				lastCompo.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§eClique ici pour ne plus afficher ce message.")));
-				lastCompo.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/clans dismissExpirationMessage"));
-				member.getPlayer().spigot().sendMessage(components);
-			}else resetExpirationTime();
+		if (getChief().equals(member.getInformation())) {
+			if (cachedPlot == null) {
+				if (plotExpirationReset != -1) {
+					if (plotExpirationReset > System.currentTimeMillis()) {
+						BaseComponent[] components = TextComponent.fromLegacyText(format("§cLe paiement de la parcelle n'a pas été réitéré, celle-ci est donc arrivée à expiration."));
+						BaseComponent lastCompo = components[components.length - 1];
+						lastCompo.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§eClique ici pour ne plus afficher ce message.")));
+						lastCompo.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/clans dismissExpirationMessage"));
+						member.getPlayer().spigot().sendMessage(components);
+					}else resetExpirationTime();
+				}
+			}else {
+				if (cachedPlot.getNextPayment() - System.currentTimeMillis() < ClanPlot.PAYMENT_DURATION_MILLIS) {
+					member.getPlayer().sendMessage(format("La parcelle du clan n'a pas été payée cette semaine. Celle-ci risque d'expirer par défaut de paiement."));
+				}
+			}
 		}
 	}
 

@@ -40,7 +40,7 @@ public class BeautyQuestsLink implements Listener {
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
 		scoreboards.put(player, id);
-		return "\n§7Quête" + (started.size() > 1 ? "s" : "") + ":\n§6§l" + quest.getName() + "\n§8> §e" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD);
+		return "\n§7Quête: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD);
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
