@@ -7,12 +7,12 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -26,6 +26,7 @@ import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
+import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
 
 public class BeautyQuestsLink implements Listener {
@@ -33,12 +34,13 @@ public class BeautyQuestsLink implements Listener {
 	private Map<Player, Integer> scoreboards = new HashMap<>();
 	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<Scoreboard<OlympaPlayerZTA>>(scoreboard -> {
 		Player player = scoreboard.getOlympaPlayer().getPlayer();
-		List<Quest> started = QuestsAPI.getQuestsStarteds(PlayersManager.getPlayerAccount(player), true);
+		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+		List<Quest> started = QuestsAPI.getQuestsStarteds(acc, true);
 		int id = scoreboards.get(player).intValue();
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
 		scoreboards.put(player, id);
-		return "§7Quête" + (started.size() > 1 ? "s" : "") + ": §e" + quest.getName();
+		return "\n§7Quête" + (started.size() > 1 ? "s" : "") + ":\n§6§l" + quest.getName() + "\n§8> §e" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD);
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
@@ -72,7 +74,7 @@ public class BeautyQuestsLink implements Listener {
 		checkScoreboard(e.getPlayerAccount().getPlayer());
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGH)
 	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
 		checkScoreboard(e.getPlayer());
 	}
@@ -81,10 +83,9 @@ public class BeautyQuestsLink implements Listener {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {
 			if (scoreboards.containsKey(p)) return;
+			scoreboards.put(p, 0);
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
-			
-			scoreboard.addLine(FixedLine.EMPTY_LINE);
 			
 			scoreboard.addLine(line);
 		}else {
