@@ -5,21 +5,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.registry.ItemStackable;
-
-public abstract class Weapon implements ItemStackable{
-	
-	// Système de cassage d'arme etc. ?
-	
-	private final int id;
-
-	public Weapon(int id) {
-		this.id = id;
-	}
-
-	public int getID(){
-		return id;
-	}
+public interface Weapon {
 	
 	public abstract void onInteract(PlayerInteractEvent e);
 	
@@ -36,5 +22,14 @@ public abstract class Weapon implements ItemStackable{
 	public abstract void itemHeld(Player p, ItemStack item);
 	
 	public abstract void itemNoLongerHeld(Player p, ItemStack item);
+	
+	/**
+	 * @param key Nom du paramètre
+	 * @param value Valeur du paramètre
+	 * @return <tt>§6§l{KEY} §r§6: §e§o{VALUE}</tt>
+	 */
+	public static String getFeatureLoreLine(String key, Object value) {
+		return "§6§l" + key + " §r§6: §e§o" + value;
+	}
 	
 }

@@ -2,9 +2,11 @@ package fr.olympa.zta.utils;
 
 public class AttributeModifier{
 	
-	private String name;
-	private Operation operation;
-	private float amount;
+	private final String name;
+	private final Operation operation;
+	private final float amount;
+	
+	private org.bukkit.attribute.AttributeModifier bukkit = null;
 	
 	public AttributeModifier(String name, Operation operation, float amount){
 		this.name = name;
@@ -26,6 +28,24 @@ public class AttributeModifier{
 	
 	public enum Operation{
 		ADD_NUMBER, ADD_MULTIPLICATOR, MULTIPLY_VALUE;
+		
+		public org.bukkit.attribute.AttributeModifier.Operation getBukkitOperation() {
+			switch (this) {
+			case ADD_MULTIPLICATOR:
+				return org.bukkit.attribute.AttributeModifier.Operation.ADD_SCALAR;
+			case ADD_NUMBER:
+				return org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER;
+			case MULTIPLY_VALUE:
+				return org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+			default:
+				return null;
+			}
+		}
+	}
+	
+	public org.bukkit.attribute.AttributeModifier getBukkitModifier() {
+		if (bukkit == null) bukkit = new org.bukkit.attribute.AttributeModifier(name, amount, operation.getBukkitOperation());
+		return bukkit;
 	}
 	
 	@Override

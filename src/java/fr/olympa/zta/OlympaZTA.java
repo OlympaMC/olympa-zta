@@ -80,7 +80,6 @@ import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
-import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.accessories.CannonCaC;
 import fr.olympa.zta.weapons.guns.accessories.CannonDamage;
 import fr.olympa.zta.weapons.guns.accessories.CannonPower;
@@ -90,24 +89,6 @@ import fr.olympa.zta.weapons.guns.accessories.ScopeLight;
 import fr.olympa.zta.weapons.guns.accessories.ScopeStrong;
 import fr.olympa.zta.weapons.guns.accessories.StockLight;
 import fr.olympa.zta.weapons.guns.accessories.StockStrong;
-import fr.olympa.zta.weapons.guns.created.Gun870;
-import fr.olympa.zta.weapons.guns.created.GunAK;
-import fr.olympa.zta.weapons.guns.created.GunBarrett;
-import fr.olympa.zta.weapons.guns.created.GunBazooka;
-import fr.olympa.zta.weapons.guns.created.GunBenelli;
-import fr.olympa.zta.weapons.guns.created.GunCobra;
-import fr.olympa.zta.weapons.guns.created.GunDragunov;
-import fr.olympa.zta.weapons.guns.created.GunG19;
-import fr.olympa.zta.weapons.guns.created.GunKSG;
-import fr.olympa.zta.weapons.guns.created.GunLupara;
-import fr.olympa.zta.weapons.guns.created.GunM16;
-import fr.olympa.zta.weapons.guns.created.GunM1897;
-import fr.olympa.zta.weapons.guns.created.GunM1911;
-import fr.olympa.zta.weapons.guns.created.GunP22;
-import fr.olympa.zta.weapons.guns.created.GunSDMR;
-import fr.olympa.zta.weapons.guns.created.GunSkorpion;
-import fr.olympa.zta.weapons.guns.created.GunStoner;
-import fr.olympa.zta.weapons.guns.created.GunUZI;
 import fr.olympa.zta.weapons.knives.KnifeBatte;
 import fr.olympa.zta.weapons.knives.KnifeBiche;
 import fr.olympa.zta.weapons.knives.KnifeSurin;
@@ -181,7 +162,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			throw new RuntimeException("Registry failed to load", ex);
 		}
 		
-		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), Gun.TABLE_NAME, Gun.CREATE_TABLE_STATEMENT, Gun::deserializeGun));
 		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 
 		Bukkit.clearRecipes();

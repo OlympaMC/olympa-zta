@@ -11,8 +11,7 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.registry.ItemStackable;
 import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.weapons.guns.accessories.Accessory;
-import fr.olympa.zta.weapons.guns.accessories.Accessory.AccessoryType;
+import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 
 public class AccessoriesGUI extends OlympaGUI{
 	

@@ -13,42 +13,37 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.utils.Attribute;
+import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
-import fr.olympa.zta.weapons.guns.accessories.Accessory;
-import fr.olympa.zta.weapons.guns.accessories.Accessory.AccessoryType;
-import fr.olympa.zta.weapons.guns.accessories.Cannon;
-import fr.olympa.zta.weapons.guns.accessories.Scope;
-import fr.olympa.zta.weapons.guns.accessories.Stock;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class Gun extends Weapon {
+public abstract class Gun implements Weapon {
 
 	private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
-	public static final String TABLE_NAME = "`zta_guns`";
-
+	private final int id;
+	
 	protected int ammos = 0;
 	protected boolean ready = false;
 	protected boolean zoomed = false;
@@ -66,25 +61,38 @@ public abstract class Gun extends Weapon {
 	public final Attribute fireRate = new Attribute(getFireRate());
 	public final Attribute fireVolume = new Attribute(getFireVolume());
 
-	public Scope scope;
-	public Cannon cannon;
-	public Stock stock;
+	public Accessory scope;
+	public Accessory cannon;
+	public Accessory stock;
 	
 	public float customDamagePlayer, customDamageEntity;
 
 	public Gun(int id) {
-		super(id);
+		this.id = id;
+	}
+	
+	public int getID() {
+		return id;
 	}
 
+	public abstract String getName();
+	
+	public abstract Material getItemMaterial();
+	
 	public ItemStack createItemStack() {
 		return createItemStack(true);
 	}
 
 	public ItemStack createItemStack(boolean accessories) {
-		ItemStack item = ItemUtils.item(getItemMaterial(), getName());
+		ItemStack item = new ItemStack(getItemMaterial());
+		ItemMeta meta = item.getItemMeta();
+		meta.addItemFlags(ItemFlag.values());
+		meta.getPersistentDataContainer().set(GunRegistry.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, getID());
+		meta.setCustomModelData(1);
+		item.setItemMeta(meta);
 		updateItemName(item);
 		updateItemLore(item, accessories);
-		return addIdentifier(item);
+		return item;
 	}
 
 	public void updateItemName(ItemStack item) {
@@ -102,18 +110,20 @@ public abstract class Gun extends Weapon {
 	public void updateItemLore(ItemStack item, boolean accessories) {
 		ItemMeta im = item.getItemMeta();
 		List<String> lore = new ArrayList<>(Arrays.asList(
-				getFeatureLoreLine("Cadence de tir", attributeFormat.format(getFireRate() / 20D) + "s"), getFeatureLoreLine("Temps de recharge", attributeFormat.format(getChargeTime() / 20D)
-						+ "s"),
-				getFeatureLoreLine("Munitions", getAmmoType().getName()),
-				getFeatureLoreLine("Précision", getAccuracy().getName()),
-				getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
+				Weapon.getFeatureLoreLine("Cadence de tir", attributeFormat.format(getFireRate() / 20D) + "s"),
+				Weapon.getFeatureLoreLine("Temps de recharge", attributeFormat.format(getChargeTime() / 20D) + "s"),
+				Weapon.getFeatureLoreLine("Munitions", getAmmoType().getName()),
+				Weapon.getFeatureLoreLine("Précision", getAccuracy().getName()),
+				Weapon.getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
 		if (accessories) {
 			lore.addAll(Arrays.asList(
 					"",
 					"§6§lAccessoires §r§6: §e[§n" + getAccessoriesAmount() + "§r§e/" + getAllowedAccessoriesAmount() + "]",
 					"§e§oClic droit pour attacher des accessoires"));
 		}
-		lore.addAll(getIDLoreLines());
+		lore.add("");
+		lore.add("§6§lArme immatriculée §r§6:");
+		lore.add("§e§m   §r§e[I" + id + "]§m   §r");
 		im.setLore(lore);
 		item.setItemMeta(im);
 	}
@@ -346,9 +356,9 @@ public abstract class Gun extends Weapon {
 
 	private void toggleZoom(Player p, ItemStack item) {
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -446,7 +456,7 @@ public abstract class Gun extends Weapon {
 	 * @return AttributModifier sur l'attribut {@link Attribute#GENERIC_MOVEMENT_SPEED}
 	 */
 	public AttributeModifier getZoomModifier() {
-		return zoomModifier == null ? null : zoomModifier;
+		return zoomModifier;
 	}
 
 	/**
@@ -486,20 +496,20 @@ public abstract class Gun extends Weapon {
 		return i;
 	}
 
-	public void setAccessory(AccessoryType type, Accessory accessory) {
+	public void setAccessory(Accessory accessory) {
 		Accessory old = null;
-		switch (type) {
+		switch (accessory.getAccessoryType()) {
 		case SCOPE:
 			old = scope;
-			scope = (Scope) accessory;
+			scope = accessory;
 			break;
 		case CANNON:
 			old = cannon;
-			cannon = (Cannon) accessory;
+			cannon = accessory;
 			break;
 		case STOCK:
 			old = stock;
-			stock = (Stock) accessory;
+			stock = accessory;
 			break;
 		}
 		if (old != null) old.remove(this);
@@ -555,36 +565,31 @@ public abstract class Gun extends Weapon {
 		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1, 1);
 	}
 
-	private static OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`id`) VALUES (?)");
-	private static OlympaStatement updateStatement = new OlympaStatement("UPDATE " + TABLE_NAME + " SET "
-			+ "`ammos` = ?, "
-			+ "`ready` = ?, "
-			+ "`zoomed` = ?, "
-			+ "`secondary_mode` = ?, "
-			+ "`scope_id` = ?, "
-			+ "`cannon_id` = ?, "
-			+ "`stock_id` = ? "
-			+ "WHERE (`id` = ?)");
-
-	public void createDatas() throws SQLException {
-		PreparedStatement statement = createStatement.getStatement();
-		statement.setInt(1, getID());
-		statement.executeUpdate();
-	}
-
-	public synchronized void updateDatas() throws SQLException {
-		PreparedStatement statement = updateStatement.getStatement();
+	public synchronized void updateDatas(PreparedStatement statement) throws SQLException {
 		statement.setInt(1, ammos);
 		statement.setBoolean(2, ready);
 		statement.setBoolean(3, zoomed);
 		statement.setBoolean(4, secondaryMode);
-		statement.setInt(5, scope == null ? -1 : scope.getID());
-		statement.setInt(6, cannon == null ? -1 : cannon.getID());
-		statement.setInt(7, stock == null ? -1 : stock.getID());
+		statement.setInt(5, scope == null ? -1 : scope.ordinal());
+		statement.setInt(6, cannon == null ? -1 : cannon.ordinal());
+		statement.setInt(7, stock == null ? -1 : stock.ordinal());
 		statement.setInt(8, getID());
 		statement.executeUpdate();
 	}
-
+	
+	public void loadDatas(ResultSet set) throws Exception {
+		ammos = set.getInt("ammos");
+		ready = set.getBoolean("ready");
+		zoomed = set.getBoolean("zoomed");
+		secondaryMode = set.getBoolean("secondary_mode");
+		int scopeType = set.getInt("scope_id");
+		int cannonType = set.getInt("cannon_id");
+		int stockType = set.getInt("stock_id");
+		if (scopeType != -1) setAccessory(Accessory.values()[scopeType]);
+		if (cannonType != -1) setAccessory(Accessory.values()[cannonType]);
+		if (stockType != -1) setAccessory(Accessory.values()[stockType]);
+	}
+	
 	public enum GunAction {
 		ZOOM, CHANGE_MODE;
 	}
@@ -625,37 +630,6 @@ public abstract class Gun extends Weapon {
 			return spread;
 		}
 
-	}
-
-	public static final String CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
-			"  `id` INT NOT NULL," +
-			"  `ammos` SMALLINT(2) UNSIGNED DEFAULT 0," +
-			"  `ready` TINYINT(1) DEFAULT 1," +
-			"  `zoomed` TINYINT(1) DEFAULT 0," +
-			"  `secondary_mode` TINYINT(1) DEFAULT 0," +
-			"  `scope_id` INT(11) DEFAULT -1," +
-			"  `cannon_id` INT(11) DEFAULT -1," +
-			"  `stock_id` INT(11) DEFAULT -1," +
-			"  PRIMARY KEY (`id`))";
-
-	public static <T extends Gun> T deserializeGun(ResultSet set, int id, Class<?> clazz) throws Exception {
-		T gun = (T) clazz.getConstructor(int.class).newInstance(id);
-		gun.ammos = set.getInt("ammos");
-		gun.ready = set.getBoolean("ready");
-		gun.zoomed = set.getBoolean("zoomed");
-		gun.secondaryMode = set.getBoolean("secondary_mode");
-		int scopeID = set.getInt("scope_id");
-		int cannonID = set.getInt("cannon_id");
-		int stockID = set.getInt("stock_id");
-		new BukkitRunnable() {
-			public void run() {
-				ZTARegistry registry = ZTARegistry.get();
-				if (scopeID != -1) gun.setAccessory(AccessoryType.SCOPE, registry.getObject(scopeID));
-				if (cannonID != -1) gun.setAccessory(AccessoryType.CANNON, registry.getObject(cannonID));
-				if (stockID != -1) gun.setAccessory(AccessoryType.STOCK, registry.getObject(stockID));
-			}
-		}.runTaskLater(OlympaZTA.getInstance(), 20L);
-		return gun;
 	}
 
 	public static ItemStack buildDemoStack(Material type, String name) {

@@ -1,41 +1,53 @@
 package fr.olympa.zta.weapons.knives;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.weapons.Weapon;
 
-public abstract class Knife extends Weapon{
+public enum Knife implements Weapon {
+	
+	BATTE(Material.BLAZE_ROD, "Batte", 2, 3),
+	BICHE(Material.ARROW, "Pied-de-biche", 3, 3),
+	SURIN(Material.STICK, "Surin", 4, 2),
+	;
 	
 	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false);
 	
-	public Knife(int id) {
-		super(id);
+	private final float playerDamage, entityDamage;
+	
+	private final ItemStack item;
+	
+	private Knife(Material material, String name, float playerDamage, float entityDamage) {
+		this.playerDamage = playerDamage;
+		this.entityDamage = entityDamage;
+		
+		item = new ItemStack(material);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§b" + name);
+		meta.setLore(Arrays.asList(Weapon.getFeatureLoreLine("Dégâts aux joueurs", playerDamage), Weapon.getFeatureLoreLine("Dégâts aux monstres", entityDamage)));
+		meta.setCustomModelData(1);
+		item.setItemMeta(meta);
 	}
-
-	public ItemStack createItemStack(){
-		List<String> lore = new ArrayList<>(Arrays.asList(
-				getFeatureLoreLine("Dégâts aux joueurs", getPlayerDamage()),
-				getFeatureLoreLine("Dégâts aux monstres", getEntityDamage())));
-		lore.addAll(getIDLoreLines());
-		return addIdentifier(ItemUtils.item(getItemMaterial(), "§b" + getName(), lore.toArray(new String[0])));
+	
+	public ItemStack getItem() {
+		return item.clone();
 	}
 	
 	public void onInteract(PlayerInteractEvent e){}
 	
 	public void onEntityHit(EntityDamageByEntityEvent e){
 		if (e.getEntity() instanceof Player) {
-			e.setDamage(getPlayerDamage());
-		}else e.setDamage(getEntityDamage());
+			e.setDamage(playerDamage);
+		}else e.setDamage(entityDamage);
 	}
 	
 	public boolean drop(Player p, ItemStack item){
@@ -51,9 +63,5 @@ public abstract class Knife extends Weapon{
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		p.removePotionEffect(PotionEffectType.SPEED);
 	}
-	
-	public abstract float getPlayerDamage();
-	
-	public abstract float getEntityDamage();
 	
 }

@@ -1,12 +1,12 @@
 package fr.olympa.zta.weapons.guns.created;
 
 import org.bukkit.Material;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.zta.utils.AttributeModifier;
+import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.CommonGunConstants;
 import fr.olympa.zta.weapons.guns.Gun;
@@ -21,7 +21,7 @@ public class GunBarrett extends Gun{
 	public static final String NAME = "Barrett M109";
 	public static final Material TYPE = Material.IRON_HOE;
 
-	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", -3, Operation.ADD_SCALAR);
+	private static final AttributeModifier zoomModifier = new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -3);
 	private static final PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 1);
 	
 	public GunBarrett(int id) {
