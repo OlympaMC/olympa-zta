@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -26,10 +27,11 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.ItemStackable;
 
 public class GunRegistry {
 	
-	public static final NamespacedKey PERISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "gunRegistry");
+	public static final NamespacedKey GUN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "gunRegistry");
 	
 	public final String TABLE_NAME = "`zta_guns`";
 
@@ -57,7 +59,7 @@ public class GunRegistry {
 	public GunRegistry(Class<? extends Gun>... classes) throws Exception {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
-				"  `id` UNSIGNED INT NOT NULL AUTO_INCREMENT," +
+				"  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT," +
 				"  `type` VARCHAR(30) NOT NULL," +
 				"  `ammos` SMALLINT(2) UNSIGNED DEFAULT 0," +
 				"  `ready` TINYINT(1) DEFAULT 1," +
@@ -113,17 +115,23 @@ public class GunRegistry {
 		return false;
 	}
 	
+	public <T extends Gun> GunInstantiator<T> addInstantiator(Class<T> clazz) {
+		try {
+			GunInstantiator<T> instantiator = new GunInstantiator<>(clazz);
+			instantiators.put(clazz, instantiator);
+			return instantiator;
+		}catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public <T extends Gun> GunInstantiator<T> getInstantiator(Class<T> clazz) {
 		return (GunInstantiator<T>) instantiators.get(clazz);
 	}
 	
-	public GunInstantiator<?> getInstantiator(String simpleName) {
-		try {
-			return instantiators.get(Class.forName("fr.olympa.weapons.guns.created." + simpleName));
-		}catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public GunInstantiator<?> getInstantiator(String simpleName) throws ClassNotFoundException {
+		return instantiators.get(Class.forName(getClass().getPackageName() + ".created." + simpleName));
 	}
 	
 	public Collection<GunInstantiator<? extends Gun>> getInstantiators() {
@@ -154,8 +162,8 @@ public class GunRegistry {
 		ItemMeta im = is.getItemMeta();
 		if (!im.hasLore()) return null;
 		
-		int id = im.getPersistentDataContainer().getOrDefault(PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
-		if (id != 0) return registry.get(id);
+		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
+		if (id != -1) return registry.get(id);
 		
 		return null;
 	}
@@ -172,14 +180,14 @@ public class GunRegistry {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
-				int id = im.getPersistentDataContainer().getOrDefault(PERISTENT_DATA_KEY, PersistentDataType.INTEGER, 0);
+				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
 				if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
 						int index = s.indexOf("[I");
 						if (index != -1) {
 							OlympaZTA.getInstance().getLogger().warning("Found registry object with lore: " + s);
 							id = Integer.parseInt(s.substring(index + 2, s.indexOf("]")));
-							im.getPersistentDataContainer().set(PERISTENT_DATA_KEY, PersistentDataType.INTEGER, id);
+							im.getPersistentDataContainer().set(GUN_KEY, PersistentDataType.INTEGER, id);
 							item.setItemMeta(im);
 							break;
 						}
@@ -240,16 +248,17 @@ public class GunRegistry {
 		}
 	}
 	
-	public class GunInstantiator<T extends Gun> {
+	public class GunInstantiator<T extends Gun> implements ItemStackable {
 		private Class<T> clazz;
 		private Constructor<T> constructor;
 		private ItemStack demoItem;
 		
-		public GunInstantiator(Class<T> clazz) throws ReflectiveOperationException {
+		private GunInstantiator(Class<T> clazz) throws ReflectiveOperationException {
 			this.clazz = clazz;
 			constructor = clazz.getDeclaredConstructor(int.class);
 			demoItem = new ItemStack((Material) clazz.getDeclaredField("TYPE").get(null));
 			ItemMeta meta = demoItem.getItemMeta();
+			meta.addItemFlags(ItemFlag.values());
 			meta.setDisplayName("§e" + clazz.getDeclaredField("NAME").get(null));
 			meta.setCustomModelData(1);
 			demoItem.setItemMeta(meta);
@@ -259,10 +268,12 @@ public class GunRegistry {
 			return clazz;
 		}
 		
+		@Override
 		public ItemStack getDemoItem() {
 			return demoItem;
 		}
 		
+		@Override
 		public ItemStack createItem() {
 			try {
 				T gun = create();

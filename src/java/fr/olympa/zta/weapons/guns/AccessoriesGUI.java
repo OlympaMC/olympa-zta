@@ -16,7 +16,7 @@ import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 
 public class AccessoriesGUI extends OlympaGUI{
 	
-	public static final NamespacedKey PERSISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "accessory");
+	public static final NamespacedKey ACCESSORY_KEY = new NamespacedKey(OlympaZTA.getInstance(), "accessory");
 	
 	private static final ItemStack separator = ItemUtils.item(Material.GRAY_STAINED_GLASS_PANE, "§7");
 	
@@ -36,7 +36,7 @@ public class AccessoriesGUI extends OlympaGUI{
 				Accessory accessory = type.get(gun);
 				if (accessory == null) {
 					item = type.getAvailableItemSlot();
-				}else item = accessory.getItem();
+				}else item = accessory.createItem();
 			}else item = type.getUnavailableItemSlot();
 			inv.setItem(type.getSlot(), item);
 		}
@@ -72,7 +72,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		
 		Accessory accessory = null;
 		ItemMeta meta = current.getItemMeta();
-		if (meta.getPersistentDataContainer().has(PERSISTENT_DATA_KEY, PersistentDataType.INTEGER)) accessory = Accessory.values()[meta.getPersistentDataContainer().get(PERSISTENT_DATA_KEY, PersistentDataType.INTEGER)];
+		if (meta.getPersistentDataContainer().has(ACCESSORY_KEY, PersistentDataType.INTEGER)) accessory = Accessory.values()[meta.getPersistentDataContainer().get(ACCESSORY_KEY, PersistentDataType.INTEGER)];
 		if (accessory == null) return true; // si l'objet en main n'est pas un accessoire : cancel
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
 		

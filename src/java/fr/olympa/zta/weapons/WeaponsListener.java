@@ -94,9 +94,9 @@ public class WeaponsListener implements Listener {
 		checkHeld(p, inv.getItem(e.getNewSlot()), true);
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDrop(PlayerDropItemEvent e) {
-		checkHeld(e.getPlayer(), e.getItemDrop().getItemStack(), false);
+		if (!e.isCancelled()) checkHeld(e.getPlayer(), e.getItemDrop().getItemStack(), false);
 	}
 
 	@EventHandler
@@ -135,8 +135,8 @@ public class WeaponsListener implements Listener {
 		ItemMeta meta = item.getItemMeta();
 		if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
 			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
-		}else if (meta.getPersistentDataContainer().has(GunRegistry.PERISTENT_DATA_KEY, PersistentDataType.INTEGER)) {
-			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER));
+		}else if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER)) {
+			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(GunRegistry.GUN_KEY, PersistentDataType.INTEGER));
 		}
 		return null;
 	}

@@ -33,6 +33,10 @@ public class Attribute{
 		computeValue();
 	}
 	
+	public int getModifiersSize() {
+		return modifiers.size();
+	}
+	
 	public float getValue(){
 		return cachedValue;
 	}

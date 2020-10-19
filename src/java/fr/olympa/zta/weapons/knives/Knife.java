@@ -8,14 +8,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.zta.weapons.ItemStackable;
 import fr.olympa.zta.weapons.Weapon;
+import fr.olympa.zta.weapons.WeaponsListener;
 
-public enum Knife implements Weapon {
+public enum Knife implements Weapon, ItemStackable {
 	
-	BATTE(Material.BLAZE_ROD, "Batte", 2, 3),
+	MATRAQUE(Material.BLAZE_ROD, "Matraque", 2, 3),
 	BICHE(Material.ARROW, "Pied-de-biche", 3, 3),
 	SURIN(Material.STICK, "Surin", 4, 2),
 	;
@@ -34,11 +37,13 @@ public enum Knife implements Weapon {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
 		meta.setLore(Arrays.asList(Weapon.getFeatureLoreLine("Dégâts aux joueurs", playerDamage), Weapon.getFeatureLoreLine("Dégâts aux monstres", entityDamage)));
+		meta.getPersistentDataContainer().set(WeaponsListener.KNIFE_KEY, PersistentDataType.INTEGER, ordinal());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
 	}
 	
-	public ItemStack getItem() {
+	@Override
+	public ItemStack createItem() {
 		return item.clone();
 	}
 	

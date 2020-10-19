@@ -68,8 +68,11 @@ public class GunReward extends AbstractReward {
 	@Override
 	protected void load(Map<String, Object> map) {
 		String type = (String) map.get("instantiator");
-		instantiator = OlympaZTA.getInstance().gunRegistry.getInstantiator(type);
-		if (instantiator == null) throw new IllegalArgumentException("Unknown item stackable type: " + type);
+		try {
+			instantiator = OlympaZTA.getInstance().gunRegistry.getInstantiator(type);
+		}catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("Unknown item stackable type: " + type);
+		}
 	}
 	
 	@Override

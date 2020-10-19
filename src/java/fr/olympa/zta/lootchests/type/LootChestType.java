@@ -46,7 +46,7 @@ public enum LootChestType {
 			new GunCreator(1.755, GunUZI.class),
 			new GunCreator(1.690, GunM16.class),
 			new GunCreator(1.755, GunM1897.class),
-			new KnifeCreator(2.6, Knife.BATTE),
+			new KnifeCreator(2.6, Knife.MATRAQUE),
 			new AccessoryCreator(1.0, Accessory.STOCK_LIGHT),
 			new AccessoryCreator(0.6, Accessory.CANNON_CAC),
 			new AccessoryCreator(0.4, Accessory.SCOPE_LIGHT),

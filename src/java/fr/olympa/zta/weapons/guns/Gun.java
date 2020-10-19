@@ -88,7 +88,7 @@ public abstract class Gun implements Weapon {
 		ItemStack item = new ItemStack(getItemMaterial());
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
-		meta.getPersistentDataContainer().set(GunRegistry.PERISTENT_DATA_KEY, PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(GunRegistry.GUN_KEY, PersistentDataType.INTEGER, getID());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
 		updateItemName(item);
@@ -124,7 +124,7 @@ public abstract class Gun implements Weapon {
 		}
 		lore.add("");
 		lore.add("§6§lArme immatriculée §r§6:");
-		lore.add("§e§m   §r§e[I" + id + "]§m   §r");
+		lore.add("§e§m                      §r§e[I" + id + "]§m                     §r");
 		im.setLore(lore);
 		item.setItemMeta(im);
 	}
@@ -164,9 +164,9 @@ public abstract class Gun implements Weapon {
 		Player p = e.getPlayer();
 		ItemStack item = e.getItem();
 		e.setCancelled(true);
-
+		
 		lastClick = System.currentTimeMillis();
-
+		
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
 			if (reloading != null) {
 				if (isOneByOneCharge() && ammos > 0) {
@@ -299,7 +299,7 @@ public abstract class Gun implements Weapon {
 		if (zoomed) toggleZoom(p, item);
 
 		int max = (int) maxAmmos.getValue();
-		if (max >= ammos) return;
+		if (max <= ammos) return;
 
 		int toCharge;
 		int availableAmmos = getAmmoType().getAmmos(p);
@@ -571,14 +571,15 @@ public abstract class Gun implements Weapon {
 	}
 
 	public synchronized void updateDatas(PreparedStatement statement) throws SQLException {
-		statement.setInt(1, ammos);
-		statement.setBoolean(2, ready);
-		statement.setBoolean(3, zoomed);
-		statement.setBoolean(4, secondaryMode);
-		statement.setInt(5, scope == null ? -1 : scope.ordinal());
-		statement.setInt(6, cannon == null ? -1 : cannon.ordinal());
-		statement.setInt(7, stock == null ? -1 : stock.ordinal());
-		statement.setInt(8, getID());
+		int i = 1;
+		statement.setInt(i++, ammos);
+		statement.setBoolean(i++, ready);
+		statement.setBoolean(i++, zoomed);
+		statement.setBoolean(i++, secondaryMode);
+		statement.setInt(i++, scope == null ? -1 : scope.ordinal());
+		statement.setInt(i++, cannon == null ? -1 : cannon.ordinal());
+		statement.setInt(i++, stock == null ? -1 : stock.ordinal());
+		statement.setInt(i++, getID());
 		statement.executeUpdate();
 	}
 	

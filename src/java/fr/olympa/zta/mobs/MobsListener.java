@@ -204,7 +204,7 @@ public class MobsListener implements Listener {
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(5), Knife.BATTE.getItem());
+		p.getInventory().addItem(Food.BAKED_POTATO.get(5), Knife.MATRAQUE.createItem());
 	}
 	
 }

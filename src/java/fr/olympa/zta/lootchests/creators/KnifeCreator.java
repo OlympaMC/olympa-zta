@@ -21,7 +21,7 @@ public class KnifeCreator implements LootCreator {
 	}
 
 	public Loot create(Player p, Random random) {
-		return new Loot(type.getItem());
+		return new Loot(type.createItem());
 	}
 
 }

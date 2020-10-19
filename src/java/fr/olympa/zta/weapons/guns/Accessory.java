@@ -14,8 +14,9 @@ import org.bukkit.potion.PotionEffectType;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
+import fr.olympa.zta.weapons.ItemStackable;
 
-public enum Accessory {
+public enum Accessory implements ItemStackable {
 
 	CANNON_CAC(AccessoryType.CANNON, Material.GLOWSTONE_DUST, "Baïonnette", "augmente les dégâts au corps-à-corps (+4)"){
 		@Override
@@ -161,7 +162,7 @@ public enum Accessory {
 		}
 		meta.setLore(lore);
 		meta.setCustomModelData(1);
-		meta.getPersistentDataContainer().set(AccessoriesGUI.PERSISTENT_DATA_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(AccessoriesGUI.ACCESSORY_KEY, PersistentDataType.INTEGER, ordinal());
 		item.setItemMeta(meta);
 	}
 	
@@ -169,7 +170,8 @@ public enum Accessory {
 		return type;
 	}
 	
-	public ItemStack getItem() {
+	@Override
+	public ItemStack createItem() {
 		return item.clone();
 	}
 

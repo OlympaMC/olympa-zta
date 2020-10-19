@@ -2,6 +2,7 @@ package fr.olympa.zta;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +65,6 @@ import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
-import fr.olympa.zta.registry.RegistryCommand;
 import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
@@ -74,9 +74,30 @@ import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
+import fr.olympa.zta.weapons.WeaponsGiveGUI;
 import fr.olympa.zta.weapons.WeaponsListener;
+import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunRegistry;
+import fr.olympa.zta.weapons.guns.created.Gun870;
+import fr.olympa.zta.weapons.guns.created.GunAK;
+import fr.olympa.zta.weapons.guns.created.GunBarrett;
+import fr.olympa.zta.weapons.guns.created.GunBazooka;
+import fr.olympa.zta.weapons.guns.created.GunBenelli;
+import fr.olympa.zta.weapons.guns.created.GunCobra;
+import fr.olympa.zta.weapons.guns.created.GunDragunov;
+import fr.olympa.zta.weapons.guns.created.GunG19;
+import fr.olympa.zta.weapons.guns.created.GunKSG;
+import fr.olympa.zta.weapons.guns.created.GunLupara;
+import fr.olympa.zta.weapons.guns.created.GunM16;
+import fr.olympa.zta.weapons.guns.created.GunM1897;
+import fr.olympa.zta.weapons.guns.created.GunM1911;
+import fr.olympa.zta.weapons.guns.created.GunP22;
+import fr.olympa.zta.weapons.guns.created.GunSDMR;
+import fr.olympa.zta.weapons.guns.created.GunSkorpion;
+import fr.olympa.zta.weapons.guns.created.GunStoner;
+import fr.olympa.zta.weapons.guns.created.GunUZI;
+import fr.olympa.zta.weapons.knives.Knife;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -147,8 +168,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			throw new RuntimeException("Registry failed to load", ex);
 		}
 		
-		//Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
-
+		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).stream()
+				.map(gunRegistry::addInstantiator)
+				.forEach(WeaponsGiveGUI.stackables::add);
+		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
+		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
+		
 		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();
 
@@ -204,7 +229,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new MobsCommand().register();
 		new EnderChestCommand().register();
 		new HubCommand().register();
-		new RegistryCommand().register();
 		new SpreadManageCommand().register();
 		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
