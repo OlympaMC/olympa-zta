@@ -2,7 +2,6 @@ package fr.olympa.zta;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -65,10 +64,7 @@ import fr.olympa.zta.mobs.MobsListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
-import fr.olympa.zta.registry.ItemStackableInstantiator;
 import fr.olympa.zta.registry.RegistryCommand;
-import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.registry.ZTARegistry.DeserializeDatas;
 import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
@@ -80,18 +76,7 @@ import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.AmmoType;
-import fr.olympa.zta.weapons.guns.accessories.CannonCaC;
-import fr.olympa.zta.weapons.guns.accessories.CannonDamage;
-import fr.olympa.zta.weapons.guns.accessories.CannonPower;
-import fr.olympa.zta.weapons.guns.accessories.CannonSilent;
-import fr.olympa.zta.weapons.guns.accessories.CannonStabilizer;
-import fr.olympa.zta.weapons.guns.accessories.ScopeLight;
-import fr.olympa.zta.weapons.guns.accessories.ScopeStrong;
-import fr.olympa.zta.weapons.guns.accessories.StockLight;
-import fr.olympa.zta.weapons.guns.accessories.StockStrong;
-import fr.olympa.zta.weapons.knives.KnifeBatte;
-import fr.olympa.zta.weapons.knives.KnifeBiche;
-import fr.olympa.zta.weapons.knives.KnifeSurin;
+import fr.olympa.zta.weapons.guns.GunRegistry;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -120,7 +105,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ClansManagerZTA clansManager;
 	public TaxManager taxManager;
 	public AuctionsManager auctionsManager;
-	public ZTARegistry registry;
+	public GunRegistry gunRegistry;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -157,12 +142,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 
 		try {
-			registry = new ZTARegistry();
+			gunRegistry = new GunRegistry();
 		}catch (Exception ex) {
 			throw new RuntimeException("Registry failed to load", ex);
 		}
 		
-		Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
+		//Arrays.asList(KnifeBatte.class, KnifeBiche.class, KnifeSurin.class, CannonCaC.class, CannonDamage.class, CannonPower.class, CannonSilent.class, CannonStabilizer.class, ScopeLight.class, ScopeStrong.class, StockLight.class, StockStrong.class).forEach(x -> registry.registerItemStackableType(new ItemStackableInstantiator<>(x), null, null, DeserializeDatas.easyClass()));
 
 		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();
@@ -311,7 +296,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning.end();
 		scoreboards.unload();
 
-		registry.unload();
+		gunRegistry.unload();
 	}
 	
 }

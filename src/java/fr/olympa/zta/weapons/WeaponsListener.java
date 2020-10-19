@@ -2,6 +2,7 @@ package fr.olympa.zta.weapons;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -24,14 +25,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.registry.Registrable;
-import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.weapons.guns.Gun;
+import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import fr.olympa.zta.weapons.knives.Knife;
 
 public class WeaponsListener implements Listener {
+	
+	public static final NamespacedKey KNIFE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "knife");
 
 	public static boolean cancelDamageEvent = false; // dommage causé par le contact d'une balle
 
@@ -45,10 +49,9 @@ public class WeaponsListener implements Listener {
 		Player damager = (Player) e.getDamager();
 
 		ItemStack item = damager.getInventory().getItemInMainHand();
-		if (item == null) return;
 
-		Registrable object = ZTARegistry.get().getItemStackable(item);
-		if (object != null && object instanceof Weapon) ((Weapon) object).onEntityHit(e);
+		Weapon weapon = getWeapon(item);
+		if (weapon != null) weapon.onEntityHit(e);
 	}
 
 	@EventHandler
@@ -62,10 +65,10 @@ public class WeaponsListener implements Listener {
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		if (e.useItemInHand() == Result.DENY) return;
-		if (e.getItem() == null || e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
+		if (e.getHand() == EquipmentSlot.OFF_HAND || e.getAction() == Action.PHYSICAL) return;
 
-		Registrable object = ZTARegistry.get().getItemStackable(e.getItem());
-		if (object != null && object instanceof Weapon) ((Weapon) object).onInteract(e);
+		Weapon weapon = getWeapon(e.getItem());
+		if (weapon != null) weapon.onInteract(e);
 	}
 
 	@EventHandler
@@ -76,11 +79,10 @@ public class WeaponsListener implements Listener {
 		ItemStack item = e.getCurrentItem();
 		if (item == null) return;
 
-		Registrable object = ZTARegistry.get().getItemStackable(item);
-		if (object instanceof Gun) {
-			((Gun) object).itemClick((Player) e.getWhoClicked(), item);
+		OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
+			gun.itemClick((Player) e.getWhoClicked(), item);
 			e.setCancelled(true);
-		}
+		});
 	}
 
 	@EventHandler
@@ -126,16 +128,25 @@ public class WeaponsListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), true);
 	}
+	
+	private Weapon getWeapon(ItemStack item) {
+		if (item == null) return null;
+		if (!item.hasItemMeta()) return null;
+		ItemMeta meta = item.getItemMeta();
+		if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
+			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
+		}else if (meta.getPersistentDataContainer().has(GunRegistry.PERISTENT_DATA_KEY, PersistentDataType.INTEGER)) {
+			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER));
+		}
+		return null;
+	}
 
 	private void checkHeld(Player p, ItemStack item, boolean held) {
-		if (item != null) {
-			Registrable object = ZTARegistry.get().getItemStackable(item);
-			if (object instanceof Weapon) {
-				Weapon weapon = (Weapon) object;
-				if (held) {
-					weapon.itemHeld(p, item);
-				}else weapon.itemNoLongerHeld(p, item);
-			}
+		Weapon weapon = getWeapon(item);
+		if (weapon != null) {
+			if (held) {
+				weapon.itemHeld(p, item);
+			}else weapon.itemNoLongerHeld(p, item);
 		}
 	}
 

@@ -1,10 +1,13 @@
 package fr.olympa.zta.weapons.guns;
 
+import java.lang.reflect.Constructor;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,8 +26,6 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.Registrable;
 
 public class GunRegistry {
 	
@@ -44,13 +46,15 @@ public class GunRegistry {
 			+ "`stock_id` = ? "
 			+ "WHERE (`id` = ?)");
 	
+	private final Map<Class<? extends Gun>, GunInstantiator<? extends Gun>> instantiators = new HashMap<>();
+	
 	public final Map<Integer, Gun> registry = new ConcurrentHashMap<>(200);
 	public final List<Integer> toEvict = new ArrayList<>();
 	
 	private final BukkitTask evictingTask;
 	public long nextEviction = 0;
 	
-	public GunRegistry() throws SQLException {
+	public GunRegistry(Class<? extends Gun>... classes) throws Exception {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 				"  `id` UNSIGNED INT NOT NULL AUTO_INCREMENT," +
@@ -86,24 +90,10 @@ public class GunRegistry {
 				if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
 			}
 		}, 0, period);
-	}
-	
-	/**
-	 * Enregistrer dans le registre l'objet spécifié, dont les caractéristiques seront sauvegardées dans la BDD
-	 * @param clazz Objet à enregistrer
-	 * @return ID de l'objet enregistré (renvoie {@link Registrable#getID()})
-	 */
-	public synchronized Gun registerGun(Class<? extends Gun> clazz) throws SQLException, ReflectiveOperationException {
-		PreparedStatement statement = createStatement.getStatement();
-		statement.setString(1, clazz.getName());
-		statement.executeUpdate();
-		ResultSet generatedKeys = statement.getGeneratedKeys();
-		generatedKeys.next();
-		int id = generatedKeys.getInt("id");
-		generatedKeys.close();
-		Gun gun = clazz.getConstructor(int.class).newInstance(id);
-		registry.put(id, gun);
-		return gun;
+		
+		for (Class<? extends Gun> clazz : classes) {
+			instantiators.put(clazz, new GunInstantiator<>(clazz));
+		}
 	}
 	
 	public boolean removeObject(Gun object) {
@@ -123,13 +113,30 @@ public class GunRegistry {
 		return false;
 	}
 	
+	public <T extends Gun> GunInstantiator<T> getInstantiator(Class<T> clazz) {
+		return (GunInstantiator<T>) instantiators.get(clazz);
+	}
+	
+	public GunInstantiator<?> getInstantiator(String simpleName) {
+		try {
+			return instantiators.get(Class.forName("fr.olympa.weapons.guns.created." + simpleName));
+		}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Collection<GunInstantiator<? extends Gun>> getInstantiators() {
+		return instantiators.values();
+	}
+	
 	/**
 	 * Chercher dans le registre l'objet correspondant à l'ID
 	 * @param id ID de l'objet
 	 * @return objet correspondant à l'ID spécifié
 	 */
-	public <T extends Gun> T getObject(int id) {
-		return (T) registry.get(id);
+	public Gun getGun(int id) {
+		return registry.get(id);
 	}
 	
 	public int getRegistrySize() {
@@ -156,17 +163,6 @@ public class GunRegistry {
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {
 		Gun gun = getGun(item);
 		if (gun != null) consumer.accept(gun);
-	}
-	
-	/**
-	 * Créer l'item découlant d'un objet ItemStackable et enregistrer cet objet dans le registre
-	 * @param <T> Objet de type {@link ItemStackable}
-	 * @param object Objet pour lequel sera créé l'item et qui sera enregistré dans le registre.
-	 * @return Item créé
-	 */
-	public <T extends Gun> ItemStack createItem(Class<? extends Gun> clazz) throws SQLException, ReflectiveOperationException {
-		Gun gun = registerGun(clazz);
-		return gun.createItemStack();
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
@@ -205,8 +201,8 @@ public class GunRegistry {
 				int id = resultSet.getInt("id");
 				try {
 					String type = resultSet.getString("type");
-					Class<? extends Gun> clazz = (Class<? extends Gun>) Class.forName(type);
-					Gun gun = clazz.getConstructor(int.class).newInstance(id);
+					GunInstantiator<?> instantiator = getInstantiator(type);
+					Gun gun = instantiator.generate(id);
 					gun.loadDatas(resultSet);
 					registry.put(id, gun);
 					i++;
@@ -241,6 +237,57 @@ public class GunRegistry {
 				e.printStackTrace();
 			}
 			iterator.remove();
+		}
+	}
+	
+	public class GunInstantiator<T extends Gun> {
+		private Class<T> clazz;
+		private Constructor<T> constructor;
+		private ItemStack demoItem;
+		
+		public GunInstantiator(Class<T> clazz) throws ReflectiveOperationException {
+			this.clazz = clazz;
+			constructor = clazz.getDeclaredConstructor(int.class);
+			demoItem = new ItemStack((Material) clazz.getDeclaredField("TYPE").get(null));
+			ItemMeta meta = demoItem.getItemMeta();
+			meta.setDisplayName("§e" + clazz.getDeclaredField("NAME").get(null));
+			meta.setCustomModelData(1);
+			demoItem.setItemMeta(meta);
+		}
+		
+		public Class<T> getClazz() {
+			return clazz;
+		}
+		
+		public ItemStack getDemoItem() {
+			return demoItem;
+		}
+		
+		public ItemStack createItem() {
+			try {
+				T gun = create();
+				return gun.createItemStack();
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				return null;
+			}
+		}
+		
+		private T generate(int id) throws ReflectiveOperationException {
+			return constructor.newInstance(id);
+		}
+		
+		private T create() throws SQLException, ReflectiveOperationException {
+			PreparedStatement statement = createStatement.getStatement();
+			statement.setString(1, clazz.getSimpleName());
+			statement.executeUpdate();
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+			generatedKeys.next();
+			int id = generatedKeys.getInt("id");
+			generatedKeys.close();
+			T gun = generate(id);
+			registry.put(id, gun);
+			return gun;
 		}
 	}
 	

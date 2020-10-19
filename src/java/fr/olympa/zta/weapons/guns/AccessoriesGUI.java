@@ -1,19 +1,22 @@
 package fr.olympa.zta.weapons.guns;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 
 public class AccessoriesGUI extends OlympaGUI{
+	
+	public static final NamespacedKey PERSISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "accessory");
 	
 	private static final ItemStack separator = ItemUtils.item(Material.GRAY_STAINED_GLASS_PANE, "§7");
 	
@@ -33,7 +36,7 @@ public class AccessoriesGUI extends OlympaGUI{
 				Accessory accessory = type.get(gun);
 				if (accessory == null) {
 					item = type.getAvailableItemSlot();
-				}else item = accessory.createItemStack();
+				}else item = accessory.getItem();
 			}else item = type.getUnavailableItemSlot();
 			inv.setItem(type.getSlot(), item);
 		}
@@ -67,9 +70,10 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
 		if (current.getType() == Material.RED_STAINED_GLASS_PANE) return true; // si le slot est indisponible : cancel
 		
-		ItemStackable object = ZTARegistry.get().getItemStackable(cursor);
-		if (!(object instanceof Accessory)) return true; // si l'objet en main n'est pas un accessoire : cancel
-		Accessory accessory = (Accessory) object;
+		Accessory accessory = null;
+		ItemMeta meta = current.getItemMeta();
+		if (meta.getPersistentDataContainer().has(PERSISTENT_DATA_KEY, PersistentDataType.INTEGER)) accessory = Accessory.values()[meta.getPersistentDataContainer().get(PERSISTENT_DATA_KEY, PersistentDataType.INTEGER)];
+		if (accessory == null) return true; // si l'objet en main n'est pas un accessoire : cancel
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
 		
 		if (current.getType() == Material.LIME_STAINED_GLASS_PANE) {
@@ -80,7 +84,7 @@ public class AccessoriesGUI extends OlympaGUI{
 			}.runTask(OlympaZTA.getInstance());
 		}
 		
-		gun.setAccessory(accessoryType, accessory);
+		gun.setAccessory(accessory);
 		accessory.apply(gun); // mettre les caractéristiques de l'accessoire sur l'arme
 		
 		return false; // laisse le joueur swapper les items

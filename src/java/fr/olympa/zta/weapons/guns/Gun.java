@@ -33,6 +33,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
+import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -495,10 +496,14 @@ public abstract class Gun implements Weapon {
 		if (isStockAllowed()) i++;
 		return i;
 	}
-
+	
 	public void setAccessory(Accessory accessory) {
+		setAccessory(accessory.getType(), accessory);
+	}
+
+	public void setAccessory(AccessoryType type, Accessory accessory) {
 		Accessory old = null;
-		switch (accessory.getAccessoryType()) {
+		switch (type) {
 		case SCOPE:
 			old = scope;
 			scope = accessory;

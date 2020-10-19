@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,7 +12,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
 
@@ -146,8 +144,6 @@ public enum Accessory {
 	},
 	;
 	
-	private static final NamespacedKey PERSISTENT_DATA_KEY = new NamespacedKey(OlympaZTA.getInstance(), "accessory");
-	
 	private final AccessoryType type;
 	
 	private final ItemStack item;
@@ -165,11 +161,11 @@ public enum Accessory {
 		}
 		meta.setLore(lore);
 		meta.setCustomModelData(1);
-		meta.getPersistentDataContainer().set(PERSISTENT_DATA_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(AccessoriesGUI.PERSISTENT_DATA_KEY, PersistentDataType.INTEGER, ordinal());
 		item.setItemMeta(meta);
 	}
 	
-	public AccessoryType getAccessoryType() {
+	public AccessoryType getType() {
 		return type;
 	}
 	

@@ -46,7 +46,7 @@ public class BeautyQuestsLink implements Listener {
 	public BeautyQuestsLink() {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(QuestItemReward.class, ItemUtils.item(Material.GOLD_INGOT, "§eOlympa ZTA - Item de quête"), QuestItemReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyItemReward.class, ItemUtils.item(Material.NETHER_BRICK, "§eOlympa ZTA - Billets de banque"), MoneyItemReward::new));
-		QuestsAPI.registerReward(new QuestObjectCreator<>(ItemStackableReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Item custom"), ItemStackableReward::new));
+		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Item custom"), GunReward::new));
 		QuestsAPI.setHologramsManager(new BeautyQuestsHolograms());
 	}
 	

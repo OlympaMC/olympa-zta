@@ -43,10 +43,9 @@ import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
-import fr.olympa.zta.registry.ZTARegistry;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.guns.AmmoType;
-import fr.olympa.zta.weapons.knives.KnifeBatte;
+import fr.olympa.zta.weapons.knives.Knife;
 
 public class MobsListener implements Listener {
 
@@ -140,7 +139,7 @@ public class MobsListener implements Listener {
 			}
 		}
 		if (!e.isCancelled() && e.getEntity() instanceof Item) {
-			ZTARegistry.get().ifStackable(((Item) e.getEntity()).getItemStack(), ZTARegistry.get()::removeObject);
+			OlympaZTA.getInstance().gunRegistry.ifGun(((Item) e.getEntity()).getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
 		}
 	}
 
@@ -155,7 +154,7 @@ public class MobsListener implements Listener {
 		
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargés depuis l'inventaire de §6%s§e.", ZTARegistry.get().loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
+				OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargés depuis l'inventaire de §6%s§e.", OlympaZTA.getInstance().gunRegistry.loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
 			}catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -175,7 +174,7 @@ public class MobsListener implements Listener {
 	public void onQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
-		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> ZTARegistry.get().launchEvictItems(e.getPlayer().getInventory().getContents()));
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents()));
 	}
 	
 	@EventHandler
@@ -200,12 +199,12 @@ public class MobsListener implements Listener {
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
-		ZTARegistry.get().ifStackable(e.getEntity().getItemStack(), ZTARegistry.get()::removeObject);
+		OlympaZTA.getInstance().gunRegistry.ifGun(e.getEntity().getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
 	}
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(5), ZTARegistry.get().createItem(new KnifeBatte(ZTARegistry.get().generateID())));
+		p.getInventory().addItem(Food.BAKED_POTATO.get(5), Knife.BATTE.getItem());
 	}
 	
 }

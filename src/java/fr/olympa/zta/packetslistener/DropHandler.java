@@ -3,9 +3,8 @@ package fr.olympa.zta.packetslistener;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.registry.ItemStackable;
-import fr.olympa.zta.registry.ZTARegistry;
-import fr.olympa.zta.weapons.Weapon;
+import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.guns.Gun;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,12 +22,10 @@ public class DropHandler extends ChannelDuplexHandler{
 			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
 				ItemStack item = p.getInventory().getItemInMainHand();
-				ItemStackable object = ZTARegistry.get().getItemStackable(item);
-				if (object instanceof Weapon) {
-					if (((Weapon) object).drop(p, item)) {
-						p.updateInventory();
-						return; // super.channelRead pas appelé si l'action est annulée (en théorie, visiblement il est appelé)
-					}
+				Gun gun = OlympaZTA.getInstance().gunRegistry.getGun(item);
+				if (gun != null && gun.drop(p, item)) {
+					p.updateInventory();
+					return; // super.channelRead pas appelé si l'action est annulée
 				}
 			}
 		}
