@@ -1,6 +1,4 @@
-package fr.olympa.zta.weapons.knives;
-
-import java.util.Arrays;
+package fr.olympa.zta.weapons;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,15 +10,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import fr.olympa.zta.weapons.ItemStackable;
-import fr.olympa.zta.weapons.Weapon;
-import fr.olympa.zta.weapons.WeaponsListener;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public enum Knife implements Weapon, ItemStackable {
 	
-	MATRAQUE(Material.BLAZE_ROD, "Matraque", 2, 3),
-	BICHE(Material.ARROW, "Pied-de-biche", 3, 3),
-	SURIN(Material.STICK, "Surin", 4, 2),
+	MATRAQUE(Material.BLAZE_ROD, "Matraque", "Arme contondante, peu puissante contre les joueurs, utile pour se défendre contre les infectés.", 2, 3),
+	BICHE(Material.ARROW, "Pied-de-biche", "Objet polyvalent contre les joueurs comme contre les infectés.", 3, 3),
+	SURIN(Material.STICK, "Surin", "Couteau perforant, occasionnant plus de dégâts chez les joueurs que chez les infectés.", 4, 2),
 	;
 	
 	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false);
@@ -29,14 +25,14 @@ public enum Knife implements Weapon, ItemStackable {
 	
 	private final ItemStack item;
 	
-	private Knife(Material material, String name, float playerDamage, float entityDamage) {
+	private Knife(Material material, String name, String description, float playerDamage, float entityDamage) {
 		this.playerDamage = playerDamage;
 		this.entityDamage = entityDamage;
 		
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
-		meta.setLore(Arrays.asList(Weapon.getFeatureLoreLine("Dégâts aux joueurs", playerDamage), Weapon.getFeatureLoreLine("Dégâts aux monstres", entityDamage)));
+		meta.setLore(SpigotUtils.wrapAndAlign(description, 35));
 		meta.getPersistentDataContainer().set(WeaponsListener.KNIFE_KEY, PersistentDataType.INTEGER, ordinal());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);

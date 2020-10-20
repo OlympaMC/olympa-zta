@@ -187,7 +187,7 @@ public class GunRegistry {
 				int id = resultSet.getInt("id");
 				try {
 					GunType type = GunType.valueOf(resultSet.getString("type"));
-					Gun gun = createGun(type);
+					Gun gun = new Gun(id, type);
 					gun.loadDatas(resultSet);
 					registry.put(id, gun);
 					i++;

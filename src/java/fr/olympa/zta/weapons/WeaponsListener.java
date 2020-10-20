@@ -31,7 +31,6 @@ import org.bukkit.persistence.PersistentDataType;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
-import fr.olympa.zta.weapons.knives.Knife;
 
 public class WeaponsListener implements Listener {
 	

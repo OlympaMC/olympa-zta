@@ -44,8 +44,8 @@ import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
-import fr.olympa.zta.weapons.knives.Knife;
 
 public class MobsListener implements Listener {
 

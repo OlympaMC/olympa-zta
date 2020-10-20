@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
@@ -26,7 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import fr.olympa.api.item.ItemUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.Attribute;
@@ -120,8 +118,7 @@ public class Gun implements Weapon {
 		List<String> lore = new ArrayList<>(type.getLore());
 		if (accessories) lore.addAll(type.getAccessoriesLore(getAccessoriesAmount()));
 		lore.add("");
-		lore.add("§6§lArme immatriculée §r§6:");
-		lore.add("§e§m                      §r§e[I" + id + "]§m                     §r");
+		lore.add("§8Arme immatriculée > §7[G" + id + "]");
 		return lore;
 	}
 
@@ -138,14 +135,14 @@ public class Gun implements Weapon {
 	@Override
 	public void itemHeld(Player p, ItemStack item) {
 		p.setCooldown(item.getType(), 0);
+		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 	}
 
 	@Override
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		if (zoomed) toggleZoom(p, item);
-		if (reloading != null) {
-			cancelReload(p, item);
-		}
+		if (reloading != null) cancelReload(p, item);
+		if (type.hasHeldEffect()) p.removePotionEffect(type.getHeldEffect().getType());
 	}
 
 	public boolean drop(Player p, ItemStack item) {
@@ -262,7 +259,7 @@ public class Gun implements Weapon {
 
 	private void fire(Player p) {
 		Bullet bullet = type.createBullet(this, (customDamagePlayer == 0 ? type.getPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? type.getEntityDamage() : customDamageEntity) + damageAdded);
-		for (int i = 0; i < getFiredBulletsAmount(); i++) {
+		for (int i = 0; i < type.getFiredBullets(); i++) {
 			bullet.launchProjectile(p);
 		}
 		
@@ -360,10 +357,6 @@ public class Gun implements Weapon {
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
 		updateItemCustomModel(item);
-	}
-
-	public int getFiredBulletsAmount() {
-		return 1;
 	}
 
 	public GunMode getCurrentMode() {
@@ -515,10 +508,6 @@ public class Gun implements Weapon {
 			return spread;
 		}
 
-	}
-
-	public static ItemStack buildDemoStack(Material type, String name) {
-		return ItemUtils.item(type, "§e" + name);
 	}
 
 }

@@ -71,7 +71,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (current.getType() == Material.RED_STAINED_GLASS_PANE) return true; // si le slot est indisponible : cancel
 		
 		Accessory accessory = null;
-		ItemMeta meta = current.getItemMeta();
+		ItemMeta meta = cursor.getItemMeta();
 		if (meta.getPersistentDataContainer().has(ACCESSORY_KEY, PersistentDataType.INTEGER)) accessory = Accessory.values()[meta.getPersistentDataContainer().get(ACCESSORY_KEY, PersistentDataType.INTEGER)];
 		if (accessory == null) return true; // si l'objet en main n'est pas un accessoire : cancel
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel

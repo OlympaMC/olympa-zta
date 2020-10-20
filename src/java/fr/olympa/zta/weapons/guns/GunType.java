@@ -1,7 +1,7 @@
 package fr.olympa.zta.weapons.guns;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,11 +12,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.ItemStackable;
-import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.Gun.GunAccuracy;
 import fr.olympa.zta.weapons.guns.Gun.GunMode;
@@ -30,6 +30,7 @@ public enum GunType implements ItemStackable{
 	
 	REM_870(
 			"Remington 870 Express",
+			"Fusil à pompe de facture classique.",
 			Material.WOODEN_HOE,
 			AmmoType.CARTRIDGE,
 			4,
@@ -53,10 +54,11 @@ public enum GunType implements ItemStackable{
 			AccessoryType.SCOPE),
 	AK_20(
 			"AK-20",
+			"Fustil Kalashnikov ultra-moderne. Sa cadence de tir rapide et la pénétration de ses balles en font une excellente arme pour se défendre des autres joueurs.",
 			Material.GOLDEN_PICKAXE,
 			AmmoType.HANDWORKED,
 			20,
-			5,
+			6,
 			70,
 			false,
 			CommonGunConstants.KNOCKBACK_LOW,
@@ -67,7 +69,7 @@ public enum GunType implements ItemStackable{
 			3,
 			BulletSimple::new,
 			1,
-			GunMode.AUTOMATIC,
+			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
 			"zta.guns.auto",
@@ -75,6 +77,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.values()),
 	BARRETT(
 			"Barrett M109",
+			"Fusil sniper anti-matériel. D'une efficacité redoutable contre les infectés comme contre les joueurs lorsque utilisé à grande distance.",
 			Material.IRON_HOE,
 			AmmoType.HEAVY,
 			1,
@@ -97,6 +100,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.CANNON),
 	BAZOOKA(
 			"Bazooka",
+			"§c⚠ ARME DE TEST - NE DOIT EN AUCUN CAS ÊTRE SOUS LA POSSESSION D'UN JOUEUR ⚠",
 			Material.GOLDEN_HOE,
 			AmmoType.HEAVY,
 			2,
@@ -118,6 +122,7 @@ public enum GunType implements ItemStackable{
 			null),
 	BENELLI(
 			"Benelli M5 Super",
+			"Fustil de combat rapproché. Très efficace contre les infectés.",
 			Material.STONE_SHOVEL,
 			AmmoType.CARTRIDGE,
 			8,
@@ -138,7 +143,8 @@ public enum GunType implements ItemStackable{
 			"zta.guns.pump",
 			null),
 	COBRA(
-			"King Cobra",
+			"Colt King Cobra",
+			"Arme de poing polyvalente.",
 			Material.STONE_AXE,
 			AmmoType.HEAVY,
 			6,
@@ -147,7 +153,7 @@ public enum GunType implements ItemStackable{
 			false,
 			CommonGunConstants.KNOCKBACK_LOW,
 			CommonGunConstants.BULLET_SPEED_HIGH,
-			GunAccuracy.EXTREME,
+			GunAccuracy.HIGH,
 			null,
 			4,
 			4,
@@ -159,22 +165,23 @@ public enum GunType implements ItemStackable{
 			"zta.guns.generic",
 			null),
 	DRAGUNOV(
-			"Dragunov",
+			"SV Dragunov",
+			"Fusil de précision russe. D'une efficacité incontestée contre les joueurs, son absence totale de discrétion peut malgré tout être handicapante.",
 			Material.GOLDEN_HOE,
 			AmmoType.HANDWORKED,
-			1,
-			-1,
+			5,
+			40,
 			60,
 			false,
 			CommonGunConstants.KNOCKBACK_HIGH,
 			CommonGunConstants.BULLET_SPEED_ULTRA_HIGH,
 			GunAccuracy.EXTREME,
 			new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -1),
-			14,
+			12,
 			10,
 			new BulletEffectCreator(new PotionEffect(PotionEffectType.SLOW, 20, 1)),
 			1,
-			GunMode.SINGLE,
+			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_HIGH,
 			"zta.guns.barrett",
@@ -182,6 +189,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.CANNON),
 	G19(
 			"Glock 19",
+			"Revolver compact, très fiable, moyennement puissant.",
 			Material.GOLDEN_AXE,
 			AmmoType.HANDWORKED,
 			15,
@@ -196,14 +204,15 @@ public enum GunType implements ItemStackable{
 			4,
 			BulletSimple::new,
 			1,
-			GunMode.AUTOMATIC,
 			GunMode.SEMI_AUTOMATIC,
+			null,
 			CommonGunConstants.SOUND_VOLUME_LOW,
 			"zta.guns.generic",
 			null,
 			AccessoryType.CANNON),
 	KSG(
-			"KSG",
+			"Kel-Tec KSG",
+			"Fustil de combat rapproché, peu dommageant pour les joueurs mais efficace lors de mêlées d'infectés grâce à ses deux tubes de munitions.",
 			Material.IRON_SHOVEL,
 			AmmoType.CARTRIDGE,
 			10,
@@ -217,7 +226,7 @@ public enum GunType implements ItemStackable{
 			3,
 			6,
 			new BulletEffectCreator(new PotionEffect(PotionEffectType.WITHER, 40, 1)),
-			5,
+			2,
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
@@ -226,6 +235,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.STOCK),
 	LUPARA(
 			"Lupara",
+			"Fusil de chasse à canon scié.",
 			Material.GOLDEN_SHOVEL,
 			AmmoType.CARTRIDGE,
 			1,
@@ -248,10 +258,11 @@ public enum GunType implements ItemStackable{
 			AccessoryType.STOCK),
 	M16(
 			"M16",
+			"Fusil d'assaut très utilisé par les forces militaires.",
 			Material.WOODEN_PICKAXE,
 			AmmoType.HEAVY,
 			20,
-			8,
+			5,
 			60,
 			false,
 			CommonGunConstants.KNOCKBACK_MEDIUM,
@@ -270,7 +281,8 @@ public enum GunType implements ItemStackable{
 			AccessoryType.CANNON,
 			AccessoryType.STOCK),
 	M1897(
-			"M1897",
+			"Model 1897",
+			"Fusil à pompe à faible portée. Puissant contre les joueurs, il l'est encore plus contre les infectés.",
 			Material.WOODEN_SHOVEL,
 			AmmoType.CARTRIDGE,
 			5,
@@ -293,6 +305,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.STOCK),
 	M1911(
 			"Colt M1911",
+			"Pistolet semi-automatique précis à moyenne portée.",
 			Material.WOODEN_AXE,
 			AmmoType.LIGHT,
 			7,
@@ -307,7 +320,7 @@ public enum GunType implements ItemStackable{
 			3,
 			BulletSimple::new,
 			1,
-			GunMode.SINGLE,
+			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_LOW,
 			"zta.guns.generic",
@@ -315,6 +328,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.CANNON),
 	P22(
 			"Walther P22",
+			"Pistolet semi-automatique allemand peu puissant.",
 			Material.IRON_AXE,
 			AmmoType.LIGHT,
 			10,
@@ -337,6 +351,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.CANNON),
 	SDMR(
 			"SDM-R",
+			"Fustil de précision dérivé du M16 pouvant être facilement modifié.",
 			Material.IRON_PICKAXE,
 			AmmoType.HEAVY,
 			20,
@@ -359,6 +374,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.values()),
 	SKORPION(
 			"Skorpion VZ64",
+			"Pistolet mitrailleur extrêmement rapide, à courte portée. Très efficace dans des lieux étroits contre des infectés.",
 			Material.MAGMA_CREAM,
 			AmmoType.HANDWORKED,
 			24,
@@ -380,13 +396,14 @@ public enum GunType implements ItemStackable{
 			null),
 	STONER(
 			"Stoner 24",
+			"Mitraillette lourde à grande capacité.",
 			Material.IRON_HORSE_ARMOR,
 			AmmoType.HEAVY,
-			55,
-			15,
+			70,
+			3,
 			70,
 			false,
-			CommonGunConstants.KNOCKBACK_HIGH,
+			CommonGunConstants.KNOCKBACK_LOW,
 			CommonGunConstants.BULLET_SPEED_MEDIUM,
 			GunAccuracy.MEDIUM,
 			null,
@@ -403,6 +420,7 @@ public enum GunType implements ItemStackable{
 			AccessoryType.STOCK),
 	UZI(
 			"UZI",
+			"Pistolet-mitrailleur compact à cadence de tir élevée. Extrêmement perforante chez les infectés.",
 			Material.SLIME_BALL,
 			AmmoType.LIGHT,
 			25,
@@ -424,9 +442,10 @@ public enum GunType implements ItemStackable{
 			null),
 			;
 	
-	private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
+	//private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
 	
 	private final String name;
+	private final String description;
 	private final Material material;
 	private final AmmoType ammoType;
 	private final int maxAmmos;
@@ -448,10 +467,12 @@ public enum GunType implements ItemStackable{
 	private final PotionEffect heldEffect;
 	private final List<AccessoryType> allowedAccessories;
 	
+	private final List<String> lore;
 	private final ItemStack demoItem;
 	
-	private GunType(String name, Material material, AmmoType ammoType, int maxAmmos, int fireRate, int chargeTime, boolean oneByOneCharge, float knockback, float bulletSpeed, GunAccuracy accuracy, AttributeModifier zoomModifier, int playerDamage, int entityDamage, BulletCreator bulletCreator, int firedBullets, GunMode primaryMode, GunMode secondaryMode, float fireVolume, String fireSound, PotionEffect heldEffect, AccessoryType... allowedAccessories) {
+	private GunType(String name, String description, Material material, AmmoType ammoType, int maxAmmos, int fireRate, int chargeTime, boolean oneByOneCharge, float knockback, float bulletSpeed, GunAccuracy accuracy, AttributeModifier zoomModifier, int playerDamage, int entityDamage, BulletCreator bulletCreator, int firedBullets, GunMode primaryMode, GunMode secondaryMode, float fireVolume, String fireSound, PotionEffect heldEffect, AccessoryType... allowedAccessories) {
 		this.name = name;
+		this.description = description;
 		this.material = material;
 		this.ammoType = ammoType;
 		this.maxAmmos = maxAmmos;
@@ -473,10 +494,14 @@ public enum GunType implements ItemStackable{
 		this.heldEffect = heldEffect;
 		this.allowedAccessories = Arrays.asList(allowedAccessories);
 		
+		lore = new ArrayList<>(SpigotUtils.wrapAndAlign(description, 35));
+		lore.add("");
+		lore.add("§8§lMagasin > §7" + ammoType.getName() + " §8(x" + maxAmmos + ")");
+		
 		demoItem = new ItemStack(material);
 		ItemMeta meta = demoItem.getItemMeta();
 		meta.setDisplayName("§e" + name);
-		meta.setLore(getLore());
+		meta.setLore(lore);
 		meta.addItemFlags(ItemFlag.values());
 		meta.setCustomModelData(1);
 		demoItem.setItemMeta(meta);
@@ -484,6 +509,10 @@ public enum GunType implements ItemStackable{
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 	
 	public Material getMaterial() {
@@ -612,6 +641,10 @@ public enum GunType implements ItemStackable{
 		return heldEffect;
 	}
 	
+	public boolean hasHeldEffect() {
+		return heldEffect != null;
+	}
+	
 	public List<AccessoryType> getAllowedAccessories() {
 		return allowedAccessories;
 	}
@@ -633,19 +666,20 @@ public enum GunType implements ItemStackable{
 	}
 	
 	public List<String> getLore(){
-		return Arrays.asList(
+		return lore;
+		/*return Arrays.asList(
 				Weapon.getFeatureLoreLine("Cadence de tir", attributeFormat.format(getFireRate() / 20D) + "s"),
 				Weapon.getFeatureLoreLine("Temps de recharge", attributeFormat.format(getChargeTime() / 20D) + "s"),
 				Weapon.getFeatureLoreLine("Munitions", getAmmoType().getName()),
 				Weapon.getFeatureLoreLine("Précision", getAccuracy().getName()),
-				Weapon.getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (hasSecondaryMode() ? "/" + getSecondaryMode().getName() : "")));
+				Weapon.getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (hasSecondaryMode() ? "/" + getSecondaryMode().getName() : "")));*/
 	}
 	
 	public List<String> getAccessoriesLore(int accessories){
 		return Arrays.asList(
-				"",
-				"§6§lAccessoires §r§6: §e[§n" + accessories + "§r§e/" + allowedAccessories.size() + "]",
-				"§e§oClic droit pour attacher des accessoires");
+				//"",
+				"§8§lAccessoires > §7[§n" + accessories + "§7/" + allowedAccessories.size() + "]",
+				"§7§o   (clic droit)");
 	}
 	
 }

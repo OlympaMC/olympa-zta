@@ -13,10 +13,10 @@ import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.lootchests.creators.QuestItemCreator;
 import fr.olympa.zta.lootchests.creators.QuestItemCreator.QuestItem;
 import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunType;
-import fr.olympa.zta.weapons.knives.Knife;
 
 public enum LootChestType {
 

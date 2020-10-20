@@ -156,9 +156,10 @@ public enum Accessory implements ItemStackable {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§a" + name);
 		List<String> lore = new ArrayList<>();
-		lore.add("§6§l" + (effects.length < 2 ? "Effet" : "Effets") + " §r§6:");
+		lore.add("§8> Objet de type §7" + type.name);
+		lore.add("§8> " + (effects.length < 2 ? "Effet" : "Effets") + ":");
 		for (String effect : effects) {
-			lore.add("§e- " + effect);
+			lore.add("§7● " + effect);
 		}
 		meta.setLore(lore);
 		meta.setCustomModelData(1);
