@@ -2,7 +2,6 @@ package fr.olympa.zta;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -79,24 +78,7 @@ import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunRegistry;
-import fr.olympa.zta.weapons.guns.created.Gun870;
-import fr.olympa.zta.weapons.guns.created.GunAK;
-import fr.olympa.zta.weapons.guns.created.GunBarrett;
-import fr.olympa.zta.weapons.guns.created.GunBazooka;
-import fr.olympa.zta.weapons.guns.created.GunBenelli;
-import fr.olympa.zta.weapons.guns.created.GunCobra;
-import fr.olympa.zta.weapons.guns.created.GunDragunov;
-import fr.olympa.zta.weapons.guns.created.GunG19;
-import fr.olympa.zta.weapons.guns.created.GunKSG;
-import fr.olympa.zta.weapons.guns.created.GunLupara;
-import fr.olympa.zta.weapons.guns.created.GunM16;
-import fr.olympa.zta.weapons.guns.created.GunM1897;
-import fr.olympa.zta.weapons.guns.created.GunM1911;
-import fr.olympa.zta.weapons.guns.created.GunP22;
-import fr.olympa.zta.weapons.guns.created.GunSDMR;
-import fr.olympa.zta.weapons.guns.created.GunSkorpion;
-import fr.olympa.zta.weapons.guns.created.GunStoner;
-import fr.olympa.zta.weapons.guns.created.GunUZI;
+import fr.olympa.zta.weapons.guns.GunType;
 import fr.olympa.zta.weapons.knives.Knife;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
@@ -168,9 +150,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			throw new RuntimeException("Registry failed to load", ex);
 		}
 		
-		Arrays.asList(GunM1911.class, GunCobra.class, Gun870.class, GunUZI.class, GunM16.class, GunM1897.class, GunG19.class, GunSkorpion.class, GunAK.class, GunBenelli.class, GunDragunov.class, GunLupara.class, GunP22.class, GunSDMR.class, GunStoner.class, GunBarrett.class, GunKSG.class, GunBazooka.class).stream()
-				.map(gunRegistry::addInstantiator)
-				.forEach(WeaponsGiveGUI.stackables::add);
+		for (GunType gun : GunType.values()) WeaponsGiveGUI.stackables.add(gun);
 		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
 		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
 		

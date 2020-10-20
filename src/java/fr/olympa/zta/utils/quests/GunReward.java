@@ -1,5 +1,6 @@
 package fr.olympa.zta.utils.quests;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.bukkit.DyeColor;
@@ -8,8 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.weapons.guns.GunRegistry.GunInstantiator;
+import fr.olympa.zta.weapons.guns.GunType;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.gui.creation.QuestObjectGUI;
@@ -17,20 +17,20 @@ import fr.skytasul.quests.gui.templates.PagedGUI;
 
 public class GunReward extends AbstractReward {
 	
-	private GunInstantiator<?> instantiator;
+	private GunType type;
 	
 	public GunReward() {
-		super("ztaMoneyItem");
+		super("ztaGun");
 	}
 	
-	public GunReward(GunInstantiator<?> instantiator) {
+	public GunReward(GunType type) {
 		this();
-		this.instantiator = instantiator;
+		this.type = type;
 	}
 	
 	@Override
 	public String give(Player p) {
-		ItemStack item = instantiator.createItem();
+		ItemStack item = type.createItem();
 		if (item == null) return "Error";
 		SpigotUtils.giveItems(p, item);
 		return ItemUtils.getName(item);
@@ -38,26 +38,26 @@ public class GunReward extends AbstractReward {
 	
 	@Override
 	public AbstractReward clone() {
-		return new GunReward(instantiator);
+		return new GunReward(type);
 	}
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + instantiator.getClazz().getSimpleName() };
+		return new String[] { "§8> §7" + type.getName() };
 	}
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new PagedGUI<>("Liste des items", DyeColor.LIGHT_BLUE, OlympaZTA.getInstance().gunRegistry.getInstantiators()) {
+		new PagedGUI<>("Liste des armes", DyeColor.LIGHT_BLUE, Arrays.asList(GunType.values())) {
 			
 			@Override
-			public ItemStack getItemStack(GunInstantiator<?> object) {
+			public ItemStack getItemStack(GunType object) {
 				return object.getDemoItem();
 			}
 			
 			@Override
-			public void click(GunInstantiator<?> existing) {
-				instantiator = existing;
+			public void click(GunType existing) {
+				type = existing;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();
 			}
@@ -67,17 +67,17 @@ public class GunReward extends AbstractReward {
 	
 	@Override
 	protected void load(Map<String, Object> map) {
-		String type = (String) map.get("instantiator");
+		String typeName = (String) map.get("type");
 		try {
-			instantiator = OlympaZTA.getInstance().gunRegistry.getInstantiator(type);
-		}catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException("Unknown item stackable type: " + type);
+			type = GunType.valueOf(typeName);
+		}catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Unknown item stackable type: " + typeName);
 		}
 	}
 	
 	@Override
 	protected void save(Map<String, Object> map) {
-		map.put("instantiator", instantiator.getClazz().getSimpleName());
+		map.put("type", type.name());
 	}
 	
 }

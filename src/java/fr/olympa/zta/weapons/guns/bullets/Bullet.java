@@ -65,4 +65,9 @@ public abstract class Bullet{
 	 */
 	public abstract void hit(ProjectileHitEvent e);
 	
+	@FunctionalInterface
+	public static interface BulletCreator {
+		public Bullet create(Gun gun, float playerDamage, float entityDamage);
+	}
+	
 }

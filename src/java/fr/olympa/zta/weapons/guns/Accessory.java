@@ -214,15 +214,7 @@ public enum Accessory implements ItemStackable {
 		}
 		
 		public boolean isEnabled(Gun gun){
-			switch (this){
-			case SCOPE:
-				return gun.isScopeAllowed();
-			case CANNON:
-				return gun.isCannonAllowed();
-			case STOCK:
-				return gun.isStockAllowed();
-			}
-			return false;
+			return gun.getType().getAllowedAccessories().contains(this);
 		}
 		
 		public Accessory get(Gun gun) {

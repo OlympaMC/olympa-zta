@@ -1,13 +1,10 @@
 package fr.olympa.zta.weapons.guns;
 
-import java.lang.reflect.Constructor;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +13,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -27,7 +22,6 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.weapons.ItemStackable;
 
 public class GunRegistry {
 	
@@ -47,8 +41,6 @@ public class GunRegistry {
 			+ "`cannon_id` = ?, "
 			+ "`stock_id` = ? "
 			+ "WHERE (`id` = ?)");
-	
-	private final Map<Class<? extends Gun>, GunInstantiator<? extends Gun>> instantiators = new HashMap<>();
 	
 	public final Map<Integer, Gun> registry = new ConcurrentHashMap<>(200);
 	public final List<Integer> toEvict = new ArrayList<>();
@@ -92,10 +84,6 @@ public class GunRegistry {
 				if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
 			}
 		}, 0, period);
-		
-		for (Class<? extends Gun> clazz : classes) {
-			instantiators.put(clazz, new GunInstantiator<>(clazz));
-		}
 	}
 	
 	public boolean removeObject(Gun object) {
@@ -113,29 +101,6 @@ public class GunRegistry {
 			e.printStackTrace();
 		}
 		return false;
-	}
-	
-	public <T extends Gun> GunInstantiator<T> addInstantiator(Class<T> clazz) {
-		try {
-			GunInstantiator<T> instantiator = new GunInstantiator<>(clazz);
-			instantiators.put(clazz, instantiator);
-			return instantiator;
-		}catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public <T extends Gun> GunInstantiator<T> getInstantiator(Class<T> clazz) {
-		return (GunInstantiator<T>) instantiators.get(clazz);
-	}
-	
-	public GunInstantiator<?> getInstantiator(String simpleName) throws ClassNotFoundException {
-		return instantiators.get(Class.forName(getClass().getPackageName() + ".created." + simpleName));
-	}
-	
-	public Collection<GunInstantiator<? extends Gun>> getInstantiators() {
-		return instantiators.values();
 	}
 	
 	/**
@@ -173,6 +138,19 @@ public class GunRegistry {
 		if (gun != null) consumer.accept(gun);
 	}
 	
+	public Gun createGun(GunType type) throws SQLException {
+		PreparedStatement statement = createStatement.getStatement();
+		statement.setString(1, type.name());
+		statement.executeUpdate();
+		ResultSet generatedKeys = statement.getGeneratedKeys();
+		generatedKeys.next();
+		int id = generatedKeys.getInt("id");
+		generatedKeys.close();
+		Gun gun = new Gun(id, type);
+		registry.put(id, gun);
+		return gun;
+	}
+	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
 		synchronized (toEvict) {
 			List<Integer> ids = new ArrayList<>();
@@ -208,9 +186,8 @@ public class GunRegistry {
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
 				try {
-					String type = resultSet.getString("type");
-					GunInstantiator<?> instantiator = getInstantiator(type);
-					Gun gun = instantiator.generate(id);
+					GunType type = GunType.valueOf(resultSet.getString("type"));
+					Gun gun = createGun(type);
 					gun.loadDatas(resultSet);
 					registry.put(id, gun);
 					i++;
@@ -245,60 +222,6 @@ public class GunRegistry {
 				e.printStackTrace();
 			}
 			iterator.remove();
-		}
-	}
-	
-	public class GunInstantiator<T extends Gun> implements ItemStackable {
-		private Class<T> clazz;
-		private Constructor<T> constructor;
-		private ItemStack demoItem;
-		
-		private GunInstantiator(Class<T> clazz) throws ReflectiveOperationException {
-			this.clazz = clazz;
-			constructor = clazz.getDeclaredConstructor(int.class);
-			demoItem = new ItemStack((Material) clazz.getDeclaredField("TYPE").get(null));
-			ItemMeta meta = demoItem.getItemMeta();
-			meta.addItemFlags(ItemFlag.values());
-			meta.setDisplayName("§e" + clazz.getDeclaredField("NAME").get(null));
-			meta.setCustomModelData(1);
-			demoItem.setItemMeta(meta);
-		}
-		
-		public Class<T> getClazz() {
-			return clazz;
-		}
-		
-		@Override
-		public ItemStack getDemoItem() {
-			return demoItem;
-		}
-		
-		@Override
-		public ItemStack createItem() {
-			try {
-				T gun = create();
-				return gun.createItemStack();
-			}catch (Exception ex) {
-				ex.printStackTrace();
-				return null;
-			}
-		}
-		
-		private T generate(int id) throws ReflectiveOperationException {
-			return constructor.newInstance(id);
-		}
-		
-		private T create() throws SQLException, ReflectiveOperationException {
-			PreparedStatement statement = createStatement.getStatement();
-			statement.setString(1, clazz.getSimpleName());
-			statement.executeUpdate();
-			ResultSet generatedKeys = statement.getGeneratedKeys();
-			generatedKeys.next();
-			int id = generatedKeys.getInt("id");
-			generatedKeys.close();
-			T gun = generate(id);
-			registry.put(id, gun);
-			return gun;
 		}
 	}
 	

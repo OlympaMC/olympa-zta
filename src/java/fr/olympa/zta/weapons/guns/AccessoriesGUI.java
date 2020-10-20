@@ -43,7 +43,7 @@ public class AccessoriesGUI extends OlympaGUI{
 	}
 	
 	public boolean onClose(Player p) {
-		gun.updateItemLore(editedItem, true);
+		ItemUtils.setRawLore(editedItem, gun.getLore(true));
 		return true;
 	}
 	

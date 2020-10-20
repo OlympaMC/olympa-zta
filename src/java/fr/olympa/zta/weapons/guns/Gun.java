@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -38,12 +37,12 @@ import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class Gun implements Weapon {
+public class Gun implements Weapon {
 
-	private static DecimalFormat attributeFormat = new DecimalFormat("##.##");
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
 	private final int id;
+	private final GunType type;
 	
 	protected int ammos = 0;
 	protected boolean ready = false;
@@ -54,13 +53,13 @@ public abstract class Gun implements Weapon {
 	public float damageAdded = 0;
 	public float damageCaC = 0;
 	public AttributeModifier zoomModifier = null;
-	public final Attribute maxAmmos = new Attribute(getMaxAmmos());
-	public final Attribute chargeTime = new Attribute(getChargeTime());
-	public final Attribute bulletSpeed = new Attribute(getBulletSpeed());
-	public final Attribute bulletSpread = new Attribute(getAccuracy().getBulletSpread());
-	public final Attribute knockback = new Attribute(getKnockback());
-	public final Attribute fireRate = new Attribute(getFireRate());
-	public final Attribute fireVolume = new Attribute(getFireVolume());
+	public final Attribute maxAmmos;
+	public final Attribute chargeTime;
+	public final Attribute bulletSpeed;
+	public final Attribute bulletSpread;
+	public final Attribute knockback;
+	public final Attribute fireRate;
+	public final Attribute fireVolume;
 
 	public Accessory scope;
 	public Accessory cannon;
@@ -68,37 +67,46 @@ public abstract class Gun implements Weapon {
 	
 	public float customDamagePlayer, customDamageEntity;
 
-	public Gun(int id) {
+	Gun(int id, GunType type) {
 		this.id = id;
+		this.type = type;
+		
+		maxAmmos = new Attribute(type.getMaxAmmos());
+		chargeTime = new Attribute(type.getChargeTime());
+		bulletSpeed = new Attribute(type.getBulletSpeed());
+		bulletSpread = new Attribute(type.getAccuracy().getBulletSpread());
+		knockback = new Attribute(type.getKnockback());
+		fireRate = new Attribute(type.getFireRate());
+		fireVolume = new Attribute(type.getFireVolume());
 	}
 	
 	public int getID() {
 		return id;
 	}
-
-	public abstract String getName();
 	
-	public abstract Material getItemMaterial();
+	public GunType getType() {
+		return type;
+	}
 	
 	public ItemStack createItemStack() {
 		return createItemStack(true);
 	}
 
 	public ItemStack createItemStack(boolean accessories) {
-		ItemStack item = new ItemStack(getItemMaterial());
+		ItemStack item = new ItemStack(type.getMaterial());
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
 		meta.getPersistentDataContainer().set(GunRegistry.GUN_KEY, PersistentDataType.INTEGER, getID());
 		meta.setCustomModelData(1);
+		meta.setLore(getLore(accessories));
 		item.setItemMeta(meta);
 		updateItemName(item);
-		updateItemLore(item, accessories);
 		return item;
 	}
 
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (getSecondaryMode() == null ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		im.setDisplayName("§e" + (type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
 		item.setItemMeta(im);
 	}
 
@@ -108,25 +116,13 @@ public abstract class Gun implements Weapon {
 		item.setItemMeta(im);
 	}
 
-	public void updateItemLore(ItemStack item, boolean accessories) {
-		ItemMeta im = item.getItemMeta();
-		List<String> lore = new ArrayList<>(Arrays.asList(
-				Weapon.getFeatureLoreLine("Cadence de tir", attributeFormat.format(getFireRate() / 20D) + "s"),
-				Weapon.getFeatureLoreLine("Temps de recharge", attributeFormat.format(getChargeTime() / 20D) + "s"),
-				Weapon.getFeatureLoreLine("Munitions", getAmmoType().getName()),
-				Weapon.getFeatureLoreLine("Précision", getAccuracy().getName()),
-				Weapon.getFeatureLoreLine("Mode de tir", getPrimaryMode().getName() + (getSecondaryMode() == null ? "" : "/" + getSecondaryMode().getName()))));
-		if (accessories) {
-			lore.addAll(Arrays.asList(
-					"",
-					"§6§lAccessoires §r§6: §e[§n" + getAccessoriesAmount() + "§r§e/" + getAllowedAccessoriesAmount() + "]",
-					"§e§oClic droit pour attacher des accessoires"));
-		}
+	public List<String> getLore(boolean accessories) {
+		List<String> lore = new ArrayList<>(type.getLore());
+		if (accessories) lore.addAll(type.getAccessoriesLore(getAccessoriesAmount()));
 		lore.add("");
 		lore.add("§6§lArme immatriculée §r§6:");
 		lore.add("§e§m                      §r§e[I" + id + "]§m                     §r");
-		im.setLore(lore);
-		item.setItemMeta(im);
+		return lore;
 	}
 
 	public void onEntityHit(EntityDamageByEntityEvent e) {
@@ -169,7 +165,7 @@ public abstract class Gun implements Weapon {
 		
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) { // clic droit : tir
 			if (reloading != null) {
-				if (isOneByOneCharge() && ammos > 0) {
+				if (type.isOneByOneCharge() && ammos > 0) {
 					cancelReload(p, item);
 				}else return;
 			}
@@ -265,7 +261,7 @@ public abstract class Gun implements Weapon {
 	}
 
 	private void fire(Player p) {
-		Bullet bullet = getFiredBullet(p, (customDamagePlayer == 0 ? getBulletPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? getBulletEntityDamage() : customDamageEntity) + damageAdded);
+		Bullet bullet = type.createBullet(this, (customDamagePlayer == 0 ? type.getPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? type.getEntityDamage() : customDamageEntity) + damageAdded);
 		for (int i = 0; i < getFiredBulletsAmount(); i++) {
 			bullet.launchProjectile(p);
 		}
@@ -302,14 +298,14 @@ public abstract class Gun implements Weapon {
 		if (max <= ammos) return;
 
 		int toCharge;
-		int availableAmmos = getAmmoType().getAmmos(p);
+		int availableAmmos = type.getAmmoType().getAmmos(p);
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
 			return;
 		}
-		if (isOneByOneCharge()) {
+		if (type.isOneByOneCharge()) {
 			toCharge = 1;
-		}else toCharge = Math.min((int) Math.ceil((max - ammos) / (double) getAmmoType().getAmmosPerItem()), availableAmmos);
+		}else toCharge = Math.min((int) Math.ceil((max - ammos) / (double) type.getAmmoType().getAmmosPerItem()), availableAmmos);
 
 		reloading = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), new Runnable() {
 			final short animationMax = 13;
@@ -322,11 +318,11 @@ public abstract class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = Math.min(ammos + getAmmoType().removeAmmos(p, toCharge) * getAmmoType().getAmmosPerItem(), max);
+					ammos = Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max);
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
-					if (isOneByOneCharge() && maxAmmos.getValue() > ammos) {
+					if (type.isOneByOneCharge() && maxAmmos.getValue() > ammos) {
 						reloading.cancel();
 						reloading = null;
 						reload(p, item); // relancer une charge
@@ -357,128 +353,28 @@ public abstract class Gun implements Weapon {
 
 	private void toggleZoom(Player p, ItemStack item) {
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(type.getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(type.getZoomModifier().getBukkitModifier());
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
 		updateItemCustomModel(item);
 	}
 
-	/**
-	 * @return Type de munition
-	 */
-	public abstract AmmoType getAmmoType();
-
-	/**
-	 * @return Maximum de munitions
-	 */
-	protected abstract int getMaxAmmos();
-
-	/**
-	 * @return Temps (en ticks) entre chaque coup de feu
-	 */
-	protected abstract int getFireRate();
-
-	/**
-	 * @return Temps (en ticks) avant la recharge complète
-	 */
-	protected abstract int getChargeTime();
-
-	/**
-	 * @return <tt>true</tt> si la charge se fait munition par munition
-	 */
-	protected boolean isOneByOneCharge() {
-		return false;
-	}
-
-	/**
-	 * @return Puissance de recul en m/s
-	 */
-	protected abstract float getKnockback();
-
-	/**
-	 * @return Vitesse de la balle en m/s
-	 */
-	protected abstract float getBulletSpeed();
-
-	/**
-	 * @return Rayon du dispersement des balles (en m)
-	 */
-	protected abstract GunAccuracy getAccuracy();
-
-	/**
-	 * @return Dommages donnés aux joueurs par la balle tirée
-	 */
-	protected abstract float getBulletPlayerDamage();
-	
-	/**
-	 * @return Dommages donnés aux entités par la balle tirée
-	 */
-	protected abstract float getBulletEntityDamage();
-	
-	/**
-	 * @param p Player qui tire la balle
-	 * @param playerDamage Dommages aux joueurs
-	 * @param entityDamage Dommages aux entités
-	 * @return instance de {@link Bullet}
-	 */
-	public abstract Bullet getFiredBullet(Player p, float playerDamage, float entityDamage);
-
 	public int getFiredBulletsAmount() {
 		return 1;
 	}
-	
-	/**
-	 * @return Mode de tir principal
-	 */
-	public abstract GunMode getPrimaryMode();
-
-	/**
-	 * @return Mode de tir secondaire
-	 */
-	public GunMode getSecondaryMode() {
-		return null;
-	}
 
 	public GunMode getCurrentMode() {
-		return secondaryMode ? getSecondaryMode() : getPrimaryMode();
+		return secondaryMode ? type.getSecondaryMode() : type.getPrimaryMode();
 	}
 
 	/**
 	 * @return Action effectuée lors du clic secondaire
 	 */
 	public GunAction getSecondClickAction() {
-		return getSecondaryMode() != null ? GunAction.CHANGE_MODE : getZoomModifier() != null ? GunAction.ZOOM : null;
-	}
-
-	/**
-	 * @return AttributModifier sur l'attribut {@link Attribute#GENERIC_MOVEMENT_SPEED}
-	 */
-	public AttributeModifier getZoomModifier() {
-		return zoomModifier;
-	}
-
-	/**
-	 * @return Est-ce qu'un canon peut être attaché à l'arme
-	 */
-	public boolean isCannonAllowed() {
-		return false;
-	}
-
-	/**
-	 * @return Est-ce qu'une lunette peut être attachée à l'arme
-	 */
-	public boolean isScopeAllowed() {
-		return false;
-	}
-
-	/**
-	 * @return Est-ce qu'une crosse peut être attachée à l'arme
-	 */
-	public boolean isStockAllowed() {
-		return false;
+		return type.hasSecondaryMode() ? GunAction.CHANGE_MODE : type.hasZoom() ? GunAction.ZOOM : null;
 	}
 
 	public int getAccessoriesAmount() {
@@ -486,14 +382,6 @@ public abstract class Gun implements Weapon {
 		if (scope != null) i++;
 		if (cannon != null) i++;
 		if (stock != null) i++;
-		return i;
-	}
-
-	public int getAllowedAccessoriesAmount() {
-		int i = 0;
-		if (isScopeAllowed()) i++;
-		if (isCannonAllowed()) i++;
-		if (isStockAllowed()) i++;
 		return i;
 	}
 	
@@ -522,20 +410,11 @@ public abstract class Gun implements Weapon {
 	}
 
 	/**
-	 * @return Volume lors du tir de la balle (distance = 16*x)
-	 */
-	protected abstract float getFireVolume();
-	
-	protected String getFireSound() {
-		return "zta.guns.generic";
-	}
-
-	/**
 	 * Jouer le son de tir
 	 * @param lc location où est jouée le son
 	 */
 	public void playFireSound(Location lc) {
-		lc.getWorld().playSound(lc, getFireSound(), SoundCategory.PLAYERS, fireVolume.getValue(), 1);
+		lc.getWorld().playSound(lc, type.getFireSound(), SoundCategory.PLAYERS, fireVolume.getValue(), 1);
 	}
 
 	/**

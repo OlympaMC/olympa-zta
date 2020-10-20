@@ -18,6 +18,7 @@ import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.GunRegistry;
+import fr.olympa.zta.weapons.guns.GunType;
 
 public class WeaponsCommand extends ComplexCommand {
 
@@ -127,7 +128,7 @@ public class WeaponsCommand extends ComplexCommand {
 	public void gunRegistryInfo(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
 			GunRegistry registry = OlympaZTA.getInstance().gunRegistry;
-			sendInfo("Types d'armes disponible : §l" + registry.getInstantiators().size());
+			sendInfo("Types d'armes disponible : §l" + GunType.values().length);
 			sendInfo("Armes chargés dans le registre : §l" + registry.registry.size());
 			sendInfo("Armes en attente d'être déchargées : §l" + registry.toEvict.size());
 			sendInfo("Prochain déchargement : §l" + evictionFormat.format(registry.nextEviction));

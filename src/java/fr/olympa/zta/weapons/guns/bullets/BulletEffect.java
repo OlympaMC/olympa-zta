@@ -19,4 +19,19 @@ public class BulletEffect extends BulletSimple{
 		entity.addPotionEffect(effect);
 	}
 	
+	public static class BulletEffectCreator implements BulletCreator {
+		
+		private PotionEffect effect;
+		
+		public BulletEffectCreator(PotionEffect effect) {
+			this.effect = effect;
+		}
+		
+		@Override
+		public Bullet create(Gun gun, float playerDamage, float entityDamage) {
+			return new BulletEffect(gun, playerDamage, entityDamage, effect);
+		}
+		
+	}
+	
 }
