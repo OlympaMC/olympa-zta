@@ -7,6 +7,7 @@ import java.util.function.Function;
 import fr.olympa.api.utils.Reflection;
 import fr.olympa.api.utils.Reflection.ClassEnum;
 import fr.olympa.zta.OlympaZTA;
+import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityDrowned;
@@ -75,6 +76,17 @@ public class CustomEntityDrowned extends EntityDrowned {
 	public boolean i(EntityLiving entity) {
 		if (entity != null) return entity.isInWater();
 		return false;
+	}
+	
+	@Override
+	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {}
+	
+	@Override
+	protected void a(DamageSource damagesource, boolean flag) {} // dropFromLootTable
+	
+	@Override
+	public int getExpReward() {
+		return 0;
 	}
 
 	@Override

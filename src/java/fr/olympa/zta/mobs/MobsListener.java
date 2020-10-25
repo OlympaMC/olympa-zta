@@ -73,7 +73,7 @@ public class MobsListener implements Listener {
 				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
 					kept.add(itemStack);
 					contents[i] = null;
-				}else if (itemStack.getType().name().startsWith("LEATHER_")) {
+				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.MATRAQUE.isItem(itemStack)) {
 					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
 				}
 			}
@@ -152,6 +152,10 @@ public class MobsListener implements Listener {
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 		p.setWalkSpeed(0.21f);
 		
+		for (AmmoType ammoType : AmmoType.values()) {
+			p.discoverRecipe(ammoType.getRecipe().getKey());
+		}
+		
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
 				OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargés depuis l'inventaire de §6%s§e.", OlympaZTA.getInstance().gunRegistry.loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
@@ -163,9 +167,6 @@ public class MobsListener implements Listener {
 		if (!p.hasPlayedBefore()) {
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
 			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
-			for (AmmoType ammoType : AmmoType.values()) {
-				p.discoverRecipe(ammoType.getRecipe().getKey());
-			}
 			giveStartItems(p);
 		}
 	}
@@ -199,7 +200,7 @@ public class MobsListener implements Listener {
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
-		OlympaZTA.getInstance().gunRegistry.ifGun(e.getEntity().getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
+		OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> OlympaZTA.getInstance().gunRegistry.itemRemove(e.getEntity().getItemStack()));
 	}
 	
 	private void giveStartItems(Player p) {

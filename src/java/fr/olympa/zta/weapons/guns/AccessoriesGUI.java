@@ -56,11 +56,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		
 		gun.setAccessory(accessoryType, null);
 		
-		new BukkitRunnable(){
-			public void run(){
-				inv.setItem(slot, accessoryType.getAvailableItemSlot()); // remettre l'item "slot disponible"
-			}
-		}.runTask(OlympaZTA.getInstance());
+		OlympaZTA.getInstance().getTask().runTask(() -> inv.setItem(slot, accessoryType.getAvailableItemSlot())); // remettre l'item "slot disponible"
 		
 		return false; // laisse le joueur prendre l'item
 	}

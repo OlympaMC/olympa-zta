@@ -128,7 +128,7 @@ public class WeaponsListener implements Listener {
 		checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), true);
 	}
 	
-	private Weapon getWeapon(ItemStack item) {
+	public static Weapon getWeapon(ItemStack item) {
 		if (item == null) return null;
 		if (!item.hasItemMeta()) return null;
 		ItemMeta meta = item.getItemMeta();

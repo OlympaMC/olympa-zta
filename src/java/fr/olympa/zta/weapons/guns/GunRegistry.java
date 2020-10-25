@@ -89,7 +89,7 @@ public class GunRegistry {
 	public boolean removeObject(Gun object) {
 		if (!registry.containsKey(object.getID())) return false;
 		try {
-			System.out.println("GunRegistry.removeObject()");
+			OlympaZTA.getInstance().sendMessage("Objet §6%s (%d) §esupprimé du registre.", object.getType().getName(), object.getID());
 			
 			PreparedStatement statement = removeStatement.getStatement();
 			statement.setInt(1, object.getID());
@@ -136,6 +136,30 @@ public class GunRegistry {
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {
 		Gun gun = getGun(item);
 		if (gun != null) consumer.accept(gun);
+	}
+	
+	public void itemRemove(ItemStack is) {
+		if (is == null) return;
+		if (!is.hasItemMeta()) return;
+		ItemMeta im = is.getItemMeta();
+		if (!im.hasLore()) return;
+		
+		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
+		if (id != -1) {
+			Gun gun = registry.get(id);
+			if (gun != null) {
+				removeObject(gun);
+			}else {
+				try {
+					PreparedStatement statement = removeStatement.getStatement();
+					statement.setInt(1, id);
+					statement.executeUpdate();
+					OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
+				}catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public Gun createGun(GunType type) throws SQLException {

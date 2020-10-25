@@ -43,6 +43,10 @@ public enum Knife implements Weapon, ItemStackable {
 		return item.clone();
 	}
 	
+	public boolean isItem(ItemStack item) {
+		return this == WeaponsListener.getWeapon(item);
+	}
+	
 	public void onInteract(PlayerInteractEvent e){}
 	
 	public void onEntityHit(EntityDamageByEntityEvent e){
