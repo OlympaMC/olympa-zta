@@ -98,7 +98,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	
 	@EventHandler
 	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
-		addLines(e.getScoreboard());
+		if (e.getOlympaPlayer().getClan() != null) addLines(e.getScoreboard());
 	}
 	
 	public void addLines(Scoreboard<OlympaPlayerZTA> scoreboard) {

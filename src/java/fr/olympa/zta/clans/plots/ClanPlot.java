@@ -218,7 +218,7 @@ public class ClanPlot {
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour louer cette parcelle.");
 	}
 	
-	class ClanPlotFlag extends PlayerBlockInteractFlag {
+	public class ClanPlotFlag extends PlayerBlockInteractFlag {
 		
 		public ClanPlotFlag() {
 			super(true, true, true);

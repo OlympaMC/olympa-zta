@@ -49,10 +49,10 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class MobsListener implements Listener {
 
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 25, 
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 20,
 			new AmmoCreator(20, 2, 3),
-			new MoneyCreator(50, 1, 5),
-			new FoodCreator(5, Food.BAKED_POTATO),
+			new MoneyCreator(50, 3, 9),
+			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
 			new AmmoCreator(10, AmmoType.LIGHT, 2, 3, false),
 			new AmmoCreator(10, AmmoType.HEAVY, 2, 3, false),
 			new AmmoCreator(10, AmmoType.HANDWORKED, 2, 3, false),
@@ -205,7 +205,7 @@ public class MobsListener implements Listener {
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(5), Knife.MATRAQUE.createItem());
+		p.getInventory().addItem(Food.BAKED_POTATO.get(10), Knife.MATRAQUE.createItem());
 	}
 	
 }

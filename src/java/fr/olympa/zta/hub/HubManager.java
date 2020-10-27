@@ -97,7 +97,7 @@ public class HubManager implements Listener {
 					int y = lc.getWorld().getHighestBlockYAt(lc);
 					if (y > maxHeight) continue attempt;
 					lc.setY(y);
-					for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+					for (Player otherPlayer : region.getWorld().getPlayers()) {
 						if (p == otherPlayer) continue;
 						int distance = (int) otherPlayer.getLocation().distance(lc);
 						if (distance < minDistance) {

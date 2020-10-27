@@ -92,7 +92,7 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		Loot loot = currentLoots.remove(slot);
 		if (loot == null) throw new RuntimeException("No loot at slot for chest " + getID());
-		if (loot instanceof InventoryLoot) return ((InventoryLoot) loot).onTake(p, inv, slot);
+		if (loot instanceof InventoryLoot) ((InventoryLoot) loot).onTake(p, inv, slot);
 		return false;
 	}
 

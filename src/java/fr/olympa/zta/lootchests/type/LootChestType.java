@@ -47,7 +47,7 @@ public enum LootChestType {
 			new ArmorCreator(10, ArmorType.ANTIRIOT),
 			new QuestItemCreator(3.6, QuestItem.DECHET),
 			new QuestItemCreator(3.6, QuestItem.AMAS),
-			new MoneyCreator(0.8, 1, 3)),
+			new MoneyCreator(0.8, 2, 5)),
 	MILITARY(
 			"militaire",
 			new ItemStackableCreator(2.09, GunType.P22),
@@ -75,7 +75,7 @@ public enum LootChestType {
 			new ArmorCreator(12, ArmorType.MILITARY),
 			new QuestItemCreator(3.6, QuestItem.DECHET),
 			new QuestItemCreator(3.6, QuestItem.AMAS),
-			new MoneyCreator(0.8, 1, 3)),
+			new MoneyCreator(0.8, 2, 5)),
 	CONTRABAND(
 			"de contrebandier",
 			new ItemStackableCreator(1.65, GunType.G19),
@@ -104,7 +104,7 @@ public enum LootChestType {
 			new ArmorCreator(12, ArmorType.GANGSTER),
 			new QuestItemCreator(3.6, QuestItem.DECHET),
 			new QuestItemCreator(3.6, QuestItem.AMAS),
-			new MoneyCreator(0.8, 1, 3));
+			new MoneyCreator(0.8, 2, 5));
 
 	private List<LootCreator> creatorsSimple = new ArrayList<>();
 	private List<LootCreator> creatorsAlways = new ArrayList<>();

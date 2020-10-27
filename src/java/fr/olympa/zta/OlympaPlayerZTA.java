@@ -29,7 +29,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public static final int MAX_SLOTS = 27;
 	static final Map<String, String> COLUMNS = ImmutableMap.<String, String>builder()
 			.put("ender_chest", "VARBINARY(8000) NULL")
-			.put("money", "DOUBLE NULL DEFAULT 0")
+			.put("money", "DOUBLE NULL DEFAULT 100")
 			.put("plot", "INT NOT NULL DEFAULT -1")
 			.put("killed_zombies", "INT NOT NULL DEFAULT 0")
 			.put("killed_players", "INT NOT NULL DEFAULT 0")
@@ -40,7 +40,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.build();
 
 	private Inventory enderChest = Bukkit.createInventory(null, 9, "Enderchest de " + getName());
-	private OlympaMoney money = new OlympaMoney(0);
+	private OlympaMoney money = new OlympaMoney(100);
 	private ClanZTA clan = null;
 	private PlayerPlot plot = null;
 	public BukkitTask plotFind = null; // pas persistant

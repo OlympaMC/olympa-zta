@@ -28,7 +28,7 @@ public interface LootCreator extends Chanced {
 		
 		public interface InventoryLoot {
 			
-			public boolean onTake(Player p, Inventory inv, int slot);
+			public void onTake(Player p, Inventory inv, int slot);
 			
 		}
 

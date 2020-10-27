@@ -20,7 +20,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlot.ClanPlotFlag;
 import fr.olympa.zta.lootchests.type.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
@@ -90,6 +92,7 @@ public class Scan {
 					for (int y = 1; y <= highestY; y++) {
 						Block block = world.getBlockAt(x, y, z);
 						if (block.getType() == Material.CHEST) {
+							if (OlympaCore.getInstance().getRegionManager().getApplicableRegions(block.getLocation()).stream().anyMatch(region -> region.getFlag(ClanPlotFlag.class) != null)) return;
 							Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 								Chest chestBlock = (Chest) block.getState();
 								//chestBlock.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);

@@ -19,7 +19,7 @@ import net.minecraft.server.v1_15_R1.GroupDataEntity;
 import net.minecraft.server.v1_15_R1.ItemStack;
 import net.minecraft.server.v1_15_R1.Items;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.PathfinderGoal;
+import net.minecraft.server.v1_15_R1.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_15_R1.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
@@ -40,14 +40,15 @@ public class CustomEntityZombie extends EntityZombie {
 
 	@Override
 	protected void l() { // addBehaviourGoals
-		this.goalSelector.a(2, (PathfinderGoal) new PathfinderGoalCustomZombieAttack(this, 1.0, false));
-		this.goalSelector.a(5, (PathfinderGoal) new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
-		this.goalSelector.a(7, (PathfinderGoal) new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
+		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
+		this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
+		this.goalSelector.a(7, new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
 		initTargetGoals();
 	}
 
 	protected void initTargetGoals() {
-		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 5, 8, true, false));
+		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this));
+		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 5, 8, true, false));
 	}
 	
 	@Override
@@ -126,7 +127,7 @@ public class CustomEntityZombie extends EntityZombie {
 		if (nbttagcompound.hasKey("Explosive")) this.explosive = nbttagcompound.getBoolean("Explosive");
 	}
 	
-	static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {
+	public static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {
 
 		private EntityZombie zombie;
 

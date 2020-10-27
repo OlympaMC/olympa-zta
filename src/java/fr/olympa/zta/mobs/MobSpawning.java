@@ -51,12 +51,13 @@ import fr.olympa.zta.utils.DynmapLink;
 import net.md_5.bungee.api.ChatMessageType;
 import net.minecraft.server.v1_15_R1.Entity;
 
-public class MobSpawning {
+public class MobSpawning implements Runnable {
 
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";
 
-	private BukkitTask[] tasks = new BukkitTask[2]; // 0: calculation, 1: spawn
+	private Thread calculationThread;
+	private BukkitTask spawnTask;
 	public World world = Bukkit.getWorlds().get(0);
 
 	private boolean enabled = false;
@@ -91,61 +92,76 @@ public class MobSpawning {
 			addSafeZone(safeRegions.getSerializable(id + ".region", Region.class), id, safeRegions.getString(id + ".title"));
 		}
 	}
-
-	public void start() {
-		tasks[0] = new BukkitRunnable() {
-			public void run() { // s'effectue toutes les 5 secondes pour calculer les prochains spawns de la tâche 1
-				long time = System.currentTimeMillis();
-				queueLock.lock();
-				try {
-					List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
-					if (entities.size() > maxEntities) return;
-					Map<Chunk, SpawnType> activeChunks = getActiveChunks();
-					for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
-						Chunk chunk = entry.getKey();
-						SpawnType spawn = entry.getValue();
-						int mobs = random.nextInt(spawn.spawnAmount + 1);
-						mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
-							int x = random.nextInt(16);
-							int z = random.nextInt(16); // random position dans le chunk
-							if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
-								Block block = chunk.getBlock(x, seaLevel, z);
-								if (block.getType() == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
-									for (Location loc : entities) {
-										if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs; // trop proche d'entité = abandon
-									}
-									spawnQueue.add(new AbstractMap.SimpleEntry<>(block.getLocation(), Zombies.DROWNED));
+	
+	@Override
+	public void run() {
+		while (true) {
+			long time = System.currentTimeMillis();
+			queueLock.lock();
+			try {
+				List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
+				if (entities.size() > maxEntities) return;
+				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
+				for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
+					Chunk chunk = entry.getKey();
+					SpawnType spawn = entry.getValue();
+					int mobs = random.nextInt(spawn.spawnAmount + 1);
+					mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
+						int x = random.nextInt(16);
+						int z = random.nextInt(16); // random position dans le chunk
+						if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
+							Block block = chunk.getBlock(x, seaLevel, z);
+							if (block.getType() == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
+								for (Location loc : entities) {
+									if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs; // trop proche d'entité = abandon
 								}
-							}else {
-								int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
-								Block prev = chunk.getBlock(x, y, z);
-								y: for (; y < 140; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
-									boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-									prev = chunk.getBlock(x, y, z);
-									if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
-										Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
-										if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
-										Block block = location.getBlock();
-										if (block.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
-										for (Location loc : entities) {
-											if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
-										}
-										Location lc = block.getLocation();
-										spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
-										break y;
+								spawnQueue.add(new AbstractMap.SimpleEntry<>(block.getLocation(), Zombies.DROWNED));
+							}
+						}else {
+							int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
+							Block prev = chunk.getBlock(x, y, z);
+							y: for (; y < 140; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
+								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
+								prev = chunk.getBlock(x, y, z);
+								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
+									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
+									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
+									Block block = location.getBlock();
+									if (block.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
+									for (Location loc : entities) {
+										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 									}
+									Location lc = block.getLocation();
+									spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
+									break y;
 								}
 							}
 						}
 					}
-				}finally {
-					queueLock.unlock();
-					computeTimes.add(System.currentTimeMillis() - time);
+				}
+			}finally {
+				queueLock.unlock();
+				long elapsed = System.currentTimeMillis() - time;
+				computeTimes.add(elapsed);
+				if (!enabled) break;
+				try {
+					if (elapsed < 5000) Thread.sleep(5000 - elapsed);
+				}catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
 				}
 			}
-		}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 40L, 101L);
-
-		tasks[1] = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
+		}
+		calculationThread = null;
+	}
+	
+	public void start() {
+		enabled = true;
+		
+		calculationThread = new Thread(this, "Mob spawning");
+		calculationThread.start();
+		
+		spawnTask = new BukkitRunnable() { // s'effectue toutes les 2 secondes et demie pour spawner la moitié des mobs calculés dans la tâche 0
 			public void run() {
 				queueSize.add(spawnQueue.size());
 
@@ -167,8 +183,6 @@ public class MobSpawning {
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 20L, 50L);
-
-		enabled = true;
 	}
 
 	private Map<Chunk, SpawnType> getActiveChunks() {
@@ -251,17 +265,12 @@ public class MobSpawning {
 	}
 
 	public void end() {
-		for (int i = 0; i < tasks.length; i++) {
-			if (tasks[i] != null) {
-				tasks[i].cancel();
-				tasks[i] = null;
-			}
-		}
+		enabled = false;
+		
+		spawnTask.cancel();
 
 		spawnQueue.clear();
 		queueSize.clear();
-
-		enabled = false;
 	}
 	
 	public enum SpawnType {
@@ -341,7 +350,7 @@ public class MobSpawning {
 			@Override
 			public ActionResult enters(Player p, Set<TrackedRegion> to) {
 				OlympaZTA zta = OlympaZTA.getInstance();
-				Bukkit.getScheduler().runTask(zta, () -> zta.lineRadar.updateHolder(zta.scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p))));
+				Bukkit.getScheduler().runTaskLaterAsynchronously(zta, () -> zta.lineRadar.updateHolder(zta.scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p))), 1L);
 				return super.enters(p, to);
 			}
 		}

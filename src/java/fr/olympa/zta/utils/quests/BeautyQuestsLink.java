@@ -15,6 +15,7 @@ import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -40,7 +41,7 @@ public class BeautyQuestsLink implements Listener {
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
 		scoreboards.put(player, id);
-		return "\n§7Quête: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD);
+		return String.join("\n", SpigotUtils.wordWrap("\n§7Quête: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 30));
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {

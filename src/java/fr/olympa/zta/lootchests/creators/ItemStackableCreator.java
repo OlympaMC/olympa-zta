@@ -33,9 +33,8 @@ public class ItemStackableCreator implements LootCreator {
 		}
 
 		@Override
-		public boolean onTake(Player p, Inventory inv, int slot) {
+		public void onTake(Player p, Inventory inv, int slot) {
 			inv.setItem(slot, stackable.createItem());
-			return false;
 		}
 
 	}

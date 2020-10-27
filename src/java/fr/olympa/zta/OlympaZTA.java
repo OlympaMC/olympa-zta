@@ -132,6 +132,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public void onEnable() {
 		instance = this;
 		super.onEnable();
+		
+		Bukkit.clearRecipes();
+		sendMessage("Recettes par défaut supprimées.");
 
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
@@ -154,7 +157,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
 		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
 		
-		Bukkit.clearRecipes();
 		AmmoType.CARTRIDGE.getName();
 
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
