@@ -47,7 +47,7 @@ public class DynmapLink {
 				chestsMarkers.setHideByDefault(true);
 				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");
 				enderChestsMarkers = api.getMarkerAPI().getMarkerSet("enderchests");
-				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, true);
+				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, false);
 				enderChestIcon = api.getMarkerAPI().getMarkerIcon("portal");
 				plotsMarkers = api.getMarkerAPI().getMarkerSet("plots");
 				if (plotsMarkers == null) plotsMarkers = api.getMarkerAPI().createMarkerSet("plots", "Parcelles de Clans", null, false);
@@ -109,7 +109,7 @@ public class DynmapLink {
 		
 		String loc = SpigotUtils.convertLocationToString(location);
 		if (enderChestsMarkers.findMarker(loc) != null) return;
-		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, true);
+		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, false);
 	}
 	
 	public static void showClanPlot(ClanPlot plot) {

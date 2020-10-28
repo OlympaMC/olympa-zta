@@ -25,7 +25,6 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot.ClanPlotFlag;
 import fr.olympa.zta.lootchests.type.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
-import fr.olympa.zta.utils.DynmapLink;
 
 public class Scan {
 
@@ -81,18 +80,27 @@ public class Scan {
 					if (spawn == null) continue;
 					Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
 					if (!chunk.isForceLoaded()) {
+						int chunkID = chunkLast++;
 						Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 							chunk.setForceLoaded(true);
 							chunk.load();
+							loadedChunks.put(chunkID, chunk);
 						});
-						loadedChunks.put(chunkLast++, chunk);
+						while (!loadedChunks.asMap().containsKey(chunkID)) {
+							try {
+								Thread.sleep(100);
+							}catch (InterruptedException e) {
+								e.printStackTrace();
+								return;
+							}
+						}
 					}
 
 					int highestY = world.getHighestBlockYAt(x, z, HeightMap.WORLD_SURFACE);
 					for (int y = 1; y <= highestY; y++) {
 						Block block = world.getBlockAt(x, y, z);
 						if (block.getType() == Material.CHEST) {
-							if (OlympaCore.getInstance().getRegionManager().getApplicableRegions(block.getLocation()).stream().anyMatch(region -> region.getFlag(ClanPlotFlag.class) != null)) return;
+							if (OlympaCore.getInstance().getRegionManager().getApplicableRegions(block.getLocation()).stream().anyMatch(region -> region.getFlag(ClanPlotFlag.class) != null)) continue;
 							Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 								Chest chestBlock = (Chest) block.getState();
 								//chestBlock.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
@@ -100,7 +108,7 @@ public class Scan {
 								chestBlock.update();
 								LootChest lootChest = manager.getLootChest(chestBlock);
 								if (lootChest != null) {
-									if (lootChest.getLocation().equals(block.getLocation())) lootChest = null; // misplaced chest
+									if (!lootChest.getLocation().equals(block.getLocation())) lootChest = null; // misplaced chest
 								}
 								if (lootChest == null) {
 									LootChestCreator creator = spawn.getLootChests().pick(random).get(0);
@@ -113,7 +121,7 @@ public class Scan {
 								}else chestsAlreadyPresent++;
 							});
 						}else if (block.getType() == Material.ENDER_CHEST) {
-							DynmapLink.showEnderChest(block.getLocation());
+							OlympaZTA.getInstance().ecManager.addEnderChest(block.getLocation(), true);
 						}
 						processed++;
 					}

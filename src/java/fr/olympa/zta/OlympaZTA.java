@@ -2,6 +2,7 @@ package fr.olympa.zta;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,7 @@ import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.clans.plots.ClanPlotsManager;
 import fr.olympa.zta.enderchest.EnderChestCommand;
+import fr.olympa.zta.enderchest.EnderChestManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
@@ -94,10 +96,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		return (OlympaZTA) instance;
 	}
 	
-	public MobsListener mobsListener;
-	
 	public BeautyQuestsLink beautyQuestsLink;
 
+	public MobsListener mobsListener;
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
@@ -109,6 +110,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public TaxManager taxManager;
 	public AuctionsManager auctionsManager;
 	public GunRegistry gunRegistry;
+	public EnderChestManager ecManager;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -205,6 +207,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors du chargement des coffres de loot.");
+		}
+		
+		try {
+			ecManager = new EnderChestManager();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+			getLogger().severe("Une erreur est survenue lors du chargement des coffres de l'end.");
 		}
 
 		new WeaponsCommand().register();
