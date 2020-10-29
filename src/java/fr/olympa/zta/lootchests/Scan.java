@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Color;
 import org.bukkit.HeightMap;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
+import org.dynmap.markers.AreaMarker;
 
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
@@ -29,9 +30,9 @@ import fr.olympa.zta.lootchests.type.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
 
-public class Scan {
+public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-/commit/9e31ec544f2363357fdb38d0fc5729e79b12bcbe
 
-	private static final double DIVIDE = 5D;
+	private static final double DIVIDE = 6D;
 	
 	private final LootChestsManager manager = OlympaZTA.getInstance().lootChestsManager;
 
@@ -42,10 +43,6 @@ public class Scan {
 	private BukkitTask messages = null;
 	private BukkitTask syncTasks = null;
 	
-	private ReentrantLock toUnloadLock = new ReentrantLock();
-	private List<Chunk> toUnload = new ArrayList<>();
-	private ReentrantLock toLoadLock = new ReentrantLock();
-	private List<Chunk> toLoad = Collections.synchronizedList(new ArrayList<>());
 	private List<Entry<Block, SpawnType>> chests = Collections.synchronizedList(new ArrayList<>());
 
 	private Map<Integer, Thread> threads = new HashMap<>();
@@ -99,11 +96,6 @@ public class Scan {
 			});
 			chests.clear();
 			
-			toUnloadLock.lock();
-			toUnload.forEach(chunk -> chunk.removePluginChunkTicket(OlympaZTA.getInstance()));
-			toUnload.clear();
-			toUnloadLock.unlock();
-			
 			if (threads.isEmpty()) {
 				Prefix.DEFAULT_GOOD.sendMessage(sender, "Scan terminé ! %d chunks traités, %d blocs traités, %d coffres créés, %d coffres déjà présents.", chunkProcessed, processed, chestsCreated, chestsAlreadyPresent);
 				messages.cancel();
@@ -111,7 +103,7 @@ public class Scan {
 				syncTasks.cancel();
 				syncTasks = null;
 			}
-		}, 20, 1);
+		}, 20, 5);
 		
 		messages = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
 			Prefix.INFO.sendMessage(sender, "Scan en cours... %d chunks traités, %d blocs traités, %d coffres créés, %d coffres déjà présents.", chunkProcessed, processed, chestsCreated, chestsAlreadyPresent);
@@ -121,12 +113,11 @@ public class Scan {
 	private void startThread(int id, World world, int minChunkX, int minChunkZ, int maxChunkX, int maxChunkZ) {
 		Prefix.INFO.sendMessage(sender, "Démarrage du thread #%d pour le scan des chunks de %d %d à %d %d.", id, minChunkX, minChunkZ, maxChunkX, maxChunkZ);
 		Thread thread = new Thread(() -> {
+			List<AreaMarker> markers = new ArrayList<>();
 			for (int xChunk = minChunkX; xChunk < maxChunkX; xChunk++) {
 				for (int zChunk = minChunkZ; zChunk < maxChunkZ; zChunk++) {
 					Chunk chunk = world.getChunkAt(xChunk, zChunk);
-					toLoadLock.lock();
-					toLoad.add(chunk);
-					toLoadLock.unlock();
+					chunk.addPluginChunkTicket(OlympaZTA.getInstance());
 					while (!chunk.isLoaded()) {
 						try {
 							Thread.sleep(40);
@@ -155,15 +146,15 @@ public class Scan {
 							}
 						}
 					}
-					toUnloadLock.lock();
-					toUnload.add(chunk);
-					toUnloadLock.unlock();
+					chunk.removePluginChunkTicket(OlympaZTA.getInstance());
 					chunkProcessed++;
-					DynmapLink.showDebug(id, world, xChunk * 16, zChunk * 16, xChunkTo, zChunkTo);
+					markers.add(DynmapLink.showDebug(id, world, xChunk * 16, zChunk * 16, xChunkTo, zChunkTo, Color.AQUA.asRGB()));
 				}
 			}
 			threads.remove(id);
 			Prefix.INFO.sendMessage(sender, "Thread #%d terminé (restants : %d).", id, threads.size());
+			markers.forEach(AreaMarker::deleteMarker);
+			DynmapLink.showDebug(id, world, minChunkX * 16, minChunkZ * 16, maxChunkX * 16, maxChunkZ * 16, Color.LIME.asRGB());
 		}, "Scan #" + id);
 		thread.start();
 		threads.put(id, thread);

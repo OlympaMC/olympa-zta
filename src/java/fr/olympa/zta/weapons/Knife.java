@@ -19,7 +19,7 @@ public enum Knife implements Weapon, ItemStackable {
 	SURIN(Material.STICK, "Surin", "Couteau perforant, occasionnant plus de dégâts chez les joueurs que chez les infectés.", 4, 2),
 	;
 	
-	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false);
+	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false, false);
 	
 	private final float playerDamage, entityDamage;
 	

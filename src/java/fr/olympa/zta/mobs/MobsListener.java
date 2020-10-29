@@ -51,11 +51,11 @@ public class MobsListener implements Listener {
 
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 20,
 			new AmmoCreator(20, 2, 3),
-			new MoneyCreator(50, 3, 9),
+			new MoneyCreator(45, 3, 9),
 			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
-			new AmmoCreator(10, AmmoType.LIGHT, 2, 3, false),
-			new AmmoCreator(10, AmmoType.HEAVY, 2, 3, false),
-			new AmmoCreator(10, AmmoType.HANDWORKED, 2, 3, false),
+			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
+			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),
+			new AmmoCreator(12, AmmoType.HANDWORKED, 2, 3, false),
 			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false)
 			);
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();

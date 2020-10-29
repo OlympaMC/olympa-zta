@@ -109,8 +109,15 @@ public class DynmapLink {
 		if (api == null) return;
 		
 		String loc = SpigotUtils.convertLocationToString(location);
-		if (enderChestsMarkers.findMarker(loc) != null) return;
 		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, false);
+	}
+	
+	public static void hideEnderChest(Location location) {
+		if (api == null) return;
+		
+		String loc = SpigotUtils.convertLocationToString(location);
+		Marker marker = enderChestsMarkers.findMarker(loc);
+		if (marker != null) marker.deleteMarker();
 	}
 	
 	public static void showClanPlot(ClanPlot plot) {
@@ -124,10 +131,12 @@ public class DynmapLink {
 	
 	private static int i = 0;
 	
-	public static void showDebug(int threadID, World world, int xFrom, int zFrom, int xTo, int zTo) {
-		if (api == null) return;
+	public static AreaMarker showDebug(int threadID, World world, int xFrom, int zFrom, int xTo, int zTo, int color) {
+		if (api == null) return null;
 		
-		enderChestsMarkers.createAreaMarker(threadID + " " + i++, "Thread" + threadID, true, world.getName(), new double[] { xFrom, xTo }, new double[] { zFrom, zTo }, false);
+		AreaMarker areaMarker = enderChestsMarkers.createAreaMarker(threadID + " " + i++, "Thread" + threadID, true, world.getName(), new double[] { xFrom, xTo }, new double[] { zFrom, zTo }, false);
+		areaMarker.setFillStyle(0.8, color);
+		return areaMarker;
 	}
 	
 	public static class DynmapHideFlag extends Flag {

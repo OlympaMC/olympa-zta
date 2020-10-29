@@ -63,8 +63,8 @@ public class ClanPlotsCommand extends ComplexCommand {
 	public void info(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		sendSuccess("Parcelle de clan %d:", plot.getID());
-		sendInfo("Point d'apparition: §6%s", SpigotUtils.convertLocationToString(plot.getSpawn()));
-		sendInfo("Pancarte informative: §6%s", SpigotUtils.convertLocationToString(plot.getSign()));
+		sendInfo("Point d'apparition: §6%s", SpigotUtils.convertLocationToHumanString(plot.getSpawn()));
+		sendInfo("Pancarte informative: §6%s", SpigotUtils.convertBlockLocationToString(plot.getSign()));
 		sendInfo("Prix: §6%s", plot.getPriceFormatted());
 		if (plot.getClan() != null) {
 			sendInfo("Louée au clan: §6%s", plot.getClan().getName() + " §e(" + plot.getClan().getID() + ")");

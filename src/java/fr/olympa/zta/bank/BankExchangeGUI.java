@@ -15,10 +15,10 @@ import fr.olympa.zta.utils.PhysicalMoney;
 
 public class BankExchangeGUI extends OlympaGUI {
 
-	private static ItemStack add = ItemUtils.item(Material.GREEN_WOOL, "§a↑ Augmenter le montant de la transaction", "§e§l> Clic droit : §eAugmenter de 1", "§e§l> Clic gauche : §eAugmenter de 10", "§e§l> Clic central : §eAugmenter de 100");
-	private static ItemStack remove = ItemUtils.item(Material.RED_WOOL, "§c↓ Diminuer le montant de la transaction", "§e§l> Clic droit : §eBaisser de 1", "§e§l> Clic gauche : §eBaisser de 10", "§e§l> Clic central : §eBaisser de 100");
-	private static ItemStack transfer = ItemUtils.item(Material.REDSTONE, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", "  §8§o inventaire à votre compte");
-	private static ItemStack withdraw = ItemUtils.item(Material.GOLD_NUGGET, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "  §8§o compte sous forme de billets");
+	private static ItemStack add = ItemUtils.item(Material.GREEN_WOOL, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic droit : §7Augmenter de 1", "§8§l> Clic gauche : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100");
+	private static ItemStack remove = ItemUtils.item(Material.RED_WOOL, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic droit : §7Baisser de 1", "§8§l> Clic gauche : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100");
+	private static ItemStack transfer = ItemUtils.item(Material.REDSTONE, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
+	private static ItemStack withdraw = ItemUtils.item(Material.BRICK, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
 
 	private OlympaPlayerZTA player;
 
@@ -29,8 +29,10 @@ public class BankExchangeGUI extends OlympaGUI {
 		this.player = player;
 		this.player.getGameMoney().observe("bank_gui", this::updateMoney);
 
-		inv.setItem(0, ItemUtils.item(Material.EMERALD, "§e§lMa monnaie"));
-		updateMoney();
+		ItemUtils.skull(item -> {
+			inv.setItem(0, item);
+			updateMoney();
+		}, "§e§lMa monnaie", player.getName());
 
 		inv.setItem(2, add);
 		inv.setItem(4, remove);
@@ -46,7 +48,7 @@ public class BankExchangeGUI extends OlympaGUI {
 	}
 
 	private void updateMoney() {
-		ItemUtils.lore(inv.getItem(0), "§e> Compte bancaire : §6§l" + player.getGameMoney().getFormatted(), "§e> Mon porte-feuille : §6§l" + PhysicalMoney.getPlayerMoney(player.getPlayer()) + OlympaMoney.OMEGA);
+		ItemUtils.lore(inv.getItem(0), "§8> Compte bancaire : §7§l" + player.getGameMoney().getFormatted(), "§8> Mon porte-feuille : §7§l" + PhysicalMoney.getPlayerMoney(player.getPlayer()) + OlympaMoney.OMEGA);
 	}
 
 	@Override
