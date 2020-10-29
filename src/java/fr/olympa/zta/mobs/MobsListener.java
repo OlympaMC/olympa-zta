@@ -99,6 +99,7 @@ public class MobsListener implements Listener {
 		}else if (cause.getCause() == DamageCause.DROWNING) {
 			reason = "s'est noyé.";
 		}
+		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
 		e.getDrops().clear();
 	}

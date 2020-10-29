@@ -47,7 +47,7 @@ public class EnderChestManager {
 	public void addEnderChest(Location location, boolean database) {
 		enderchests.add(location);
 		DynmapLink.showEnderChest(location);
-		OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, new CyclingLine<>(CyclingLine.getAnim("EnderChest", ChatColor.AQUA, ChatColor.DARK_AQUA), 2, 3 * 20));
+		OlympaZTA.getInstance().getTask().runTask(() -> OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, new CyclingLine<>(CyclingLine.getAnim("EnderChest", ChatColor.AQUA, ChatColor.DARK_AQUA), 2, 3 * 20)));
 		if (database) {
 			try {
 				PreparedStatement statement = insertStatement.getStatement();

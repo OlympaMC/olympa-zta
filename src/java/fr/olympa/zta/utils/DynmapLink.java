@@ -6,6 +6,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
@@ -119,6 +120,14 @@ public class DynmapLink {
 		
 		//List<Location> points = plot.getTrackedRegion().getRegion().getLocations();
 		//plotsMarkers.createAreaMarker(Integer.toString(plot.getID()), "Parcelle du clan" + plot.getID(), true, plot.getTrackedRegion().getRegion().getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), true);
+	}
+	
+	private static int i = 0;
+	
+	public static void showDebug(int threadID, World world, int xFrom, int zFrom, int xTo, int zTo) {
+		if (api == null) return;
+		
+		enderChestsMarkers.createAreaMarker(threadID + " " + i++, "Thread" + threadID, true, world.getName(), new double[] { xFrom, xTo }, new double[] { zFrom, zTo }, false);
 	}
 	
 	public static class DynmapHideFlag extends Flag {
