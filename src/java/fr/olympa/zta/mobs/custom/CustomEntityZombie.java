@@ -103,11 +103,6 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 	
 	@Override
-	protected boolean isDropExperience() {
-		return zombieType != Zombies.TRAINING;
-	}
-	
-	@Override
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
 			if (zombieType == Zombies.TNT) {
@@ -138,7 +133,7 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	public void a(NBTTagCompound nbttagcompound) {
 		super.a(nbttagcompound);
-		if (nbttagcompound.hasKey("ZTAType")) this.zombieType = Enum.valueOf(Zombies.class, nbttagcompound.getString("ZTAType"));
+		if (nbttagcompound.hasKey("ZTAType")) setZombieType(Zombies.valueOf(nbttagcompound.getString("ZTAType")));
 	}
 	
 	public static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {

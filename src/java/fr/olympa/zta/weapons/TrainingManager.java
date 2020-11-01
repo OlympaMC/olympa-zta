@@ -26,6 +26,7 @@ import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.ActionResult;
 import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.SpigotUtils;
@@ -59,7 +60,7 @@ public class TrainingManager implements Listener {
 		this.playersRegion = config.getSerializable("playersRegion", Region.class);
 		this.mobsRegion = config.getSerializable("mobsRegion", Region.class);
 		
-		OlympaCore.getInstance().getRegionManager().registerRegion(playersRegion, "training_players", EventPriority.HIGH, new GunFlag(false, true), new Flag() {
+		OlympaCore.getInstance().getRegionManager().registerRegion(playersRegion, "training_players", EventPriority.HIGH, new GunFlag(false, true), new DropFlag(true), new Flag() {
 			@Override
 			public ActionResult leaves(Player p, Set<TrackedRegion> to) {
 				TrainingSlot slot = getTrainingSlot(p);

@@ -295,7 +295,7 @@ public class Gun implements Weapon {
 		if (zoomed) toggleZoom(p, item);
 		
 		GunFlag gunFlag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
-		boolean takeItems = p.getGameMode() != GameMode.SURVIVAL && (gunFlag == null || !gunFlag.isFreeAmmos());
+		boolean takeItems = p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
 		
 		int max = (int) maxAmmos.getValue();
 		if (max <= ammos) return;
