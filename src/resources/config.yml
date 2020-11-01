@@ -141,6 +141,34 @@ hub:
   xMax: 5710
   zMax: 5700
 
+training:
+  enterButton: world 5611 13 5597
+  exitButtons:
+  - "world 5608 13 5598"
+  - "world 5607 12 5594"
+  - "world 5608 13 5589"
+  locations:
+  - "world 5606.5 12 5598.5 90 0"
+  - "world 5606.5 12 5594.5 90 0"
+  - "world 5606.5 12 5589.5 90 0"
+  exitLocation: world 5615 12 5599 111 0
+  playersRegion:
+    ==: fr.olympa.api.region.shapes.ExpandedCuboid
+    world: "world"
+    xMin: 5604
+    zMin: 5587
+    xMax: 5609
+    zMax: 5601
+  mobsRegion:
+    ==: fr.olympa.api.region.shapes.Cuboid
+    world: "world"
+    xMin: 5580
+    yMin: 12
+    zMin: 5585
+    xMax: 5600
+    yMax: 14
+    zMax: 5604
+
 seaLevel: 22
 
 spawn: world 5632.5 5.0 5632.5 180 0

@@ -39,7 +39,8 @@ public class EnderChestManager implements Listener {
 				+ "  `world` VARCHAR(45) NOT NULL,"
 				+ "  `x` INT NOT NULL,"
 				+ "  `y` INT NOT NULL,"
-				+ "  `z` INT NOT NULL);");
+				+ "  `z` INT NOT NULL"
+				+ ")");
 		
 		ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
 		while (resultSet.next()) {
@@ -52,7 +53,7 @@ public class EnderChestManager implements Listener {
 	}
 	
 	public void addEnderChest(Location location, boolean database) {
-		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "&l&b", "&l&3"), 2, 3 * 10)));
+		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§l§b", "§l&§"), 2, 3 * 10)));
 		DynmapLink.showEnderChest(location);
 		if (database) {
 			try {

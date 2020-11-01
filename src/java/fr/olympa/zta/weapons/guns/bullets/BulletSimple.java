@@ -29,13 +29,14 @@ public class BulletSimple extends Bullet{
 		if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
 			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
 			WeaponsListener.cancelDamageEvent = true;
-			float damage = e.getHitEntity() instanceof Player ? playerDamage : entityDamage;
+			float damage = hitEntity instanceof Player ? playerDamage : entityDamage;
 
+			boolean stats = !hitEntity.hasMetadata("training");
 			if (isHeadShot(e.getEntity(), hitEntity)) {
 				damage *= 1.5;
 				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
-				OlympaPlayerZTA.get(shooter).headshots.increment();
-			}else OlympaPlayerZTA.get(shooter).otherShots.increment();
+				if (stats) OlympaPlayerZTA.get(shooter).headshots.increment();
+			}else if (stats) OlympaPlayerZTA.get(shooter).otherShots.increment();
 			damage(hitEntity, shooter, damage);
 		}
 	}

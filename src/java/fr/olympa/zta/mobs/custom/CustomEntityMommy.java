@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers.NBT;
 
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.EntityTypes;
@@ -27,6 +28,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	public CustomEntityMommy(EntityTypes<CustomEntityMommy> type, World world) {
 		super(type, world);
+		setZombieType(Zombies.COMMON);
 	}
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {

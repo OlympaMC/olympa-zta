@@ -26,7 +26,7 @@ import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
-import fr.olympa.zta.weapons.guns.NoGunFlag;
+import fr.olympa.zta.weapons.guns.GunFlag;
 import net.md_5.bungee.api.ChatMessageType;
 
 public class HubManager implements Listener {
@@ -49,7 +49,7 @@ public class HubManager implements Listener {
 		this.spawnpoint = spawnpoint;
 		this.spawnRegions = new HashSet<>(spawnRegions);
 
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new FoodFlag(true, false), new NoGunFlag(true), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new FoodFlag(true, false), new GunFlag(true, false), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
 	}
 
 	public void addSpawnRegion(SpawnType region) {

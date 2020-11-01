@@ -75,11 +75,13 @@ import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.Knife;
+import fr.olympa.zta.weapons.TrainingManager;
 import fr.olympa.zta.weapons.WeaponsCommand;
 import fr.olympa.zta.weapons.WeaponsGiveGUI;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
+import fr.olympa.zta.weapons.guns.GunFlag;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
 import net.citizensnpcs.api.CitizensAPI;
@@ -111,6 +113,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public AuctionsManager auctionsManager;
 	public GunRegistry gunRegistry;
 	public EnderChestManager ecManager;
+	public TrainingManager training;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -171,6 +174,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
+		pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
 		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		
 		try {
@@ -195,7 +199,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			taxManager = new TaxManager(this, null, "zta_tax", 0);
+			taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, "zta_tax", 0);
 			auctionsManager = new AuctionsManager(this, "zta_auctions", taxManager);
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -232,6 +236,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning.start();
 		
 		OlympaCore.getInstance().getRegionManager().awaitWorldTracking("world", e -> e.getRegion().registerFlags(
+				new GunFlag(false, false),
 				new ItemDurabilityFlag(true),
 				new PhysicsFlag(true),
 				new PlayerBlocksFlag(true),
@@ -310,7 +315,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
-
+		training.unload();
+		
 		gunRegistry.unload();
 	}
 	

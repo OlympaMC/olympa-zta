@@ -90,9 +90,18 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
-		Loot loot = currentLoots.remove(slot);
+		if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) return true;
+		Loot loot = currentLoots.get(slot);
 		if (loot == null) throw new RuntimeException("No loot at slot for chest " + getID());
-		if (loot instanceof InventoryLoot) ((InventoryLoot) loot).onTake(p, inv, slot);
+		if (loot instanceof InventoryLoot) {
+			if (click.isShiftClick() && p.getInventory().firstEmpty() == -1) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
+				return false;
+			}else {
+				((InventoryLoot) loot).onTake(p, inv, slot);
+			}
+		}
+		currentLoots.remove(slot);
 		return false;
 	}
 

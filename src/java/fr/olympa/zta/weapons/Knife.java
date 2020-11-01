@@ -14,7 +14,7 @@ import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public enum Knife implements Weapon, ItemStackable {
 	
-	MATRAQUE(Material.BLAZE_ROD, "Matraque", "Arme contondante, peu puissante contre les joueurs, utile pour se défendre contre les infectés.", 2, 3),
+	BATTE(Material.BLAZE_ROD, "Batte de base-ball", "Arme contondante, peu puissante contre les joueurs, utile pour se défendre contre les infectés.", 2, 3),
 	BICHE(Material.ARROW, "Pied-de-biche", "Objet polyvalent contre les joueurs comme contre les infectés.", 3, 3),
 	SURIN(Material.STICK, "Surin", "Couteau perforant, occasionnant plus de dégâts chez les joueurs que chez les infectés.", 4, 2),
 	;

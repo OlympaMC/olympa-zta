@@ -73,7 +73,7 @@ public class MobsListener implements Listener {
 				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
 					kept.add(itemStack);
 					contents[i] = null;
-				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.MATRAQUE.isItem(itemStack)) {
+				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.BATTE.isItem(itemStack)) {
 					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
 				}
 			}
@@ -112,7 +112,7 @@ public class MobsListener implements Listener {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
 				killer.killedPlayers.increment();
-			}else if (entity.getType() == EntityType.ZOMBIE) {
+			}else if (entity.getType() == EntityType.ZOMBIE && !entity.hasMetadata("training")) {
 				killer.killedZombies.increment();
 				for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
 					e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
@@ -206,7 +206,7 @@ public class MobsListener implements Listener {
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(10), Knife.MATRAQUE.createItem());
+		p.getInventory().addItem(Food.BAKED_POTATO.get(10), Knife.BATTE.createItem());
 	}
 	
 }

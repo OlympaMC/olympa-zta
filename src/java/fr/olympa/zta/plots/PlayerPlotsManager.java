@@ -44,7 +44,6 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
-import fr.olympa.zta.weapons.guns.NoGunFlag;
 
 public class PlayerPlotsManager {
 	
@@ -84,7 +83,7 @@ public class PlayerPlotsManager {
 		worldCrea.setFullTime(10000);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
 
-		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new ItemDurabilityFlag(true), new NoGunFlag(true), new DamageFlag(true), new GameModeFlag(GameMode.SURVIVAL), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
+		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new ItemDurabilityFlag(true), new DamageFlag(true), new GameModeFlag(GameMode.SURVIVAL), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
 			@Override
 			public <T extends Event & Cancellable> void blockEvent(T event, Player p, Block block) {
 				event.setCancelled(PlayerPlotsManager.this.blockEvent(p, event, block));

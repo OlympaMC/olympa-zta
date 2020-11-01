@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -168,7 +169,7 @@ public class Gun implements Weapon {
 			}
 			if (ammos == 0) { // tentative de tir alors que le barillet est vide
 				reload(p, item);
-			}else if (ready && fireEnabled(p) && task == null) {
+			}else if (ready && isFireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
 					ready = false;
 					task = new BukkitRunnable() {
@@ -231,12 +232,14 @@ public class Gun implements Weapon {
 		}
 	}
 
-	private boolean fireEnabled;
-	public boolean fireEnabled(Player p) {
-		fireEnabled = true;
-		OlympaCore.getInstance().getRegionManager().fireEvent(p.getLocation(), NoGunFlag.class, x -> fireEnabled = x.isFireEnabled());
-		return fireEnabled;
-		//return !OlympaZTA.getInstance().hub.isInHub(p.getLocation()) && OlympaZTA.getInstance().mobSpawning.world == p.getWorld();
+	public boolean isFireEnabled(Player p) {
+		GunFlag gunFlag = getGunFlag(p);
+		if (gunFlag == null) return false;
+		return gunFlag.isFireEnabled(p);
+	}
+	
+	public GunFlag getGunFlag(Player p) {
+		return OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
 	}
 
 	public void itemClick(Player p, ItemStack item) {
@@ -290,12 +293,15 @@ public class Gun implements Weapon {
 	private void reload(Player p, ItemStack item) {
 		if (reloading != null) return;
 		if (zoomed) toggleZoom(p, item);
-
+		
+		GunFlag gunFlag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
+		boolean takeItems = p.getGameMode() != GameMode.SURVIVAL && (gunFlag == null || !gunFlag.isFreeAmmos());
+		
 		int max = (int) maxAmmos.getValue();
 		if (max <= ammos) return;
 
 		int toCharge;
-		int availableAmmos = type.getAmmoType().getAmmos(p);
+		int availableAmmos = takeItems ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
 			return;
@@ -315,7 +321,7 @@ public class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max);
+					ammos = takeItems ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : max;
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
