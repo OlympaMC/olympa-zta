@@ -1,6 +1,7 @@
 package fr.olympa.zta.utils.quests;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import fr.olympa.api.holograms.Hologram;
 import fr.olympa.api.lines.FixedLine;
@@ -11,7 +12,7 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 	
 	@Override
 	public boolean supportPerPlayerVisibility() {
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -22,6 +23,7 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 	@Override
 	public AbstractHolograms<Hologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
 		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false);
+		hologram.setDefaultVisibility(defaultVisible);
 		return new OHologram(hologram);
 	}
 	
@@ -29,6 +31,13 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 		
 		protected OHologram(Hologram hologram) {
 			super(hologram);
+		}
+		
+		@Override
+		public void setPlayerVisibility(Player p, boolean visible) {
+			if (visible) {
+				hologram.show(p);
+			}else hologram.hide(p);
 		}
 		
 		@Override

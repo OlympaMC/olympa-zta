@@ -16,6 +16,6 @@ public class CommonGunConstants{
 	public static final float SOUND_VOLUME_ULTRA_HIGH = 3.5f;
 	public static final float SOUND_VOLUME_HIGH = 3f;
 	public static final float SOUND_VOLUME_MEDIUM = 2f;
-	public static final float SOUND_VOLUME_LOW = 2f;
+	public static final float SOUND_VOLUME_LOW = 1.5f;
 	
 }

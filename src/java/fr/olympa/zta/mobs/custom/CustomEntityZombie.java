@@ -69,7 +69,7 @@ public class CustomEntityZombie extends EntityZombie {
 		super.initAttributes();
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
 		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
-		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(25.0);
+		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(22.0);
 	}
 	
 	@Override

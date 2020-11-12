@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -42,6 +43,8 @@ public class Gun implements Weapon {
 
 	private final int id;
 	private final GunType type;
+	
+	protected int beforeTrainingAmmos = -1;
 	
 	protected int ammos = 0;
 	protected boolean ready = false;
@@ -85,6 +88,18 @@ public class Gun implements Weapon {
 	
 	public GunType getType() {
 		return type;
+	}
+	
+	public void saveBeforeTrainingAmmos() {
+		beforeTrainingAmmos = ammos;
+	}
+	
+	public void restoreBeforeTrainingAmmos(ItemStack item) {
+		if (beforeTrainingAmmos != -1) {
+			ammos = beforeTrainingAmmos;
+			beforeTrainingAmmos = -1;
+			updateItemName(item);
+		}
 	}
 	
 	public ItemStack createItemStack() {
@@ -276,10 +291,10 @@ public class Gun implements Weapon {
 		ammos--;
 
 		playFireSound(p.getLocation());
-		float distance = (fireVolume.getValue() - 0.5f) * 16;
+		float distance = (fireVolume.getValue() - 0.5f) * 10;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
 			Zombie zombie = (Zombie) en;
-			if (zombie.getTarget() == null) zombie.setTarget(p);
+			if (zombie.getTarget() == null && ThreadLocalRandom.current().nextBoolean()) zombie.setTarget(p);
 		}
 	}
 
@@ -356,9 +371,9 @@ public class Gun implements Weapon {
 
 	private void toggleZoom(Player p, ItemStack item) {
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(type.getZoomModifier().getBukkitModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(type.getZoomModifier().getBukkitModifier());
+			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -373,7 +388,15 @@ public class Gun implements Weapon {
 	 * @return Action effectuée lors du clic secondaire
 	 */
 	public GunAction getSecondClickAction() {
-		return type.hasSecondaryMode() ? GunAction.CHANGE_MODE : type.hasZoom() ? GunAction.ZOOM : null;
+		return type.hasSecondaryMode() ? GunAction.CHANGE_MODE : hasZoom() ? GunAction.ZOOM : null;
+	}
+	
+	public boolean hasZoom() {
+		return type.hasZoom() || (zoomModifier != null);
+	}
+	
+	public AttributeModifier getZoomModifier() {
+		return zoomModifier == null ? type.getZoomModifier() : zoomModifier;
 	}
 
 	public int getAccessoriesAmount() {

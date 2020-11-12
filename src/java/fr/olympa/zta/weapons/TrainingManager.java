@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.holograms.Hologram.HologramLine;
@@ -34,6 +35,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
+import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.GunFlag;
 
 public class TrainingManager implements Listener {
@@ -153,6 +155,9 @@ public class TrainingManager implements Listener {
 				bar.setProgress(timeElapsed / SECONDS);
 			}, 20L, 20L);
 			slotsLine.updateGlobal();
+			for (ItemStack item : player.getInventory().getContents()) {
+				OlympaZTA.getInstance().gunRegistry.ifGun(item, Gun::saveBeforeTrainingAmmos);
+			}
 		}
 		
 		public void exit(boolean teleport) {
@@ -167,6 +172,9 @@ public class TrainingManager implements Listener {
 			Prefix.DEFAULT.sendMessage(tmp, "Vous quittez le stand de tir.");
 			slotsLine.updateGlobal();
 			if (teleport) tmp.teleport(exitLocation);
+			for (ItemStack item : tmp.getInventory().getContents()) {
+				OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> gun.restoreBeforeTrainingAmmos(item));
+			}
 		}
 	}
 	

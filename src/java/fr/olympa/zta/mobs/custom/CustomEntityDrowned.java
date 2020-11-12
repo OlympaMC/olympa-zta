@@ -71,7 +71,7 @@ public class CustomEntityDrowned extends EntityDrowned {
 
 	@Override
 	protected void initPathfinder() {
-		//this.goalSelector.a(1, supplyDrownedGoToWater.apply(this));
+		this.goalSelector.a(1, supplyDrownedGoToWater.apply(this));
 		this.goalSelector.a(2, supplyDrownedAttack.apply(this));
 		this.goalSelector.a(3, supplyDrownedSwipUp.apply(this, OlympaZTA.getInstance().mobSpawning.seaLevel));
 		this.goalSelector.a(4, new PathfinderGoalRandomStroll((EntityCreature) this, 1.0));

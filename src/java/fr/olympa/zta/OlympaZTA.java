@@ -311,11 +311,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	@Override
 	public void onDisable(){
 		super.onDisable();
+		training.unload();
 
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
-		training.unload();
 		
 		gunRegistry.unload();
 	}
