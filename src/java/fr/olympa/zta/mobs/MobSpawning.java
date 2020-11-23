@@ -37,11 +37,8 @@ import org.bukkit.scheduler.BukkitTask;
 import com.google.common.collect.EvictingQueue;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.api.region.tracking.ActionResult;
-import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
-import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.type.LootChestPicker;
 import fr.olympa.zta.lootchests.type.LootChestType;
@@ -345,13 +342,6 @@ public class MobSpawning implements Runnable {
 			public SpawningFlag(SpawnType type) {
 				super.setMessages(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
 				this.type = type;
-			}
-
-			@Override
-			public ActionResult enters(Player p, Set<TrackedRegion> to) {
-				OlympaZTA zta = OlympaZTA.getInstance();
-				Bukkit.getScheduler().runTaskLaterAsynchronously(zta, () -> zta.lineRadar.updateHolder(zta.scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(p))), 1L);
-				return super.enters(p, to);
 			}
 		}
 	}

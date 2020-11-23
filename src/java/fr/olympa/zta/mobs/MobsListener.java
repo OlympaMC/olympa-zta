@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -32,6 +31,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -42,6 +42,7 @@ import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
 import fr.olympa.zta.lootchests.creators.LootCreator;
 import fr.olympa.zta.lootchests.creators.MoneyCreator;
 import fr.olympa.zta.mobs.custom.Mobs;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
@@ -112,10 +113,14 @@ public class MobsListener implements Listener {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
 				killer.killedPlayers.increment();
-			}else if (entity.getType() == EntityType.ZOMBIE && !entity.hasMetadata("training")) {
-				killer.killedZombies.increment();
-				for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
-					e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
+			}else {
+				if (!entity.hasMetadata("ztaZombieType")) return;
+				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
+				if (zombie == Zombies.COMMON || zombie == Zombies.DROWNED) {
+					killer.killedZombies.increment();
+					for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
+						e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
+					}
 				}
 			}
 		}
@@ -202,6 +207,11 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
 		OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> OlympaZTA.getInstance().gunRegistry.itemRemove(e.getEntity().getItemStack()));
+	}
+	
+	@EventHandler
+	public void onPlayerMoveRegions(AsyncPlayerMoveRegionsEvent e) {
+		OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
 	}
 	
 	private void giveStartItems(Player p) {

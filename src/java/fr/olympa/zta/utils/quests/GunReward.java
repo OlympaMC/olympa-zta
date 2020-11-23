@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
@@ -56,7 +57,7 @@ public class GunReward extends AbstractReward {
 			}
 			
 			@Override
-			public void click(GunType existing) {
+			public void click(GunType existing, ItemStack item, ClickType clickType) {
 				type = existing;
 				ItemUtils.lore(clicked, getLore());
 				gui.reopen();

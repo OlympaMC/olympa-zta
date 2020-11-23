@@ -10,12 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.ChatPaginator;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -41,14 +41,16 @@ public class BeautyQuestsLink implements Listener {
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
 		scoreboards.put(player, id);
-		return String.join("\n", SpigotUtils.wordWrap("\n§7Quête: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 30));
+		return String.join("\n", ChatPaginator.wordWrap("\n§7Mission: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 25));
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
+		QuestsAPI.setHologramsManager(new BeautyQuestsHolograms());
 		QuestsAPI.registerReward(new QuestObjectCreator<>(QuestItemReward.class, ItemUtils.item(Material.GOLD_INGOT, "§eOlympa ZTA - Item de quête"), QuestItemReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyItemReward.class, ItemUtils.item(Material.NETHER_BRICK, "§eOlympa ZTA - Billets de banque"), MoneyItemReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Item custom"), GunReward::new));
-		QuestsAPI.setHologramsManager(new BeautyQuestsHolograms());
+		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
+		QuestsAPI.registerMobFactory(new ZTAMobFactory());
 	}
 	
 	public boolean isQuestItem(ItemStack item) {

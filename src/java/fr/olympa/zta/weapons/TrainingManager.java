@@ -70,7 +70,7 @@ public class TrainingManager implements Listener {
 				return super.leaves(p, to);
 			}
 		});
-		OlympaCore.getInstance().getHologramsManager().createHologram(enterButton.clone().add(0.5, 1, 0.5), false, new CyclingLine<>(Arrays.asList("§6§lSTAND DE TIR", "§e§lSTAND DE TIR"), 40), slotsLine, FixedLine.EMPTY_LINE, new FixedLine<>("§aCliquez sur le bouton"), new FixedLine<>("§apour rejoindre le stand."), new FixedLine<>("§7(munitions données)"));
+		OlympaCore.getInstance().getHologramsManager().createHologram(enterButton.clone().add(0.5, 1, 0.5), false, true, new CyclingLine<>(Arrays.asList("§6§lSTAND DE TIR", "§e§lSTAND DE TIR"), 40), slotsLine, FixedLine.EMPTY_LINE, new FixedLine<>("§aCliquez sur le bouton"), new FixedLine<>("§apour rejoindre le stand."), new FixedLine<>("§7(munitions données)"));
 		
 		mobsSpawn = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), () -> {
 			if (slots.stream().allMatch(TrainingSlot::isEmpty)) return;

@@ -4,10 +4,13 @@ import java.lang.reflect.Constructor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.bukkit.metadata.FixedMetadataValue;
+
 import fr.olympa.api.utils.Reflection;
 import fr.olympa.api.utils.Reflection.ClassEnum;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.CustomEntityZombie.PathfinderGoalCustomZombieAttack;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
 import net.minecraft.server.v1_15_R1.EntityCreature;
@@ -67,6 +70,7 @@ public class CustomEntityDrowned extends EntityDrowned {
 
 	public CustomEntityDrowned(EntityTypes<? extends EntityDrowned> var0, World var1) {
 		super(var0, var1);
+		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), Zombies.DROWNED));
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -76,16 +77,32 @@ public class Mobs {
 	}
 
 	public enum Zombies {
-		COMMON(customZombie), TNT(customZombie), TRAINING(customZombie), DROWNED(customDrowned);
+		COMMON(customZombie, "Infecté"), TNT(customZombie, "Infecté explosif"), TRAINING(customZombie, "Zombie d'entraînement"), DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
 
 		private final EntityTypes<? extends EntityZombie> type;
+		private String name;
+		private EntityType bukkitType;
 
-		private Zombies(EntityTypes<? extends EntityZombie> type) {
+		private Zombies(EntityTypes<? extends EntityZombie> type, String name) {
+			this(type, name, EntityType.ZOMBIE);
+		}
+		
+		private Zombies(EntityTypes<? extends EntityZombie> type, String name, EntityType bukkitType) {
 			this.type = type;
+			this.name = name;
+			this.bukkitType = bukkitType;
 		}
 
 		public EntityTypes<? extends EntityZombie> getType() {
 			return type;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public EntityType getBukkitType() {
+			return bukkitType;
 		}
 	}
 

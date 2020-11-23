@@ -44,8 +44,8 @@ public class CustomEntityZombie extends EntityZombie {
 	
 	public void setZombieType(Zombies zombieType) {
 		this.zombieType = zombieType;
+		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), zombieType));
 		if (zombieType == Zombies.TRAINING) {
-			getBukkitEntity().setMetadata("training", new FixedMetadataValue(OlympaZTA.getInstance(), true));
 			setSilent(true);
 		}else {
 			this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));

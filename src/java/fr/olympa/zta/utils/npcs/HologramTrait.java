@@ -20,7 +20,7 @@ public abstract class HologramTrait extends Trait {
 
 	protected void showHologram() {
 		removeHologram();
-		hologramID = OlympaCore.getInstance().getHologramsManager().createHologram(getHologramLocation(npc.getStoredLocation()), false, getLines()).getID();
+		hologramID = OlympaCore.getInstance().getHologramsManager().createHologram(getHologramLocation(npc.getStoredLocation()), false, true, getLines()).getID();
 	}
 	
 	private Location getHologramLocation(Location npcLocation) {

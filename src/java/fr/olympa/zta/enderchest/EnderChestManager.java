@@ -53,7 +53,7 @@ public class EnderChestManager implements Listener {
 	}
 	
 	public void addEnderChest(Location location, boolean database) {
-		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§l§b", "§l&§"), 2, 3 * 10)));
+		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, true, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§b§l", "§3§l"), 2, 3 * 10)));
 		DynmapLink.showEnderChest(location);
 		if (database) {
 			try {

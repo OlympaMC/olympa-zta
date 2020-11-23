@@ -22,9 +22,7 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 	
 	@Override
 	public AbstractHolograms<Hologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
-		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false);
-		hologram.setDefaultVisibility(defaultVisible);
-		return new OHologram(hologram);
+		return new OHologram(OlympaCore.getInstance().getHologramsManager().createHologram(lc, defaultVisible, false));
 	}
 	
 	public class OHologram extends BQHologram {
@@ -35,9 +33,7 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 		
 		@Override
 		public void setPlayerVisibility(Player p, boolean visible) {
-			if (visible) {
-				hologram.show(p);
-			}else hologram.hide(p);
+			hologram.setVisibility(p, visible);
 		}
 		
 		@Override
