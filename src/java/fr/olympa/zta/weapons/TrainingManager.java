@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -115,6 +116,12 @@ public class TrainingManager implements Listener {
 			TrainingSlot slot = getTrainingSlot(e.getPlayer());
 			if (slot != null) slot.exit(true);
 		}
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerQuitEvent e) {
+		TrainingSlot slot = getTrainingSlot(e.getPlayer());
+		if (slot != null) slot.exit(true);
 	}
 	
 	class TrainingSlot {

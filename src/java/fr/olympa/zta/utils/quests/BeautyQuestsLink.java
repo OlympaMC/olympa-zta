@@ -10,12 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.ChatPaginator;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -26,6 +26,7 @@ import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
+import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
 import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch.Source;
 import fr.skytasul.quests.utils.Utils;
@@ -41,7 +42,7 @@ public class BeautyQuestsLink implements Listener {
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
 		scoreboards.put(player, id);
-		return String.join("\n", ChatPaginator.wordWrap("\n§7Mission: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 25));
+		return String.join("\n", SpigotUtils.wordWrap("\n§7Mission: §6§l" + quest.getName() + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 30));
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
@@ -55,6 +56,11 @@ public class BeautyQuestsLink implements Listener {
 	
 	public boolean isQuestItem(ItemStack item) {
 		return Utils.isQuestItem(item);
+	}
+	
+	@EventHandler
+	public void onBQLoad(PlayerAccountJoinEvent e) {
+		checkScoreboard(e.getPlayer());
 	}
 	
 	@EventHandler
@@ -84,6 +90,7 @@ public class BeautyQuestsLink implements Listener {
 	
 	private void checkScoreboard(Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		if (acc == null) return;
 		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {
 			if (scoreboards.containsKey(p)) return;
 			scoreboards.put(p, 0);

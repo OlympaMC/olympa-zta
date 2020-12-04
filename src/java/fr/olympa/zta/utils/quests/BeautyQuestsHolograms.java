@@ -22,7 +22,7 @@ public class BeautyQuestsHolograms extends AbstractHolograms<Hologram> {
 	
 	@Override
 	public AbstractHolograms<Hologram>.BQHologram createHologram(Location lc, boolean defaultVisible) {
-		return new OHologram(OlympaCore.getInstance().getHologramsManager().createHologram(lc, defaultVisible, false));
+		return new OHologram(OlympaCore.getInstance().getHologramsManager().createHologram(lc, false, defaultVisible));
 	}
 	
 	public class OHologram extends BQHologram {

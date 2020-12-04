@@ -37,6 +37,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			.put("headshots", "INT NOT NULL DEFAULT 0")
 			.put("other_shots", "INT NOT NULL DEFAULT 0")
 			.put("opened_chests", "INT NOT NULL DEFAULT 0")
+			.put("kit_vip_time", "BIGINT NULL")
 			.build();
 
 	private Inventory enderChest = Bukkit.createInventory(null, 9, "Enderchest de " + getName());
@@ -51,7 +52,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt headshots = new ObservableInt(0);
 	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
-
+	public long kitVIPtime = 0;
+	
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
 		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(this)));
@@ -93,6 +95,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			headshots.set(resultSet.getInt("headshots"));
 			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
+			kitVIPtime = resultSet.getLong("kit_vip_time");
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
@@ -110,6 +113,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			statement.setInt(i++, headshots.get());
 			statement.setInt(i++, otherShots.get());
 			statement.setInt(i++, openedChests.get());
+			statement.setLong(i++, kitVIPtime);
 		}catch (IOException e) {
 			e.printStackTrace();
 		}

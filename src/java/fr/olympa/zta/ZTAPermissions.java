@@ -18,7 +18,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission MOD_COMMANDS = new OlympaPermission(OlympaGroup.ASSISTANT);
 	
 	public static final OlympaPermission TPA_COMMANDS = new OlympaPermission(OlympaGroup.PLAYER);
-	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
+	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.VIP);
 	public static final OlympaPermission ENDERCHEST_COMMAND_OTHER = new OlympaPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaPermission CLANS_PLAYERS_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission MONEY_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
@@ -28,5 +28,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission HUB_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 
 	public static final OlympaPermission PROBLEM_MONITORING = new OlympaPermission(OlympaGroup.DEV);
+	
+	public static final OlympaPermission KIT_VIP_PERMISSION = new OlympaPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
 
 }

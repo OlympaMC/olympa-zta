@@ -98,6 +98,7 @@ public class Gun implements Weapon {
 		if (beforeTrainingAmmos != -1) {
 			ammos = beforeTrainingAmmos;
 			beforeTrainingAmmos = -1;
+			if (ammos != 0) ready = true;
 			updateItemName(item);
 		}
 	}

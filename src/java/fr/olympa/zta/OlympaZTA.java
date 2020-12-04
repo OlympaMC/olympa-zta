@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -27,9 +28,13 @@ import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.command.essentials.BackCommand;
 import fr.olympa.api.command.essentials.FeedCommand;
 import fr.olympa.api.command.essentials.HealCommand;
+import fr.olympa.api.command.essentials.KitCommand;
+import fr.olympa.api.command.essentials.KitCommand.Kit;
 import fr.olympa.api.command.essentials.tp.TpaHandler;
 import fr.olympa.api.economy.MoneyCommand;
+import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.economy.tax.TaxManager;
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
@@ -74,6 +79,8 @@ import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
+import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.TrainingManager;
 import fr.olympa.zta.weapons.WeaponsCommand;
@@ -200,7 +207,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		try {
 			taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, "zta_tax", 0);
-			auctionsManager = new AuctionsManager(this, "zta_auctions", taxManager);
+			auctionsManager = new AuctionsManager(this, "zta_auctions", taxManager) {
+				public int getMaxAuctions(MoneyPlayerInterface player) {
+					return player.getGroup().getPower() >= OlympaGroup.VIP.getPower() ? 20 : 10;
+				};
+			};
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors du chargement de la taxe et des ventes.");
@@ -229,6 +240,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new BackCommand(this, ZTAPermissions.MOD_COMMANDS).register();
+		new KitCommand<OlympaPlayerZTA>(this, new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.convert(1, TimeUnit.MILLISECONDS), x -> x.kitVIPtime, (x, time) -> x.kitVIPtime = time,
+				(op, p) -> new ItemStack[] { GunType.M16.createItem(), Food.COOKED_RABBIT.get(15), ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS), ArmorType.ANTIRIOT.get(ArmorSlot.LEGGINGS), ArmorType.ANTIRIOT.get(ArmorSlot.CHESTPLATE), ArmorType.ANTIRIOT.get(ArmorSlot.HELMET) })).register();
 		new StatsCommand(this).register();
 		
 		new Mobs(); // initalise les mobs custom
