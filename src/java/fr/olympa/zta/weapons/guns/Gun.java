@@ -121,7 +121,7 @@ public class Gun implements Weapon {
 
 	public void updateItemName(ItemStack item) {
 		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+		im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
 		item.setItemMeta(im);
 	}
 
@@ -210,7 +210,7 @@ public class Gun implements Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 3L));
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 2L));
 				}else if (fireRate.getValue() == -1) {
 					ready = false;
 					fire(p);

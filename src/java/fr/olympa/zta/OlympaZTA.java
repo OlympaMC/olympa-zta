@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import fr.olympa.api.CombatManager;
 import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.command.essentials.BackCommand;
 import fr.olympa.api.command.essentials.FeedCommand;
@@ -121,6 +122,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public GunRegistry gunRegistry;
 	public EnderChestManager ecManager;
 	public TrainingManager training;
+	public CombatManager combat;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -182,6 +184,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
 		pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
+		pluginManager.registerEvents(combat = new CombatManager(this, 10), this);
 		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		
 		try {
@@ -240,8 +243,17 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new BackCommand(this, ZTAPermissions.MOD_COMMANDS).register();
-		new KitCommand<OlympaPlayerZTA>(this, new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.convert(1, TimeUnit.MILLISECONDS), x -> x.kitVIPtime, (x, time) -> x.kitVIPtime = time,
-				(op, p) -> new ItemStack[] { GunType.M16.createItem(), Food.COOKED_RABBIT.get(15), ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS), ArmorType.ANTIRIOT.get(ArmorSlot.LEGGINGS), ArmorType.ANTIRIOT.get(ArmorSlot.CHESTPLATE), ArmorType.ANTIRIOT.get(ArmorSlot.HELMET) })).register();
+		new KitCommand<OlympaPlayerZTA>(this,
+				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPtime, (x, time) -> x.kitVIPtime = time, (op, p) -> new ItemStack[] {
+								GunType.M16.createItem(),
+								Food.COOKED_RABBIT.get(15),
+								ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),
+								ArmorType.ANTIRIOT.get(ArmorSlot.LEGGINGS),
+								ArmorType.ANTIRIOT.get(ArmorSlot.CHESTPLATE),
+								ArmorType.ANTIRIOT.get(ArmorSlot.HELMET),
+								AmmoType.HANDWORKED.getAmmo(10, true),
+								AmmoType.LIGHT.getAmmo(10, true),
+								AmmoType.HEAVY.getAmmo(10, true) })).register();
 		new StatsCommand(this).register();
 		
 		new Mobs(); // initalise les mobs custom

@@ -60,42 +60,43 @@ public class BeautyQuestsLink implements Listener {
 	
 	@EventHandler
 	public void onBQLoad(PlayerAccountJoinEvent e) {
-		checkScoreboard(e.getPlayer());
+		checkScoreboard(e.getPlayer(), false);
 	}
 	
 	@EventHandler
 	public void onQuestStart(QuestLaunchEvent e) {
-		checkScoreboard(e.getPlayer());
+		checkScoreboard(e.getPlayer(), false);
 	}
 	
 	@EventHandler
 	public void onQuestFinish(QuestFinishEvent e) {
-		checkScoreboard(e.getPlayer());
+		checkScoreboard(e.getPlayer(), false);
 	}
 	
 	@EventHandler
 	public void onQuestReset(PlayerQuestResetEvent e) {
-		checkScoreboard(e.getPlayerAccount().getPlayer());
+		checkScoreboard(e.getPlayerAccount().getPlayer(), false);
 	}
 	
 	@EventHandler
 	public void onQuestSetStage(PlayerSetStageEvent e) {
-		checkScoreboard(e.getPlayerAccount().getPlayer());
+		checkScoreboard(e.getPlayerAccount().getPlayer(), false);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
-		checkScoreboard(e.getPlayer());
+		checkScoreboard(e.getPlayer(), true);
 	}
 	
-	private void checkScoreboard(Player p) {
+	private void checkScoreboard(Player p, boolean forceCreation) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return;
 		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {
-			if (scoreboards.containsKey(p)) return;
-			scoreboards.put(p, 0);
+			if (!forceCreation && scoreboards.containsKey(p)) return;
+			scoreboards.putIfAbsent(p, 0);
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
+			if (scoreboard == null) return;
 			
 			scoreboard.addLine(line);
 		}else {
