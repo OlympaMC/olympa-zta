@@ -28,6 +28,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -62,6 +63,13 @@ public class MobsListener implements Listener {
 			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false)
 			);
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
+	
+	private Map<Player, Location> packPositions = new HashMap<>();
+	private Location packWaitingRoom;
+	
+	public MobsListener(Location packWaitingRoom) {
+		this.packWaitingRoom = packWaitingRoom;
+	}
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
@@ -155,7 +163,7 @@ public class MobsListener implements Listener {
 			OlympaZTA.getInstance().gunRegistry.ifGun(((Item) e.getEntity()).getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
 		}
 	}
-
+	
 	@EventHandler (priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
@@ -187,29 +195,45 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
+		packPositions.remove(p);
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents()));
 	}
 	
 	@EventHandler
 	public void onResourcePack(PlayerResourcePackStatusEvent e) {
+		Player p = e.getPlayer();
 		switch (e.getStatus()) {
 		case ACCEPTED:
-			Prefix.DEFAULT.sendMessage(e.getPlayer(), "§eChargement du pack de resources §6§lOlympa ZTA§e...");
+			packPositions.put(p, p.getLocation());
+			p.teleport(packWaitingRoom);
+			Prefix.DEFAULT.sendMessage(p, "§eChargement du pack de resources §6§lOlympa ZTA§e...");
 			break;
 		case DECLINED:
-			Prefix.BAD.sendMessage(e.getPlayer(), "Tu as désactivé l'utilisation du pack de resources. Pour plus de fun et une meilleure expérience de jeu, accepte-le depuis ton menu Multijoueur !");
+			Prefix.BAD.sendMessage(p, "Tu as désactivé l'utilisation du pack de resources. Pour plus de fun et une meilleure expérience de jeu, accepte-le depuis ton menu Multijoueur !");
 			break;
 		case FAILED_DOWNLOAD:
-			Prefix.ERROR.sendMessage(e.getPlayer(), "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !");
-			break;
 		case SUCCESSFULLY_LOADED:
-			Prefix.DEFAULT_GOOD.sendMessage(e.getPlayer(), "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+			Prefix.DEFAULT_GOOD.sendMessage(p, e.getStatus() == Status.FAILED_DOWNLOAD ? "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !" : "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+			Location lastLoc = packPositions.remove(p);
+			if (lastLoc != null) {
+				Prefix.DEFAULT.sendMessage(p, "Vous allez être envoyé à votre dernière position....");
+				p.teleport(lastLoc);
+			}
 			break;
 		default:
 			break;
 		}
 	}
+	
+	/*@EventHandler
+	public void onJoinLocation(PlayerSpawnLocationEvent e) {
+		Player p = e.getPlayer();
+		if (p.hasPlayedBefore()) {
+			loadedPack.put(p, p.getLocation());
+			e.setSpawnLocation(packWaitingRoom);
+		}
+	}*/
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {

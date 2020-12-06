@@ -179,7 +179,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(new WeaponsListener(), this);
-		pluginManager.registerEvents(mobsListener = new MobsListener(), this);
+		pluginManager.registerEvents(mobsListener = new MobsListener(config.getLocation("waitingRoom")), this);
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
