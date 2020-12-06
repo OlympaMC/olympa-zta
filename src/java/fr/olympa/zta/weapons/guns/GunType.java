@@ -278,8 +278,8 @@ public enum GunType implements ItemStackable{
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
 			"zta.guns.auto",
 			null,
-			AccessoryType.CANNON,
-			AccessoryType.STOCK),
+			//AccessoryType.STOCK,
+			AccessoryType.CANNON),
 	M1897(
 			"Model 1897",
 			"Fusil à pompe à faible portée. Puissant contre les joueurs, il l'est encore plus contre les infectés.",

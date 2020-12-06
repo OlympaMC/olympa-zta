@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +31,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.projectiles.ProjectileSource;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.utils.Prefix;
@@ -90,6 +92,10 @@ public class MobsListener implements Listener {
 		String reason = "est mort.";
 		if (cause instanceof EntityDamageByEntityEvent) {
 			Entity damager = ((EntityDamageByEntityEvent) cause).getDamager();
+			if (damager instanceof Projectile) {
+				ProjectileSource source = ((Projectile) damager).getShooter();
+				if (source != null && (source instanceof Entity)) damager = (Entity) source;
+			}
 			if (damager instanceof Zombie) {
 				if (damager.hasMetadata("player")) {
 					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
@@ -103,6 +109,7 @@ public class MobsListener implements Listener {
 		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
 		e.getDrops().clear();
+		e.getEntity().spigot().respawn();
 	}
 
 	@EventHandler
