@@ -53,12 +53,12 @@ public class QuestItemCreator implements LootCreator {
 		private final int segment;
 		private final ImmutableItemStack item;
 
-		private QuestItem(Material type, String name, int segment, String... lore) {
+		private QuestItem(Material type, String name, int cat, String... lore) {
 			this.name = name;
-			this.segment = segment;
+			this.segment = cat;
 			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
 			loreList.add("");
-			loreList.add("§8> §7Ressource de segment §l" + segment);
+			loreList.add("§8> §7Ressource de catégorie §l" + cat);
 			this.item = new ImmutableItemStack(ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new)));
 		}
 

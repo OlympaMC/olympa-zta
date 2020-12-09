@@ -198,7 +198,7 @@ public class Gun implements Weapon {
 								if (ammos == 0) {
 									cancel();
 								}
-							}else if (left == -3) {
+							}else if (left == -4) {
 								ready = true;
 								playReadySound(p.getLocation());
 								updateItemName(item);

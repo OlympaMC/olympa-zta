@@ -1,6 +1,5 @@
 package fr.olympa.zta.mobs;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Drowned;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -33,8 +33,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
+import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -105,19 +108,20 @@ public class MobsListener implements Listener {
 				if (source != null && (source instanceof Entity)) damager = (Entity) source;
 			}
 			if (damager instanceof Zombie) {
-				if (damager.hasMetadata("player")) {
+				if (damager instanceof Drowned) {
+					reason = "s'est fait tuer par un §6noyé§e.";
+				}else if (damager.hasMetadata("player")) {
 					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
 				}else reason = "s'est fait tuer par un §6infecté§e.";
 			}else {
 				reason = "s'est fait tuer par §6" + damager.getName() + "§e.";
 			}
-		}else if (cause.getCause() == DamageCause.DROWNING) {
+		}else if (cause != null && cause.getCause() == DamageCause.DROWNING) {
 			reason = "s'est noyé.";
 		}
 		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
 		e.getDrops().clear();
-		e.getEntity().spigot().respawn();
 	}
 
 	@EventHandler
@@ -143,6 +147,7 @@ public class MobsListener implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
+		System.out.println("MobsListener.onRespawn()");
 		giveStartItems(e.getPlayer());
 		List<ItemStack> items = keptItems.remove(e.getPlayer());
 		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
@@ -169,26 +174,39 @@ public class MobsListener implements Listener {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 
-		p.setHealth(p.getHealth());
+		if (p.getHealth() != 0) p.setHealth(p.getHealth());
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 		p.setWalkSpeed(0.21f);
 		
 		for (AmmoType ammoType : AmmoType.values()) {
 			p.discoverRecipe(ammoType.getRecipe().getKey());
 		}
-		
-		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
-			try {
-				OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargés depuis l'inventaire de §6%s§e.", OlympaZTA.getInstance().gunRegistry.loadFromItems(e.getPlayer().getInventory().getContents()), p.getName());
-			}catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		});
 
-		if (!p.hasPlayedBefore()) {
-			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
+		if (p.hasPlayedBefore()) {
+			Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
+				try {
+					int loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.getPlayer().getInventory().getContents());
+					if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'inventaire de §6%s§e.", loaded, p.getName());
+				}catch (Exception ex) {
+					OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'inventaire de %s.", p.getName());
+					ex.printStackTrace();
+				}
+			});
+		}else {
 			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
 			giveStartItems(p);
+		}
+	}
+	
+	@EventHandler
+	public void onOlympaPlayerLoad(OlympaPlayerLoadEvent e) {
+		int loaded;
+		try {
+			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChest().getContents());
+			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer());
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'enderchest de %s.", e.getPlayer().getName());
+			ex.printStackTrace();
 		}
 	}
 
@@ -197,16 +215,24 @@ public class MobsListener implements Listener {
 		Player p = e.getPlayer();
 		packPositions.remove(p);
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
-		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents()));
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
+			OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents());
+			OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
+			OlympaZTA.getInstance().gunRegistry.launchEvictItems(oplayer.getEnderChest().getContents());
+		});
 	}
 	
 	@EventHandler
 	public void onResourcePack(PlayerResourcePackStatusEvent e) {
+		System.out.println("MobsListener.onResourcePack() " + e.getStatus().name());
 		Player p = e.getPlayer();
 		switch (e.getStatus()) {
 		case ACCEPTED:
-			packPositions.put(p, p.getLocation());
-			p.teleport(packWaitingRoom);
+			Location playerLocation = p.getLocation();
+			if (!OlympaZTA.getInstance().hub.isInHub(playerLocation)) {
+				packPositions.put(p, playerLocation);
+				p.teleport(packWaitingRoom);
+			}
 			Prefix.DEFAULT.sendMessage(p, "§eChargement du pack de resources §6§lOlympa ZTA§e...");
 			break;
 		case DECLINED:
@@ -226,14 +252,11 @@ public class MobsListener implements Listener {
 		}
 	}
 	
-	/*@EventHandler
+	@EventHandler
 	public void onJoinLocation(PlayerSpawnLocationEvent e) {
 		Player p = e.getPlayer();
-		if (p.hasPlayedBefore()) {
-			loadedPack.put(p, p.getLocation());
-			e.setSpawnLocation(packWaitingRoom);
-		}
-	}*/
+		if (!p.hasPlayedBefore()) e.setSpawnLocation(OlympaZTA.getInstance().hub.getSpawnpoint());
+	}
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {

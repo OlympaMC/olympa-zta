@@ -12,8 +12,8 @@ import fr.olympa.zta.utils.npcs.AbstractShop.AbstractSellingShop;
 
 public class BlockShop extends AbstractSellingShop<Material> {
 
-	protected BlockShop(String traitName, String shopName, DyeColor color, List<Article<Material>> articles) {
-		super(traitName, shopName, color, articles);
+	protected BlockShop(String traitName, String blocksType, DyeColor color, List<Article<Material>> articles) {
+		super(traitName, "Magasins de blocs" + (blocksType == null ? "" : " - " + blocksType), "Blocs" + (blocksType == null ? "" : " - " + blocksType), color, articles);
 	}
 
 	@Override

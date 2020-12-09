@@ -2,6 +2,7 @@ package fr.olympa.zta.utils.npcs;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,26 +12,38 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.templates.PagedGUI;
+import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.lines.BlinkingLine;
+import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
+import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
-import net.citizensnpcs.api.trait.Trait;
 
-public abstract class AbstractShop<T> extends Trait {
+public abstract class AbstractShop<T> extends HologramTrait {
 
 	private List<Article<T>> articles;
 	
 	private String shopName;
+	private String holoType, holoName;
 	private DyeColor color;
 
-	protected AbstractShop(String traitName, String shopName, DyeColor color, List<Article<T>> articles) {
+	protected AbstractShop(String traitName, String shopName, String holoType, String holoName, DyeColor color, List<Article<T>> articles) {
 		super(traitName);
 		this.shopName = shopName;
+		this.holoType = holoType;
+		this.holoName = holoName;
 		this.color = color;
 		this.articles = articles;
 	}
 
+	@Override
+	protected AbstractLine<HologramLine>[] getLines() {
+		return new AbstractLine[] { new BlinkingLine<HologramLine>((color, x) -> color + "§l" + holoName, OlympaZTA.getInstance(), 60, ChatColor.GOLD, ChatColor.YELLOW), new FixedLine<>("§8§n" + holoType) };
+	}
+	
 	public abstract ItemStack getItemStack(T object);
 	
 	public abstract void click(Article<T> article, Player p);
@@ -78,8 +91,8 @@ public abstract class AbstractShop<T> extends Trait {
 	
 	public static abstract class AbstractSellingShop<T> extends AbstractShop<T> {
 		
-		protected AbstractSellingShop(String traitName, String shopName, DyeColor color, List<Article<T>> articles) {
-			super(traitName, shopName, color, articles);
+		protected AbstractSellingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
+			super(traitName, shopName, "Vente", holo, color, articles);
 		}
 		
 		@Override
@@ -100,8 +113,8 @@ public abstract class AbstractShop<T> extends Trait {
 	
 	public static abstract class AbstractBuyingShop<T> extends AbstractShop<T> {
 		
-		protected AbstractBuyingShop(String traitName, String shopName, DyeColor color, List<Article<T>> articles) {
-			super(traitName, shopName, color, articles);
+		protected AbstractBuyingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
+			super(traitName, shopName, "Rachat", holo, color, articles);
 		}
 		
 		@Override

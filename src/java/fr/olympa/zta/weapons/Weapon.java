@@ -23,13 +23,4 @@ public interface Weapon {
 	
 	public abstract void itemNoLongerHeld(Player p, ItemStack item);
 	
-	/**
-	 * @param key Nom du paramètre
-	 * @param value Valeur du paramètre
-	 * @return <tt>§6§l{KEY} §r§6: §e§o{VALUE}</tt>
-	 */
-	public static String getFeatureLoreLine(String key, Object value) {
-		return "§6§l" + key + " §r§6: §e§o" + value;
-	}
-	
 }

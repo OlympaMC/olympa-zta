@@ -89,7 +89,7 @@ public class BeautyQuestsLink implements Listener {
 		checkScoreboard(e.getPlayer(), true);
 	}
 	
-	private void checkScoreboard(Player p, boolean forceCreation) {
+	private synchronized void checkScoreboard(Player p, boolean forceCreation) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return;
 		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {

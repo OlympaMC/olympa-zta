@@ -3,7 +3,7 @@ package fr.olympa.zta.utils;
 public enum Faction {
 
 	CORPORATION("Corporation"),
-	FRATERINTE("Fraternité");
+	MILICE("Milice");
 
 	private final String name;
 

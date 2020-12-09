@@ -138,7 +138,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	});
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineMoney = new DynamicLine<>(x -> "§7Monnaie: §6" + x.getOlympaPlayer().getGameMoney().getFormatted());
 	public PlayerObservableLine<Scoreboard<OlympaPlayerZTA>> lineDeaths = new PlayerObservableLine<>(x -> "§7Morts: §6" + x.getOlympaPlayer().deaths.get(), (x) -> x.getOlympaPlayer().deaths);
-	//public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineGroup = new DynamicLine<>(x -> "§7Rang: §b" + x.getOlympaPlayer().getGroupNameColored());
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
 
@@ -301,6 +300,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				getLogger().warning("Le NPC " + npcID + " n'existe pas. (trait " + trait.getSimpleName() + ")");
 			}else if (!npc.hasTrait(trait)) npc.addTrait(trait);
 		});
+		training.hashCode();
 	}
 	
 	@EventHandler
@@ -327,11 +327,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			if (food != null) item.setItemStack(food.get(originalItem.getAmount()));
 		}
 	}
-
-	/*@EventHandler
-	public void onPlayerGroupChange(AsyncOlympaPlayerChangeGroupEvent e) {
-		lineGroup.updateHolder(scoreboards.getPlayerScoreboard((OlympaPlayerZTA) e.getOlympaPlayer()));
-	}*/
 
 	@Override
 	public void onDisable(){

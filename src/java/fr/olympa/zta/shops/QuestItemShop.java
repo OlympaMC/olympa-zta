@@ -16,7 +16,7 @@ public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	private static final List<Article<QuestItem>> ARTICLES = Arrays.asList(new Article<>(QuestItem.DECHET, 15));
 	
 	public QuestItemShop() {
-		super("questitemshop", "Rachat de pièeces", DyeColor.MAGENTA, ARTICLES);
+		super("questitemshop", "Rachat de pièeces", "Pièces détachées", DyeColor.MAGENTA, ARTICLES);
 	}
 	
 	@Override

@@ -71,7 +71,7 @@ public class FraterniteBlockShop extends BlockShop {
 			);
 
 	public FraterniteBlockShop() {
-		super("blockshopfraternite", "Magasin de blocs - Fraternité", DyeColor.GREEN, materials);
+		super("blockshopfraternite", "Fraternité", DyeColor.GREEN, materials);
 	}
 	
 }

@@ -119,7 +119,7 @@ public class CivilBlockShop extends BlockShop {
 			);
 	
 	public CivilBlockShop() {
-		super("blockshopcivil", "Magasin de blocs", DyeColor.CYAN, materials);
+		super("blockshopcivil", null, DyeColor.CYAN, materials);
 	}
 
 }
