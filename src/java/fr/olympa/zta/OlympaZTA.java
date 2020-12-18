@@ -336,6 +336,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();
+		combat.unload();
 		
 		gunRegistry.unload();
 	}

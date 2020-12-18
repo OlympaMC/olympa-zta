@@ -1,7 +1,6 @@
 package fr.olympa.zta.clans;
 
 import java.sql.SQLException;
-import java.sql.Types;
 
 import fr.olympa.api.clans.Clan;
 import fr.olympa.api.clans.ClanPlayerInterface;
@@ -58,7 +57,7 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	
 	private void updateResetExpiration() {
 		try {
-			getClansManager().plotExpirationResetColumn.updateValue(this, plotExpirationReset, Types.BIGINT);
+			getClansManager().plotExpirationResetColumn.updateValue(this, plotExpirationReset);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}

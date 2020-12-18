@@ -437,7 +437,7 @@ public class Gun implements Weapon {
 	 * @param lc location où est jouée le son
 	 */
 	public void playFireSound(Location lc) {
-		lc.getWorld().playSound(lc, type.getFireSound(), SoundCategory.PLAYERS, fireVolume.getValue(), 1);
+		lc.getWorld().playSound(lc, type.getFireSound(), SoundCategory.PLAYERS, fireVolume.getValue() + 0.5f, 1);
 	}
 
 	/**

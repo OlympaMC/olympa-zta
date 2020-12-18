@@ -37,6 +37,7 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
@@ -96,7 +97,7 @@ public class MobsListener implements Listener {
 		Location loc = p.getLocation();
 		ItemStack[] armor = p.getInventory().getArmorContents();
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, contents, "§7" + p.getName() + " momifié");
+			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, contents, "§7§l" + p.getName() + "§7 momifié");
 			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
 		});
 		EntityDamageEvent cause = p.getLastDamageCause();
@@ -107,20 +108,21 @@ public class MobsListener implements Listener {
 				ProjectileSource source = ((Projectile) damager).getShooter();
 				if (source != null && (source instanceof Entity)) damager = (Entity) source;
 			}
-			if (damager instanceof Zombie) {
-				if (damager instanceof Drowned) {
-					reason = "s'est fait tuer par un §6noyé§e.";
-				}else if (damager.hasMetadata("player")) {
+			if (damager instanceof Drowned) {
+				reason = "s'est fait tuer par un §cnoyé§e.";
+			}else if (damager instanceof Zombie) {
+				if (damager.hasMetadata("player")) {
 					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
-				}else reason = "s'est fait tuer par un §6infecté§e.";
-			}else {
-				reason = "s'est fait tuer par §6" + damager.getName() + "§e.";
+				}else reason = "s'est fait tuer par un §cinfecté§e.";
+			}else if (damager instanceof Player) {
+				OlympaPlayer oplayer = AccountProvider.get(damager.getUniqueId());
+				if (oplayer != null) reason = "s'est fait tuer par " + oplayer.getGroup().getColor() + damager.getName() + "§e.";
 			}
 		}else if (cause != null && cause.getCause() == DamageCause.DROWNING) {
 			reason = "s'est noyé.";
 		}
 		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-		e.setDeathMessage("§6§l" + p.getName() + "§r§e " + reason);
+		e.setDeathMessage(op.getGroup().getColor() + p.getName() + "§e " + reason);
 		e.getDrops().clear();
 	}
 
@@ -147,7 +149,6 @@ public class MobsListener implements Listener {
 	
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		System.out.println("MobsListener.onRespawn()");
 		giveStartItems(e.getPlayer());
 		List<ItemStack> items = keptItems.remove(e.getPlayer());
 		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
@@ -174,7 +175,12 @@ public class MobsListener implements Listener {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 
-		if (p.getHealth() != 0) p.setHealth(p.getHealth());
+		if (p.getHealth() == 0) {
+			p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu étais encore en combat lors de ta dernière déconnexion...");
+			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
+		}//else p.setHealth(p.getHealth());
+		
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
 		p.setWalkSpeed(0.21f);
 		
@@ -215,21 +221,21 @@ public class MobsListener implements Listener {
 		Player p = e.getPlayer();
 		packPositions.remove(p);
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
+		OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
+		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents());
-			OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
 			OlympaZTA.getInstance().gunRegistry.launchEvictItems(oplayer.getEnderChest().getContents());
 		});
 	}
 	
 	@EventHandler
 	public void onResourcePack(PlayerResourcePackStatusEvent e) {
-		System.out.println("MobsListener.onResourcePack() " + e.getStatus().name());
 		Player p = e.getPlayer();
 		switch (e.getStatus()) {
 		case ACCEPTED:
 			Location playerLocation = p.getLocation();
-			if (!OlympaZTA.getInstance().hub.isInHub(playerLocation)) {
+			if (p.getHealth() != 0 && !OlympaZTA.getInstance().hub.isInHub(playerLocation)) {
 				packPositions.put(p, playerLocation);
 				p.teleport(packWaitingRoom);
 			}

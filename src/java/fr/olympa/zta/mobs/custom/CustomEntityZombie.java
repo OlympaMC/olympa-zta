@@ -107,6 +107,11 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 	
 	@Override
+	public boolean isPersistent() {
+		return false;
+	}
+	
+	@Override
 	public boolean damageEntity(DamageSource damagesource, float f) {
 		if (super.damageEntity(damagesource, f)) {
 			if (zombieType == Zombies.TNT) {

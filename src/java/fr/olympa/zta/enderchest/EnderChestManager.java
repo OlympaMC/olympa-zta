@@ -10,17 +10,23 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import fr.olympa.api.holograms.Hologram;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.utils.DynmapLink;
 
@@ -83,6 +89,17 @@ public class EnderChestManager implements Listener {
 			statement.executeUpdate();
 		}catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		if (e.getClickedBlock() == null || e.getAction() != Action.RIGHT_CLICK_BLOCK || e.getHand() != EquipmentSlot.HAND) return;
+		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+			Player p = e.getPlayer();
+			e.setCancelled(true);
+			p.openInventory(OlympaPlayerZTA.get(p).getEnderChest());
+			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}
 	

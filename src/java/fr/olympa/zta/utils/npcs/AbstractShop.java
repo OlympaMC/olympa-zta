@@ -62,14 +62,17 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		@Override
 		public ItemStack getItemStack(Article<T> object) {
 			ItemStack item = AbstractShop.this.getItemStack(object.object);
+			ItemMeta meta = item.getItemMeta();
 			int size = -1;
-			if (item.hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				if (meta.hasLore()) size = meta.getLore().stream().mapToInt(String::length).max().getAsInt();
-			}
-			if (size == -1) size = ItemUtils.getName(item).length() - 4;
+			List<String> lore = meta.getLore();
+			size = meta.getLore().stream().mapToInt(String::length).max().getAsInt();
+			if (size == -1) size = ChatColor.stripColor(ItemUtils.getName(item)).length() - 4;
 			String bar = "§m" + " ".repeat(size / 2);
-			return ItemUtils.loreAdd(item, "", "§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");
+			lore.add("");
+			lore.add("§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			return item;
 		}
 
 		@Override

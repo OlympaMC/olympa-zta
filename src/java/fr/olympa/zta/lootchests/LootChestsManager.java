@@ -32,7 +32,6 @@ import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
-import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.type.LootChestType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -179,9 +178,6 @@ public class LootChestsManager implements Listener {
 
 			e.setCancelled(true);
 			chest.click(player);
-		}else if (block.getType() == Material.ENDER_CHEST) {
-			e.setCancelled(true);
-			player.openInventory(OlympaPlayerZTA.get(player).getEnderChest());
 		}
 	}
 	

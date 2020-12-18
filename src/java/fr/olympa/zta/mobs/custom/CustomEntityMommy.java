@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers.NBT;
 
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_15_R1.DamageSource;
 import net.minecraft.server.v1_15_R1.EntityCreature;
@@ -61,12 +62,12 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	@Override
 	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {
-		System.out.println("Dropped " + (contents == null ? "null" : contents.length) + " items");
 		if (contents != null) {
+			OlympaZTA.getInstance().sendMessage("%d items droppés depuis un zombie momifié.", contents.length);
 			for (ItemStack item : contents) {
 				a(item);
 			}
-		}
+		}else OlympaZTA.getInstance().sendMessage("§cPas de contenu dans l'inventaire d'un zombie momifié.");
 	}
 	
 	@Override

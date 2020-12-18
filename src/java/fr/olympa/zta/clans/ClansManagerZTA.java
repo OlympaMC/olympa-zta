@@ -2,6 +2,7 @@ package fr.olympa.zta.clans;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.sql.Column;
+import fr.olympa.api.sql.SQLColumn;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -51,7 +52,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 		return String.join("\n", players);
 	}, OlympaZTA.getInstance(), 10);
 	
-	protected Column<ClanZTA> plotExpirationResetColumn;
+	protected SQLColumn<ClanZTA> plotExpirationResetColumn;
 	
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
 		super(OlympaZTA.getInstance(), "zta_clans", 5);
@@ -90,9 +91,9 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	@Override
-	public List<Column<ClanZTA>> addDBClansCollums(List<Column<ClanZTA>> columns) {
+	public List<SQLColumn<ClanZTA>> addDBClansCollums(List<SQLColumn<ClanZTA>> columns) {
 		columns = super.addDBClansCollums(columns);
-		columns.add(plotExpirationResetColumn = new Column<ClanZTA>("plot_expiration_reset", "BIGINT NOT NULL DEFAULT -1").setUpdatable(true));
+		columns.add(plotExpirationResetColumn = new SQLColumn<ClanZTA>("plot_expiration_reset", "BIGINT NOT NULL DEFAULT -1", Types.BIGINT).setUpdatable());
 		return columns;
 	}
 	
