@@ -30,16 +30,16 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public static final int MAX_SLOTS = 27;
 
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<>("ender_chest", "VARBINARY(8000) NULL", Types.VARBINARY);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_PLAYERS = new SQLColumn<>("killed_players", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_DEATH = new SQLColumn<>("deaths", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HEADSHOTS = new SQLColumn<>("headshots", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OTHER_SHOTS = new SQLColumn<>("other_shots", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OPENED_CHESTS = new SQLColumn<>("opened_chests", "INT NOT NULL DEFAULT 0", Types.INTEGER);
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<>("kit_vip_time", "BIGINT NULL", Types.BIGINT);
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<OlympaPlayerZTA>("ender_chest", "VARBINARY(8000) NULL", Types.VARBINARY).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<OlympaPlayerZTA>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<OlympaPlayerZTA>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<OlympaPlayerZTA>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_PLAYERS = new SQLColumn<OlympaPlayerZTA>("killed_players", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_DEATH = new SQLColumn<OlympaPlayerZTA>("deaths", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HEADSHOTS = new SQLColumn<OlympaPlayerZTA>("headshots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OTHER_SHOTS = new SQLColumn<OlympaPlayerZTA>("other_shots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OPENED_CHESTS = new SQLColumn<OlympaPlayerZTA>("opened_chests", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("kit_vip_time", "BIGINT NULL", Types.BIGINT).setUpdatable();
 	
 	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_KIT_VIP_TIME);
 	
