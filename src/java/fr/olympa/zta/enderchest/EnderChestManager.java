@@ -21,13 +21,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import fr.olympa.api.enderchest.EnderChestCommand;
 import fr.olympa.api.holograms.Hologram;
 import fr.olympa.api.lines.CyclingLine;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
-import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.utils.DynmapLink;
 
 public class EnderChestManager implements Listener {
@@ -35,6 +37,7 @@ public class EnderChestManager implements Listener {
 	private static final String TABLE_NAME = "`zta_enderchests`";
 	
 	private Map<Location, Hologram> enderchests = new HashMap<>();
+	private EnderChestCommand command;
 	
 	private OlympaStatement insertStatement = new OlympaStatement(StatementType.INSERT, TABLE_NAME, "world", "x", "y", "z");
 	private OlympaStatement deleteStatement = new OlympaStatement(StatementType.DELETE, TABLE_NAME, "world", "x", "y", "z");
@@ -54,6 +57,9 @@ public class EnderChestManager implements Listener {
 		}
 		resultSet.close();
 		statement.close();
+		
+		command = new EnderChestCommand(OlympaZTA.getInstance(), ZTAPermissions.ENDERCHEST_COMMAND, ZTAPermissions.ENDERCHEST_COMMAND_OTHER);
+		command.register();
 		
 		OlympaZTA.getInstance().sendMessage("§6%d §eEnderChests chargés", enderchests.size());
 	}
@@ -98,7 +104,7 @@ public class EnderChestManager implements Listener {
 		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 			Player p = e.getPlayer();
 			e.setCancelled(true);
-			p.openInventory(OlympaPlayerZTA.get(p).getEnderChest());
+			command.getEnderChestGUI(AccountProvider.get(p.getUniqueId())).create(p);
 			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}

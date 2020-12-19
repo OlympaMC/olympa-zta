@@ -208,7 +208,7 @@ public class MobsListener implements Listener {
 	public void onOlympaPlayerLoad(OlympaPlayerLoadEvent e) {
 		int loaded;
 		try {
-			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChest().getContents());
+			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChestContents());
 			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer());
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'enderchest de %s.", e.getPlayer().getName());
@@ -225,7 +225,7 @@ public class MobsListener implements Listener {
 		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents());
-			OlympaZTA.getInstance().gunRegistry.launchEvictItems(oplayer.getEnderChest().getContents());
+			OlympaZTA.getInstance().gunRegistry.launchEvictItems(oplayer.getEnderChestContents());
 		});
 	}
 	

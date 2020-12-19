@@ -57,7 +57,6 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.clans.plots.ClanPlotsManager;
-import fr.olympa.zta.enderchest.EnderChestCommand;
 import fr.olympa.zta.enderchest.EnderChestManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
@@ -235,7 +234,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		new WeaponsCommand().register();
 		new MobsCommand().register();
-		new EnderChestCommand().register();
 		new HubCommand().register();
 		new SpreadManageCommand().register();
 		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
@@ -243,7 +241,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new BackCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new KitCommand<OlympaPlayerZTA>(this,
-				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPtime, (x, time) -> x.kitVIPtime = time, (op, p) -> new ItemStack[] {
+				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPtime.get(), (x, time) -> x.kitVIPtime.set(time), (op, p) -> new ItemStack[] {
 								GunType.M16.createItem(),
 								Food.COOKED_RABBIT.get(15),
 								ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),
