@@ -174,6 +174,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		teleportationManager = new TeleportationManager();
 		
+		OlympaGroup.PLAYER.setRuntimePermission("beautyquests.command", false);
+		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(new WeaponsListener(), this);
@@ -226,7 +228,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			ecManager = new EnderChestManager();
+			pluginManager.registerEvents(ecManager = new EnderChestManager(), this);
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors du chargement des coffres de l'end.");

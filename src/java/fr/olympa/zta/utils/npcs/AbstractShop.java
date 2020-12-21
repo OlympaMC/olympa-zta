@@ -1,5 +1,6 @@
 package fr.olympa.zta.utils.npcs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -65,8 +66,10 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			ItemMeta meta = item.getItemMeta();
 			int size = -1;
 			List<String> lore = meta.getLore();
-			size = meta.getLore().stream().mapToInt(String::length).max().getAsInt();
-			if (size == -1) size = ChatColor.stripColor(ItemUtils.getName(item)).length() - 4;
+			if (lore == null) lore = new ArrayList<>();
+			if (!lore.isEmpty()) size = meta.getLore().stream().filter(x -> x != null).mapToInt(String::length).max().getAsInt();
+			size = Math.max(size, ChatColor.stripColor(ItemUtils.getName(item)).length() - 4);
+			size = Math.max(size, 4);
 			String bar = "§m" + " ".repeat(size / 2);
 			lore.add("");
 			lore.add("§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");

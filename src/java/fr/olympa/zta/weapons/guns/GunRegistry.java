@@ -176,6 +176,7 @@ public class GunRegistry {
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
+		if (items == null) return 0;
 		synchronized (toEvict) {
 			List<Integer> ids = new ArrayList<>();
 			for (ItemStack item : items) {
@@ -228,6 +229,7 @@ public class GunRegistry {
 	}
 	
 	public void launchEvictItems(ItemStack[] items) {
+		if (items == null) return;
 		synchronized (toEvict) {
 			for (ItemStack item : items) {
 				ifGun(item, gun -> toEvict.add(gun.getID()));

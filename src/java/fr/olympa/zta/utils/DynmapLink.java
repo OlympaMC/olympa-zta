@@ -53,6 +53,7 @@ public class DynmapLink {
 				plotsMarkers = api.getMarkerAPI().getMarkerSet("plots");
 				if (plotsMarkers == null) plotsMarkers = api.getMarkerAPI().createMarkerSet("plots", "Parcelles de Clans", null, false);
 				plotIcon = api.getMarkerAPI().getMarkerIcon("house");
+				new DynmapCommand().register();
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();

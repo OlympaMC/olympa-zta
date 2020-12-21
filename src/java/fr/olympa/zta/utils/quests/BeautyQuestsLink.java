@@ -53,6 +53,7 @@ public class BeautyQuestsLink implements Listener {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Item custom"), GunReward::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
 		QuestsAPI.registerMobFactory(new ZTAMobFactory());
+		new BQCommand().register();
 	}
 	
 	public boolean isQuestItem(ItemStack item) {

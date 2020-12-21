@@ -74,6 +74,9 @@ public class MobSpawning implements Runnable {
 	private final int chunkRadiusDoubled = chunkRadius * 2;
 	public int criticalEntitiesPerChunk = 20;
 	public int maxEntities = 3000;
+	
+	public long timeActiveChunks;
+	public int lastActiveChunks;
 
 	public MobSpawning(int seaLevel, ConfigurationSection spawnRegions, ConfigurationSection safeRegions) {
 		this.seaLevel = seaLevel;
@@ -98,7 +101,10 @@ public class MobSpawning implements Runnable {
 			try {
 				List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
 				if (entities.size() > maxEntities) return;
+				long time2 = System.currentTimeMillis();
 				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
+				timeActiveChunks = System.currentTimeMillis() - time2;
+				lastActiveChunks = activeChunks.size();
 				for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
 					Chunk chunk = entry.getKey();
 					SpawnType spawn = entry.getValue();
@@ -198,6 +204,7 @@ public class MobSpawning implements Runnable {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
 					if (chunks.containsKey(chunk)) continue;
+					if (!chunk.isLoaded()) continue;
 					SpawnType type;
 					if (world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() == Material.WATER) {
 						type = SpawnType.NONE;
@@ -268,13 +275,14 @@ public class MobSpawning implements Runnable {
 
 		spawnQueue.clear();
 		queueSize.clear();
+		computeTimes.clear();
 	}
 	
 	public enum SpawnType {
 		NONE(20, 1, 5, 0, "§cerreur", null, null, null, null),
-		HARD(11, 2, 10, 0.1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
-		MEDIUM(13, 2, 9, 0.08, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
-		EASY(16, 1, 7, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+		HARD(13, 2, 9, 0.1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+		MEDIUM(15, 2, 8, 0.08, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+		EASY(18, 1, 6, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
 		SAFE(24, 1, 3, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private int minDistanceSquared;
