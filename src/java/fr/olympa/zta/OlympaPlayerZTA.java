@@ -60,15 +60,15 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
 		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(this)));
-		money.observe("datas", () -> COLUMN_MONEY.updateValue(this, money.get()));
-		plot.observe("datas", () -> COLUMN_PLOT.updateValue(this, plot.mapOr(PlayerPlot::getID, -1)));
-		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateValue(this, killedZombies.get()));
-		killedPlayers.observe("datas", () -> COLUMN_KILLED_PLAYERS.updateValue(this, killedPlayers.get()));
-		deaths.observe("datas", () -> COLUMN_DEATH.updateValue(this, deaths.get()));
-		headshots.observe("datas", () -> COLUMN_HEADSHOTS.updateValue(this, headshots.get()));
-		otherShots.observe("datas", () -> COLUMN_OTHER_SHOTS.updateValue(this, otherShots.get()));
-		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateValue(this, openedChests.get()));
-		kitVIPtime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateValue(this, kitVIPtime.get()));
+		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
+		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
+		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateAsync(this, killedZombies.get(), null, null));
+		killedPlayers.observe("datas", () -> COLUMN_KILLED_PLAYERS.updateAsync(this, killedPlayers.get(), null, null));
+		deaths.observe("datas", () -> COLUMN_DEATH.updateAsync(this, deaths.get(), null, null));
+		headshots.observe("datas", () -> COLUMN_HEADSHOTS.updateAsync(this, headshots.get(), null, null));
+		otherShots.observe("datas", () -> COLUMN_OTHER_SHOTS.updateAsync(this, otherShots.get(), null, null));
+		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateAsync(this, openedChests.get(), null, null));
+		kitVIPtime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPtime.get(), null, null));
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public void setEnderChestContents(ItemStack[] contents) {
 		this.enderChestContents = contents;
 		try {
-			COLUMN_ENDER_CHEST.updateValue(this, ItemUtils.serializeItemsArray(enderChestContents));
-		}catch (SQLException | IOException e) {
+			COLUMN_ENDER_CHEST.updateAsync(this, ItemUtils.serializeItemsArray(enderChestContents), null, null);
+		}catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
