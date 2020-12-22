@@ -53,6 +53,7 @@ import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -144,6 +145,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public void onEnable() {
 		instance = this;
 		super.onEnable();
+		OlympaCore.getInstance().setOlympaServer(OlympaServer.ZTA);
 		
 		Bukkit.clearRecipes();
 		sendMessage("Recettes par défaut supprimées.");

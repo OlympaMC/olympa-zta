@@ -201,6 +201,7 @@ public class LootChestsManager implements Listener {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent e) {
 		if (e.isCancelled()) return;
+		if (e.getBlock().getWorld() != OlympaZTA.getInstance().mobSpawning.world) return;
 		if (e.getBlock().getType() != Material.CHEST) return;
 		Chest chest = (Chest) e.getBlock().getState();
 		if (getLootChest(chest) != null) return;

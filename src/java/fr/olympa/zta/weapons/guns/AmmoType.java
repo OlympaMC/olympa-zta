@@ -3,6 +3,7 @@ package fr.olympa.zta.weapons.guns;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -15,23 +16,25 @@ import fr.olympa.zta.OlympaZTA;
 
 public enum AmmoType{
 	
-	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE, 3),
-	HEAVY("Munitions lourdes", Material.LAPIS_LAZULI, Material.LIGHT_BLUE_DYE, 3),
-	HANDWORKED("Munitions artisanales", Material.RED_DYE, Material.PINK_DYE, 3),
-	CARTRIDGE("Cartouches", Material.GRAY_DYE, Material.LIGHT_GRAY_DYE, 1);
+	LIGHT("Munitions légères", Material.GREEN_DYE, Material.LIME_DYE, 3, ChatColor.YELLOW),
+	HEAVY("Munitions lourdes", Material.LAPIS_LAZULI, Material.LIGHT_BLUE_DYE, 3, ChatColor.GREEN),
+	HANDWORKED("Munitions artisanales", Material.RED_DYE, Material.PINK_DYE, 3, ChatColor.GRAY),
+	CARTRIDGE("Cartouches", Material.GRAY_DYE, Material.LIGHT_GRAY_DYE, 1, ChatColor.RED);
 	
 	private String name;
 	private Material empty, fill;
 	private int ammosPerItem;
+	private ChatColor color;
 	
 	private ItemStack itemFilled, itemEmpty;
 	private ShapelessRecipe recipe;
 
-	private AmmoType(String name, Material empty, Material fill, int ammosPerItem) {
+	private AmmoType(String name, Material empty, Material fill, int ammosPerItem, ChatColor color) {
 		this.name = name;
 		this.empty = empty;
 		this.fill = fill;
 		this.ammosPerItem = ammosPerItem;
+		this.color = color;
 
 		itemFilled = new ItemStack(fill);
 		ItemMeta meta = itemFilled.getItemMeta();
@@ -64,6 +67,10 @@ public enum AmmoType{
 	
 	public int getAmmosPerItem() {
 		return ammosPerItem;
+	}
+	
+	public ChatColor getColor() {
+		return color;
 	}
 	
 	public ShapelessRecipe getRecipe() {

@@ -26,7 +26,8 @@ import fr.olympa.zta.OlympaZTA;
 
 public class PlayerPlot {
 
-	public static int[] questsRequiredPerLevel = { 3, 10, 25, 60, 140, 300, 750, 1500 };
+	//public static int[] questsRequiredPerLevel = { 3, 10, 25, 60, 140, 300, 750, 1500 };
+	public static int[] moneyRequiredPerLevel = { 300, 1000, 2500, 6000, 14000, 30000, 75000, 150000 };
 	private static int[] sizePerLevel = { 10, 14, 18, 22, 26, 31, 36, 42 };
 	private static int[] heightPerLevel = { PlotChunkGenerator.WORLD_LEVEL + 4, 40, 76, 112, 148, 184, 220, 256 };
 	private static int[] chestsPerLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -122,7 +123,7 @@ public class PlayerPlot {
 				}
 			}
 
-			if (level != questsRequiredPerLevel.length) {
+			if (level != moneyRequiredPerLevel.length) {
 				int borderMin = min - 1;
 				int borderMax = max + 1;
 				boolean yellow = true;
@@ -190,7 +191,7 @@ public class PlayerPlot {
 		}
 
 		Location location = block.getLocation();
-		if (level < questsRequiredPerLevel.length) {
+		if (level < moneyRequiredPerLevel.length) {
 			int x = location.getBlockX() - loc.getWorldX();
 			int z = location.getBlockZ() - loc.getWorldZ();
 			if (x < min || x > max || z < min || z > max | location.getBlockY() > heightPerLevel[level - 1]) return true;

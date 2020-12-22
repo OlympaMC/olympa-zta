@@ -73,8 +73,9 @@ public class WeaponsListener implements Listener {
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 		if (e.getClick() != ClickType.RIGHT) return;
+		if (e.getView().getTopInventory() != null) return;
 		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
-
+		
 		ItemStack item = e.getCurrentItem();
 		if (item == null || e.getCursor() == null || e.getCursor().getType() == Material.AIR) return;
 

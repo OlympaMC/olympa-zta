@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.editor.parsers.OlympaPlayerParser;
 import fr.olympa.api.gui.OlympaGUI;
@@ -49,8 +50,8 @@ public class PlayerPlotGUI extends OlympaGUI {
 		inv.clear();
 		Material color = Material.CYAN_STAINED_GLASS_PANE;
 		if (manage) {
-			if (plot.getLevel() < PlayerPlot.questsRequiredPerLevel.length) {
-				inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§eMonter de niveau", "§8> §o" + PlayerPlot.questsRequiredPerLevel[plot.getLevel()] + " quêtes nécessaires"));
+			if (plot.getLevel() < PlayerPlot.moneyRequiredPerLevel.length) {
+				inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§eMonter de niveau", "§8> §o" + OlympaMoney.format(PlayerPlot.moneyRequiredPerLevel[plot.getLevel()]) + " nécessaires"));
 			}else inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§c§mMonter de niveau", "§8> §o vous avez atteint le niveau maximal"));
 			inv.setItem(1, ItemUtils.item(Material.PAPER, "§eInviter un joueur"));
 			inv.setItem(2, ItemUtils.item(Material.FILLED_MAP, "§cÉjecter des joueurs"));
@@ -64,7 +65,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					center = ItemUtils.item(Material.REDSTONE, "§aNous préparons ta parcelle...");
 					startProgress();
 				}else center = ItemUtils.item(Material.STONE
-						, "§e§lClic gauche : §eAcheter ma parcelle", "§8> §o" + PlayerPlot.questsRequiredPerLevel[0] + " quêtes nécessaires", "§e§lClic droit : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
+						, "§e§lClic gauche : §eAcheter ma parcelle", "§8> §o" + OlympaMoney.format(PlayerPlot.moneyRequiredPerLevel[0]) + " nécessaires", "§e§lClic droit : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
 			}else {
 				color = Material.LIME_STAINED_GLASS_PANE;
 				center = ItemUtils.item(Material.DIAMOND, "§e§lClic gauche : §eMe téléporter", "§8> §oVous transporte à votre parcelle");
@@ -102,11 +103,14 @@ public class PlayerPlotGUI extends OlympaGUI {
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (manage) {
-			if (slot == 0 && plot.getLevel() < PlayerPlot.questsRequiredPerLevel.length) {
-				plot.setLevel(plot.getLevel() + 1, true);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Ta parcelle a monté de niveau !");
-				manage = false;
-				setState();
+			if (slot == 0 && plot.getLevel() < PlayerPlot.moneyRequiredPerLevel.length) {
+				int money = PlayerPlot.moneyRequiredPerLevel[plot.getLevel()];
+				if (player.getGameMoney().withdraw(money)) {
+					plot.setLevel(plot.getLevel() + 1, true);
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Ta parcelle a monté de niveau !");
+					manage = false;
+					setState();
+				}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour monter ta parcelle de niveau (%s).", OlympaMoney.format(money));
 			}else if (slot == 1) {
 				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur que tu souhaites inviter.");
 				new TextEditor<>(p, (target) -> {
@@ -131,8 +135,11 @@ public class PlayerPlotGUI extends OlympaGUI {
 		if (slot != 4) return true;
 		if (plot == null && progress == null) {
 			if (click.isLeftClick()) {
-				manager.initSearch(player);
-				setState();
+				int money = PlayerPlot.moneyRequiredPerLevel[0];
+				if (player.getGameMoney().withdraw(money)) {
+					manager.initSearch(player);
+					setState();
+				}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour acheter une parcelle (%s).", OlympaMoney.format(money));
 			}else if (click.isRightClick()) {
 				new PlotInvitationsGUI(manager.getInvitations(player)).create(p);
 			}

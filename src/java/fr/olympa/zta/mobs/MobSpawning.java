@@ -100,7 +100,7 @@ public class MobSpawning implements Runnable {
 			long time = System.currentTimeMillis();
 			queueLock.lock();
 			try {
-				List<Location> entities = world.getLivingEntities().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
+				List<Location> entities = world./*getLivingEntities().*/getPlayers().stream().map(LivingEntity::getLocation).collect(Collectors.toList());
 				if (entities.size() > maxEntities) return;
 				long time2 = System.currentTimeMillis();
 				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
@@ -127,8 +127,8 @@ public class MobSpawning implements Runnable {
 							int highestY = world.getHighestBlockYAt(chunk.getX() << 4 | x, chunk.getZ() << 4 | z);
 							y: for (; y < highestY; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
 								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-								prev = chunk.getBlock(x, y, z);
-								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
+								Block follow = null;
+								if (possible && (follow = chunk.getBlock(x, y + 1, z)).getType() == Material.AIR && prev.getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
 									Location location = prev.getLocation();
 									if (prev.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
@@ -138,6 +138,7 @@ public class MobSpawning implements Runnable {
 									spawnQueue.add(new AbstractMap.SimpleEntry<>(location, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
 									continue mobs;
 								}
+								prev = follow;
 							}
 						}
 					}
