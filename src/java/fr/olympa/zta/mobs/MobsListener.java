@@ -219,7 +219,8 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
-		packPositions.remove(p);
+		Location oldPosition = packPositions.remove(p);
+		if (oldPosition != null) p.teleport(oldPosition);
 		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
 		OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
 		if (oplayer == null) return;

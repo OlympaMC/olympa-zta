@@ -68,9 +68,9 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
 			if (!lore.isEmpty()) size = meta.getLore().stream().filter(x -> x != null).mapToInt(String::length).max().getAsInt();
-			size = Math.max(size, ChatColor.stripColor(ItemUtils.getName(item)).length() - 4);
+			size = Math.max(size, ChatColor.stripColor(ItemUtils.getName(item)).length() - 3);
 			size = Math.max(size, 4);
-			String bar = "§m" + " ".repeat(size / 2);
+			String bar = "§m" + " ".repeat((int) Math.ceil(size / 2D));
 			lore.add("");
 			lore.add("§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");
 			meta.setLore(lore);

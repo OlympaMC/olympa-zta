@@ -16,7 +16,6 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 	private static final List<Article<Food>> ARTICLES = Arrays.asList(
 			new Article<>(Food.GOLDEN_CARROT, 15),
 			new Article<>(Food.COOKIE, 5),
-			new Article<>(Food.BAKED_POTATO, 7),
 			new Article<>(Food.COOKED_BEEF, 12),
 			new Article<>(Food.COOKED_PORKCHOP, 12),
 			new Article<>(Food.BREAD, 10),

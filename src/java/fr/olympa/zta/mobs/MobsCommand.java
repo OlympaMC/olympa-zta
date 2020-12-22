@@ -26,13 +26,14 @@ public class MobsCommand extends ComplexCommand {
 		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
 		sendInfo("Le spawn de mob est §l%s", spawning.isEnabled() ? "§aactif" : "§cinactif");
 		if (spawning.isEnabled()) {
-			sendInfo("➤ Nombre de mobs moyen dans la queue de spawn : §l%s", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
-			sendInfo("➤ Durée de calcul des spawn de la dernière minute (en ms) : §l%s", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
-			sendInfo("➤ Dernière durée de calcul des chunks actifs (%d) : §l%d ms", spawning.timeActiveChunks, spawning.lastActiveChunks);
+			sendInfo("§7- Nombre de mobs moyen dans la §equeue de spawn : §l%s", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
+			sendInfo("§7- Durée de §ecalcul des spawn de la dernière minute (en ms) : §l%s", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
+			sendInfo("§7- Dernière durée de §ecalcul des chunks actifs (%d) : §l%d ms", spawning.lastActiveChunks, spawning.timeActiveChunks);
+			sendInfo("§7- Nombre de §ezombies spawnés à la dernière task : §l%d", spawning.lastSpawnedMobs);
 		}
-		sendInfo("Nombre d'entités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
-		sendInfo("Quantité maximale d'entités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
-		if (player != null) sendInfo("Vous êtes actuellement dans une zone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+		sendInfo("§7Nombre d'§eentités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
+		sendInfo("§7Quantité maximale d'§eentités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
+		if (player != null) sendInfo("§7Vous êtes actuellement dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
 	}
 
 	@Cmd (player = true, args = { "MOBTYPE", "INTEGER" }, min = 0, syntax = "[type] [quantité]")

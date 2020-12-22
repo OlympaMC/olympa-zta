@@ -77,6 +77,7 @@ public class MobSpawning implements Runnable {
 	
 	public long timeActiveChunks;
 	public int lastActiveChunks;
+	public int lastSpawnedMobs;
 
 	public MobSpawning(int seaLevel, ConfigurationSection spawnRegions, ConfigurationSection safeRegions) {
 		this.seaLevel = seaLevel;
@@ -123,20 +124,19 @@ public class MobSpawning implements Runnable {
 						}else {
 							int y = 1 + random.nextInt(40); // à partir de quelle hauteur ça va tenter de faire spawn
 							Block prev = chunk.getBlock(x, y, z);
-							y: for (; y < 140; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
+							int highestY = world.getHighestBlockYAt(chunk.getX() << 4 | x, chunk.getZ() << 4 | z);
+							y: for (; y < highestY; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
 								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
 								prev = chunk.getBlock(x, y, z);
 								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
-									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
+									Location location = prev.getLocation();
+									if (prev.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
-									Block block = location.getBlock();
-									if (block.getLightFromBlocks() > 10) continue; // si trop de lumière de blocs pas possible
 									for (Location loc : entities) {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 									}
-									Location lc = block.getLocation();
-									spawnQueue.add(new AbstractMap.SimpleEntry<>(lc, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
-									break y;
+									spawnQueue.add(new AbstractMap.SimpleEntry<>(location, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
+									continue mobs;
 								}
 							}
 						}
@@ -170,11 +170,15 @@ public class MobSpawning implements Runnable {
 
 				if (!queueLock.tryLock()) return;
 				try {
+					lastSpawnedMobs = 0;
 					int i = spawnQueue.size() / 2;
 					for (Iterator<Entry<Location, Zombies>> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						try {
 							Entry<Location, Zombies> loc = iterator.next();
-							if (loc.getKey().getChunk().isLoaded()) Mobs.spawnCommonZombie(loc.getValue(), loc.getKey());
+							if (loc.getKey().getChunk().isLoaded()) {
+								Mobs.spawnCommonZombie(loc.getValue(), loc.getKey());
+								lastSpawnedMobs++;
+							}
 						}catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -190,8 +194,8 @@ public class MobSpawning implements Runnable {
 
 	private Map<Chunk, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		Set<Chunk> processedChunks = new HashSet<Chunk>(players.size());
-		Map<Chunk, SpawnType> chunks = new HashMap<>(players.size() * 8);
+		Set<Chunk> processedChunks = new HashSet<Chunk>(players.size() + 1, 1);
+		Map<Chunk, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);
 		for (Player p : players) {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
@@ -283,7 +287,7 @@ public class MobSpawning implements Runnable {
 		HARD(13, 2, 9, 0.1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
 		MEDIUM(15, 2, 8, 0.08, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
 		EASY(18, 1, 6, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
-		SAFE(24, 1, 3, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+		SAFE(22, 1, 3, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private int minDistanceSquared;
 		private int spawnAmount;
