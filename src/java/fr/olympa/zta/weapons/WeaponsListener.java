@@ -77,7 +77,7 @@ public class WeaponsListener implements Listener {
 		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
 		
 		ItemStack item = e.getCurrentItem();
-		if (item == null || e.getCursor() == null || e.getCursor().getType() == Material.AIR) return;
+		if (item == null || e.getCursor() != null || e.getCursor().getType() != Material.AIR) return;
 
 		OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
 			gun.itemClick((Player) e.getWhoClicked(), item);

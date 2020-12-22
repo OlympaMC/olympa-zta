@@ -44,19 +44,19 @@ public class PhysicalMoney {
 		
 		amount -= remove(inv, 1, amount);
 		if (amount <= 0) {
-			give(p, Math.abs(amount)); // si enlevé plus que nécessaire, rendre la monnaie manquante
+			give(p, -amount); // si enlevé plus que nécessaire, rendre la monnaie manquante
 			return true;
 		}
 		
-		amount -= remove(inv, 10, amount / 10) * 10;
+		amount -= remove(inv, 10, (int) Math.ceil(amount / 10D)) * 10;
 		if (amount <= 0){
-			give(p, Math.abs(amount)); // si enlevé plus que nécessaire, rendre la monnaie manquante
+			give(p, -amount); // si enlevé plus que nécessaire, rendre la monnaie manquante
 			return true;
 		}
 		
-		amount -= remove(inv, 100, amount / 100) * 100;
+		amount -= remove(inv, 100, (int) Math.ceil(amount / 100D)) * 100;
 		if (amount <= 0){
-			give(p, Math.abs(amount));
+			give(p, -amount);
 			return true;
 		}
 		return true;

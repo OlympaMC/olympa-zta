@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -182,19 +183,29 @@ public class PlayerPlot {
 
 	public boolean blockAction(Player p, Event e, Block block) {
 		OlympaPlayerZTA oplayer = OlympaPlayerZTA.get(p);
-		if (oplayer.getPlot() != this) return true;
+		if (oplayer.getPlot() != this) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire sur cette parcelle !");
+			return true;
+		}
 		
 		boolean chest = false;
 		if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST) {
 			chest = true;
-			if (e instanceof BlockPlaceEvent && chests == chestsPerLevel[level - 1]) return true;
+			if (e instanceof BlockPlaceEvent && chests >= chestsPerLevel[level - 1]) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite des %d coffres pour une parcelle de niveau %d.", chestsPerLevel[level - 1], level);
+				return true;
+			}
 		}
 
 		Location location = block.getLocation();
 		if (level < moneyRequiredPerLevel.length) {
 			int x = location.getBlockX() - loc.getWorldX();
 			int z = location.getBlockZ() - loc.getWorldZ();
-			if (x < min || x > max || z < min || z > max | location.getBlockY() > heightPerLevel[level - 1]) return true;
+			if (x < min || x > max || z < min || z > max) return true;
+			if (location.getBlockY() > heightPerLevel[level - 1]) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite de hauteur pour une parcelle de niveau %d.", level);
+				return true;
+			}
 		}
 
 		if (chest) {

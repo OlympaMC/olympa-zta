@@ -65,12 +65,15 @@ public class MobsCommand extends ComplexCommand {
 		String state;
 		if (spawning.isEnabled()) {
 			spawning.end();
-			state = "désactivé";
+			state = "§c§ldésactivé";
 		}else {
-			spawning.start();
-			state = "activé";
+			if (!spawning.start()) {
+				sendError("Le spawn naturel des mobs n'a pas pu démarrer.");
+				return;
+			}
+			state = "§a§lactivé";
 		}
-		sendSuccess("Le spawn naturel des mobs a été §l" + state + "§r§a.");
+		sendSuccess("§eLe spawn naturel des mobs a été " + state + "§e.");
 	}
 
 	@Cmd (min = 1, args = "INTEGER")
