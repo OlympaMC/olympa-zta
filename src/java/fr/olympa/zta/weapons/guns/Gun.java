@@ -305,19 +305,21 @@ public class Gun implements Weapon {
 		updateItemName(item);
 		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
 	}
+	
+	private boolean shouldTakeItems(Player p) {
+		GunFlag gunFlag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
+		return p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
+	}
 
 	private void reload(Player p, ItemStack item) {
 		if (reloading != null) return;
 		if (zoomed) toggleZoom(p, item);
-		
-		GunFlag gunFlag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
-		boolean takeItems = p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
-		
+
 		int max = (int) maxAmmos.getValue();
 		if (max <= ammos) return;
 
 		int toCharge;
-		int availableAmmos = takeItems ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
+		int availableAmmos = shouldTakeItems(p) ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
 			return;
@@ -337,7 +339,7 @@ public class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = takeItems ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : max;
+					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : max;
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 

@@ -5,9 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -178,7 +180,7 @@ public class GunRegistry {
 	public int loadFromItems(ItemStack[] items) throws SQLException {
 		if (items == null) return 0;
 		synchronized (toEvict) {
-			List<Integer> ids = new ArrayList<>();
+			Set<Integer> ids = new HashSet<>();
 			for (ItemStack item : items) {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
@@ -200,7 +202,7 @@ public class GunRegistry {
 					if (registry.containsKey(id)) {
 						toEvict.remove((Object) id);
 					}else {
-						ids.add(id);
+						if (!ids.add(id)) OlympaZTA.getInstance().sendMessage("§cL'objet du registre %d était contenu en double dans un inventaire.", id);
 					}
 				}
 			}
@@ -210,6 +212,7 @@ public class GunRegistry {
 			int i = 0;
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
+				ids.remove(id);
 				try {
 					GunType type = GunType.valueOf(resultSet.getString("type"));
 					Gun gun = new Gun(id, type);
@@ -217,11 +220,12 @@ public class GunRegistry {
 					registry.put(id, gun);
 					i++;
 				}catch (Exception e) {
-					OlympaZTA.getInstance().sendMessage("Une erreur est survenue lors du chargement de l'objet " + id + " du registre.");
+					OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'objet %d du registre.", id);
 					e.printStackTrace();
 					continue;
 				}
 			}
+			ids.forEach(id -> OlympaZTA.getInstance().sendMessage("§cAucun objet trouvé dans le registre pour l'item avec ID %d.", id));
 			statement.close();
 			resultSet.close();
 			return i;
