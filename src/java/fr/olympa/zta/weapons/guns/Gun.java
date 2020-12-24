@@ -94,8 +94,9 @@ public class Gun implements Weapon {
 		beforeTrainingAmmos = ammos;
 	}
 	
-	public void restoreBeforeTrainingAmmos(ItemStack item) {
+	public void restoreBeforeTrainingAmmos(Player p, ItemStack item) {
 		if (beforeTrainingAmmos != -1) {
+			cancelReload(p, item);
 			ammos = beforeTrainingAmmos;
 			beforeTrainingAmmos = -1;
 			if (ammos != 0) ready = true;

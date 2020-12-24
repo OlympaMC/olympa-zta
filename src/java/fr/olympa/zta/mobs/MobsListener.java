@@ -140,7 +140,7 @@ public class MobsListener implements Listener {
 				if (zombie == Zombies.COMMON || zombie == Zombies.DROWNED) {
 					killer.killedZombies.increment();
 					for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
-						e.getDrops().add(creator.create(entity.getKiller(), ThreadLocalRandom.current()).getItem());
+						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
 					}
 				}
 			}
@@ -209,7 +209,7 @@ public class MobsListener implements Listener {
 		int loaded;
 		try {
 			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChestContents());
-			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer());
+			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer().getName());
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'enderchest de %s.", e.getPlayer().getName());
 			ex.printStackTrace();

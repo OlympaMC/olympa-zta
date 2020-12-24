@@ -10,7 +10,7 @@ import fr.olympa.api.utils.RandomizedPicker.Chanced;
 
 public interface LootCreator extends Chanced {
 
-	public abstract Loot create(Player p, Random random);
+	public abstract Loot create(Random random);
 
 	public class Loot {
 

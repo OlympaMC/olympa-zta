@@ -58,6 +58,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.clans.plots.ClanPlotsManager;
+import fr.olympa.zta.crates.CratesManager;
 import fr.olympa.zta.enderchest.EnderChestManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
@@ -123,6 +124,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public EnderChestManager ecManager;
 	public TrainingManager training;
 	public CombatManager combat;
+	public CratesManager crates;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -187,6 +189,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
 		pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
 		pluginManager.registerEvents(combat = new CombatManager(this, 10), this);
+		pluginManager.registerEvents(crates = new CratesManager(), this);
 		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		
 		try {
@@ -339,6 +342,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning.end();
 		scoreboards.unload();
 		combat.unload();
+		crates.unload();
 		
 		gunRegistry.unload();
 	}

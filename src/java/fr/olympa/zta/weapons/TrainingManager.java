@@ -180,7 +180,7 @@ public class TrainingManager implements Listener {
 			slotsLine.updateGlobal();
 			if (teleport) tmp.teleport(exitLocation);
 			for (ItemStack item : tmp.getInventory().getContents()) {
-				OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> gun.restoreBeforeTrainingAmmos(item));
+				OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> gun.restoreBeforeTrainingAmmos(tmp, item));
 			}
 		}
 	}

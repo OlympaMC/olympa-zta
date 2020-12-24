@@ -3,7 +3,6 @@ package fr.olympa.zta.lootchests.creators;
 import java.util.Random;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ImmutableItemStack;
@@ -32,7 +31,7 @@ public class FoodCreator implements LootCreator {
 		return chance;
 	}
 
-	public Loot create(Player p, Random random) {
+	public Loot create(Random random) {
 		return new Loot(type.get(Utils.getRandomAmount(random, min, max)));
 	}
 

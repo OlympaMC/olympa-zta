@@ -2,8 +2,6 @@ package fr.olympa.zta.lootchests.creators;
 
 import java.util.Random;
 
-import org.bukkit.entity.Player;
-
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 
@@ -21,7 +19,7 @@ public class ArmorCreator implements LootCreator {
 		return chance;
 	}
 
-	public Loot create(Player p, Random random) {
+	public Loot create(Random random) {
 		return new Loot(type.get(ArmorSlot.values()[random.nextInt(4)])); // pièce d'armure aléatoire
 	}
 

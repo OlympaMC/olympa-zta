@@ -46,7 +46,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private ClanZTA clan = null;
 	public BukkitTask plotFind = null; // pas persistant
 	/* Données */
-	private ItemStack[] enderChestContents;
+	private ItemStack[] enderChestContents = new ItemStack[0];
 	private OlympaMoney money = new OlympaMoney(100);
 	private ObservableValue<PlayerPlot> plot = new ObservableValue<PlayerPlot>(null);
 	public ObservableInt killedZombies = new ObservableInt(0);

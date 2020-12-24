@@ -1,9 +1,7 @@
 package fr.olympa.zta.lootchests;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -14,27 +12,21 @@ import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
-import fr.olympa.zta.lootchests.creators.LootCreator.Loot.InventoryLoot;
 import fr.olympa.zta.lootchests.type.LootChestType;
 import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;
 
-public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator> {
+public class LootChest extends RandomizedInventory {
 
 	private final int id;
 
@@ -42,8 +34,6 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 	private LootChestType type;
 	private int waitMin = 6 * 60000, waitMax = 8 * 60000; // 60'000ticks = 1min
 	private long nextOpen = 0;
-
-	private Map<Integer, Loot> currentLoots = new HashMap<>();
 
 	private Random random = new Random();
 
@@ -65,43 +55,11 @@ public class LootChest extends OlympaGUI implements RandomizedPicker<LootCreator
 		if (time > nextOpen) {
 			OlympaPlayerZTA.get(p).openedChests.increment();
 			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
-			clearInventory();
-			for (LootCreator creator : pick(random)) {
-				int slot;
-				do {
-					slot = random.nextInt(27);
-				}while (inv.getItem(slot) != null);
-
-				Loot loot = creator.create(p, random);
-				currentLoots.put(slot, loot);
-				inv.setItem(slot, loot.getItem());
-			}
+			fillInventory();
 		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
 
 		super.create(p);
 		updateChestState(inv.getViewers().size(), true);
-	}
-
-	public void clearInventory() {
-		currentLoots.values().forEach(Loot::onRemove);
-		currentLoots.clear();
-		inv.clear();
-	}
-
-	@Override
-	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
-		if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) return true;
-		Loot loot = currentLoots.get(slot);
-		if (loot == null) throw new RuntimeException("No loot at slot for chest " + getID());
-		if (click.isShiftClick() && p.getInventory().firstEmpty() == -1) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
-			return false;
-		}
-		if (loot instanceof InventoryLoot) {
-				((InventoryLoot) loot).onTake(p, inv, slot);
-		}
-		currentLoots.remove(slot);
-		return false;
 	}
 
 	@Override

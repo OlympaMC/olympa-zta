@@ -16,6 +16,7 @@ public class ZTAPermissions{
 	public static final OlympaPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission MOD_COMMANDS = new OlympaPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaPermission CRATES_COMMAND = new OlympaPermission(OlympaGroup.RESP_ANIMATION);
 	
 	public static final OlympaPermission TPA_COMMANDS = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.VIP);

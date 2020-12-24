@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ImmutableItemStack;
@@ -28,7 +27,7 @@ public class QuestItemCreator implements LootCreator {
 	}
 
 	@Override
-	public Loot create(Player p, Random random) {
+	public Loot create(Random random) {
 		return new Loot(questItem.getItem(1));
 	}
 	

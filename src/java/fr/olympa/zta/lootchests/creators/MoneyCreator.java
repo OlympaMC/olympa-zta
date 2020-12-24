@@ -2,8 +2,6 @@ package fr.olympa.zta.lootchests.creators;
 
 import java.util.Random;
 
-import org.bukkit.entity.Player;
-
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.utils.PhysicalMoney;
 
@@ -24,7 +22,7 @@ public class MoneyCreator implements LootCreator {
 	}
 
 	@Override
-	public Loot create(Player p, Random random) {
+	public Loot create(Random random) {
 		return new Loot(PhysicalMoney.getBanknote(PhysicalMoney.BANKNOTE_1, Utils.getRandomAmount(random, min, max)));
 	}
 

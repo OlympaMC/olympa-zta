@@ -22,7 +22,7 @@ public class ItemStackableCreator implements LootCreator {
 		return chance;
 	}
 
-	public Loot create(Player p, Random random) {
+	public Loot create(Random random) {
 		return new StackableLoot();
 	}
 
