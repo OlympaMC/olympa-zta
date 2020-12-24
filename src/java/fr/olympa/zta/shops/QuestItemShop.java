@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.lootchests.creators.QuestItemCreator.QuestItem;
+import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 
 public class QuestItemShop extends AbstractBuyingShop<QuestItem> {

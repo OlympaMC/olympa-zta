@@ -1,4 +1,4 @@
-package fr.olympa.zta.crates;
+package fr.olympa.zta.loot.crates;
 
 import java.util.ArrayList;
 import java.util.List;

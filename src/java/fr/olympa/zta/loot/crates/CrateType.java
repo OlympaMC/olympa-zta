@@ -1,15 +1,15 @@
-package fr.olympa.zta.crates;
+package fr.olympa.zta.loot.crates;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.olympa.zta.lootchests.creators.AmmoCreator;
-import fr.olympa.zta.lootchests.creators.ArmorCreator;
-import fr.olympa.zta.lootchests.creators.FoodCreator;
-import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
-import fr.olympa.zta.lootchests.creators.ItemStackableCreator;
-import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.lootchests.creators.MoneyCreator;
+import fr.olympa.zta.loot.creators.AmmoCreator;
+import fr.olympa.zta.loot.creators.ArmorCreator;
+import fr.olympa.zta.loot.creators.FoodCreator;
+import fr.olympa.zta.loot.creators.ItemStackableCreator;
+import fr.olympa.zta.loot.creators.LootCreator;
+import fr.olympa.zta.loot.creators.MoneyCreator;
+import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.Accessory;

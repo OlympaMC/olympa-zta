@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
+import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 
 public class FoodBuyingShop extends AbstractBuyingShop<Food> {

@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests;
+package fr.olympa.zta.loot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
-import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.lootchests.creators.LootCreator.Loot;
-import fr.olympa.zta.lootchests.creators.LootCreator.Loot.InventoryLoot;
+import fr.olympa.zta.loot.creators.LootCreator;
+import fr.olympa.zta.loot.creators.LootCreator.Loot;
+import fr.olympa.zta.loot.creators.LootCreator.Loot.InventoryLoot;
 
 public abstract class RandomizedInventory extends OlympaGUI implements RandomizedPicker<LootCreator> {
 	

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.lootchests.creators.QuestItemCreator.QuestItem;
+import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;

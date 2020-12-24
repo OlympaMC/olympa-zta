@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests;
+package fr.olympa.zta.loot.chests;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,7 +33,7 @@ import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.lootchests.type.LootChestType;
+import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 
 public class LootChestsManager implements Listener {

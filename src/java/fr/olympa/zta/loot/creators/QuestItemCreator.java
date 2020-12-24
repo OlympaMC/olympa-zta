@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests.creators;
+package fr.olympa.zta.loot.creators;
 
 import java.util.ArrayList;
 import java.util.Arrays;

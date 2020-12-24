@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests.type;
+package fr.olympa.zta.loot.chests.type;
 
 import fr.olympa.api.utils.RandomizedPicker.Chanced;
 

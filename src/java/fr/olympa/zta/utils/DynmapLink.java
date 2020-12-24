@@ -23,7 +23,7 @@ import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
-import fr.olympa.zta.lootchests.LootChest;
+import fr.olympa.zta.loot.chests.LootChest;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
 public class DynmapLink {

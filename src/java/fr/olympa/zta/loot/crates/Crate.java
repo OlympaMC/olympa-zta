@@ -1,4 +1,4 @@
-package fr.olympa.zta.crates;
+package fr.olympa.zta.loot.crates;
 
 import java.util.List;
 
@@ -21,8 +21,8 @@ import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.lootchests.RandomizedInventory;
-import fr.olympa.zta.lootchests.creators.LootCreator;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.creators.LootCreator;
 
 public class Crate extends RandomizedInventory {
 	

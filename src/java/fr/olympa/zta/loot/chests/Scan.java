@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests;
+package fr.olympa.zta.loot.chests;
 
 import java.sql.SQLException;
 import java.util.AbstractMap;
@@ -26,7 +26,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot.ClanPlotFlag;
-import fr.olympa.zta.lootchests.type.LootChestCreator;
+import fr.olympa.zta.loot.chests.type.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
 

@@ -1,4 +1,4 @@
-package fr.olympa.zta.crates;
+package fr.olympa.zta.loot.crates;
 
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;

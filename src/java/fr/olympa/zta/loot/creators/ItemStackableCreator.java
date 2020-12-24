@@ -1,11 +1,11 @@
-package fr.olympa.zta.lootchests.creators;
+package fr.olympa.zta.loot.creators;
 
 import java.util.Random;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import fr.olympa.zta.lootchests.creators.LootCreator.Loot.InventoryLoot;
+import fr.olympa.zta.loot.creators.LootCreator.Loot.InventoryLoot;
 import fr.olympa.zta.weapons.ItemStackable;
 
 public class ItemStackableCreator implements LootCreator {

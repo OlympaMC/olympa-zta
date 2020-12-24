@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests;
+package fr.olympa.zta.loot.chests;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
-import fr.olympa.zta.lootchests.type.LootChestType;
+import fr.olympa.zta.loot.chests.type.LootChestType;
 
 public class LootChestCommand extends ComplexCommand {
 	

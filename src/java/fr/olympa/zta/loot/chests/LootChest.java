@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests;
+package fr.olympa.zta.loot.chests;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,8 +20,9 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.lootchests.creators.LootCreator;
-import fr.olympa.zta.lootchests.type.LootChestType;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.chests.type.LootChestType;
+import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.utils.DynmapLink;
 import net.minecraft.server.v1_15_R1.Block;
 import net.minecraft.server.v1_15_R1.BlockPosition;

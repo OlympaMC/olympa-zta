@@ -1,4 +1,4 @@
-package fr.olympa.zta.lootchests.type;
+package fr.olympa.zta.loot.chests.type;
 
 import java.util.ArrayList;
 import java.util.List;

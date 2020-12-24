@@ -43,7 +43,7 @@ import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.lootchests.creators.FoodCreator.Food;
+import fr.olympa.zta.loot.creators.FoodCreator.Food;
 
 public class PlayerPlotsManager {
 	
