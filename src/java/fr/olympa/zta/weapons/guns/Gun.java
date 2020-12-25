@@ -152,6 +152,7 @@ public class Gun implements Weapon {
 
 	@Override
 	public void itemHeld(Player p, ItemStack item) {
+		showAmmos(p);
 		p.setCooldown(item.getType(), 0);
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 	}
@@ -291,7 +292,7 @@ public class Gun implements Weapon {
 			p.setVelocity(velocity);
 		}
 		ammos--;
-
+		
 		playFireSound(p.getLocation());
 		float distance = (fireVolume.getValue() - 0.5f) * 10;
 		for (Entity en : p.getWorld().getNearbyEntities(p.getLocation(), distance, distance, distance, x -> x instanceof Zombie)) {
@@ -300,11 +301,19 @@ public class Gun implements Weapon {
 		}
 	}
 
+	public void showAmmos(Player p) {
+		int availableAmmos = shouldTakeItems(p) ? type.getAmmoType().getAmmos(p) : -1;
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(type.getAmmoType().getColoredName() + "§7: " + (availableAmmos == -1 ? "§c∞" : (availableAmmos == 0 ? "§c0" : availableAmmos))));
+	}
+	
 	private void cancelReload(Player p, ItemStack item) {
-		reloading.cancel();
-		reloading = null;
+		if (reloading != null) {
+			reloading.cancel();
+			reloading = null;
+		}
 		updateItemName(item);
-		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
+		//p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
+		showAmmos(p);
 	}
 	
 	private boolean shouldTakeItems(Player p) {
@@ -323,6 +332,7 @@ public class Gun implements Weapon {
 		int availableAmmos = shouldTakeItems(p) ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
+			showAmmos(p);
 			return;
 		}
 		if (type.isOneByOneCharge()) {

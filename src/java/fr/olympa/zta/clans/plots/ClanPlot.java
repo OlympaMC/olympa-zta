@@ -4,10 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -28,6 +31,8 @@ import fr.olympa.zta.clans.ClanZTA;
 
 public class ClanPlot {
 
+	private static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
+	
 	public static final int PAYMENT_DURATION_DAYS = 7;
 	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000;
 	private static final DateFormat paymentDateFormat = new SimpleDateFormat("dd/MM");
@@ -226,8 +231,15 @@ public class ClanPlot {
 		}
 		
 		@Override
-		public void interactEvent(PlayerInteractEvent event) {
+		protected void handleOtherBlock(PlayerInteractEvent event) {
 			handleCancellable(event, null, OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
+		}
+		
+		@Override
+		protected void handleInventoryBlock(PlayerInteractEvent event) {
+			if (OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan) {
+				handleCancellable(event, null, true);
+			}else handleCancellable(event, null, !CONTAINER_MATERIALS.contains(event.getClickedBlock().getType()));
 		}
 		
 	}

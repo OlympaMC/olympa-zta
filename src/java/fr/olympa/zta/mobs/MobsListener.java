@@ -45,12 +45,13 @@ import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
+import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
-import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.packetslistener.PacketHandlers;
+import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -59,7 +60,7 @@ public class MobsListener implements Listener {
 
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 20,
 			new AmmoCreator(20, 2, 3),
-			new MoneyCreator(45, 3, 9),
+			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
 			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
 			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
 			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),

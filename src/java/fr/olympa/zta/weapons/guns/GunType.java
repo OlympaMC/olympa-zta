@@ -496,7 +496,7 @@ public enum GunType implements ItemStackable{
 		
 		lore = new ArrayList<>(SpigotUtils.wrapAndAlign(description, 35));
 		lore.add("");
-		lore.add("§8§lMunitions > " + ammoType.getColor() + ammoType.getName() + " §8(x" + maxAmmos + ")");
+		lore.add("§8§lMunitions > " + ammoType.getColoredName() + " §8(x" + maxAmmos + ")");
 		
 		demoItem = new ItemStack(material);
 		ItemMeta meta = demoItem.getItemMeta();

@@ -250,7 +250,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new KitCommand<OlympaPlayerZTA>(this,
 				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPtime.get(), (x, time) -> x.kitVIPtime.set(time), (op, p) -> new ItemStack[] {
 								GunType.M16.createItem(),
-								Food.COOKED_RABBIT.get(15),
+								Food.COOKED_BEEF.get(15),
 								ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),
 								ArmorType.ANTIRIOT.get(ArmorSlot.LEGGINGS),
 								ArmorType.ANTIRIOT.get(ArmorSlot.CHESTPLATE),

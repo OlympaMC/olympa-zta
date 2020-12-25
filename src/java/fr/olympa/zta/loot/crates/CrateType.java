@@ -6,10 +6,11 @@ import java.util.List;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
+import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
-import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.Accessory;
@@ -19,7 +20,8 @@ import fr.olympa.zta.weapons.guns.GunType;
 public enum CrateType {
 
 	BASIC(
-			new MoneyCreator(50, 30, 150),
+			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 3, 9),
+			new MoneyCreator(20, PhysicalMoney.BANKNOTE_100, 1, 2),
 			new AmmoCreator(15, 5, 13),
 			new AmmoCreator(15, AmmoType.HEAVY, 4, 8, true),
 			new AmmoCreator(15, AmmoType.LIGHT, 4, 8, true),

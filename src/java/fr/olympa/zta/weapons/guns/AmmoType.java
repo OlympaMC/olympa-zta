@@ -57,6 +57,10 @@ public enum AmmoType{
 		return name;
 	}
 	
+	public String getColoredName() {
+		return color + name;
+	}
+	
 	public Material getEmptyAmmoType(){
 		return empty;
 	}

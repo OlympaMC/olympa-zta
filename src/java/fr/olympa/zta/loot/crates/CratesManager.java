@@ -24,6 +24,10 @@ public class CratesManager implements Listener {
 		crate.startFalling();
 	}
 	
+	public List<Crate> getRunning() {
+		return running;
+	}
+	
 	public void unloadCrate(Crate crate) {
 		running.remove(crate);
 		crate.cancel();
