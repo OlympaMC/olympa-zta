@@ -25,7 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_15_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_16_R3.CraftChunk;
 import org.bukkit.entity.Drowned;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.utils.DynmapLink;
 import net.md_5.bungee.api.ChatMessageType;
-import net.minecraft.server.v1_15_R1.Entity;
+import net.minecraft.server.v1_16_R3.Entity;
 
 public class MobSpawning implements Runnable {
 
@@ -231,7 +231,7 @@ public class MobSpawning implements Runnable {
 
 	private int entityCount(Chunk chunk) {
 		int count = 0;
-		net.minecraft.server.v1_15_R1.Chunk nmsChunk = ((CraftChunk) chunk).getHandle(); // + opti de passer par les NMS, sinon Bukkit construit une array avec les bukkit entity et c'est lourd
+		net.minecraft.server.v1_16_R3.Chunk nmsChunk = ((CraftChunk) chunk).getHandle(); // + opti de passer par les NMS, sinon Bukkit construit une array avec les bukkit entity et c'est lourd
 		for (List<Entity> slice : nmsChunk.entitySlices) {
 			count += slice.size();
 		}

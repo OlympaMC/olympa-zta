@@ -2,9 +2,9 @@ package fr.olympa.zta.mobs.custom;
 
 import org.bukkit.event.entity.EntityTargetEvent;
 
-import net.minecraft.server.v1_15_R1.EntityCreature;
-import net.minecraft.server.v1_15_R1.EntityHuman;
-import net.minecraft.server.v1_15_R1.PathfinderGoalTarget;
+import net.minecraft.server.v1_16_R3.EntityCreature;
+import net.minecraft.server.v1_16_R3.EntityHuman;
+import net.minecraft.server.v1_16_R3.PathfinderGoalTarget;
 
 public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget {
 

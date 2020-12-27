@@ -44,6 +44,7 @@ public class WeaponsListener implements Listener {
 			cancelDamageEvent = false;
 			return;
 		}
+		if (e.isCancelled()) return;
 		if (!(e.getDamager() instanceof Player) || e.getCause() != DamageCause.ENTITY_ATTACK || !(e.getEntity() instanceof LivingEntity)) return;
 		Player damager = (Player) e.getDamager();
 

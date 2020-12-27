@@ -3,32 +3,35 @@ package fr.olympa.zta.mobs.custom;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
-import net.citizensnpcs.nms.v1_15_R1.util.CustomEntityRegistry;
-import net.minecraft.server.v1_15_R1.BlockPosition;
-import net.minecraft.server.v1_15_R1.Entity;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EntityZombie;
-import net.minecraft.server.v1_15_R1.EnumMobSpawn;
-import net.minecraft.server.v1_15_R1.IRegistry;
-import net.minecraft.server.v1_15_R1.MinecraftKey;
+import net.citizensnpcs.nms.v1_16_R3.util.CustomEntityRegistry;
+import net.minecraft.server.v1_16_R3.AttributeDefaults;
+import net.minecraft.server.v1_16_R3.AttributeProvider;
+import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.EntityLiving;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.EntityZombie;
+import net.minecraft.server.v1_16_R3.EnumMobSpawn;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.minecraft.server.v1_16_R3.MinecraftKey;
 
 public class Mobs {
 
 	private static Random random = new Random();
 
-	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE");
-	private static EntityTypes<CustomEntityMommy> customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK");
-	private static EntityTypes<CustomEntityDrowned> customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED");
+	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE", CustomEntityZombie.getAttributeBuilder());
+	private static EntityTypes<CustomEntityMommy> customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK", CustomEntityMommy.getAttributeBuilder());
+	private static EntityTypes<CustomEntityDrowned> customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED", CustomEntityDrowned.getAttributeBuilder());
 
 	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));
@@ -55,9 +58,9 @@ public class Mobs {
 		return zombie;
 	}
 
-	private static <T extends Entity> EntityTypes<T> replaceEntity(EntityTypes.b<T> function, String overrideName, EntityTypes<?> overrideType, String overrideTypeFieldName) {
+	private static <T extends EntityLiving> EntityTypes<T> replaceEntity(EntityTypes.b<T> function, String overrideName, EntityTypes<?> overrideType, String overrideTypeFieldName, AttributeProvider.Builder attributesBuilder) {
 		try {
-			EntityTypes<T> type = EntityTypes.a.<T>a(function, overrideType.e()).a(overrideName);
+			EntityTypes<T> type = EntityTypes.Builder.<T>a(function, overrideType.e()).a(overrideName);
 
 			CustomEntityRegistry registry = (CustomEntityRegistry) IRegistry.ENTITY_TYPE;
 			registry.put(registry.a(overrideType), new MinecraftKey(overrideName), type);
@@ -68,6 +71,11 @@ public class Mobs {
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(entityTypesField, entityTypesField.getModifiers() & ~Modifier.FINAL);
 			entityTypesField.set(null, type);
+			
+			Field attributesMapField = AttributeDefaults.class.getDeclaredField("b");
+			attributesMapField.setAccessible(true);
+			Map<EntityTypes<? extends EntityLiving>, AttributeProvider> attributesMap = (Map<EntityTypes<? extends EntityLiving>, AttributeProvider>) attributesMapField.get(null);
+			attributesMap.put(type, attributesBuilder.a());
 			
 			return type;
 		}catch (ReflectiveOperationException e) {

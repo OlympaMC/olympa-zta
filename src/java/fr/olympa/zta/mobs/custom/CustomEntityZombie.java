@@ -2,32 +2,35 @@ package fr.olympa.zta.mobs.custom;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import net.minecraft.server.v1_15_R1.DamageSource;
-import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
-import net.minecraft.server.v1_15_R1.EntityCreature;
-import net.minecraft.server.v1_15_R1.EntityLiving;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EntityZombie;
-import net.minecraft.server.v1_15_R1.EnumItemSlot;
-import net.minecraft.server.v1_15_R1.EnumMobSpawn;
-import net.minecraft.server.v1_15_R1.Explosion.Effect;
-import net.minecraft.server.v1_15_R1.GeneratorAccess;
-import net.minecraft.server.v1_15_R1.GenericAttributes;
-import net.minecraft.server.v1_15_R1.GroupDataEntity;
-import net.minecraft.server.v1_15_R1.ItemStack;
-import net.minecraft.server.v1_15_R1.Items;
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStrollLand;
-import net.minecraft.server.v1_15_R1.SoundCategory;
-import net.minecraft.server.v1_15_R1.SoundEffects;
-import net.minecraft.server.v1_15_R1.World;
+import net.minecraft.server.v1_16_R3.AttributeProvider;
+import net.minecraft.server.v1_16_R3.DamageSource;
+import net.minecraft.server.v1_16_R3.DifficultyDamageScaler;
+import net.minecraft.server.v1_16_R3.EntityCreature;
+import net.minecraft.server.v1_16_R3.EntityLiving;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.EntityZombie;
+import net.minecraft.server.v1_16_R3.EnumItemSlot;
+import net.minecraft.server.v1_16_R3.EnumMobSpawn;
+import net.minecraft.server.v1_16_R3.Explosion.Effect;
+import net.minecraft.server.v1_16_R3.GenericAttributes;
+import net.minecraft.server.v1_16_R3.GroupDataEntity;
+import net.minecraft.server.v1_16_R3.ItemStack;
+import net.minecraft.server.v1_16_R3.Items;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_16_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_16_R3.PathfinderGoalRandomStrollLand;
+import net.minecraft.server.v1_16_R3.SoundCategory;
+import net.minecraft.server.v1_16_R3.SoundEffects;
+import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.server.v1_16_R3.WorldAccess;
 
 public class CustomEntityZombie extends EntityZombie {
 
@@ -39,6 +42,12 @@ public class CustomEntityZombie extends EntityZombie {
 	
 	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
 		super(type, world);
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
+	}
+	
+	public static AttributeProvider.Builder getAttributeBuilder() {
+		return EntityZombie.eS().a(GenericAttributes.FOLLOW_RANGE, 22.0);
 	}
 	
 	public void setZombieType(Zombies zombieType) {
@@ -58,7 +67,7 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 
 	@Override
-	protected void l() { // addBehaviourGoals
+	protected void initPathfinder() { // addBehaviourGoals
 		//this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
 		this.goalSelector.a(7, new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
 	}
@@ -69,20 +78,12 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 	
 	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
-		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(22.0);
-	}
-	
-	@Override
-	protected boolean et() { // convertsInWater
+	protected boolean eN() { // convertsInWater
 		return false;
 	}
 
 	@Override
-	protected boolean K_() { // isSunSensitive
+	protected boolean T_() { // isSunSensitive
 		return false;
 	}
 
@@ -128,20 +129,25 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 
 	@Override
-	public GroupDataEntity prepare(GeneratorAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
+	public @Nullable GroupDataEntity prepare(WorldAccess worldaccess, DifficultyDamageScaler difficultydamagescaler, EnumMobSpawn enummobspawn, @Nullable GroupDataEntity groupdataentity, @Nullable NBTTagCompound nbttagcompound) {
 		//if (zombieType == Zombies.TNT) setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
 		return null;
 	}
 	
 	@Override
-	public void b(NBTTagCompound nbttagcompound) {
-		super.b(nbttagcompound);
+	public void saveData(NBTTagCompound nbttagcompound) {
+		super.saveData(nbttagcompound);
 		nbttagcompound.setString("ZTAType", zombieType.name());
 	}
 	
 	@Override
-	public void a(NBTTagCompound nbttagcompound) {
-		super.a(nbttagcompound);
+	public NBTTagCompound save(NBTTagCompound nbttagcompound) {
+		return super.save(nbttagcompound);
+	}
+	
+	@Override
+	public void loadData(NBTTagCompound nbttagcompound) {
+		super.loadData(nbttagcompound);
 		if (nbttagcompound.hasKey("ZTAType")) setZombieType(Zombies.valueOf(nbttagcompound.getString("ZTAType")));
 	}
 	
@@ -157,13 +163,13 @@ public class CustomEntityZombie extends EntityZombie {
 		@Override
 		public void c() {
 			super.c();
-			zombie.q(true);
+			zombie.setAggressive(true);
 		}
 
 		@Override
 		public void d() {
 			super.d();
-			zombie.q(false);
+			zombie.setAggressive(false);
 		}
 
 	}

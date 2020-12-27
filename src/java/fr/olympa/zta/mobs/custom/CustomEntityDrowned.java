@@ -11,21 +11,22 @@ import fr.olympa.api.utils.Reflection.ClassEnum;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.CustomEntityZombie.PathfinderGoalCustomZombieAttack;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import net.minecraft.server.v1_15_R1.DamageSource;
-import net.minecraft.server.v1_15_R1.DifficultyDamageScaler;
-import net.minecraft.server.v1_15_R1.EntityCreature;
-import net.minecraft.server.v1_15_R1.EntityDrowned;
-import net.minecraft.server.v1_15_R1.EntityLiving;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EnumMobSpawn;
-import net.minecraft.server.v1_15_R1.GeneratorAccess;
-import net.minecraft.server.v1_15_R1.GenericAttributes;
-import net.minecraft.server.v1_15_R1.GroupDataEntity;
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.PathfinderGoal;
-import net.minecraft.server.v1_15_R1.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_15_R1.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_15_R1.World;
+import net.minecraft.server.v1_16_R3.AttributeProvider;
+import net.minecraft.server.v1_16_R3.DamageSource;
+import net.minecraft.server.v1_16_R3.DifficultyDamageScaler;
+import net.minecraft.server.v1_16_R3.EntityCreature;
+import net.minecraft.server.v1_16_R3.EntityDrowned;
+import net.minecraft.server.v1_16_R3.EntityLiving;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.EnumMobSpawn;
+import net.minecraft.server.v1_16_R3.GenericAttributes;
+import net.minecraft.server.v1_16_R3.GroupDataEntity;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.PathfinderGoal;
+import net.minecraft.server.v1_16_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_16_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.server.v1_16_R3.WorldAccess;
 
 public class CustomEntityDrowned extends EntityDrowned {
 
@@ -72,6 +73,10 @@ public class CustomEntityDrowned extends EntityDrowned {
 		super(var0, var1);
 		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), Zombies.DROWNED));
 	}
+	
+	public static AttributeProvider.Builder getAttributeBuilder() {
+		return EntityDrowned.eS().a(GenericAttributes.MOVEMENT_SPEED, 0.4).a(GenericAttributes.ATTACK_DAMAGE, 10.0);
+	}
 
 	@Override
 	protected void initPathfinder() {
@@ -82,13 +87,6 @@ public class CustomEntityDrowned extends EntityDrowned {
 		this.goalSelector.a(7, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this).a(CustomEntityZombie.class));
 		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 2, 32, true, false));
-	}
-
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.4);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(10.0);
 	}
 
 	@Override
@@ -111,12 +109,12 @@ public class CustomEntityDrowned extends EntityDrowned {
 	}
 
 	@Override
-	public GroupDataEntity prepare(GeneratorAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
+	public GroupDataEntity prepare(WorldAccess var0, DifficultyDamageScaler var1, EnumMobSpawn var2, GroupDataEntity var3, NBTTagCompound var4) {
 		return null;
 	}
 
 	@Override
-	protected boolean K_() { // isSunSensitive
+	protected boolean T_() { // isSunSensitive
 		return false;
 	}
 

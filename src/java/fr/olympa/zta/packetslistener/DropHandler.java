@@ -8,8 +8,8 @@ import fr.olympa.zta.weapons.guns.Gun;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.server.v1_15_R1.PacketPlayInBlockDig;
-import net.minecraft.server.v1_15_R1.PacketPlayInBlockDig.EnumPlayerDigType;
+import net.minecraft.server.v1_16_R3.PacketPlayInBlockDig;
+import net.minecraft.server.v1_16_R3.PacketPlayInBlockDig.EnumPlayerDigType;
 
 @Sharable
 public class DropHandler extends ChannelDuplexHandler{

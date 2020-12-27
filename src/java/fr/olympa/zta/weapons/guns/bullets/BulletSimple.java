@@ -1,5 +1,7 @@
 package fr.olympa.zta.weapons.guns.bullets;
 
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -9,6 +11,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import fr.olympa.zta.OlympaPlayerZTA;
+import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
 
@@ -31,13 +34,21 @@ public class BulletSimple extends Bullet{
 			WeaponsListener.cancelDamageEvent = true;
 			float damage = hitEntity instanceof Player ? playerDamage : entityDamage;
 
+			Location blood;
 			boolean stats = !hitEntity.hasMetadata("training");
 			if (isHeadShot(e.getEntity(), hitEntity)) {
 				damage *= 1.5;
 				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
+				blood = hitEntity.getEyeLocation();
 				if (stats) OlympaPlayerZTA.get(shooter).headshots.increment();
-			}else if (stats) OlympaPlayerZTA.get(shooter).otherShots.increment();
+			}else {
+				blood = hitEntity.getLocation().add(0, 1, 0);
+				if (stats) OlympaPlayerZTA.get(shooter).otherShots.increment();
+			}
+			hitEntity.getWorld().spawnParticle(Particle.BLOCK_CRACK, blood, 5, Knife.BLOOD_DATA);
 			damage(hitEntity, shooter, damage);
+		}else if (e.getHitBlock() != null) {
+			e.getEntity().getWorld().spawnParticle(Particle.BLOCK_CRACK, e.getHitBlock().getLocation().add(0, 0.5, 0), 3, e.getHitBlock().getBlockData());
 		}
 	}
 	

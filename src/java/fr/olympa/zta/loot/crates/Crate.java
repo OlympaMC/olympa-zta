@@ -76,7 +76,7 @@ public class Crate extends RandomizedInventory {
 				location.getWorld().spawnParticle(Particle.SMOKE_LARGE, location, 30 - diff, 0.8, 0, 0.8, 0.01);
 				if (diff < 15) location.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, location, 15 - diff, 0.8, 0, 0.8, 0.01);
 			}
-			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1);
+			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.3f, 1);
 			if (block.getRelative(BlockFace.DOWN).getType() != Material.AIR) { // touché le sol
 				task.cancel();
 				task = null;

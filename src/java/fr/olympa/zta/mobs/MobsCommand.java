@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Zombie;
@@ -46,11 +47,25 @@ public class MobsCommand extends ComplexCommand {
 		sendSuccess("Vous avez fait spawn %d zombie de type %s.", amount, zombieType.name());
 	}
 
-	@Cmd (args = "kill|remove", min = 0, syntax = "<action>")
+	@Cmd (args = { "kill|remove", "DOUBLE" }, min = 0, syntax = "[action] [rayon]")
 	public void killZombies(CommandContext cmd) {
 		boolean remove = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("remove");
+		double radius = cmd.getArgument(1, 0);
+		if (radius < 0) {
+			sendIncorrectSyntax();
+			return;
+		}
+		
+		Collection<Zombie> zombies;
+		if (radius > 0) {
+			if (player == null) {
+				sendImpossibleWithConsole();
+				return;
+			}
+			zombies = player.getNearbyEntities(radius, radius, radius).stream().filter(x -> x instanceof Zombie).map(Zombie.class::cast).collect(Collectors.toList());
+		}else zombies = OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class);
 		int amount = 0;
-		for (Zombie zombie : OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class)) {
+		for (Zombie zombie : zombies) {
 			if (remove) {
 				zombie.remove();
 			}else zombie.damage(1000000);

@@ -2,21 +2,22 @@ package fr.olympa.zta.mobs.custom;
 
 import java.util.Arrays;
 
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers.NBT;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
 
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import net.minecraft.server.v1_15_R1.DamageSource;
-import net.minecraft.server.v1_15_R1.EntityCreature;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.GenericAttributes;
-import net.minecraft.server.v1_15_R1.ItemStack;
-import net.minecraft.server.v1_15_R1.MinecraftServer;
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.NBTTagList;
-import net.minecraft.server.v1_15_R1.PathfinderGoal;
-import net.minecraft.server.v1_15_R1.World;
+import net.minecraft.server.v1_16_R3.AttributeProvider;
+import net.minecraft.server.v1_16_R3.DamageSource;
+import net.minecraft.server.v1_16_R3.EntityCreature;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.GenericAttributes;
+import net.minecraft.server.v1_16_R3.ItemStack;
+import net.minecraft.server.v1_16_R3.MinecraftServer;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagList;
+import net.minecraft.server.v1_16_R3.PathfinderGoal;
+import net.minecraft.server.v1_16_R3.World;
 
 public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
@@ -32,6 +33,10 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 		setZombieType(Zombies.COMMON);
 	}
 	
+	public static AttributeProvider.Builder getAttributeBuilder() {
+		return CustomEntityZombie.getAttributeBuilder().a(GenericAttributes.MOVEMENT_SPEED, 0.32).a(GenericAttributes.ATTACK_DAMAGE, 9).a(GenericAttributes.ARMOR, 4);
+	}
+	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
 		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
 	}
@@ -39,14 +44,6 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	@Override
 	protected void initTargetGoals() {
 		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 1, 20, true, false));
-	}
-	
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(9);
-		this.getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
 	}
 	
 	@Override
@@ -71,23 +68,23 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	}
 	
 	@Override
-	protected boolean et() { // convertsInWater
+	protected boolean eN() { // convertsInWater
 		return false;
 	}
 	
 	@Override
-	protected boolean K_() { // isSunSensitive
+	protected boolean T_() { // isSunSensitive
 		return false;
 	}
 	
 	@Override
-	public boolean I() { // requiresCustomPersistence
+	public boolean isPersistent() { // requiresCustomPersistence
 		return true;
 	}
 	
 	@Override
-	public void b(NBTTagCompound nbttagcompound) {
-		super.b(nbttagcompound);
+	public void saveData(NBTTagCompound nbttagcompound) {
+		super.saveData(nbttagcompound);
 		nbttagcompound.setInt("MommyDieTime", this.dieTime);
 		
 		NBTTagList nbtList = new NBTTagList();
@@ -102,8 +99,8 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	}
 	
 	@Override
-	public void a(NBTTagCompound nbttagcompound) {
-		super.a(nbttagcompound);
+	public void loadData(NBTTagCompound nbttagcompound) {
+		super.loadData(nbttagcompound);
 		if (nbttagcompound.hasKey("MommyDieTime")) this.dieTime = nbttagcompound.getInt("MommyDieTime");
 		
 		if (nbttagcompound.hasKey("PlayerInventory")) {

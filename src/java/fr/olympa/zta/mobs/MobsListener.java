@@ -55,6 +55,7 @@ import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
+import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
@@ -79,6 +80,7 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
+		if (CitizensAPI.getNPCRegistry().isNPC(p)) return;
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
 		List<ItemStack> kept = new ArrayList<>();
@@ -131,7 +133,7 @@ public class MobsListener implements Listener {
 	public void onEntityDeath(EntityDeathEvent e) {
 		LivingEntity entity = e.getEntity();
 		
-		if (entity.getKiller() != null) {
+		if (entity.getKiller() != null && !CitizensAPI.getNPCRegistry().isNPC(entity.getKiller())) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
 			if (entity instanceof Player) {
 				killer.killedPlayers.increment();
@@ -157,6 +159,7 @@ public class MobsListener implements Listener {
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onDamage(EntityDamageEvent e) {
+		if (e.isCancelled()) return;
 		if (e.getCause() == DamageCause.FALL) {
 			e.setDamage(e.getDamage() / 2);
 		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
@@ -166,7 +169,7 @@ public class MobsListener implements Listener {
 				e.setDamage(e.getDamage() / 2);
 			}
 		}
-		if (!e.isCancelled() && e.getEntity() instanceof Item) {
+		if (e.getEntity() instanceof Item) {
 			OlympaZTA.getInstance().gunRegistry.ifGun(((Item) e.getEntity()).getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
 		}
 	}

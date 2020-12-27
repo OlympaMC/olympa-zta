@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -178,8 +179,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		teleportationManager = new TeleportationManager();
 		
-		OlympaGroup.PLAYER.setRuntimePermission("beautyquests.command", false);
-		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(new WeaponsListener(), this);
@@ -188,7 +187,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
 		pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
-		pluginManager.registerEvents(combat = new CombatManager(this, 10), this);
+		pluginManager.registerEvents(combat = new CombatManager(this, 10) {
+			public boolean canEnterCombat(Player damager, Player damaged) {
+				return !CitizensAPI.getNPCRegistry().isNPC(damaged) && !CitizensAPI.getNPCRegistry().isNPC(damager);
+			};
+		}, this);
 		pluginManager.registerEvents(crates = new CratesManager(), this);
 		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		

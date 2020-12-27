@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
@@ -54,6 +55,9 @@ public class BeautyQuestsLink implements Listener {
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
 		QuestsAPI.registerMobFactory(new ZTAMobFactory());
 		new BQCommand().register();
+		
+		OlympaGroup.PLAYER.setRuntimePermission("beautyquests.command", false);
+		OlympaGroup.RESP_TECH.setRuntimePermission("beautyquests.*", true);
 	}
 	
 	public boolean isQuestItem(ItemStack item) {
