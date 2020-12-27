@@ -3,6 +3,7 @@ package fr.olympa.zta.mobs.custom;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -14,6 +15,9 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.collect.ImmutableMap;
+
+import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.nms.v1_16_R3.util.CustomEntityRegistry;
 import net.minecraft.server.v1_16_R3.AttributeDefaults;
 import net.minecraft.server.v1_16_R3.AttributeProvider;
@@ -29,10 +33,21 @@ public class Mobs {
 
 	private static Random random = new Random();
 
-	private static EntityTypes<CustomEntityZombie> customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE", CustomEntityZombie.getAttributeBuilder());
-	private static EntityTypes<CustomEntityMommy> customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK", CustomEntityMommy.getAttributeBuilder());
-	private static EntityTypes<CustomEntityDrowned> customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED", CustomEntityDrowned.getAttributeBuilder());
+	private static EntityTypes<CustomEntityZombie> customZombie;
+	private static EntityTypes<CustomEntityMommy> customMommy;
+	private static EntityTypes<CustomEntityDrowned> customDrowned;
 
+	static {
+		try {
+			customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE", CustomEntityZombie.getAttributeBuilder());
+			customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK", CustomEntityMommy.getAttributeBuilder());
+			customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED", CustomEntityDrowned.getAttributeBuilder());
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement des mobs custom.");
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
@@ -74,11 +89,16 @@ public class Mobs {
 			
 			Field attributesMapField = AttributeDefaults.class.getDeclaredField("b");
 			attributesMapField.setAccessible(true);
+			modifiersField.setInt(attributesMapField, attributesMapField.getModifiers() & ~Modifier.FINAL);
 			Map<EntityTypes<? extends EntityLiving>, AttributeProvider> attributesMap = (Map<EntityTypes<? extends EntityLiving>, AttributeProvider>) attributesMapField.get(null);
+			if (attributesMap instanceof ImmutableMap) {
+				attributesMap = new HashMap<>(attributesMap);
+				attributesMapField.set(null, attributesMap);
+			}
 			attributesMap.put(type, attributesBuilder.a());
 			
 			return type;
-		}catch (ReflectiveOperationException e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
