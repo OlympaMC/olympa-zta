@@ -92,8 +92,12 @@ public class WeaponsListener implements Listener {
 		Player p = e.getPlayer();
 		Inventory inv = p.getInventory();
 
-		checkHeld(p, inv.getItem(e.getPreviousSlot()), false);
-		checkHeld(p, inv.getItem(e.getNewSlot()), true);
+		ItemStack item = inv.getItem(e.getPreviousSlot());
+		Weapon previous = getWeapon(item);
+		if (previous != null) previous.itemNoLongerHeld(p, item);
+		item = inv.getItem(e.getNewSlot());
+		Weapon next = getWeapon(item);
+		if (next != null) next.itemHeld(p, item, previous);
 	}
 
 	@EventHandler (priority = EventPriority.MONITOR)
@@ -143,13 +147,14 @@ public class WeaponsListener implements Listener {
 		return null;
 	}
 
-	private void checkHeld(Player p, ItemStack item, boolean held) {
+	private Weapon checkHeld(Player p, ItemStack item, boolean held) {
 		Weapon weapon = getWeapon(item);
 		if (weapon != null) {
 			if (held) {
-				weapon.itemHeld(p, item);
+				weapon.itemHeld(p, item, null);
 			}else weapon.itemNoLongerHeld(p, item);
 		}
+		return weapon;
 	}
-
+	
 }

@@ -76,7 +76,7 @@ public enum Knife implements Weapon, ItemStackable {
 	}
 	
 	@Override
-	public void itemHeld(Player p, ItemStack item) {
+	public void itemHeld(Player p, ItemStack item, Weapon previous) {
 		p.addPotionEffect(SPEED_EFFECT);
 	}
 	

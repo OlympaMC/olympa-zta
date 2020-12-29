@@ -184,7 +184,7 @@ public class PlayerPlot {
 	public boolean blockAction(Player p, Event e, Block block) {
 		OlympaPlayerZTA oplayer = OlympaPlayerZTA.get(p);
 		if (oplayer.getPlot() != this) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire sur cette parcelle !");
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire ici !");
 			return true;
 		}
 		
@@ -201,7 +201,10 @@ public class PlayerPlot {
 		if (level < moneyRequiredPerLevel.length) {
 			int x = location.getBlockX() - loc.getWorldX();
 			int z = location.getBlockZ() - loc.getWorldZ();
-			if (x < min || x > max || z < min || z > max) return true;
+			if (x < min || x > max || z < min || z > max) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite d'une parcelle de niveau %d.", level);
+				return true;
+			}
 			if (location.getBlockY() > heightPerLevel[level - 1]) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite de hauteur pour une parcelle de niveau %d.", level);
 				return true;
