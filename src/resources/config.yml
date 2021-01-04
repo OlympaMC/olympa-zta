@@ -179,6 +179,9 @@ spawnRegionTypes: [SAFE, EASY]
 
 firstBuildSchem: "tente.schem"
 
+packBlocks:
+- "world 5600 12 560"
+
 bank: [0, 1]
 auctions: [6]
 tomHookNPC: [2]

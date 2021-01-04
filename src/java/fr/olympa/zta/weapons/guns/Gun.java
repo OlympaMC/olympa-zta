@@ -151,10 +151,34 @@ public class Gun implements Weapon {
 	}
 
 	@Override
-	public void itemHeld(Player p, ItemStack item) {
+	public void itemHeld(Player p, ItemStack item, Weapon previous) {
 		showAmmos(p);
 		p.setCooldown(item.getType(), 0);
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
+		int readyTime = -1;
+		if (previous instanceof Gun) {
+			Gun prev = (Gun) previous;
+			if (!prev.ready) {
+				readyTime = (int) Math.min(prev.fireRate.getValue(), fireRate.getValue());
+			}
+		}
+		if (readyTime == -1 && !ready) readyTime = (int) fireRate.getValue();
+		if (readyTime != -1) {
+			ready = false;
+			updateItemName(item);
+			task = new BukkitRunnable() {
+				@Override
+				public void run() {
+					setReady(p, item);
+					cancel();
+				}
+				@Override
+				public synchronized void cancel() throws IllegalStateException {
+					super.cancel();
+					task = null;
+				}
+			}.runTaskLater(OlympaZTA.getInstance(), readyTime);
+		}
 	}
 
 	@Override
@@ -162,6 +186,10 @@ public class Gun implements Weapon {
 		if (zoomed) toggleZoom(p, item);
 		if (reloading != null) cancelReload(p, item);
 		if (type.hasHeldEffect()) p.removePotionEffect(type.getHeldEffect().getType());
+		if (task != null) {
+			task.cancel();
+			task = null;
+		}
 	}
 
 	public boolean drop(Player p, ItemStack item) {
@@ -201,9 +229,7 @@ public class Gun implements Weapon {
 									cancel();
 								}
 							}else if (left == -4) {
-								ready = true;
-								playReadySound(p.getLocation());
-								updateItemName(item);
+								setReady(p, item);
 								cancel();
 							}
 						}
@@ -231,9 +257,7 @@ public class Gun implements Weapon {
 								fire(p);
 								updateItemName(item);
 							}else {
-								ready = true;
-								playReadySound(p.getLocation());
-								updateItemName(item);
+								setReady(p, item);
 								cancel();
 							}
 						}
@@ -248,6 +272,12 @@ public class Gun implements Weapon {
 		}else 	if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
 			if (reloading == null) secondaryClick(p, item);
 		}
+	}
+	
+	private void setReady(Player p, ItemStack item) {
+		ready = true;
+		playReadySound(p.getLocation());
+		updateItemName(item);
 	}
 
 	public boolean isFireEnabled(Player p) {

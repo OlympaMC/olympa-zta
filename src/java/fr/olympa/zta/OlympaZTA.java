@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
@@ -21,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -55,6 +57,7 @@ import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.server.OlympaServer;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -66,6 +69,7 @@ import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.loot.chests.LootChestsManager;
 import fr.olympa.zta.loot.crates.CratesManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.loot.packs.PackBlock;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -267,6 +271,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();
 		
+		Map<Location, PackBlock> packBlocks = getConfig().getStringList("packBlocks").stream().map(SpigotUtils::convertStringToLocation).collect(Collectors.toMap(x -> x, PackBlock::new));
+		
 		OlympaCore.getInstance().getRegionManager().awaitWorldTracking("world", e -> e.getRegion().registerFlags(
 				new GunFlag(false, false),
 				new ItemDurabilityFlag(true),
@@ -274,7 +280,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new PlayerBlocksFlag(true),
 				new FishFlag(true),
 				new GameModeFlag(GameMode.ADVENTURE),
-				new PlayerBlockInteractFlag(false, true, true)));
+				new PlayerBlockInteractFlag(false, true, true) {
+					public void interactEvent(PlayerInteractEvent event) {
+						PackBlock packBlock = packBlocks.get(event.getClickedBlock().getLocation());
+						if (packBlock != null) {
+							packBlock.click(event.getPlayer());
+							return;
+						}
+						super.interactEvent(event);
+					}
+				}));
 		
 		scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(
 				FixedLine.EMPTY_LINE,

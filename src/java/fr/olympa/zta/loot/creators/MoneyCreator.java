@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.utils.PhysicalMoney;
 
@@ -28,6 +29,11 @@ public class MoneyCreator implements LootCreator {
 	@Override
 	public Loot create(Random random) {
 		return new Loot(PhysicalMoney.getBanknote(banknote, Utils.getRandomAmount(random, min, max)));
+	}
+	
+	@Override
+	public String getTitle() {
+		return ItemUtils.getName(banknote);
 	}
 
 }

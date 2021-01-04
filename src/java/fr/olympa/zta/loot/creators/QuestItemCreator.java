@@ -31,6 +31,11 @@ public class QuestItemCreator implements LootCreator {
 		return new Loot(questItem.getItem(1));
 	}
 	
+	@Override
+	public String getTitle() {
+		return questItem.getName();
+	}
+	
 	public enum QuestItem {
 		DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
 		PIECE(Material.IRON_INGOT, "Pièce métallique", 1),

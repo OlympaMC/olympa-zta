@@ -22,5 +22,10 @@ public class ArmorCreator implements LootCreator {
 	public Loot create(Random random) {
 		return new Loot(type.get(ArmorSlot.values()[random.nextInt(4)])); // pièce d'armure aléatoire
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Pièce de : " + type.getName();
+	}
 
 }

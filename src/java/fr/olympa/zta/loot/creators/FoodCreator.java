@@ -34,6 +34,11 @@ public class FoodCreator implements LootCreator {
 	public Loot create(Random random) {
 		return new Loot(type.get(Utils.getRandomAmount(random, min, max)));
 	}
+	
+	@Override
+	public String getTitle() {
+		return type.name;
+	}
 
 	public enum Food {
 		BREAD("Pain"),

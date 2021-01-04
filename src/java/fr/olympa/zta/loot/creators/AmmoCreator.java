@@ -33,5 +33,10 @@ public class AmmoCreator implements LootCreator {
 		int amount = Utils.getRandomAmount(random, min, max);
 		return new Loot(type == null ? AmmoType.getPowder(amount) : type.getAmmo(amount, filled));
 	}
+	
+	@Override
+	public String getTitle() {
+		return type == null ? "Poudre à canon" : type.getName();
+	}
 
 }

@@ -29,11 +29,13 @@ public enum Knife implements Weapon, ItemStackable {
 	
 	private static final PotionEffect SPEED_EFFECT = new PotionEffect(PotionEffectType.SPEED, 9999999, 0, false, false, false);
 	
+	private final String name;
 	private final float playerDamage, entityDamage;
 	
 	private final ItemStack item;
 	
 	private Knife(Material material, String name, String description, float playerDamage, float entityDamage) {
+		this.name = name;
 		this.playerDamage = playerDamage;
 		this.entityDamage = entityDamage;
 		
@@ -44,6 +46,11 @@ public enum Knife implements Weapon, ItemStackable {
 		meta.getPersistentDataContainer().set(WeaponsListener.KNIFE_KEY, PersistentDataType.INTEGER, ordinal());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
+	}
+	
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	@Override
@@ -76,7 +83,7 @@ public enum Knife implements Weapon, ItemStackable {
 	}
 	
 	@Override
-	public void itemHeld(Player p, ItemStack item) {
+	public void itemHeld(Player p, ItemStack item, Weapon previous) {
 		p.addPotionEffect(SPEED_EFFECT);
 	}
 	

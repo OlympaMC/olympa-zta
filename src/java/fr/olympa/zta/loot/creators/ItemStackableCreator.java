@@ -25,6 +25,11 @@ public class ItemStackableCreator implements LootCreator {
 	public Loot create(Random random) {
 		return new StackableLoot();
 	}
+	
+	@Override
+	public String getTitle() {
+		return stackable.getName();
+	}
 
 	class StackableLoot extends Loot implements InventoryLoot {
 

@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_16_R3.CraftChunk;
 import org.bukkit.entity.Drowned;
@@ -103,34 +103,41 @@ public class MobSpawning implements Runnable {
 				List<Location> entities = world.getLivingEntities()./*getPlayers().*/stream().map(LivingEntity::getLocation).collect(Collectors.toList());
 				if (entities.size() > maxEntities) return;
 				long time2 = System.currentTimeMillis();
-				Map<Chunk, SpawnType> activeChunks = getActiveChunks();
+				Map<ChunkSnapshot, SpawnType> activeChunks = getActiveChunks();
 				timeActiveChunks = System.currentTimeMillis() - time2;
 				lastActiveChunks = activeChunks.size();
-				for (Entry<Chunk, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
-					Chunk chunk = entry.getKey();
+				for (Entry<ChunkSnapshot, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
+					ChunkSnapshot chunk = entry.getKey();
 					SpawnType spawn = entry.getValue();
+					int attempts = 0;
 					int mobs = /*random.nextInt(spawn.spawnAmount + 1)*/ 1;
 					mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
+						if (++attempts == 5) break;
 						int x = random.nextInt(16);
 						int z = random.nextInt(16); // random position dans le chunk
 						if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
-							Block block = chunk.getBlock(x, seaLevel, z);
-							if (block.getType() == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
-								for (Location loc : entities) {
-									if (loc.distanceSquared(block.getLocation()) < spawn.minDistanceSquared) continue mobs; // trop proche d'entité = abandon
+							Material block = chunk.getBlockType(x, seaLevel, z);
+							if (block == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
+								Location location = new Location(world, chunk.getX() << 4 | x, seaLevel, chunk.getZ() << 4 | z);
+								for (Location entityLocation : entities) {
+									if (entityLocation.distanceSquared(location) < spawn.minDistanceSquared) continue mobs; // trop proche d'entité = abandon
 								}
-								spawnQueue.add(new AbstractMap.SimpleEntry<>(block.getLocation(), Zombies.DROWNED));
+								spawnQueue.add(new AbstractMap.SimpleEntry<>(location, Zombies.DROWNED));
 							}
 						}else {
-							int highestY = world.getHighestBlockYAt(chunk.getX() << 4 | x, chunk.getZ() << 4 | z);
+							int highestY = chunk.getHighestBlockYAt(x, z);
 							int y = random.nextInt(Math.min(highestY - 1, 40)); // à partir de quelle hauteur ça va tenter de faire spawn
-							Block prev = chunk.getBlock(x, y, z);
+							Material prev = chunk.getBlockType(x, y, z);
 							y: for (; y < highestY; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
-								boolean possible = !UNSPAWNABLE_ON.contains(prev.getType());
-								prev = chunk.getBlock(x, y, z);
-								if (possible && prev.getType() == Material.AIR && chunk.getBlock(x, y + 1, z).getType() == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
-									Location location = prev.getLocation();
-									if (prev.getLightFromSky() <= 2) continue; // au fond d'un immeuble pas éclairé : pas intéressant
+								boolean possible = !UNSPAWNABLE_ON.contains(prev);
+								prev = chunk.getBlockType(x, y, z);
+								if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
+									if (chunk.getBlockSkyLight(x, y, z) <= 5) {
+										if (random.nextBoolean()) continue; // au fond d'un immeuble pas éclairé : pas intéressant
+										mobs++;
+										continue mobs;
+									}
+									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
 									for (Location loc : entities) {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
@@ -197,31 +204,32 @@ public class MobSpawning implements Runnable {
 		return true;
 	}
 
-	private Map<Chunk, SpawnType> getActiveChunks() {
+	private Map<ChunkSnapshot, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		Set<Chunk> processedChunks = new HashSet<Chunk>(players.size() + 1, 1);
-		Map<Chunk, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);
+		Map<ChunkSnapshot, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);
 		for (Player p : players) {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
 			if (!processedChunks.add(centralChunk)) continue; // chunk déjà calculé
-			if (SpawnType.getSpawnType(world, centralChunk.getX() * 16, centralChunk.getZ() * 16) == null) continue;
+			if (SpawnType.getSpawnType(centralChunk) == null) continue;
 			if (entityCount(centralChunk) > criticalEntitiesPerChunk) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++) {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
-					if (chunks.containsKey(chunk)) continue;
 					if (!chunk.isLoaded()) continue;
+					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
+					if (chunks.containsKey(snapshot)) continue;
 					SpawnType type;
-					if (world.getHighestBlockAt((x + ax) << 4, (z + az) << 4).getType() == Material.WATER) {
+					if (snapshot.getBlockType(0, snapshot.getHighestBlockYAt(0, 0), 0) == Material.WATER) {
 						type = SpawnType.NONE;
-					}else type = SpawnType.getSpawnType(world, chunk.getX() * 16, chunk.getZ() * 16);
+					}else type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
 						if (isInSafeZone(chunk)) continue;
-						chunks.put(chunk, type);
+						chunks.put(snapshot, type);
 					}
 				}
 			}
@@ -294,6 +302,8 @@ public class MobSpawning implements Runnable {
 		EASY(17, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
 		SAFE(22, 1, 2, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
+		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
+		
 		private int minDistanceSquared;
 		private int spawnAmount;
 		private int maxEntitiesPerChunk;
@@ -351,6 +361,13 @@ public class MobSpawning implements Runnable {
 				if (type.isInto(world, x, z)) return type;
 			}
 			return null;
+		}
+		
+		public static SpawnType getSpawnType(Chunk chunk) {
+			if (chunks.containsKey(chunk)) return chunks.get(chunk);
+			SpawnType type = getSpawnType(chunk.getWorld(), chunk.getX() * 16, chunk.getZ() * 16);
+			chunks.put(chunk, type);
+			return type;
 		}
 
 		public static class SpawningFlag extends Flag {

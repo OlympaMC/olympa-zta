@@ -19,7 +19,7 @@ public interface Weapon {
 	 */
 	public abstract boolean drop(Player p, ItemStack item);
 	
-	public abstract void itemHeld(Player p, ItemStack item);
+	public abstract void itemHeld(Player p, ItemStack item, Weapon previous);
 	
 	public abstract void itemNoLongerHeld(Player p, ItemStack item);
 	

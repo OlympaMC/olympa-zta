@@ -38,6 +38,7 @@ import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
@@ -269,7 +270,10 @@ public class PlayerPlotsManager {
 
 	private boolean blockEvent(Player p, Event e, Block block) {
 		PlayerPlot plot = getPlot(block.getLocation());
-		if (plot == null) return true;
+		if (plot == null) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire ici !");
+			return true;
+		}
 		return plot.blockAction(p, e, block);
 	}
 

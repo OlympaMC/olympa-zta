@@ -146,11 +146,13 @@ public enum Accessory implements ItemStackable {
 	;
 	
 	private final AccessoryType type;
+	private final String name;
 	
 	private final ItemStack item;
 	
 	private Accessory(AccessoryType type, Material material, String name, String... effects) {
 		this.type = type;
+		this.name = name;
 		
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
@@ -169,6 +171,11 @@ public enum Accessory implements ItemStackable {
 	
 	public AccessoryType getType() {
 		return type;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	@Override
