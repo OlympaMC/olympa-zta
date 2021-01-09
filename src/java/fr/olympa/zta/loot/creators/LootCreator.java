@@ -2,8 +2,6 @@ package fr.olympa.zta.loot.creators;
 
 import java.util.Random;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.RandomizedPicker.Chanced;
@@ -25,14 +23,12 @@ public interface LootCreator extends Chanced {
 		public ItemStack getItem() {
 			return item;
 		}
+		
+		public ItemStack getRealItem() {
+			return null;
+		}
 
 		public void onRemove() {}
-		
-		public interface InventoryLoot {
-			
-			public void onTake(Player p, Inventory inv, int slot);
-			
-		}
 
 	}
 

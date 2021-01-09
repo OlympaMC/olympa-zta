@@ -2,10 +2,8 @@ package fr.olympa.zta.loot.creators;
 
 import java.util.Random;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.loot.creators.LootCreator.Loot.InventoryLoot;
 import fr.olympa.zta.weapons.ItemStackable;
 
 public class ItemStackableCreator implements LootCreator {
@@ -31,15 +29,15 @@ public class ItemStackableCreator implements LootCreator {
 		return stackable.getName();
 	}
 
-	class StackableLoot extends Loot implements InventoryLoot {
+	class StackableLoot extends Loot {
 
 		public StackableLoot() {
 			super(stackable.getDemoItem());
 		}
-
+		
 		@Override
-		public void onTake(Player p, Inventory inv, int slot) {
-			inv.setItem(slot, stackable.createItem());
+		public ItemStack getRealItem() {
+			return stackable.createItem();
 		}
 
 	}

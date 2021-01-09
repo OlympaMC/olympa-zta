@@ -1,0 +1,70 @@
+package fr.olympa.zta.weapons;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+
+import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.zta.OlympaZTA;
+
+public enum Grenade implements Weapon, ItemStackable {
+	
+	GRENADE(Material.BLACK_DYE, "Grenade", "Engin explosif détonant quelques secondes après l'avoir lancée."),
+	;
+	
+	private final String name;
+	
+	private final ItemStack item;
+	
+	private Grenade(Material material, String name, String description) {
+		this.name = name;
+		
+		item = new ItemStack(material);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§c" + name);
+		meta.setLore(SpigotUtils.wrapAndAlign(description, 35));
+		meta.getPersistentDataContainer().set(WeaponsListener.GRENADE_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.setCustomModelData(1);
+		item.setItemMeta(meta);
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public ItemStack createItem() {
+		return item.clone();
+	}
+
+	@Override
+	public void onInteract(PlayerInteractEvent e) {
+		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Player p = e.getPlayer();
+			Location location = p.getEyeLocation();
+			ItemStack item = e.getItem();
+			ItemStack single = item.clone();
+			single.setAmount(1);
+			item.setAmount(item.getAmount() - 1);
+			p.getWorld().playSound(location, Sound.ENTITY_EGG_THROW, 0.5f, 1);
+			Item itemEntity = p.getWorld().dropItem(location, single);
+			itemEntity.setVelocity(location.getDirection());
+			itemEntity.setPersistent(false);
+			itemEntity.setPickupDelay(Short.MAX_VALUE);
+			Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
+				itemEntity.remove();
+				p.getWorld().createExplosion(itemEntity.getLocation(), 4, false, false, p);
+			}, 4 * 20);
+		}
+	}
+
+}

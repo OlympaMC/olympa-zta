@@ -19,6 +19,7 @@ import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.BlinkingLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -64,15 +65,10 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		public ItemStack getItemStack(Article<T> object) {
 			ItemStack item = AbstractShop.this.getItemStack(object.object);
 			ItemMeta meta = item.getItemMeta();
-			int size = -1;
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
-			if (!lore.isEmpty()) size = meta.getLore().stream().filter(x -> x != null).mapToInt(String::length).max().getAsInt();
-			size = Math.max(size, ChatColor.stripColor(ItemUtils.getName(item)).length() - 3);
-			size = Math.max(size, 4);
-			String bar = "§m" + " ".repeat((int) Math.ceil(size / 2D));
 			lore.add("");
-			lore.add("§e" + bar + "§e[ §6§l" + OlympaMoney.format(object.price) + "§e ]" + bar + "§r");
+			lore.add(SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.price)));
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			return item;

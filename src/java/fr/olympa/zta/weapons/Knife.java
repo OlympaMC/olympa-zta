@@ -7,7 +7,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -62,8 +61,6 @@ public enum Knife implements Weapon, ItemStackable {
 		return this == WeaponsListener.getWeapon(item);
 	}
 	
-	public void onInteract(PlayerInteractEvent e){}
-	
 	public void onEntityHit(EntityDamageByEntityEvent e){
 		if (e.getEntity() instanceof Player) {
 			e.setDamage(playerDamage);
@@ -76,10 +73,6 @@ public enum Knife implements Weapon, ItemStackable {
 				damagerLoc.getWorld().spawnParticle(Particle.BLOCK_CRACK, rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6, BLOOD_DATA);
 			}else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());
 		}
-	}
-	
-	public boolean drop(Player p, ItemStack item){
-		return false;
 	}
 	
 	@Override

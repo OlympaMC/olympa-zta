@@ -109,7 +109,7 @@ public class BeautyQuestsLink implements Listener {
 			if (!scoreboards.containsKey(p)) return;
 			scoreboards.remove(p);
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			OlympaZTA.getInstance().scoreboards.create(player); // reset le scoreboard
+			if (OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player) != null) OlympaZTA.getInstance().scoreboards.create(player); // reset le scoreboard
 		}
 	}
 	

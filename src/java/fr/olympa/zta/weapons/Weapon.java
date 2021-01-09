@@ -7,9 +7,9 @@ import org.bukkit.inventory.ItemStack;
 
 public interface Weapon {
 	
-	public abstract void onInteract(PlayerInteractEvent e);
+	public default void onInteract(PlayerInteractEvent e) {}
 	
-	public abstract void onEntityHit(EntityDamageByEntityEvent e);
+	public default void onEntityHit(EntityDamageByEntityEvent e) {}
 	
 	/**
 	 * Appelé quand un joueur drop l'item avec le clavier
@@ -17,10 +17,12 @@ public interface Weapon {
 	 * @param item Item droppé
 	 * @return <tt>true</tt> si l'action est annulée
 	 */
-	public abstract boolean drop(Player p, ItemStack item);
+	public default boolean drop(Player p, ItemStack item) {
+		return false;
+	}
 	
-	public abstract void itemHeld(Player p, ItemStack item, Weapon previous);
+	public default void itemHeld(Player p, ItemStack item, Weapon previous) {}
 	
-	public abstract void itemNoLongerHeld(Player p, ItemStack item);
+	public default void itemNoLongerHeld(Player p, ItemStack item) {}
 	
 }

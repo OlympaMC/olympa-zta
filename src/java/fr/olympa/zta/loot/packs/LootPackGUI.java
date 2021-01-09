@@ -19,7 +19,7 @@ public class LootPackGUI extends OlympaGUI {
 		super("Choisissez votre pack", 5);
 		this.packBlock = packBlock;
 		for (PackType pack : PackType.values()) {
-			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§e" + pack.getName(), pack.getLootsDescription()));
+			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§ePack " + pack.getName(), pack.getLootsDescription()));
 		}
 	}
 	

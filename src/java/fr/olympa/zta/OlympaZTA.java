@@ -88,6 +88,7 @@ import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
+import fr.olympa.zta.weapons.Grenade;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.TrainingManager;
 import fr.olympa.zta.weapons.WeaponsCommand;
@@ -177,6 +178,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		for (GunType gun : GunType.values()) WeaponsGiveGUI.stackables.add(gun);
 		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
 		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
+		for (Grenade grenade : Grenade.values()) WeaponsGiveGUI.stackables.add(grenade);
 		
 		AmmoType.CARTRIDGE.getName();
 
@@ -285,6 +287,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						PackBlock packBlock = packBlocks.get(event.getClickedBlock().getLocation());
 						if (packBlock != null) {
 							packBlock.click(event.getPlayer());
+							event.setCancelled(true);
 							return;
 						}
 						super.interactEvent(event);

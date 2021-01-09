@@ -36,7 +36,7 @@ public class AmmoCreator implements LootCreator {
 	
 	@Override
 	public String getTitle() {
-		return type == null ? "Poudre à canon" : type.getName();
+		return type == null ? "Poudre à canon" : (type.getName() + (filled ? "" : " vides"));
 	}
 
 }

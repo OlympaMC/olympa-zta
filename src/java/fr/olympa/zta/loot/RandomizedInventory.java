@@ -14,7 +14,6 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.LootCreator.Loot;
-import fr.olympa.zta.loot.creators.LootCreator.Loot.InventoryLoot;
 
 public abstract class RandomizedInventory extends OlympaGUI implements RandomizedPicker<LootCreator> {
 	
@@ -58,9 +57,8 @@ public abstract class RandomizedInventory extends OlympaGUI implements Randomize
 			Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
 			return false;
 		}
-		if (loot instanceof InventoryLoot) {
-			((InventoryLoot) loot).onTake(p, inv, slot);
-		}
+		ItemStack realItem = loot.getRealItem();
+		if (realItem != null) inv.setItem(slot, realItem);
 		currentLoots.remove(slot);
 		return false;
 	}

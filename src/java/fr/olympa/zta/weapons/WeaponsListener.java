@@ -35,6 +35,7 @@ import fr.olympa.zta.weapons.guns.bullets.Bullet;
 public class WeaponsListener implements Listener {
 	
 	public static final NamespacedKey KNIFE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "knife");
+	public static final NamespacedKey GRENADE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "grenade");
 
 	public static boolean cancelDamageEvent = false; // dommage causé par le contact d'une balle
 
@@ -141,6 +142,8 @@ public class WeaponsListener implements Listener {
 		ItemMeta meta = item.getItemMeta();
 		if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
 			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
+		}else if (meta.getPersistentDataContainer().has(GRENADE_KEY, PersistentDataType.INTEGER)) {
+			return Grenade.values()[meta.getPersistentDataContainer().get(GRENADE_KEY, PersistentDataType.INTEGER)];
 		}else if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER)) {
 			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(GunRegistry.GUN_KEY, PersistentDataType.INTEGER));
 		}
