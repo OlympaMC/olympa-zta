@@ -21,10 +21,13 @@ public class ZTAPermissions{
 	public static final OlympaPermission TPA_COMMANDS = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.VIP);
 	public static final OlympaPermission ENDERCHEST_COMMAND_OTHER = new OlympaPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaPermission ENDERCHEST_MORE_SPACE = new OlympaPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
 	public static final OlympaPermission CLANS_PLAYERS_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission MONEY_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 	public static final OlympaPermission MONEY_COMMAND_OTHER = new OlympaPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaPermission MONEY_COMMAND_MANAGE = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission BACK_COMMAND = new OlympaPermission(OlympaGroup.VIP);
+	public static final OlympaPermission BACK_COMMAND_INFINITE = new OlympaPermission(OlympaGroup.RESP_TECH);
 	
 	public static final OlympaPermission HUB_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 

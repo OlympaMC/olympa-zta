@@ -3,6 +3,8 @@ package fr.olympa.zta;
 import java.io.File;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +18,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,6 +61,7 @@ import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.server.OlympaServer;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
@@ -255,9 +260,28 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
-		new BackCommand(this, ZTAPermissions.MOD_COMMANDS).register();
+		new BackCommand(this, ZTAPermissions.BACK_COMMAND) {
+			final long TIME_BETWEEN = TimeUnit.DAYS.toMillis(1);
+			final NumberFormat numberFormat = new DecimalFormat("00");
+			
+			@Override
+			protected void teleport(Player p, Location location) {
+				super.teleport(p, location);
+				super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.set(System.currentTimeMillis());
+			}
+			
+			@Override
+			public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+				long timeToWait = (super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.get() + TIME_BETWEEN) - System.currentTimeMillis();
+				if (timeToWait > 0) {
+					sendError("Tu dois encore attendre %s avant de pouvoir refaire un /back !", Utils.durationToString(numberFormat, timeToWait));
+					return false;
+				}
+				return super.onCommand(sender, command, label, args);
+			}
+		}.register();
 		new KitCommand<OlympaPlayerZTA>(this,
-				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPtime.get(), (x, time) -> x.kitVIPtime.set(time), (op, p) -> new ItemStack[] {
+				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPTime.get(), (x, time) -> x.kitVIPTime.set(time), (op, p) -> new ItemStack[] {
 								GunType.M16.createItem(),
 								Food.COOKED_BEEF.get(15),
 								ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),

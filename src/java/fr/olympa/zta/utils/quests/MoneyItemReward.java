@@ -1,5 +1,7 @@
 package fr.olympa.zta.utils.quests;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -29,9 +31,9 @@ public class MoneyItemReward extends AbstractReward {
 	}
 	
 	@Override
-	public String give(Player p) {
+	public List<String> give(Player p) {
 		PhysicalMoney.give(p, amount);
-		return OlympaMoney.format(amount);
+		return Arrays.asList(OlympaMoney.format(amount));
 	}
 	
 	@Override

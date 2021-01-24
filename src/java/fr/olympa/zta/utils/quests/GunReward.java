@@ -1,6 +1,7 @@
 package fr.olympa.zta.utils.quests;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.DyeColor;
@@ -30,11 +31,11 @@ public class GunReward extends AbstractReward {
 	}
 	
 	@Override
-	public String give(Player p) {
+	public List<String> give(Player p) {
 		ItemStack item = type.createItem();
-		if (item == null) return "Error";
+		if (item == null) return Arrays.asList("Error");
 		SpigotUtils.giveItems(p, item);
-		return ItemUtils.getName(item);
+		return Arrays.asList(ItemUtils.getName(item));
 	}
 	
 	@Override

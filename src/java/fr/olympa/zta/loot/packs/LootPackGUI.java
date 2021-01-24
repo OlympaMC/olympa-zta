@@ -10,17 +10,20 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.zta.OlympaPlayerZTA;
 
 public class LootPackGUI extends OlympaGUI {
 	
 	private PackBlock packBlock;
 	
-	public LootPackGUI(PackBlock packBlock) {
-		super("Choisissez votre pack", 5);
+	public LootPackGUI(PackBlock packBlock, Player p) {
+		super("Choisissez votre pack", 6);
 		this.packBlock = packBlock;
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 		for (PackType pack : PackType.values()) {
 			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§ePack " + pack.getName(), pack.getLootsDescription()));
 		}
+		inv.setItem(50, ItemUtils.item(Material.BRICK, "§eMon porte-feuille", player.getGameMoney().getFormatted()));
 	}
 	
 	@Override

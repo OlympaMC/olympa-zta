@@ -1,6 +1,7 @@
 package fr.olympa.zta.utils.quests;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.DyeColor;
@@ -35,9 +36,9 @@ public class QuestItemReward extends AbstractReward {
 	}
 	
 	@Override
-	public String give(Player p) {
+	public List<String> give(Player p) {
 		SpigotUtils.giveItems(p, questItem.getItem(amount));
-		return amount + " " + questItem.getName();
+		return Arrays.asList(amount + " " + questItem.getName());
 	}
 	
 	@Override

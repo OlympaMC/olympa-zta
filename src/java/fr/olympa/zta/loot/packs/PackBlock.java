@@ -41,7 +41,7 @@ public class PackBlock {
 	}
 	
 	public void click(Player p) {
-		new LootPackGUI(this).create(p);
+		new LootPackGUI(this, p).create(p);
 	}
 	
 	public synchronized void start(Player p, PackType type) {

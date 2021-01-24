@@ -11,7 +11,7 @@ public enum ArmorType {
 	CIVIL("Tenue civile", "LEATHER", "Bandana", "Veste", "Jeans", "Baskets", true),
 	GANGSTER("Tenue de gangster", "GOLDEN", "Cagoule en Kevlar", "Veste en Kevlar", "Pantalon en Kevlar", "Chaussures en Kevlar", true, Enchantment.PROTECTION_PROJECTILE, 1),
 	ANTIRIOT("Armure anti-émeutes", "CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 1),
-	MILITARY("Armure en kevlar", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Jambières en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
+	MILITARY("Armure en Kevlar renforcé", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Jambières en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
 
 	private String name;
 	private String type;

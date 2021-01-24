@@ -58,7 +58,7 @@ public class LootChest extends RandomizedInventory {
 			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
 			fillInventory();
 		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
-
+		
 		super.create(p);
 		updateChestState(inv.getViewers().size(), true);
 	}

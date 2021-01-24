@@ -39,9 +39,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HEADSHOTS = new SQLColumn<OlympaPlayerZTA>("headshots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OTHER_SHOTS = new SQLColumn<OlympaPlayerZTA>("other_shots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OPENED_CHESTS = new SQLColumn<OlympaPlayerZTA>("opened_chests", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("kit_vip_time", "BIGINT NULL", Types.BIGINT).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("kit_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_BACK_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("back_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	
-	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_KIT_VIP_TIME);
+	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME);
 	
 	private ClanZTA clan = null;
 	public BukkitTask plotFind = null; // pas persistant
@@ -55,7 +56,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt headshots = new ObservableInt(0);
 	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
-	public ObservableLong kitVIPtime = new ObservableLong(0);
+	public ObservableLong kitVIPTime = new ObservableLong(0);
+	public ObservableLong backVIPTime = new ObservableLong(0);
 	
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
@@ -68,7 +70,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		headshots.observe("datas", () -> COLUMN_HEADSHOTS.updateAsync(this, headshots.get(), null, null));
 		otherShots.observe("datas", () -> COLUMN_OTHER_SHOTS.updateAsync(this, otherShots.get(), null, null));
 		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateAsync(this, openedChests.get(), null, null));
-		kitVIPtime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPtime.get(), null, null));
+		kitVIPTime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPTime.get(), null, null));
+		backVIPTime.observe("datas", () -> COLUMN_BACK_VIP_TIME.updateAsync(this, backVIPTime.get(), null, null));
 	}
 
 	@Override
@@ -88,7 +91,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	
 	@Override
 	public int getEnderChestRows() {
-		return 1;
+		return ZTAPermissions.ENDERCHEST_MORE_SPACE.hasPermission(this) ? 3 : 2;
 	}
 
 	@Override
@@ -124,7 +127,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			headshots.set(resultSet.getInt("headshots"));
 			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
-			kitVIPtime.set(resultSet.getLong("kit_vip_time"));
+			kitVIPTime.set(resultSet.getLong("kit_vip_time"));
+			backVIPTime.set(resultSet.getLong("kit_back_time"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
