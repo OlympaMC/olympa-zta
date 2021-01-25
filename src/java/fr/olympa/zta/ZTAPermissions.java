@@ -1,38 +1,38 @@
 package fr.olympa.zta;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class ZTAPermissions{
 	
-	public static final OlympaPermission TAX_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
-	public static final OlympaPermission LOOT_CHEST_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission WEAPONS_COMMAND = new OlympaPermission(OlympaGroup.BUILDER); // TODO change
-	public static final OlympaPermission MOBS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission UTILS_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission REGISTRY_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
-	public static final OlympaPermission PLAYER_SPREAD_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
-	public static final OlympaPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission MOD_COMMANDS = new OlympaPermission(OlympaGroup.ASSISTANT);
-	public static final OlympaPermission CRATES_COMMAND = new OlympaPermission(OlympaGroup.RESP_ANIMATION);
+	public static final OlympaSpigotPermission TAX_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission LOOT_CHEST_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission WEAPONS_COMMAND = new OlympaSpigotPermission(OlympaGroup.BUILDER); // TODO change
+	public static final OlympaSpigotPermission MOBS_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission UTILS_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission REGISTRY_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission PLAYER_SPREAD_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission MOD_COMMANDS = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission CRATES_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_ANIMATION);
 	
-	public static final OlympaPermission TPA_COMMANDS = new OlympaPermission(OlympaGroup.PLAYER);
-	public static final OlympaPermission ENDERCHEST_COMMAND = new OlympaPermission(OlympaGroup.VIP);
-	public static final OlympaPermission ENDERCHEST_COMMAND_OTHER = new OlympaPermission(OlympaGroup.ASSISTANT);
-	public static final OlympaPermission ENDERCHEST_MORE_SPACE = new OlympaPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
-	public static final OlympaPermission CLANS_PLAYERS_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
-	public static final OlympaPermission MONEY_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
-	public static final OlympaPermission MONEY_COMMAND_OTHER = new OlympaPermission(OlympaGroup.ASSISTANT);
-	public static final OlympaPermission MONEY_COMMAND_MANAGE = new OlympaPermission(OlympaGroup.DEV);
-	public static final OlympaPermission BACK_COMMAND = new OlympaPermission(OlympaGroup.VIP);
-	public static final OlympaPermission BACK_COMMAND_INFINITE = new OlympaPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission TPA_COMMANDS = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission ENDERCHEST_COMMAND = new OlympaSpigotPermission(OlympaGroup.VIP);
+	public static final OlympaSpigotPermission ENDERCHEST_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission ENDERCHEST_MORE_SPACE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
+	public static final OlympaSpigotPermission CLANS_PLAYERS_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission MONEY_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission MONEY_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission MONEY_COMMAND_MANAGE = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission BACK_COMMAND = new OlympaSpigotPermission(OlympaGroup.VIP);
+	public static final OlympaSpigotPermission BACK_COMMAND_INFINITE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	
-	public static final OlympaPermission HUB_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission HUB_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 
-	public static final OlympaPermission PROBLEM_MONITORING = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission PROBLEM_MONITORING = new OlympaSpigotPermission(OlympaGroup.DEV);
 	
-	public static final OlympaPermission KIT_VIP_PERMISSION = new OlympaPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
+	public static final OlympaSpigotPermission KIT_VIP_PERMISSION = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
 
 }

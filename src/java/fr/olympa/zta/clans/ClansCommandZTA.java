@@ -3,12 +3,12 @@ package fr.olympa.zta.clans;
 import fr.olympa.api.clans.ClansCommand;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 
 public class ClansCommandZTA extends ClansCommand<ClanZTA, ClanPlayerDataZTA> {
 	
-	public ClansCommandZTA(ClansManagerZTA manager, String description, OlympaPermission permission, String... aliases) {
+	public ClansCommandZTA(ClansManagerZTA manager, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(manager, description, permission, aliases);
 	}
 	

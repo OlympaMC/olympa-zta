@@ -128,7 +128,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
 			kitVIPTime.set(resultSet.getLong("kit_vip_time"));
-			backVIPTime.set(resultSet.getLong("kit_back_time"));
+			backVIPTime.set(resultSet.getLong("back_vip_time"));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

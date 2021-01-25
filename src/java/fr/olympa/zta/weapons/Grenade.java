@@ -13,7 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.guns.GunFlag;
 
 public enum Grenade implements Weapon, ItemStackable {
 	
@@ -51,6 +53,8 @@ public enum Grenade implements Weapon, ItemStackable {
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Player p = e.getPlayer();
 			Location location = p.getEyeLocation();
+			GunFlag flag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(location, GunFlag.class);
+			if (flag != null && !flag.isFireEnabled(p, true)) return;
 			ItemStack item = e.getItem();
 			ItemStack single = item.clone();
 			single.setAmount(1);

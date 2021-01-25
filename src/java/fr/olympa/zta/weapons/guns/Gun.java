@@ -283,7 +283,7 @@ public class Gun implements Weapon {
 	public boolean isFireEnabled(Player p) {
 		GunFlag gunFlag = getGunFlag(p);
 		if (gunFlag == null) return false;
-		return gunFlag.isFireEnabled(p);
+		return gunFlag.isFireEnabled(p, true);
 	}
 	
 	public GunFlag getGunFlag(Player p) {
@@ -347,7 +347,7 @@ public class Gun implements Weapon {
 	}
 	
 	private boolean shouldTakeItems(Player p) {
-		GunFlag gunFlag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(p.getLocation(), GunFlag.class);
+		GunFlag gunFlag = getGunFlag(p);
 		return p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
 	}
 
