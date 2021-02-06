@@ -104,6 +104,7 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunFlag;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
+import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -136,6 +137,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public TrainingManager training;
 	public CombatManager combat;
 	public CratesManager crates;
+	public SoundAmbiance soundAmbiance;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -252,6 +254,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors du chargement des coffres de l'end.");
 		}
+		
+		soundAmbiance = new SoundAmbiance();
+		soundAmbiance.start();
 
 		new WeaponsCommand().register();
 		new MobsCommand().register();
@@ -388,6 +393,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		scoreboards.unload();
 		combat.unload();
 		crates.unload();
+		soundAmbiance.stop();
 		
 		gunRegistry.unload();
 	}

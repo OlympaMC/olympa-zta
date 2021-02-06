@@ -20,6 +20,7 @@ import fr.olympa.zta.weapons.ItemStackable;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.Gun.GunAccuracy;
 import fr.olympa.zta.weapons.guns.Gun.GunMode;
+import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 import fr.olympa.zta.weapons.guns.bullets.Bullet.BulletCreator;
 import fr.olympa.zta.weapons.guns.bullets.BulletEffect.BulletEffectCreator;
@@ -48,7 +49,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.pump",
+			ZTASound.GUN_PUMP,
 			null,
 			AccessoryType.CANNON,
 			AccessoryType.SCOPE),
@@ -72,7 +73,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.auto",
+			ZTASound.GUN_AUTO,
 			null,
 			AccessoryType.values()),
 	BARRETT(
@@ -95,7 +96,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_ULTRA_HIGH,
-			"zta.guns.barrett",
+			ZTASound.GUN_BARRETT,
 			null,
 			AccessoryType.CANNON),
 	BAZOOKA(
@@ -118,7 +119,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			null),
 	BENELLI(
 			"Benelli M5 Super",
@@ -140,7 +141,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.pump",
+			ZTASound.GUN_PUMP,
 			null),
 	COBRA(
 			"Colt King Cobra",
@@ -162,7 +163,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			null),
 	DRAGUNOV(
 			"SV Dragunov",
@@ -184,7 +185,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_ULTRA_HIGH,
-			"zta.guns.barrett",
+			ZTASound.GUN_BARRETT,
 			null,
 			AccessoryType.CANNON),
 	G19(
@@ -207,7 +208,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_LOW,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			null,
 			AccessoryType.CANNON),
 	KSG(
@@ -230,7 +231,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.pump",
+			ZTASound.GUN_PUMP,
 			null,
 			AccessoryType.STOCK),
 	LUPARA(
@@ -253,7 +254,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_LOW,
-			"zta.guns.pump",
+			ZTASound.GUN_PUMP,
 			null,
 			AccessoryType.STOCK),
 	M16(
@@ -276,7 +277,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			GunMode.BLAST,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.auto",
+			ZTASound.GUN_AUTO,
 			null,
 			//AccessoryType.STOCK,
 			AccessoryType.CANNON),
@@ -300,7 +301,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.pump",
+			ZTASound.GUN_PUMP,
 			null,
 			AccessoryType.STOCK),
 	M1911(
@@ -323,7 +324,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_LOW,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			null,
 			AccessoryType.CANNON),
 	P22(
@@ -346,7 +347,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SEMI_AUTOMATIC,
 			GunMode.BLAST,
 			CommonGunConstants.SOUND_VOLUME_LOW,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			null,
 			AccessoryType.CANNON),
 	SDMR(
@@ -369,7 +370,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.auto",
+			ZTASound.GUN_AUTO,
 			null,
 			AccessoryType.values()),
 	SKORPION(
@@ -392,7 +393,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.auto",
+			ZTASound.GUN_AUTO,
 			null),
 	STONER(
 			"Stoner 24",
@@ -414,7 +415,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.generic",
+			ZTASound.GUN_GENERIC,
 			new PotionEffect(PotionEffectType.SLOW, 99999999, 1),
 			AccessoryType.CANNON,
 			AccessoryType.STOCK),
@@ -438,7 +439,7 @@ public enum GunType implements ItemStackable{
 			GunMode.AUTOMATIC,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			"zta.guns.auto",
+			ZTASound.GUN_AUTO,
 			null),
 			;
 	
@@ -463,14 +464,14 @@ public enum GunType implements ItemStackable{
 	private final GunMode primaryMode;
 	private final GunMode secondaryMode;
 	private final float fireVolume;
-	private final String fireSound;
+	private final ZTASound fireSound;
 	private final PotionEffect heldEffect;
 	private final List<AccessoryType> allowedAccessories;
 	
 	private final List<String> lore;
 	private final ItemStack demoItem;
 	
-	private GunType(String name, String description, Material material, AmmoType ammoType, int maxAmmos, int fireRate, int chargeTime, boolean oneByOneCharge, float knockback, float bulletSpeed, GunAccuracy accuracy, AttributeModifier zoomModifier, int playerDamage, int entityDamage, BulletCreator bulletCreator, int firedBullets, GunMode primaryMode, GunMode secondaryMode, float fireVolume, String fireSound, PotionEffect heldEffect, AccessoryType... allowedAccessories) {
+	private GunType(String name, String description, Material material, AmmoType ammoType, int maxAmmos, int fireRate, int chargeTime, boolean oneByOneCharge, float knockback, float bulletSpeed, GunAccuracy accuracy, AttributeModifier zoomModifier, int playerDamage, int entityDamage, BulletCreator bulletCreator, int firedBullets, GunMode primaryMode, GunMode secondaryMode, float fireVolume, ZTASound fireSound, PotionEffect heldEffect, AccessoryType... allowedAccessories) {
 		this.name = name;
 		this.description = description;
 		this.material = material;
@@ -633,7 +634,7 @@ public enum GunType implements ItemStackable{
 		return fireVolume;
 	}
 	
-	public String getFireSound() {
+	public ZTASound getFireSound() {
 		return fireSound;
 	}
 	

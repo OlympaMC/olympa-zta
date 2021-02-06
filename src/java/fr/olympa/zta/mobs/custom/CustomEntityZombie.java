@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_16_R3.AttributeProvider;
@@ -86,6 +87,11 @@ public class CustomEntityZombie extends EntityZombie {
 	protected boolean T_() { // isSunSensitive
 		return false;
 	}
+	
+	@Override
+	public boolean canPickupLoot() {
+		return false;
+	}
 
 	@Override
 	public void tick() {
@@ -137,12 +143,9 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	public void saveData(NBTTagCompound nbttagcompound) {
 		super.saveData(nbttagcompound);
-		nbttagcompound.setString("ZTAType", zombieType.name());
-	}
-	
-	@Override
-	public NBTTagCompound save(NBTTagCompound nbttagcompound) {
-		return super.save(nbttagcompound);
+		if (zombieType == null) {
+			OlympaCore.getInstance().sendMessage("§cZombie sans type.");
+		}else nbttagcompound.setString("ZTAType", zombieType.name());
 	}
 	
 	@Override

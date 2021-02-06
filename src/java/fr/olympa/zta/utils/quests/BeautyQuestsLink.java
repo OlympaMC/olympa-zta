@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
@@ -42,6 +43,7 @@ public class BeautyQuestsLink implements Listener {
 		int id = scoreboards.get(player).intValue();
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
+		quest.hasFinished(acc);
 		scoreboards.put(player, id);
 		String questName = quest.isRepeatable() ? "\n§7§lMission quotidienne:" : ("\n§7Mission: §6§l" + quest.getName());
 		return String.join("\n", SpigotUtils.wordWrap(questName + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 35));
@@ -92,6 +94,11 @@ public class BeautyQuestsLink implements Listener {
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
 		checkScoreboard(e.getPlayer(), true);
+	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		scoreboards.remove(e.getPlayer());
 	}
 	
 	private synchronized void checkScoreboard(Player p, boolean forceCreation) {

@@ -21,7 +21,7 @@ public class GunFlag extends AbstractProtectionFlag {
 
 	public boolean isFireEnabled(Player p, boolean sendMessage) {
 		boolean b = !protectedByDefault || !applies(p);
-		if (b) sendError(p);
+		if (!b) sendError(p);
 		return b;
 	}
 	

@@ -27,6 +27,7 @@ import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.weapons.guns.GunFlag;
+import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.ChatMessageType;
 
 public class HubManager implements Listener {
@@ -132,6 +133,7 @@ public class HubManager implements Listener {
 	public void onPortal(EntityPortalEnterEvent e) {
 		if (!(e.getEntity() instanceof Player)) return;
 		Player p = (Player) e.getEntity();
+		if (CitizensAPI.getNPCRegistry().isNPC(p)) return;
 
 		startRandomTeleport(p);
 	}
