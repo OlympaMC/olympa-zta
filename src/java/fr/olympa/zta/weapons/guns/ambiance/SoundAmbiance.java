@@ -23,11 +23,9 @@ public class SoundAmbiance implements Runnable {
 	
 	@Override
 	public void run() {
-		/*if (amountWithout-- > 0) return;
-		Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), ZTASound.getRandom().getSound(), SoundCategory.AMBIENT, (float) ThreadLocalRandom.current().nextDouble(0.3), (float) ThreadLocalRandom.current().nextDouble(0.7, 1)));
-		amountWithout = ThreadLocalRandom.current().nextInt(5);*/
-		ThreadLocalRandom random = ThreadLocalRandom.current();
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		if (players.isEmpty()) return;
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (Iterator<AmbianceScenario> iterator = scenarios.iterator(); iterator.hasNext();) {
 			AmbianceScenario scenario = iterator.next();
 			if (scenario.shouldTerminate()) {
@@ -36,8 +34,10 @@ public class SoundAmbiance implements Runnable {
 				players.forEach(scenario::run);
 			}
 		}
-		if (scenarios.size() < 2 && random.nextDouble() < 0.2) {
-			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(0.8f, 0.8f);
+		if (scenarios.size() < 2 && random.nextDouble() < 0.05) {
+			float volume = (float) random.nextDouble(0.03, 0.12);
+			float pitch = (float) random.nextDouble(0.7 + volume, 0.9);
+			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(volume, pitch);
 			scenarios.add(scenario);
 		}
 	}
@@ -49,6 +49,9 @@ public class SoundAmbiance implements Runnable {
 	
 	private enum Scenario implements Chanced {
 		SILENT(50, SilentScenario::new),
+		AUTO(20, AutoScenario::new),
+		SIMPLE(20, SimpleScenario::new),
+		EXPLOSION(10, ExplosionScenario::new),
 		;
 		
 		private int chance;
@@ -68,20 +71,29 @@ public class SoundAmbiance implements Runnable {
 	
 	public enum ZTASound {
 		GUN_PUMP("zta.guns.pump"),
-		GUN_AUTO("zta.guns.auto"),
+		GUN_AUTO("zta.guns.auto", "zta.guns.auto_far"),
 		GUN_BARRETT("zta.guns.barrett"),
-		GUN_GENERIC("zta.guns.generic"),
-		EXPLOSION("entity.generic.explode"),
+		GUN_GENERIC("zta.guns.generic", "zta.guns.generic_far"),
+		EXPLOSION_CIVIL("zta.explosions.civil"),
 		;
 	
-		private final String sound;
+		private final String sound, farSound;
 		
 		private ZTASound(String sound) {
+			this(sound, sound);
+		}
+		
+		private ZTASound(String sound, String farSound) {
 			this.sound = sound;
+			this.farSound = farSound;
 		}
 		
 		public String getSound() {
 			return sound;
+		}
+		
+		public String getFarSound() {
+			return farSound;
 		}
 		
 		public static ZTASound getRandom() {
