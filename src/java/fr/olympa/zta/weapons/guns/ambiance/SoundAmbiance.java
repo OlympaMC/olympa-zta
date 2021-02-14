@@ -17,6 +17,8 @@ import fr.olympa.zta.OlympaZTA;
 
 public class SoundAmbiance implements Runnable {
 	
+	private final double[] chances = { 0.06, 0.01 };
+	
 	private BukkitTask task;
 	private FixedPicker<Scenario> scenarioPicker = new FixedPicker<>(1, 1, 0, Scenario.values());
 	private List<AmbianceScenario> scenarios = new ArrayList<>();
@@ -34,8 +36,9 @@ public class SoundAmbiance implements Runnable {
 				players.forEach(scenario::run);
 			}
 		}
-		if (scenarios.size() < 2 && random.nextDouble() < 0.05) {
-			float volume = (float) random.nextDouble(0.03, 0.12);
+		if (scenarios.size() == chances.length) return;
+		if (random.nextDouble() < chances[scenarios.size()]) {
+			float volume = (float) random.nextDouble(0.03, 0.1);
 			float pitch = (float) random.nextDouble(0.7 + volume, 0.9);
 			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(volume, pitch);
 			scenarios.add(scenario);
@@ -48,9 +51,9 @@ public class SoundAmbiance implements Runnable {
 	}
 	
 	private enum Scenario implements Chanced {
-		SILENT(50, SilentScenario::new),
-		AUTO(20, AutoScenario::new),
-		SIMPLE(20, SimpleScenario::new),
+		SILENT(42, SilentScenario::new),
+		AUTO(14, AutoScenario::new),
+		SIMPLE(18, SimpleScenario::new),
 		EXPLOSION(10, ExplosionScenario::new),
 		;
 		
@@ -75,6 +78,7 @@ public class SoundAmbiance implements Runnable {
 		GUN_BARRETT("zta.guns.barrett"),
 		GUN_GENERIC("zta.guns.generic", "zta.guns.generic_far"),
 		EXPLOSION_CIVIL("zta.explosions.civil"),
+		ZOMBIE_AMBIENT("entity.zombie.ambient"),
 		;
 	
 		private final String sound, farSound;

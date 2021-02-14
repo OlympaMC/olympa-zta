@@ -9,10 +9,10 @@ import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
 
 public class AutoScenario extends AmbianceScenario {
 	
-	private final int fireRate = ThreadLocalRandom.current().nextInt(4, 8);
+	private final int fireRate = ThreadLocalRandom.current().nextInt(3, 7);
 	private int fireRateWait = -1;
 	private int shotsAmount = 0;
-	private int salves = ThreadLocalRandom.current().nextInt(1, 6);
+	private int salves = ThreadLocalRandom.current().nextInt(1, 5);
 	private int salveWait = -1;
 	private boolean shouldFire = false;
 	
@@ -45,7 +45,7 @@ public class AutoScenario extends AmbianceScenario {
 			}else {
 				if (salves-- == 0) return true;
 				salveWait = ThreadLocalRandom.current().nextInt(5, 20);
-				shotsAmount = ThreadLocalRandom.current().nextInt(2, 9);
+				shotsAmount = ThreadLocalRandom.current().nextInt(2, 8);
 			}
 		}
 		return false;
