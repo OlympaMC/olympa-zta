@@ -12,7 +12,7 @@ public class AutoScenario extends AmbianceScenario {
 	private final int fireRate = ThreadLocalRandom.current().nextInt(3, 7);
 	private int fireRateWait = -1;
 	private int shotsAmount = 0;
-	private int salves = ThreadLocalRandom.current().nextInt(1, 5);
+	private int salves = ThreadLocalRandom.current().nextInt(1, 4);
 	private int salveWait = -1;
 	private boolean shouldFire = false;
 	
@@ -44,8 +44,8 @@ public class AutoScenario extends AmbianceScenario {
 				fireRateWait = fireRate;
 			}else {
 				if (salves-- == 0) return true;
-				salveWait = ThreadLocalRandom.current().nextInt(5, 20);
-				shotsAmount = ThreadLocalRandom.current().nextInt(2, 8);
+				salveWait = ThreadLocalRandom.current().nextInt(5, 25);
+				shotsAmount = ThreadLocalRandom.current().nextInt(2, 7);
 			}
 		}
 		return false;

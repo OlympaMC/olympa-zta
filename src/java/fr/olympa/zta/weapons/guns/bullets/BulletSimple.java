@@ -14,6 +14,7 @@ import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
+import net.citizensnpcs.api.CitizensAPI;
 
 public class BulletSimple extends Bullet{
 	
@@ -31,6 +32,7 @@ public class BulletSimple extends Bullet{
 		Player shooter = (Player) e.getEntity().getShooter();
 		if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
 			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
+			if (CitizensAPI.getNPCRegistry().isNPC(hitEntity)) return;
 			WeaponsListener.cancelDamageEvent = true;
 			float damage = hitEntity instanceof Player ? playerDamage : entityDamage;
 

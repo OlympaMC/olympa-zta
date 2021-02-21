@@ -37,7 +37,7 @@ import fr.olympa.api.command.essentials.BackCommand;
 import fr.olympa.api.command.essentials.FeedCommand;
 import fr.olympa.api.command.essentials.HealCommand;
 import fr.olympa.api.command.essentials.KitCommand;
-import fr.olympa.api.command.essentials.KitCommand.Kit;
+import fr.olympa.api.command.essentials.KitCommand.SimpleKit;
 import fr.olympa.api.command.essentials.tp.TpaHandler;
 import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.MoneyPlayerInterface;
@@ -286,7 +286,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			}
 		}.register();
 		new KitCommand<OlympaPlayerZTA>(this,
-				new Kit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPTime.get(), (x, time) -> x.kitVIPTime.set(time), (op, p) -> new ItemStack[] {
+				new SimpleKit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPTime.get(), (x, time) -> x.kitVIPTime.set(time), (op, p) -> new ItemStack[] {
 								GunType.M16.createItem(),
 								Food.COOKED_BEEF.get(15),
 								ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),

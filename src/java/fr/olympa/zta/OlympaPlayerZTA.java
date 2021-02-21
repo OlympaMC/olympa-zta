@@ -61,6 +61,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
+	}
+	
+	@Override
+	public void loaded() {
+		super.loaded();
 		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(this)));
 		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
 		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
