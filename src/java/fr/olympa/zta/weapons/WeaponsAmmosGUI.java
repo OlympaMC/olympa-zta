@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.templates.PagedGUI;
@@ -21,7 +22,7 @@ public class WeaponsAmmosGUI extends PagedGUI<AmmoType> {
 	}
 
 	@Override
-	public void click(AmmoType existing, Player p) {
+	public void click(AmmoType existing, Player p, ClickType click) {
 		p.getInventory().addItem(existing.getAmmo(10, true));
 	}
 	

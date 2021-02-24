@@ -173,7 +173,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 		}
 
 		@Override
-		public void click(PlayerPlot existing, Player p) {
+		public void click(PlayerPlot existing, Player p, ClickType click) {
 			existing.addPlayer(player);
 			plot = existing;
 			setState();
@@ -200,7 +200,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 		}
 
 		@Override
-		public void click(OlympaPlayerInformations existing, Player p) {
+		public void click(OlympaPlayerInformations existing, Player p, ClickType click) {
 			plot.kick(existing);
 			super.removeItem(existing);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'expulser " + existing.getName() + " de ta parcelle.");

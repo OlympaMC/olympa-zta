@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.templates.PagedGUI;
@@ -23,7 +24,7 @@ public class WeaponsGiveGUI extends PagedGUI<ItemStackable> {
 	}
 
 	@Override
-	public void click(ItemStackable existing, Player p) {
+	public void click(ItemStackable existing, Player p, ClickType click) {
 		p.getInventory().addItem(existing.createItem());
 	}
 

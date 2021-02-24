@@ -8,6 +8,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -56,7 +57,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	}
 
 	class ShopGUI extends PagedGUI<Article<T>> {
-
+		
 		public ShopGUI() {
 			super(shopName, color, articles, Math.min(6, Math.max((int) Math.ceil(articles.size() / 9D), 3)));
 		}
@@ -75,7 +76,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 
 		@Override
-		public void click(Article<T> existing, Player p) {
+		public void click(Article<T> existing, Player p, ClickType click) {
 			AbstractShop.this.click(existing, p);
 		}
 
