@@ -525,7 +525,6 @@ public class Gun implements Weapon {
 		statement.setInt(i++, cannon == null ? -1 : cannon.ordinal());
 		statement.setInt(i++, stock == null ? -1 : stock.ordinal());
 		statement.setInt(i++, getID());
-		statement.executeUpdate();
 	}
 	
 	public void loadDatas(ResultSet set) throws Exception {

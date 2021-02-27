@@ -74,8 +74,9 @@ public class GunRegistry {
 					Integer idToEvict = iterator.next();
 					Gun evicted = registry.remove(idToEvict);
 					if (evicted != null) {
-						try {
-							evicted.updateDatas(updateStatement.getStatement());
+						try (PreparedStatement pstatement = updateStatement.createStatement()) {
+							evicted.updateDatas(pstatement);
+							updateStatement.executeUpdate(pstatement);
 						}catch (SQLException e) {
 							e.printStackTrace();
 						}
@@ -90,14 +91,13 @@ public class GunRegistry {
 	
 	public boolean removeObject(Gun object) {
 		if (!registry.containsKey(object.getID())) return false;
-		try {
-			OlympaZTA.getInstance().sendMessage("Objet §6%s (%d) §esupprimé du registre.", object.getType().getName(), object.getID());
-			
-			PreparedStatement statement = removeStatement.getStatement();
+		try (PreparedStatement statement = removeStatement.createStatement()) {
 			statement.setInt(1, object.getID());
-			statement.executeUpdate();
+			removeStatement.executeUpdate(statement);
 			
 			registry.remove(object.getID());
+			
+			OlympaZTA.getInstance().sendMessage("Objet §6%s (%d) §esupprimé du registre.", object.getType().getName(), object.getID());
 			return true;
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -152,10 +152,9 @@ public class GunRegistry {
 			if (gun != null) {
 				removeObject(gun);
 			}else {
-				try {
-					PreparedStatement statement = removeStatement.getStatement();
+				try (PreparedStatement statement = removeStatement.createStatement()) {
 					statement.setInt(1, id);
-					statement.executeUpdate();
+					removeStatement.executeUpdate(statement);
 					OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
 				}catch (SQLException e) {
 					e.printStackTrace();
@@ -165,16 +164,17 @@ public class GunRegistry {
 	}
 	
 	public Gun createGun(GunType type) throws SQLException {
-		PreparedStatement statement = createStatement.getStatement();
-		statement.setString(1, type.name());
-		statement.executeUpdate();
-		ResultSet generatedKeys = statement.getGeneratedKeys();
-		generatedKeys.next();
-		int id = generatedKeys.getInt("id");
-		generatedKeys.close();
-		Gun gun = new Gun(id, type);
-		registry.put(id, gun);
-		return gun;
+		try (PreparedStatement statement = createStatement.createStatement()) {
+			statement.setString(1, type.name());
+			createStatement.executeUpdate(statement);
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+			generatedKeys.next();
+			int id = generatedKeys.getInt("id");
+			generatedKeys.close();
+			Gun gun = new Gun(id, type);
+			registry.put(id, gun);
+			return gun;
+		}
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
@@ -246,8 +246,9 @@ public class GunRegistry {
 		toEvict.clear();
 		for (Iterator<Gun> iterator = registry.values().iterator(); iterator.hasNext();) {
 			Gun object = iterator.next();
-			try {
-				object.updateDatas(updateStatement.getStatement());
+			try (PreparedStatement statement = updateStatement.createStatement()) {
+				object.updateDatas(statement);
+				updateStatement.executeUpdate(statement);
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}

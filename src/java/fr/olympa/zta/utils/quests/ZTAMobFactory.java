@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.gui.Inventories;
 import fr.skytasul.quests.gui.ItemUtils;
 import fr.skytasul.quests.gui.templates.PagedGUI;
 import fr.skytasul.quests.utils.XMaterial;
@@ -41,6 +42,7 @@ public class ZTAMobFactory implements MobFactory<Zombies> {
 			
 			@Override
 			public void click(Zombies existing, ItemStack item, ClickType clickType) {
+				Inventories.closeAndExit(p);
 				run.accept(existing);
 			}
 			

@@ -45,7 +45,7 @@ public class GunReward extends AbstractReward {
 	
 	@Override
 	public String[] getLore() {
-		return new String[] { "§8> §7" + type.getName() };
+		return new String[] { "§8> §7" + (type == null ? null : type.getName()) };
 	}
 	
 	@Override

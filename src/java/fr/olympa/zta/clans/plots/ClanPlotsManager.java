@@ -1,11 +1,13 @@
 package fr.olympa.zta.clans.plots;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -18,50 +20,54 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.region.Region;
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.sql.SQLColumn;
+import fr.olympa.api.sql.SQLTable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
 
 public class ClanPlotsManager implements Listener {
 
-	private static final String tableName = "`zta_clan_plots`";
 	public static final NamespacedKey SIGN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "plotID");
-
+	/*private static final String tableName = "`zta_clan_plots`";
+	
 	private static final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`region`, `price`, `sign`, `spawn`) VALUES (?, ?, ?, ?)", true);
 	public static final OlympaStatement updatePlotClan = new OlympaStatement("UPDATE " + tableName + " SET `clan` = ? WHERE (`id` = ?)");
-	public static final OlympaStatement updatePlotNextPayment = new OlympaStatement("UPDATE " + tableName + " SET `next_payment` = ? WHERE (`id` = ?)");
+	public static final OlympaStatement updatePlotNextPayment = new OlympaStatement("UPDATE " + tableName + " SET `next_payment` = ? WHERE (`id` = ?)");*/
+	
+	private SQLTable<ClanPlot> table;
+	
+	public SQLColumn<ClanPlot> columnID = new SQLColumn<ClanPlot>("id", "INT(11) UNSIGNED NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(ClanPlot::getID);
+	public SQLColumn<ClanPlot> columnRegion = new SQLColumn<ClanPlot>("region", "VARBINARY(8000) NOT NULL", Types.VARBINARY);
+	public SQLColumn<ClanPlot> columnClan = new SQLColumn<ClanPlot>("clan", "INT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
+	public SQLColumn<ClanPlot> columnSign = new SQLColumn<ClanPlot>("sign", "VARCHAR(100) NOT NULL", Types.VARCHAR);
+	public SQLColumn<ClanPlot> columnSpawn = new SQLColumn<ClanPlot>("spawn", "VARCHAR(100) NOT NULL", Types.VARCHAR);
+	public SQLColumn<ClanPlot> columnPrice = new SQLColumn<ClanPlot>("price", "INT NOT NULL", Types.INTEGER);
+	public SQLColumn<ClanPlot> columnNextPayment = new SQLColumn<ClanPlot>("next_payment", "BIGINT NOT NULL DEFAULT -1", Types.BIGINT).setUpdatable();
 
 	private Map<Integer, ClanPlot> plots = new HashMap<>();
 
 	public ClanPlotsManager(ClansManagerZTA clans) throws SQLException {
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," +
-				"  `region` VARBINARY(8000) NOT NULL," +
-				"  `clan` INT NULL DEFAULT -1," +
-				"  `sign` VARCHAR(100) NOT NULL," +
-				"  `spawn` VARCHAR(100) NOT NULL," +
-				"  `price` INT NOT NULL," +
-				"  `next_payment` BIGINT NOT NULL DEFAULT -1," +
-				"  PRIMARY KEY (`id`))");
+		table = new SQLTable<>("zta_clan_plots",
+				Arrays.asList(columnID, columnRegion, columnClan, columnSign, columnSpawn, columnPrice, columnNextPayment),
+				resultSet -> {
+					try {
+						ClanPlot plot = new ClanPlot(this, resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
+						DynmapLink.showClanPlot(plot);
+						int clanID = resultSet.getInt("clan");
+						if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
+						plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
+						return plot;
+					}catch (Exception ex) {
+						OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
+						ex.printStackTrace();
+						return null;
+					}
+				});
+		table.createOrAlter();
 
-		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
-		while (resultSet.next()) {
-			try {
-				ClanPlot plot = new ClanPlot(resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
-				plots.put(plot.getID(), plot);
-				DynmapLink.showClanPlot(plot);
-				int clanID = resultSet.getInt("clan");
-				if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
-				plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
-			}catch (Exception ex) {
-				OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
-				ex.printStackTrace();
-				continue;
-			}
-		}
+		table.selectAll().stream().filter(x -> x != null).collect(Collectors.toMap(ClanPlot::getID, x -> x));
 		
 		new ClanPlotsCommand(this).register();
 	}
@@ -69,16 +75,10 @@ public class ClanPlotsManager implements Listener {
 	public ClanPlot create(Region region, int price, Block sign, Location spawn) throws SQLException, IOException {
 		Location signLocation = sign.getLocation();
 
-		PreparedStatement statement = createPlot.getStatement();
-		statement.setBytes(1, SpigotUtils.serialize(region));
-		statement.setInt(2, price);
-		statement.setString(3, SpigotUtils.convertLocationToString(signLocation));
-		statement.setString(4, SpigotUtils.convertLocationToString(spawn));
-		statement.executeUpdate();
-		ResultSet resultSet = statement.getGeneratedKeys();
+		ResultSet resultSet = table.insert(SpigotUtils.serialize(region), SpigotUtils.convertLocationToString(signLocation), SpigotUtils.convertLocationToString(spawn), price);
 		resultSet.next();
 
-		ClanPlot plot = new ClanPlot(resultSet.getInt(1), region, price, signLocation, spawn);
+		ClanPlot plot = new ClanPlot(this, resultSet.getInt(1), region, price, signLocation, spawn);
 		DynmapLink.showClanPlot(plot);
 		plot.updateSign();
 		plots.put(plot.getID(), plot);

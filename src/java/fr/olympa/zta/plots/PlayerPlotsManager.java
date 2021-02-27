@@ -97,7 +97,7 @@ public class PlayerPlotsManager {
 			@Override
 			public void interactEvent(PlayerInteractEvent event) {
 				PlayerPlot plot = getPlot(event.getClickedBlock().getLocation());
-				event.setCancelled(plot == null ? true : plot.onInteract(event));
+				event.setCancelled(plot == null || plot.onInteract(event));
 			}
 		}, new FishFlag(false) {
 			@Override
@@ -154,17 +154,19 @@ public class PlayerPlotsManager {
 		if (plotDatas == null) throw new NullPointerException("Les données primaires avec l'ID " + id + " n'ont pas été chargées.");
 
 		if (load && plotDatas.loadedPlot == null) {
-			PreparedStatement statement = loadPlot.getStatement();
-			statement.setInt(1, id);
-			ResultSet resultSet = statement.executeQuery();
-			if (!resultSet.first()) throw new NullPointerException("Le plot du joueur a été supprimé de la base de données.");
-			plotDatas.loadedPlot = new PlayerPlot(id, plotDatas.loc, resultSet.getLong("owner"), resultSet.getInt("chests"), resultSet.getInt("level"));
-
-			statement = getPlotPlayers.getStatement();
-			statement.setInt(1, id);
-			ResultSet playersResultSet = statement.executeQuery();
-			while (playersResultSet.next()) {
-				plotDatas.loadedPlot.getPlayers().add(playersResultSet.getLong("player_id"));
+			try (PreparedStatement statement = loadPlot.createStatement()) {
+				statement.setInt(1, id);
+				ResultSet resultSet = loadPlot.executeQuery(statement);
+				if (!resultSet.first()) throw new NullPointerException("Le plot du joueur a été supprimé de la base de données.");
+				plotDatas.loadedPlot = new PlayerPlot(id, plotDatas.loc, resultSet.getLong("owner"), resultSet.getInt("chests"), resultSet.getInt("level"));
+			}
+			
+			try (PreparedStatement statement = getPlotPlayers.createStatement()) {
+				statement.setInt(1, id);
+				ResultSet playersResultSet = getPlotPlayers.executeQuery(statement);
+				while (playersResultSet.next()) {
+					plotDatas.loadedPlot.getPlayers().add(playersResultSet.getLong("player_id"));
+				}
 			}
 		}
 
@@ -190,39 +192,43 @@ public class PlayerPlotsManager {
 	}
 
 	public PlayerPlot create(PlayerPlotLocation location, OlympaPlayerZTA owner) throws SQLException {
-		PreparedStatement statement = createPlot.getStatement();
-		statement.setInt(1, location.getX());
-		statement.setInt(2, location.getZ());
-		statement.setLong(3, owner.getId());
-		statement.executeUpdate();
-		ResultSet resultSet = statement.getGeneratedKeys();
-		resultSet.next();
-		PlayerPlot plot = new PlayerPlot(resultSet.getInt(1), location, owner.getId());
-		plot.setLevel(1, true);
-		addPlot(new InternalPlotDatas(plot));
-		owner.setPlot(plot);
-		resultSet.close();
-		return plot;
+		try (PreparedStatement statement = createPlot.createStatement()) {
+			statement.setInt(1, location.getX());
+			statement.setInt(2, location.getZ());
+			statement.setLong(3, owner.getId());
+			createPlot.executeUpdate(statement);
+			ResultSet resultSet = statement.getGeneratedKeys();
+			resultSet.next();
+			PlayerPlot plot = new PlayerPlot(resultSet.getInt(1), location, owner.getId());
+			plot.setLevel(1, true);
+			addPlot(new InternalPlotDatas(plot));
+			owner.setPlot(plot);
+			resultSet.close();
+			return plot;
+		}
 	}
 
 	void updateLevel(PlayerPlot plot, int newLevel) throws SQLException {
-		PreparedStatement statement = setPlotLevel.getStatement();
-		statement.setInt(1, newLevel);
-		statement.setInt(2, plot.getID());
-		statement.executeUpdate();
+		try (PreparedStatement statement = setPlotLevel.createStatement()) {
+			statement.setInt(1, newLevel);
+			statement.setInt(2, plot.getID());
+			setPlotLevel.executeUpdate(statement);
+		}
 	}
 
 	void updateChests(PlayerPlot plot, int chests) throws SQLException {
-		PreparedStatement statement = setPlotChests.getStatement();
-		statement.setInt(1, chests);
-		statement.setInt(2, plot.getID());
-		statement.executeUpdate();
+		try (PreparedStatement statement = setPlotChests.createStatement()) {
+			statement.setInt(1, chests);
+			statement.setInt(2, plot.getID());
+			setPlotChests.executeUpdate(statement);
+		}
 	}
 
 	void removePlayerPlot(OlympaPlayerInformations informations) throws SQLException {
-		PreparedStatement statement = removeOfflinePlayerPlot.getStatement();
-		statement.setLong(1, informations.getId());
-		statement.executeUpdate();
+		try (PreparedStatement statement = removeOfflinePlayerPlot.createStatement()) {
+			statement.setLong(1, informations.getId());
+			removeOfflinePlayerPlot.executeUpdate(statement);
+		}
 	}
 
 	public PlayerPlotLocation getAvailable() {

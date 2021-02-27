@@ -1,7 +1,5 @@
 package fr.olympa.zta.clans.plots;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -48,7 +46,10 @@ public class ClanPlot {
 	private long nextPayment = -1;
 	private BukkitTask paymentExpiration;
 
-	public ClanPlot(int id, Region region, int price, Location sign, Location spawn) {
+	private final ClanPlotsManager manager;
+	
+	public ClanPlot(ClanPlotsManager manager, int id, Region region, int price, Location sign, Location spawn) {
+		this.manager = manager;
 		this.id = id;
 		this.price = price;
 		this.priceFormatted = OlympaMoney.format(price);
@@ -70,16 +71,7 @@ public class ClanPlot {
 		this.clan = clan;
 		if (clan != null) clan.setCachedPlot(this);
 
-		if (updateDB) {
-			try {
-				PreparedStatement statement = ClanPlotsManager.updatePlotClan.getStatement();
-				statement.setLong(1, clan == null ? -1 : clan.getID());
-				statement.setInt(2, id);
-				statement.executeUpdate();
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		if (updateDB) manager.columnClan.updateAsync(this, clan == null ? -1 : clan.getID(), null, null);
 	}
 
 	public int getID() {
@@ -133,16 +125,7 @@ public class ClanPlot {
 			}
 		}
 		
-		if (updateDB) {
-			try {
-				PreparedStatement statement = ClanPlotsManager.updatePlotNextPayment.getStatement();
-				statement.setLong(1, nextPayment);
-				statement.setInt(2, id);
-				statement.executeUpdate();
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		if (updateDB) manager.columnNextPayment.updateAsync(this, nextPayment, null, null);
 	}
 
 	public String getExpirationDate() {

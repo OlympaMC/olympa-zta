@@ -1,11 +1,13 @@
 package fr.olympa.zta.loot.chests;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,7 +31,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.sql.SQLColumn;
+import fr.olympa.api.sql.SQLTable;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -40,38 +43,33 @@ public class LootChestsManager implements Listener {
 
 	public static final NamespacedKey LOOTCHEST = new NamespacedKey(OlympaZTA.getInstance(), "loot_chest_id");
 
-	private final String tableName = "`zta_lootchests`";
+	/*private final String tableName = "`zta_lootchests`";
 	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + tableName + " (`world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?)", true);
 	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
-	private final OlympaStatement updateLootStatement = new OlympaStatement("UPDATE " + tableName + " SET `loot_type` = ? WHERE (`id` = ?)");
+	private final OlympaStatement updateLootStatement = new OlympaStatement("UPDATE " + tableName + " SET `loot_type` = ? WHERE (`id` = ?)");*/
+	
+	private SQLTable<LootChest> table;
+	
+	public SQLColumn<LootChest> columnID = new SQLColumn<LootChest>("id", "int(11) NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(LootChest::getID);
+	public SQLColumn<LootChest> columnWorld = new SQLColumn<LootChest>("world", "varchar(45) NOT NULL", Types.VARCHAR);
+	public SQLColumn<LootChest> columnX = new SQLColumn<LootChest>("x", "int(11) NOT NULL", Types.INTEGER);
+	public SQLColumn<LootChest> columnY = new SQLColumn<LootChest>("y", "int(11) NOT NULL", Types.INTEGER);
+	public SQLColumn<LootChest> columnZ = new SQLColumn<LootChest>("z", "int(11) NOT NULL", Types.INTEGER);
+	public SQLColumn<LootChest> columnLootType = new SQLColumn<LootChest>("loot_type", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable();
 
 	public final Map<Integer, LootChest> chests = new HashMap<>();
 	private Random random = new Random();
 
 	public LootChestsManager() throws SQLException {
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-				"  `id` int(11) NOT NULL AUTO_INCREMENT," +
-				"  `world` varchar(45) NOT NULL," +
-				"  `x` int(11) NOT NULL," +
-				"  `y` int(11) NOT NULL," +
-				"  `z` int(11) NOT NULL," +
-				"  `loot_type` varchar(45) NOT NULL," +
-				"  PRIMARY KEY (`id`))");
+		table = new SQLTable<>("zta_lootchests",
+				Arrays.asList(columnID, columnWorld, columnX, columnY, columnZ, columnLootType),
+				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type"))));
+		table.createOrAlter();
 
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
-				while (resultSet.next()) {
-					try {
-						int id = resultSet.getInt("id");
-						chests.put(id, new LootChest(id, new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type"))));
-					}catch (Exception ex) {
-						ex.printStackTrace();
-						OlympaZTA.getInstance().getLogger().severe("Impossible de charger le coffre de loot " + resultSet.getInt("id"));
-						continue;
-					}
-				}
-				OlympaZTA.getInstance().sendMessage("§e" + chests.size() + "§7 coffres de loot chargés !");
+				table.selectAll().stream().collect(Collectors.toMap(LootChest::getID, x -> x));
+				OlympaZTA.getInstance().sendMessage("§e%d§7 coffres de loot chargés !", chests.size());
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -125,14 +123,7 @@ public class LootChestsManager implements Listener {
 		Chest chestState = getLeftChest((Chest) location.getBlock().getState());
 		location = chestState.getLocation();
 
-		PreparedStatement statement = createStatement.getStatement();
-		statement.setString(1, location.getWorld().getName());
-		statement.setInt(2, location.getBlockX());
-		statement.setInt(3, location.getBlockY());
-		statement.setInt(4, location.getBlockZ());
-		statement.setString(5, type.name());
-		statement.executeUpdate();
-		ResultSet generatedKeys = statement.getGeneratedKeys();
+		ResultSet generatedKeys = table.insert(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), type.name());
 		generatedKeys.next();
 		LootChest chest = new LootChest(generatedKeys.getInt(1), location, type);
 		chest.register(chestState);
@@ -143,17 +134,8 @@ public class LootChestsManager implements Listener {
 	public synchronized void removeLootChest(int id) throws SQLException {
 		LootChest chest = chests.remove(id);
 		if (chest == null) throw new IllegalArgumentException("No lootchest with id " + id);
-		PreparedStatement statement = removeStatement.getStatement();
-		statement.setInt(1, id);
-		statement.executeUpdate();
+		table.delete(chest);
 		chest.unregister((Chest) chest.getLocation().getBlock().getState());
-	}
-
-	public synchronized void updateLootType(LootChest chest) throws SQLException {
-		PreparedStatement statement = updateLootStatement.getStatement();
-		statement.setString(1, chest.getLootType().name());
-		statement.setInt(2, chest.getID());
-		statement.executeUpdate();
 	}
 
 	public LootChestType pickRandomChestType(Location location) {

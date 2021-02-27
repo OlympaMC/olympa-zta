@@ -42,6 +42,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.chests.type.LootChestPicker;
 import fr.olympa.zta.loot.chests.type.LootChestType;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.utils.DynmapLink;
@@ -132,12 +133,14 @@ public class MobSpawning implements Runnable {
 								boolean possible = !UNSPAWNABLE_ON.contains(prev);
 								prev = chunk.getBlockType(x, y, z);
 								if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
-									if (chunk.getBlockSkyLight(x, y, z) <= 5) {
+									if (chunk.getBlockSkyLight(x, y, z) <= 5 || chunk.getBlockEmittedLight(x, y, z) > 10) {
 										if (random.nextBoolean()) continue; // au fond d'un immeuble pas éclairé : pas intéressant
 										mobs++;
 										continue mobs;
 									}
 									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
+									SpawningFlag flag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(location, SpawningFlag.class);
+									if (flag == null || flag.type == null) continue;
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null) continue; // si on est dans une parcelle de clan pas de spawn
 									for (Location loc : entities) {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
@@ -247,7 +250,7 @@ public class MobSpawning implements Runnable {
 	}
 
 	public void addSafeZone(Region region, String id, String title) {
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR), new SpawnType.SpawningFlag(null));
 		safeRegions.add(region);
 		DynmapLink.showSafeArea(region, "z" + id, title);
 	}
@@ -374,8 +377,8 @@ public class MobSpawning implements Runnable {
 			public final SpawnType type;
 
 			public SpawningFlag(SpawnType type) {
-				super.setMessages(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
 				this.type = type;
+				if (type != null) super.setMessages(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
 			}
 		}
 	}

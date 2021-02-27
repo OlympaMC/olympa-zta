@@ -144,7 +144,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		String title = "§c§kdddddddd";
 		for (TrackedRegion region : regions) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);
-			if (flag != null) {
+			if (flag != null && flag.type != null) {
 				title = flag.type.title;
 				break;
 			}
@@ -189,6 +189,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		AmmoType.CARTRIDGE.getName();
 
+		OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
+		
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		teleportationManager = new TeleportationManager();
 		

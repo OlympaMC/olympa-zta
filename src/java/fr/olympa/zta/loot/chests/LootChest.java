@@ -1,6 +1,5 @@
 package fr.olympa.zta.loot.chests;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 
@@ -108,13 +107,7 @@ public class LootChest extends RandomizedInventory {
 		DynmapLink.showChest(this);
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
-		if (update) {
-			try {
-				OlympaZTA.getInstance().lootChestsManager.updateLootType(this);
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		if (update) OlympaZTA.getInstance().lootChestsManager.columnLootType.updateAsync(this, type.getName(), null, null);
 	}
 
 	public int getID() {
@@ -141,6 +134,7 @@ public class LootChest extends RandomizedInventory {
 		return type.getCreatorsAlways();
 	}
 
+	@Override
 	public Inventory getInventory() {
 		return inv;
 	}

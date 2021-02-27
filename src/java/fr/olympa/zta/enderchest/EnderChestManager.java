@@ -68,13 +68,12 @@ public class EnderChestManager implements Listener {
 		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, true, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§b§l", "§3§l"), 2, 3 * 10)));
 		DynmapLink.showEnderChest(location);
 		if (database) {
-			try {
-				PreparedStatement statement = insertStatement.getStatement();
+			try (PreparedStatement statement = insertStatement.createStatement()) {
 				statement.setString(1, location.getWorld().getName());
 				statement.setInt(2, location.getBlockX());
 				statement.setInt(3, location.getBlockY());
 				statement.setInt(4, location.getBlockZ());
-				statement.executeUpdate();
+				insertStatement.executeUpdate(statement);
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -86,13 +85,12 @@ public class EnderChestManager implements Listener {
 		if (hologram == null) return;
 		hologram.remove();
 		DynmapLink.hideEnderChest(location);
-		try {
-			PreparedStatement statement = deleteStatement.getStatement();
+		try (PreparedStatement statement = deleteStatement.createStatement()) {
 			statement.setString(1, location.getWorld().getName());
 			statement.setInt(2, location.getBlockX());
 			statement.setInt(3, location.getBlockY());
 			statement.setInt(4, location.getBlockZ());
-			statement.executeUpdate();
+			deleteStatement.executeUpdate(statement);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
