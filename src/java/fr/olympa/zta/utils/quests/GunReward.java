@@ -64,7 +64,7 @@ public class GunReward extends AbstractReward {
 				gui.reopen();
 			}
 			
-		};
+		}.create(p);
 	}
 	
 	@Override

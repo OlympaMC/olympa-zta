@@ -67,7 +67,7 @@ public class ClanPlotsManager implements Listener {
 				});
 		table.createOrAlter();
 
-		table.selectAll().stream().filter(x -> x != null).collect(Collectors.toMap(ClanPlot::getID, x -> x));
+		plots = table.selectAll().stream().filter(x -> x != null).collect(Collectors.toMap(ClanPlot::getID, x -> x));
 		
 		new ClanPlotsCommand(this).register();
 	}
