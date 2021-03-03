@@ -7,6 +7,8 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
@@ -67,7 +69,7 @@ public class ClanPlotsManager implements Listener {
 				});
 		table.createOrAlter();
 
-		plots = table.selectAll().stream().filter(x -> x != null).collect(Collectors.toMap(ClanPlot::getID, x -> x));
+		plots = table.selectAll().stream().filter(Objects::nonNull).collect(Collectors.toMap(ClanPlot::getID, Function.identity()));
 		
 		new ClanPlotsCommand(this).register();
 	}
