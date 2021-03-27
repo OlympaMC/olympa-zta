@@ -6,6 +6,8 @@ public interface ItemStackable {
 	
 	public String getName();
 	
+	public String getId();
+	
 	public ItemStack createItem();
 	
 	public default ItemStack getDemoItem() {

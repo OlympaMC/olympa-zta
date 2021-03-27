@@ -53,7 +53,7 @@ public class BeautyQuestsLink implements Listener {
 		QuestsAPI.setHologramsManager(new BeautyQuestsHolograms());
 		QuestsAPI.registerReward(new QuestObjectCreator<>(QuestItemReward.class, ItemUtils.item(Material.GOLD_INGOT, "§eOlympa ZTA - Item de quête"), QuestItemReward::new));
 		QuestsAPI.registerReward(new QuestObjectCreator<>(MoneyItemReward.class, ItemUtils.item(Material.NETHER_BRICK, "§eOlympa ZTA - Billets de banque"), MoneyItemReward::new));
-		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Item custom"), GunReward::new));
+		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Arme"), GunReward::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
 		QuestsAPI.registerMobFactory(new ZTAMobFactory());
 		new BQCommand().register();
@@ -104,7 +104,7 @@ public class BeautyQuestsLink implements Listener {
 	private synchronized void checkScoreboard(Player p, boolean forceCreation) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return;
-		if (QuestsAPI.getQuestsStarteds(acc, true).size() >= 1) {
+		if (!QuestsAPI.getQuestsStarteds(acc, true).isEmpty()) {
 			if (!forceCreation && scoreboards.containsKey(p)) return;
 			scoreboards.putIfAbsent(p, 0);
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);

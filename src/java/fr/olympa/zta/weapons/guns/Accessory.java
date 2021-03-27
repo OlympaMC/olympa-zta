@@ -179,6 +179,11 @@ public enum Accessory implements ItemStackable {
 	}
 	
 	@Override
+	public String getId() {
+		return name();
+	}
+	
+	@Override
 	public ItemStack createItem() {
 		return item.clone();
 	}

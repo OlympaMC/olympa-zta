@@ -50,7 +50,7 @@ public class WeaponsListener implements Listener {
 		Player damager = (Player) e.getDamager();
 
 		ItemStack item = damager.getInventory().getItemInMainHand();
-
+		
 		Weapon weapon = getWeapon(item);
 		if (weapon != null) weapon.onEntityHit(e);
 	}

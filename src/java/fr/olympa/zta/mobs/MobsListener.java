@@ -60,7 +60,7 @@ import net.citizensnpcs.api.CitizensAPI;
 public class MobsListener implements Listener {
 
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 20,
-			new AmmoCreator(20, 2, 3),
+			new AmmoCreator(22, 3, 4),
 			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
 			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
 			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
@@ -109,7 +109,7 @@ public class MobsListener implements Listener {
 			Entity damager = ((EntityDamageByEntityEvent) cause).getDamager();
 			if (damager instanceof Projectile) {
 				ProjectileSource source = ((Projectile) damager).getShooter();
-				if (source != null && (source instanceof Entity)) damager = (Entity) source;
+				if (source instanceof Entity) damager = (Entity) source;
 			}
 			if (damager instanceof Drowned) {
 				reason = "s'est fait tuer par un §cnoyé§e.";
@@ -161,13 +161,14 @@ public class MobsListener implements Listener {
 	public void onDamage(EntityDamageEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getCause() == DamageCause.FALL) {
-			e.setDamage(e.getDamage() / 2);
+			e.setDamage(e.getDamage() / 1.5);
 		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
 			if (e.getEntity() instanceof Item) {
 				e.setCancelled(true);
-			}else if (e.getEntity() instanceof Player) {
+				return;
+			}/*else if (e.getEntity() instanceof Player) {
 				e.setDamage(e.getDamage() / 2);
-			}
+			}*/
 		}
 		if (e.getEntity() instanceof Item) {
 			OlympaZTA.getInstance().gunRegistry.ifGun(((Item) e.getEntity()).getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
@@ -179,13 +180,15 @@ public class MobsListener implements Listener {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 
+		p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
+		
 		if (p.getHealth() == 0) {
 			p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu étais encore en combat lors de ta dernière déconnexion...");
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
 		}//else p.setHealth(p.getHealth());
 		
-		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
+		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(20);
 		p.setWalkSpeed(0.21f);
 		
 		for (AmmoType ammoType : AmmoType.values()) {

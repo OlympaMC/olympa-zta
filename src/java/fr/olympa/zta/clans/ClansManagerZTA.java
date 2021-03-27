@@ -66,13 +66,13 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	@Override
-	protected ClanZTA provideClan(int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException {
-		return new ClanZTA(this, id, name, chief, maxSize, money, created, resultSet.getLong("plot_expiration_reset"));
+	protected ClanZTA provideClan(int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException {
+		return new ClanZTA(this, id, name, tag, chief, maxSize, money, created, resultSet.getLong("plot_expiration_reset"));
 	}
 
 	@Override
-	protected ClanZTA createClan(int id, String name, OlympaPlayerInformations chief, int maxSize) {
-		return new ClanZTA(this, id, name, chief, maxSize);
+	protected ClanZTA createClan(int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
+		return new ClanZTA(this, id, name, tag, chief, maxSize);
 	}
 
 	@Override

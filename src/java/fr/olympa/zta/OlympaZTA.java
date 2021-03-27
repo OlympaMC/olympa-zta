@@ -63,6 +63,7 @@ import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.utils.spigot.TeleportationManager;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -192,7 +193,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
 		
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
-		teleportationManager = new TeleportationManager();
+		teleportationManager = new TeleportationManager(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);

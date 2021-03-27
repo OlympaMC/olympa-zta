@@ -508,8 +508,14 @@ public enum GunType implements ItemStackable{
 		demoItem.setItemMeta(meta);
 	}
 	
+	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public String getId() {
+		return name();
 	}
 	
 	public String getDescription() {

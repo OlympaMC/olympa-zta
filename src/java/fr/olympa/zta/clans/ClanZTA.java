@@ -20,15 +20,16 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	
 	private ClanPlot cachedPlot;
 
-	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, long plotExpirationReset) {
-		super(manager, id, name, chief, maxSize, money, created);
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created, long plotExpirationReset) {
+		super(manager, id, name, tag, chief, maxSize, money, created);
 		this.plotExpirationReset = plotExpirationReset;
 	}
 
-	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
-		super(manager, id, name, chief, maxSize);
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
+		super(manager, id, name, tag, chief, maxSize);
 	}
 	
+	@Override
 	public ClansManagerZTA getClansManager() {
 		return super.getClansManager();
 	}

@@ -44,6 +44,11 @@ public enum Grenade implements Weapon, ItemStackable {
 	}
 	
 	@Override
+	public String getId() {
+		return name();
+	}
+	
+	@Override
 	public ItemStack createItem() {
 		return item.clone();
 	}
