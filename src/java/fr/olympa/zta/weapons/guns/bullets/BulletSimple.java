@@ -3,6 +3,7 @@ package fr.olympa.zta.weapons.guns.bullets;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -28,16 +29,23 @@ public class BulletSimple extends Bullet{
 		this.entityDamage = entityDamage;
 	}
 	
+	public BulletSimple(float speed, float spread, float playerDamage, float entityDamage) {
+		super(speed, spread);
+		this.playerDamage = playerDamage;
+		this.entityDamage = entityDamage;
+	}
+	
 	public void hit(ProjectileHitEvent e){
 		Player shooter = (Player) e.getEntity().getShooter();
 		if (e.getHitEntity() != null && e.getHitEntity() instanceof LivingEntity) {
 			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
-			if (CitizensAPI.getNPCRegistry().isNPC(hitEntity)) return;
 			WeaponsListener.cancelDamageEvent = true;
+			if (hitEntity instanceof ArmorStand) return;
 			float damage = hitEntity instanceof Player ? playerDamage : entityDamage;
 
+			boolean npc = CitizensAPI.getNPCRegistry().isNPC(hitEntity);
+			boolean stats = !hitEntity.hasMetadata("training") && !npc;
 			Location blood;
-			boolean stats = !hitEntity.hasMetadata("training");
 			if (isHeadShot(e.getEntity(), hitEntity)) {
 				damage *= 1.5;
 				shooter.playSound(shooter.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1);
@@ -56,7 +64,7 @@ public class BulletSimple extends Bullet{
 	
 	public boolean isHeadShot(Projectile proj, LivingEntity entity) {
 		BoundingBox bb = BoundingBox.of(entity.getEyeLocation(), 0.5, 0.5, 0.5);
-		for (double i = 0.0D; i <= gun.bulletSpeed.getValue(); i += 0.8D) {
+		for (double i = 0.0D; i <= super.speed; i += 0.8D) {
 			Vector finalLoc = proj.getLocation().toVector();
 			Vector direction = proj.getVelocity().normalize();
 			direction.multiply(i);

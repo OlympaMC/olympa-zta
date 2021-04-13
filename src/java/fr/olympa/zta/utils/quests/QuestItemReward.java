@@ -57,7 +57,7 @@ public class QuestItemReward extends AbstractReward {
 			
 			@Override
 			public ItemStack getItemStack(QuestItem object) {
-				return object.getOriginalItem();
+				return object.getDemoItem();
 			}
 			
 			@Override

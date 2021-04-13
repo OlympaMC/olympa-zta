@@ -42,11 +42,14 @@ public class Mobs {
 			customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE", CustomEntityZombie.getAttributeBuilder());
 			customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK", CustomEntityMommy.getAttributeBuilder());
 			customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED", CustomEntityDrowned.getAttributeBuilder());
+			OlympaZTA.getInstance().sendMessage("3 mobs custom ont été enregistrés.");
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement des mobs custom.");
 			ex.printStackTrace();
 		}
 	}
+	
+	private Mobs() {}
 	
 	public static void spawnCommonZombie(Zombies zombieType, Location location) {
 		location.setYaw(random.nextInt(360));

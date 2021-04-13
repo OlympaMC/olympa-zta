@@ -1,7 +1,6 @@
 package fr.olympa.zta.loot.creators;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -10,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ImmutableItemStack;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.zta.weapons.ItemStackable;
 
 public class QuestItemCreator implements LootCreator {
 
@@ -36,7 +37,7 @@ public class QuestItemCreator implements LootCreator {
 		return questItem.getName();
 	}
 	
-	public enum QuestItem {
+	public enum QuestItem implements ItemStackable {
 		DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
 		PIECE(Material.IRON_INGOT, "Pièce métallique", 1),
 		AIMANT(Material.CLAY_BALL, "Aimant", 1),
@@ -51,7 +52,10 @@ public class QuestItemCreator implements LootCreator {
 		BOITIER_ELEC(Material.PRISMARINE_CRYSTALS, "Boîtier éléctronique", 2),
 		BOITIER_PROG(Material.PRISMARINE_SHARD, "Boîtier de programme", 2),
 		GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé", 2),
-		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2);
+		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2),
+		
+		PARACHUTE(Material.DIAMOND_CHESTPLATE, "Parachute", -1, "Si vous le portez, vous serez en mesure de planer dès le saut depuis un endroit élevé.", "Item rarissime, prenez-en soin."),
+		;
 		
 		private final String name;
 		private final int segment;
@@ -60,14 +64,23 @@ public class QuestItemCreator implements LootCreator {
 		private QuestItem(Material type, String name, int cat, String... lore) {
 			this.name = name;
 			this.segment = cat;
-			List<String> loreList = new ArrayList<>(Arrays.asList(lore));
-			loreList.add("");
-			loreList.add("§8> §7Ressource de catégorie §l" + cat);
+			List<String> loreList = new ArrayList<>();
+			for (String loreLine : lore) loreList.addAll(SpigotUtils.wrapAndAlign(loreLine, 35));
+			if (cat != -1) {
+				loreList.add("");
+				loreList.add("§8> §7Ressource de catégorie §l" + cat);
+			}
 			this.item = new ImmutableItemStack(ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new)));
 		}
 
+		@Override
 		public String getName() {
 			return name;
+		}
+		
+		@Override
+		public String getId() {
+			return name();
 		}
 		
 		public ItemStack getItem(int amount) {
@@ -76,7 +89,13 @@ public class QuestItemCreator implements LootCreator {
 			return item;
 		}
 		
-		public ImmutableItemStack getOriginalItem() {
+		@Override
+		public ItemStack createItem() {
+			return getItem(1);
+		}
+		
+		@Override
+		public ImmutableItemStack getDemoItem() {
 			return item;
 		}
 

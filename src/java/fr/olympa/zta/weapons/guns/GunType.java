@@ -119,7 +119,7 @@ public enum GunType implements ItemStackable{
 			GunMode.SINGLE,
 			null,
 			CommonGunConstants.SOUND_VOLUME_MEDIUM,
-			ZTASound.GUN_GENERIC,
+			ZTASound.GUN_BARRETT,
 			null),
 	BENELLI(
 			"Benelli M5 Super",

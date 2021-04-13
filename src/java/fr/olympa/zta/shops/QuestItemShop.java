@@ -21,8 +21,8 @@ public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	
 	@Override
 	protected boolean take(QuestItem object, Player p) {
-		if (SpigotUtils.containsItems(p.getInventory(), object.getOriginalItem(), 1)) {
-			SpigotUtils.removeItems(p.getInventory(), object.getOriginalItem(), 1);
+		if (SpigotUtils.containsItems(p.getInventory(), object.getDemoItem(), 1)) {
+			SpigotUtils.removeItems(p.getInventory(), object.getDemoItem(), 1);
 			return true;
 		}
 		return false;
@@ -30,7 +30,7 @@ public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	
 	@Override
 	public ItemStack getItemStack(QuestItem object) {
-		return object.getOriginalItem().toMutableStack();
+		return object.createItem();
 	}
 	
 }

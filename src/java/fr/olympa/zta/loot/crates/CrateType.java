@@ -10,6 +10,8 @@ import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
+import fr.olympa.zta.loot.creators.QuestItemCreator;
+import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
 import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
@@ -22,7 +24,7 @@ public enum CrateType {
 	BASIC(
 			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 3, 9),
 			new MoneyCreator(20, PhysicalMoney.BANKNOTE_100, 1, 2),
-			new AmmoCreator(15, 5, 13),
+			new AmmoCreator(15, 5, 15),
 			new AmmoCreator(15, AmmoType.HEAVY, 4, 8, true),
 			new AmmoCreator(15, AmmoType.LIGHT, 4, 8, true),
 			new AmmoCreator(15, AmmoType.HANDWORKED, 4, 8, true),
@@ -39,7 +41,30 @@ public enum CrateType {
 			new ItemStackableCreator(15, Accessory.STOCK_STRONG),
 			new ItemStackableCreator(15, Accessory.CANNON_DAMAGE),
 			new ArmorCreator(20, ArmorType.MILITARY)
-			);
+			),
+	RARE(
+			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 4, 10),
+			new MoneyCreator(25, PhysicalMoney.BANKNOTE_100, 2, 3),
+			new AmmoCreator(15, 5, 15),
+			new AmmoCreator(15, AmmoType.HEAVY, 5, 10, true),
+			new AmmoCreator(15, AmmoType.LIGHT, 5, 10, true),
+			new AmmoCreator(15, AmmoType.HANDWORKED, 5, 10, true),
+			new AmmoCreator(15, AmmoType.CARTRIDGE, 4, 8, true),
+			new FoodCreator(15, Food.GOLDEN_CARROT, 5, 10),
+			new FoodCreator(15, Food.COOKED_BEEF, 10, 15),
+			new FoodCreator(15, Food.GOLDEN_APPLE, 2, 5),
+			new ItemStackableCreator(7, GunType.STONER),
+			new ItemStackableCreator(8, GunType.DRAGUNOV),
+			new ItemStackableCreator(9, GunType.SDMR),
+			new ItemStackableCreator(13, GunType.M16),
+			new ItemStackableCreator(15, Knife.SURIN),
+			new ItemStackableCreator(18, Accessory.SCOPE_STRONG),
+			new ItemStackableCreator(18, Accessory.STOCK_STRONG),
+			new ItemStackableCreator(15, Accessory.CANNON_SILENT),
+			new QuestItemCreator(0.5, QuestItem.PARACHUTE),
+			new ArmorCreator(20, ArmorType.MILITARY)
+			),
+	;
 
 	private List<LootCreator> creatorsSimple = new ArrayList<>();
 	private List<LootCreator> creatorsAlways = new ArrayList<>();

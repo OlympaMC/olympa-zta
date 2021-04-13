@@ -171,8 +171,12 @@ public class LootChestsManager implements Listener {
 		if (chest.getPersistentDataContainer().has(LOOTCHEST, PersistentDataType.INTEGER)) {
 			Integer id = chest.getPersistentDataContainer().get(LOOTCHEST, PersistentDataType.INTEGER);
 			try {
-				removeLootChest(id);
-				Prefix.INFO.sendMessage(e.getPlayer(), "Tu as supprimé le coffre de loot %d.", id);
+				if (chests.containsKey(id)) {
+					removeLootChest(id);
+					Prefix.INFO.sendMessage(e.getPlayer(), "Tu as supprimé le coffre de loot %d.", id);
+				}else {
+					Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Le coffre portait l'ID %d qui n'existe plus dans la base de donnée.", id);
+				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				Prefix.ERROR.sendMessage(e.getPlayer(), "Une erreur est survenue lors de la suppresion du coffre de loot %d.", id);

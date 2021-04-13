@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
@@ -41,8 +42,8 @@ public class Gun implements Weapon {
 
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
-	private final int id;
-	private final GunType type;
+	protected final int id;
+	protected final GunType type;
 	
 	protected int beforeTrainingAmmos = -1;
 	
@@ -112,7 +113,7 @@ public class Gun implements Weapon {
 		ItemStack item = new ItemStack(type.getMaterial());
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
-		meta.getPersistentDataContainer().set(GunRegistry.GUN_KEY, PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(getKey(), PersistentDataType.INTEGER, getID());
 		meta.setCustomModelData(1);
 		meta.setLore(getLore(accessories));
 		item.setItemMeta(meta);
@@ -140,6 +141,10 @@ public class Gun implements Weapon {
 		return lore;
 	}
 
+	public NamespacedKey getKey() {
+		return GunRegistry.GUN_KEY;
+	}
+	
 	public void onEntityHit(EntityDamageByEntityEvent e) {
 		Player damager = (Player) e.getDamager();
 		if (damageCaC == 0) {
@@ -269,7 +274,7 @@ public class Gun implements Weapon {
 					}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
 				}
 			}
-		}else 	if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
+		}else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
 			if (reloading == null) secondaryClick(p, item);
 		}
 	}
@@ -311,7 +316,7 @@ public class Gun implements Weapon {
 	private void fire(Player p) {
 		Bullet bullet = type.createBullet(this, (customDamagePlayer == 0 ? type.getPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? type.getEntityDamage() : customDamageEntity) + damageAdded);
 		for (int i = 0; i < type.getFiredBullets(); i++) {
-			bullet.launchProjectile(p);
+			bullet.launchProjectile(p, p.getLocation().getDirection());
 		}
 		
 		float knockback = this.knockback.getValue();
@@ -346,7 +351,7 @@ public class Gun implements Weapon {
 		showAmmos(p);
 	}
 	
-	private boolean shouldTakeItems(Player p) {
+	protected boolean shouldTakeItems(Player p) {
 		GunFlag gunFlag = getGunFlag(p);
 		return p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
 	}
@@ -512,7 +517,7 @@ public class Gun implements Weapon {
 	 * @param lc location où est jouée le son
 	 */
 	public void playOutOfAmmosSound(Location lc) {
-		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1, 1);
+		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 0.8f, 1);
 	}
 
 	public synchronized void updateDatas(PreparedStatement statement) throws SQLException {

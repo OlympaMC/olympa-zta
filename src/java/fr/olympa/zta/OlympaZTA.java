@@ -1,6 +1,7 @@
 package fr.olympa.zta;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -30,6 +31,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.mcmonkey.sentinel.SentinelPlugin;
 
 import fr.olympa.api.CombatManager;
 import fr.olympa.api.auctions.AuctionsManager;
@@ -75,12 +78,14 @@ import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.loot.chests.LootChestsManager;
 import fr.olympa.zta.loot.crates.CratesManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
 import fr.olympa.zta.loot.packs.PackBlock;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.MobsCommand;
 import fr.olympa.zta.mobs.MobsListener;
+import fr.olympa.zta.mobs.PlayersListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
@@ -91,6 +96,7 @@ import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
+import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
@@ -106,6 +112,7 @@ import fr.olympa.zta.weapons.guns.GunFlag;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance;
+import fr.olympa.zta.weapons.guns.minigun.MinigunsManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -122,7 +129,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	
 	public BeautyQuestsLink beautyQuestsLink;
 
-	public MobsListener mobsListener;
 	public TeleportationManager teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
@@ -139,6 +145,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public CombatManager combat;
 	public CratesManager crates;
 	public SoundAmbiance soundAmbiance;
+	public MinigunsManager miniguns;
 	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
@@ -156,7 +163,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public PlayerObservableLine<Scoreboard<OlympaPlayerZTA>> lineDeaths = new PlayerObservableLine<>(x -> "§7Morts: §6" + x.getOlympaPlayer().deaths.get(), (x) -> x.getOlympaPlayer().deaths);
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
-
+	
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -169,13 +176,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
-		try {
-			if (getServer().getPluginManager().isPluginEnabled("dynmap")) DynmapLink.initialize();
-			if (getServer().getPluginManager().isPluginEnabled("BeautyQuests")) beautyQuestsLink = new BeautyQuestsLink();
-		}catch (Exception ex) {
-			sendMessage("Une erreur est survenue durant le chargement d'un plugin externe.");
-			ex.printStackTrace();
-		}
+		loadIntegration("dynmap", DynmapLink::initialize);
+		loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());
+		loadIntegration("Sentinel", () -> JavaPlugin.getPlugin(SentinelPlugin.class).registerIntegration(new SentinelZTA()));
 
 		try {
 			gunRegistry = new GunRegistry();
@@ -187,6 +190,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
 		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
 		for (Grenade grenade : Grenade.values()) WeaponsGiveGUI.stackables.add(grenade);
+		for (QuestItem item : QuestItem.values()) WeaponsGiveGUI.stackables.add(item);
 		
 		AmmoType.CARTRIDGE.getName();
 
@@ -198,7 +202,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(new WeaponsListener(), this);
-		pluginManager.registerEvents(mobsListener = new MobsListener(config.getLocation("waitingRoom")), this);
+		pluginManager.registerEvents(new MobsListener(), this);
+		pluginManager.registerEvents(new PlayersListener(config.getLocation("waitingRoom")), this);
 		pluginManager.registerEvents(hub, this);
 		pluginManager.registerEvents(teleportationManager, this);
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
@@ -217,6 +222,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
+		}
+		
+		try {
+			pluginManager.registerEvents(miniguns = new MinigunsManager(new File(getDataFolder(), "miniguns.yml")), this);
+		}catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 		try {
@@ -269,7 +280,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 		new BackCommand(this, ZTAPermissions.BACK_COMMAND) {
-			final long TIME_BETWEEN = TimeUnit.DAYS.toMillis(1);
+			final long timeBetween = TimeUnit.DAYS.toMillis(1);
 			final NumberFormat numberFormat = new DecimalFormat("00");
 			
 			@Override
@@ -280,7 +291,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			
 			@Override
 			public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-				long timeToWait = (super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.get() + TIME_BETWEEN) - System.currentTimeMillis();
+				long timeToWait = (super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.get() + timeBetween) - System.currentTimeMillis();
 				if (timeToWait > 0) {
 					sendError("Tu dois encore attendre %s avant de pouvoir refaire un /back !", Utils.durationToString(numberFormat, timeToWait));
 					return false;
@@ -301,7 +312,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 								AmmoType.HEAVY.getAmmo(10, true) })).register();
 		new StatsCommand(this).register();
 		
-		new Mobs(); // initalise les mobs custom
+		Mobs.Zombies.COMMON.getName(); // initalise les mobs custom
 		mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 		mobSpawning.start();
 		
@@ -399,6 +410,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		soundAmbiance.stop();
 		
 		gunRegistry.unload();
+	}
+	
+	private void loadIntegration(String pluginName, Runnable runnable) {
+		try {
+			if (getServer().getPluginManager().isPluginEnabled(pluginName)) {
+				runnable.run();
+				sendMessage("§aIntégration §2%s§a chargée", pluginName);
+			}else sendMessage("§cLe plugin §4%s§c n'a pas été trouvé, l'intégration n'a pas chargé", pluginName);
+		}catch (Exception ex) {
+			sendMessage("§cUne erreur est survenue lors du chargement de l'intégration du plugin §4%s", pluginName);
+			ex.printStackTrace();
+		}
 	}
 	
 }

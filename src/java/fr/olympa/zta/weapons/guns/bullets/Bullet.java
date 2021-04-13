@@ -21,20 +21,26 @@ public abstract class Bullet{
 	private static final Random random = new Random();
 	
 	private final FixedMetadataValue metadata = new FixedMetadataValue(OlympaZTA.getInstance(), this);
-	protected final Gun gun;
+	
+	protected final float speed;
+	protected final float spread;
 	
 	public Bullet(Gun gun){
-		this.gun = gun;
+		this.speed = gun.bulletSpeed.getValue();
+		this.spread = gun.bulletSpread.getValue();
 	}
 	
-	public void launchProjectile(Player p){
-		float speed = gun.bulletSpeed.getValue();
-		Vector velocity = p.getLocation().getDirection().multiply(speed);
+	public Bullet(float speed, float spread) {
+		this.speed = speed;
+		this.spread = spread;
+	}
+	
+	public void launchProjectile(Player p, Vector direction) {
+		Vector velocity = direction.multiply(speed);
 
-		float bulletSpread = gun.bulletSpread.getValue();
-		if (bulletSpread != 0) {
-			float bulletSpreadHalf = bulletSpread / 2;
-			velocity.add(new Vector(random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf));
+		if (spread != 0) {
+			float bulletSpreadHalf = spread / 2;
+			velocity.add(new Vector(random.nextFloat() * spread - bulletSpreadHalf, random.nextFloat() * spread - bulletSpreadHalf, random.nextFloat() * spread - bulletSpreadHalf));
 		}
 
 		boolean highVelocity = speed >= 4.5;

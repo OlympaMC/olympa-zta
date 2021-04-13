@@ -3,14 +3,19 @@ package fr.olympa.zta.weapons;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 
+import org.bukkit.DyeColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.utils.Attribute;
@@ -19,6 +24,7 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
+import fr.olympa.zta.weapons.guns.PersistentGun;
 
 public class WeaponsCommand extends ComplexCommand {
 
@@ -39,6 +45,23 @@ public class WeaponsCommand extends ComplexCommand {
 			new WeaponsGiveGUI().create(player);
 			return true;
 		}else return false;
+	}
+	
+	@Cmd (player = true)
+	public void givePersistent(CommandContext cmd) {
+		new PagedGUI<GunType>("Liste des armes", DyeColor.ORANGE, Arrays.asList(GunType.values()), 3) {
+			
+			@Override
+			public ItemStack getItemStack(GunType object) {
+				return object.getDemoItem();
+			}
+			
+			@Override
+			public void click(GunType existing, Player p, ClickType clickType) {
+				p.getInventory().addItem(PersistentGun.create(existing).createItemStack());
+			}
+
+		}.create(getPlayer());
 	}
 
 	@Cmd (player = true, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "[type de munition] [quantité] [vide ?]")

@@ -29,6 +29,8 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission BACK_COMMAND = new OlympaSpigotPermission(OlympaGroup.VIP);
 	public static final OlympaSpigotPermission BACK_COMMAND_INFINITE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	
+	public static final OlympaSpigotPermission MINIGUNS_COMMAND = new OlympaSpigotPermission(OlympaGroup.BUILDER);
+	
 	public static final OlympaSpigotPermission HUB_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 
 	public static final OlympaSpigotPermission PROBLEM_MONITORING = new OlympaSpigotPermission(OlympaGroup.DEV);
