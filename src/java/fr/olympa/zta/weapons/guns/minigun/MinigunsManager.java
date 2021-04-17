@@ -83,12 +83,24 @@ public class MinigunsManager implements Listener {
 	private Observer updateMinigun(int id, Minigun minigun) {
 		return () -> {
 			try {
-				minigunsYaml.set(String.valueOf(id), minigun == null ? null : minigun.serialize());
+				minigunsYaml.set(Integer.toString(id), minigun == null ? null : minigun.serialize());
 				minigunsYaml.save(minigunsFile);
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
 		};
+	}
+	
+	public void removeMinigun(Minigun minigun) {
+		minigun.destroy();
+		
+		miniguns.remove(minigun.getID());
+		try {
+			minigunsYaml.set(Integer.toString(minigun.getID()), null);
+			minigunsYaml.save(minigunsFile);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void unload() {

@@ -14,6 +14,7 @@ import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunType;
 
@@ -54,8 +55,24 @@ public enum PackType implements RandomizedPicker<LootCreator> {
 			new FoodCreator(20, Food.GOLDEN_APPLE, 10, 10),
 			new ItemStackableCreator(10, GunType.STONER),
 			new ItemStackableCreator(15, GunType.DRAGUNOV),
-			new ItemStackableCreator(20, GunType.SDMR)
-	),
+			new ItemStackableCreator(20, GunType.SDMR)),
+	ACCESSORIES(
+			5000,
+			15,
+			2,
+			2,
+			"d'accessoires",
+			new AmmoCreator(-1, 10, 15),
+			new ItemStackableCreator(8, Accessory.CANNON_CAC),
+			new ItemStackableCreator(8, Accessory.CANNON_DAMAGE),
+			new ItemStackableCreator(10, Accessory.CANNON_POWER),
+			new ItemStackableCreator(8, Accessory.CANNON_SILENT),
+			new ItemStackableCreator(9, Accessory.CANNON_STABILIZER),
+			new ItemStackableCreator(10, Accessory.SCOPE_LIGHT),
+			new ItemStackableCreator(9, Accessory.SCOPE_STRONG),
+			new ItemStackableCreator(10, Accessory.STOCK_LIGHT),
+			new ItemStackableCreator(8, Accessory.STOCK_STRONG)
+			),
 	;
 
 	private int price, slot;

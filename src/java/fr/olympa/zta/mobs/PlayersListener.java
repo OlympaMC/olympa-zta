@@ -59,6 +59,8 @@ public class PlayersListener implements Listener {
 	private Map<Player, Location> packPositions = new HashMap<>();
 	private Location packWaitingRoom;
 	
+	private List<Player> parachuting = new ArrayList<>();
+	
 	public PlayersListener(Location packWaitingRoom) {
 		this.packWaitingRoom = packWaitingRoom;
 	}
@@ -127,13 +129,13 @@ public class PlayersListener implements Listener {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 		
-		p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
+		if (p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() != 40) p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
 		
 		if (p.getHealth() == 0) {
 			p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu étais encore en combat lors de ta dernière déconnexion...");
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
-		}//else p.setHealth(p.getHealth());
+		}else p.setHealth(p.getHealth()); // pour update la barre
 		
 		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(20);
 		p.setWalkSpeed(0.21f);
@@ -227,6 +229,7 @@ public class PlayersListener implements Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
 		Player p = e.getPlayer();
+		//System.out.println("PlayersListener.onMove() " + p.getFallDistance() + " " + p.isOnGround());
 		if (p.getFallDistance() > 3) {
 			if (p.getInventory().getChestplate() != null && (p.getInventory().getChestplate().getType() == Material.DIAMOND_CHESTPLATE)) {
 				//p.addPotionEffect(PARACHUTE_EFFECT);

@@ -1,6 +1,8 @@
 package fr.olympa.zta.weapons.guns.minigun;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -12,6 +14,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,6 +32,15 @@ import fr.olympa.zta.weapons.guns.CommonGunConstants;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
+import net.minecraft.server.v1_16_R3.DataWatcher;
+import net.minecraft.server.v1_16_R3.DataWatcher.Item;
+import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R3.PlayerConnection;
 
 public class Minigun extends AbstractObservable {
 	
@@ -38,7 +51,7 @@ public class Minigun extends AbstractObservable {
 	private static final int MAX_STATE = 75;
 	private static final int WARNING_STATE = 48;
 	private static final int FIRE_RATE = 3;
-	private static final int RATE_UNTIL_UNLOAD = 10;
+	private static final int RATE_UNTIL_UNLOAD = 8;
 
 	public int id;
 	
@@ -53,6 +66,10 @@ public class Minigun extends AbstractObservable {
 	
 	private ArmorStand gunStand;
 	private ArmorStand sitStand;
+	private ArmorStand clipStand;
+	
+	private PacketPlayOutEntityMetadata packetFakeWatcherGun;
+	private PacketPlayOutEntityMetadata packetFakeWatcherClip;
 	
 	private Player inUse = null;
 	private BossBar bar;
@@ -89,7 +106,7 @@ public class Minigun extends AbstractObservable {
 		chunks.put(point, chunk);
 		
 		bar = Bukkit.createBossBar("§bMinigun", BarColor.BLUE, BarStyle.SOLID);
-		bar.setProgress(1);
+		bar.setProgress(0);
 	}
 	
 	public int getID() {
@@ -127,7 +144,30 @@ public class Minigun extends AbstractObservable {
 			if (lastLocation == null || lastLocation.getPitch() != loc.getPitch() || lastLocation.getYaw() != loc.getYaw()) move(p.getLocation());
 		}, 1, 1);
 		
-		if (lockUnload) p.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 0, (state - WARNING_STATE) * FIRE_RATE - 20, 20);
+		if (lockUnload) p.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 2, (state - WARNING_STATE) * FIRE_RATE - 20 + 5, 20);
+		
+		PlayerConnection playerConnection = ((CraftPlayer) p).getHandle().playerConnection;
+		playerConnection.sendPacket(packetFakeWatcherGun);
+		playerConnection.sendPacket(packetFakeWatcherClip);
+		playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", "minigun_manager", new ChannelDuplexHandler() {
+			@Override
+			public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+				if (msg instanceof PacketPlayOutEntityMetadata) {
+					PacketPlayOutEntityMetadata packet = (PacketPlayOutEntityMetadata) msg;
+					Field idField = packet.getClass().getDeclaredField("a");
+					idField.setAccessible(true);
+					int id = idField.getInt(packet);
+					if (id == clipStand.getEntityId() || id == gunStand.getEntityId()) {
+						Field dataField = packet.getClass().getDeclaredField("b");
+						dataField.setAccessible(true);
+						List<DataWatcher.Item<?>> data = (List<Item<?>>) dataField.get(packet);
+						if (data.size() > 1) return;
+						//System.out.println(Arrays.toString(data.stream().mapToInt(x -> x.a().a()).toArray()));
+					}
+				}
+				super.write(ctx, msg, promise);
+			}
+		});
 	}
 	
 	public void leave(boolean eject) {
@@ -141,9 +181,12 @@ public class Minigun extends AbstractObservable {
 		if (lockUnload) inUse.resetTitle();
 		lastClick = 0;
 		bar.removePlayer(inUse);
-		//gunStand.teleport(standLocation);
 		gunStand.setRightArmPose(INITIAL_ANGLE);
 		OlympaZTA.getInstance().miniguns.inUse.remove(inUse);
+		
+		ChannelPipeline pipeline = ((CraftPlayer) inUse).getHandle().playerConnection.networkManager.channel.pipeline();
+		if (pipeline.get("minigun_manager") != null) pipeline.remove("minigun_manager");
+		
 		inUse = null;
 	}
 	
@@ -160,7 +203,7 @@ public class Minigun extends AbstractObservable {
 		absangle = Math.min(absangle, MAX_ANGLE);
 		direction.crossProduct(facingDirection);
 		angle = NORMAL.dot(direction) < 0 ? -absangle : absangle;
-		gunStand.setRightArmPose(new EulerAngle(INITIAL_ANGLE.getX() - yAngle * 0.8, angle, 0));
+		gunStand.setRightArmPose(new EulerAngle(INITIAL_ANGLE.getX() - yAngle * 0.7, angle, 0));
 		
 		bulletDirection = null;
 	}
@@ -189,7 +232,7 @@ public class Minigun extends AbstractObservable {
 					if (state == MAX_STATE) {
 						lockUnload = true;
 						timeUntilUnload = RATE_UNTIL_UNLOAD / 2;
-						inUse.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 7, 90, 20);
+						inUse.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 5, 80, 20);
 					}
 					updateState();
 				}else {
@@ -244,7 +287,11 @@ public class Minigun extends AbstractObservable {
 		gunStand.setRightArmPose(INITIAL_ANGLE);
 		gunStand.setGravity(false);
 		gunStand.setPersistent(false);
-		gunStand.setMarker(false);
+		gunStand.setMarker(true);
+		
+		byte b0 = ((CraftArmorStand) gunStand).getHandle().getDataWatcher().get(EntityArmorStand.b);
+		DelegateDataWatcher<Byte> fakeWatcherMarker = new DelegateDataWatcher<>(EntityArmorStand.b, (byte) (b0 & ~16));
+		packetFakeWatcherGun = new PacketPlayOutEntityMetadata(gunStand.getEntityId(), fakeWatcherMarker, false);
 		
 		sitStand = playerPosition.getWorld().spawn(playerPosition.clone().add(0, 0.3, 0), ArmorStand.class);
 		sitStand.setInvisible(true);
@@ -253,12 +300,22 @@ public class Minigun extends AbstractObservable {
 		sitStand.setPersistent(false);
 		sitStand.setMarker(true);
 		
+		clipStand = playerPosition.getWorld().spawn(playerPosition.clone().add(0, 0.7, 0), ArmorStand.class);
+		clipStand.setInvisible(true);
+		clipStand.setInvulnerable(true);
+		clipStand.setGravity(false);
+		clipStand.setPersistent(false);
+		clipStand.setMarker(true);
+		
+		packetFakeWatcherClip = new PacketPlayOutEntityMetadata(clipStand.getEntityId(), fakeWatcherMarker, false);
+		
 		isSpawned = true;
 	}
 	
 	protected void destroy() {
 		if (!isSpawned) return;
 		isSpawned = false;
+		leave(true);
 		
 		gunStand.remove();
 		sitStand.remove();

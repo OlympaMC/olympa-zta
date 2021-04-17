@@ -23,11 +23,12 @@ public class LootPackGUI extends OlympaGUI {
 		for (PackType pack : PackType.values()) {
 			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§ePack " + pack.getName(), pack.getLootsDescription()));
 		}
-		inv.setItem(49, ItemUtils.item(Material.BRICK, "§eMon porte-feuille", player.getGameMoney().getFormatted()));
+		inv.setItem(49, ItemUtils.item(Material.BRICK, "§eMa banque", "§7➤ §6" + player.getGameMoney().getFormatted()));
 	}
 	
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+		if (slot == 49) return true;
 		Arrays.stream(PackType.values()).filter(type -> type.getSlot() == slot).findAny().ifPresent(type -> packBlock.start(p, type));
 		Inventories.closeAndExit(p);
 		return true;

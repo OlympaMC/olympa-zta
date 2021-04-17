@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.BlinkingLine;
+import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
@@ -37,7 +38,9 @@ public class PackBlock {
 	
 	public PackBlock(Location location) {
 		this.location = location.clone().add(0.5, 1, 0.5);
-		OlympaCore.getInstance().getHologramsManager().createHologram(this.location.clone().add(0, 0.1, 0), false, true, new BlinkingLine<>((color, x) -> color + "§lPacks d'équipement", OlympaZTA.getInstance(), 50, ChatColor.GOLD, ChatColor.YELLOW));
+		OlympaCore.getInstance().getHologramsManager().createHologram(this.location.clone().add(0, 0.1, 0), false, true,
+				new BlinkingLine<>((color, x) -> color + "§lPacks d'équipement", OlympaZTA.getInstance(), 50, ChatColor.GOLD, ChatColor.YELLOW),
+				new FixedLine<>("§7§o" + PackType.values().length + " packs disponibles"));
 	}
 	
 	public void click(Player p) {
@@ -55,7 +58,7 @@ public class PackBlock {
 		}
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 		if (player.getGameMoney().has(type.getPrice())) {
-			Prefix.DEFAULT.sendMessage(p, "Tu vas ouvrir un pack %s...", type.getName());
+			Prefix.DEFAULT.sendMessage(p, "Tu vas ouvrir un §lpack %s§7...", type.getName());
 			Item item = location.getWorld().dropItem(location.clone().add(0, 2.5, 0), FLOATING_ITEM);
 			item.setGravity(false);
 			item.setPersistent(false);
@@ -80,13 +83,14 @@ public class PackBlock {
 								return realItem == null ? loot.getItem() : realItem;
 							}).toArray(ItemStack[]::new);
 							SpigotUtils.giveItems(p, items);
-							Prefix.DEFAULT_GOOD.sendMessage(Bukkit.getOnlinePlayers(), "§2§l%s §atrouve %s dans un pack %s !", p.getName(), picked.stream().map(LootCreator::getTitle).collect(Collectors.joining("§a, §e", "§e", "§a")), type.getName());
+							Prefix.DEFAULT_GOOD.sendMessage(Bukkit.getOnlinePlayers(), "§2§l%s §atrouve %s dans un §npack %s§a !", p.getName(), picked.stream().map(LootCreator::getTitle).collect(Collectors.joining("§a, §6", "§6", "§a")), type.getName());
 						}else {
 							Prefix.DEFAULT_BAD.sendMessage(p, "Tu as cru nous avoir ? Reviens avec assez d'argent pour acheter le pack.");
 							Prefix.DEFAULT_BAD.sendMessage(Bukkit.getOnlinePlayers(), "%s a cru gruger le game en ne payant pas son pack ! Jetez-lui des pierres !", p.getName());
 						}
 					}else {
 						location.getWorld().spawnParticle(Particle.CRIT, location.getX(), location.getY() + (y / 10D), location.getZ(), 4, 0D, 0D, 0D, 0);
+						location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_CHIME, 0.25f, 0.6f + ((float) y) * ((1.8f - 0.6f) / 25f));
 					}
 				}
 			}, 1, 3);

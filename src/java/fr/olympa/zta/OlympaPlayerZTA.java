@@ -19,6 +19,8 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.api.sql.SQLColumn;
+import fr.olympa.api.trades.TradeBag;
+import fr.olympa.api.trades.TradePlayerInterface;
 import fr.olympa.api.utils.observable.ObservableInt;
 import fr.olympa.api.utils.observable.ObservableLong;
 import fr.olympa.api.utils.observable.ObservableValue;
@@ -26,7 +28,7 @@ import fr.olympa.zta.clans.ClanZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.plots.PlayerPlot;
 
-public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA>, EnderChestPlayerInterface {
+public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA>, EnderChestPlayerInterface, TradePlayerInterface {
 
 	public static final int MAX_SLOTS = 27;
 
@@ -141,6 +143,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public static OlympaPlayerZTA get(Player p) {
 		return AccountProvider.get(p.getUniqueId());
+	}
+	
+	@Override
+	public TradeBag<? extends TradePlayerInterface> getTradeBag() {
+		return null;// TODO
 	}
 	
 }

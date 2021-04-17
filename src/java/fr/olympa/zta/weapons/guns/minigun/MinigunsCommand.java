@@ -81,6 +81,14 @@ public class MinigunsCommand extends ComplexCommand {
 		sender.spigot().sendMessage(createCommandComponent(Prefix.DEFAULT_GOOD.formatMessage("Créer un nouvel étage..."), "addFloor", " ", minigun));*/
 	}
 	
+	@Cmd (args = "MINIGUN")
+	public void remove(CommandContext cmd) {
+		Minigun minigun = cmd.getArgument(0);
+		
+		miniguns.removeMinigun(minigun);
+		sendSuccess("Le minigun %d a été supprimé.", minigun.getID());
+	}
+	
 	@Cmd
 	public void list(CommandContext cmd) {
 		for (Minigun minigun : miniguns.getMiniguns().values()) {

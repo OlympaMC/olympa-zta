@@ -64,6 +64,7 @@ import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.server.OlympaServer;
+import fr.olympa.api.trades.TradesManager;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.api.utils.spigot.TeleportationManager;
@@ -224,6 +225,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
 		}
 		
+		new TradesManager<>(this, 10);
+		
 		try {
 			pluginManager.registerEvents(miniguns = new MinigunsManager(new File(getDataFolder(), "miniguns.yml")), this);
 		}catch (IOException ex) {
@@ -291,10 +294,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			
 			@Override
 			public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-				long timeToWait = (super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.get() + timeBetween) - System.currentTimeMillis();
-				if (timeToWait > 0) {
-					sendError("Tu dois encore attendre %s avant de pouvoir refaire un /back !", Utils.durationToString(numberFormat, timeToWait));
-					return false;
+				OlympaPlayerZTA olympaPlayer = getOlympaPlayer();
+				if (!ZTAPermissions.BACK_COMMAND_INFINITE.hasPermission(olympaPlayer)) {
+					long timeToWait = (olympaPlayer.backVIPTime.get() + timeBetween) - System.currentTimeMillis();
+					if (timeToWait > 0) {
+						sendError("Tu dois encore attendre %s avant de pouvoir refaire un /back !", Utils.durationToString(numberFormat, timeToWait));
+						return false;
+					}
 				}
 				return super.onCommand(sender, command, label, args);
 			}
