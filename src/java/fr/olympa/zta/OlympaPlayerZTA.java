@@ -69,6 +69,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public void loaded() {
 		super.loaded();
 		money.observe("scoreboard_update", () -> OlympaZTA.getInstance().lineMoney.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(this)));
+		
 		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
 		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
 		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateAsync(this, killedZombies.get(), null, null));
@@ -79,6 +80,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateAsync(this, openedChests.get(), null, null));
 		kitVIPTime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPTime.get(), null, null));
 		backVIPTime.observe("datas", () -> COLUMN_BACK_VIP_TIME.updateAsync(this, backVIPTime.get(), null, null));
+		
+		if (OlympaZTA.getInstance().rankingMoney != null) money.observe("ranking", () -> OlympaZTA.getInstance().rankingMoney.handleNewScore(getName(), null, money.get()));
+		if (OlympaZTA.getInstance().rankingKillZombie != null) killedZombies.observe("ranking", () -> OlympaZTA.getInstance().rankingKillZombie.handleNewScore(getName(), null, killedZombies.get()));
+		if (OlympaZTA.getInstance().rankingKillPlayer != null) killedPlayers.observe("ranking", () -> OlympaZTA.getInstance().rankingKillPlayer.handleNewScore(getName(), null, killedPlayers.get()));
+		if (OlympaZTA.getInstance().rankingLootChest != null) openedChests.observe("ranking", () -> OlympaZTA.getInstance().rankingLootChest.handleNewScore(getName(), null, openedChests.get()));
 	}
 
 	@Override

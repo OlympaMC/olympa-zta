@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,7 @@ import fr.olympa.api.economy.MoneyCommand;
 import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.groups.OlympaGroup;
+import fr.olympa.api.holograms.HologramCycler;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
@@ -90,6 +92,11 @@ import fr.olympa.zta.mobs.PlayersListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
+import fr.olympa.zta.ranks.ClanMoneyRanking;
+import fr.olympa.zta.ranks.KillPlayerRanking;
+import fr.olympa.zta.ranks.KillZombieRanking;
+import fr.olympa.zta.ranks.LootChestRanking;
+import fr.olympa.zta.ranks.MoneyRanking;
 import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
@@ -148,6 +155,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public SoundAmbiance soundAmbiance;
 	public MinigunsManager miniguns;
 	
+	public KillPlayerRanking rankingKillPlayer;
+	public KillZombieRanking rankingKillZombie;
+	public LootChestRanking rankingLootChest;
+	public MoneyRanking rankingMoney;
+	public ClanMoneyRanking rankingMoneyClan;
+	
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
 		String title = "§c§kdddddddd";
@@ -185,6 +198,22 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			gunRegistry = new GunRegistry();
 		}catch (Exception ex) {
 			throw new RuntimeException("Registry failed to load", ex);
+		}
+		
+		try {
+			Location first = getConfig().getLocation("scoreHolograms.first");
+			Location second = getConfig().getLocation("scoreHolograms.second");
+			
+			rankingKillPlayer = new KillPlayerRanking(first);
+			rankingKillZombie = new KillZombieRanking(first);
+			new HologramCycler(this, Arrays.asList(rankingKillPlayer.getHologram(), rankingKillZombie.getHologram()), 200).start();
+			
+			rankingLootChest = new LootChestRanking(second);
+			rankingMoney = new MoneyRanking(second);
+			rankingMoneyClan = new ClanMoneyRanking(second);
+			new HologramCycler(this, Arrays.asList(rankingLootChest.getHologram(), rankingMoney.getHologram(), rankingMoneyClan.getHologram()), 200).start();
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		for (GunType gun : GunType.values()) WeaponsGiveGUI.stackables.add(gun);

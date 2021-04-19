@@ -23,6 +23,10 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created, long plotExpirationReset) {
 		super(manager, id, name, tag, chief, maxSize, money, created);
 		this.plotExpirationReset = plotExpirationReset;
+		if (OlympaZTA.getInstance().rankingMoneyClan != null) getMoney().observe("ranking", () -> {
+			System.out.println("ClanZTA.ClanZTA() lambda money");
+			OlympaZTA.getInstance().rankingMoneyClan.handleNewScore(getName(), null, getMoney().get());
+		});
 	}
 
 	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {

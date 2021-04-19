@@ -15,7 +15,8 @@ import fr.olympa.api.utils.Prefix;
 
 public class StatsCommand extends OlympaCommand {
 	
-	private final DecimalFormat ratioFormat = new DecimalFormat("00.#");
+	private final DecimalFormat percentageFormat = new DecimalFormat("00.##");
+	private final DecimalFormat ratioFormat = new DecimalFormat("0.##");
 	
 	public StatsCommand(Plugin plugin) {
 		super(plugin, "stats");
@@ -45,9 +46,10 @@ public class StatsCommand extends OlympaCommand {
 		joiner.add("Nombre de morts: §e" + olympaPlayer.deaths.get());
 		joiner.add("Joueurs tués: §e" + olympaPlayer.killedPlayers.get());
 		joiner.add("Zombies tués: §e" + olympaPlayer.killedZombies.get());
+		joiner.add("Ratio: " + (olympaPlayer.deaths.get() == 0 ? "§cx" : "§e" + ratioFormat.format(olympaPlayer.killedPlayers.getAsDouble() / olympaPlayer.deaths.getAsDouble())));
 		double head = olympaPlayer.headshots.get();
 		double other = olympaPlayer.otherShots.get();
-		joiner.add("Headshots: " + (head == 0 && other == 0 ? "§cx" : "§e" + ratioFormat.format(head / (other + head) * 100) + "%"));
+		joiner.add("Headshots: " + (head == 0 && other == 0 ? "§cx" : "§e" + percentageFormat.format(head / (other + head) * 100) + "%"));
 		joiner.add("Coffres ouverts: §e" + olympaPlayer.openedChests.get());
 		sender.sendMessage(joiner.toString());
 		return false;
