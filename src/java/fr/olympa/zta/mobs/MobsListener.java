@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -63,6 +64,13 @@ public class MobsListener implements Listener {
 	public void onDamage(EntityDamageEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getCause() == DamageCause.FALL) {
+			if (e.getEntity() instanceof Player) {
+				Player p = (Player) e.getEntity();
+				if (p.getInventory().getBoots() != null && p.getInventory().getBoots().getType() == Material.DIAMOND_BOOTS) {
+					e.setCancelled(true);
+					return;
+				}
+			}
 			e.setDamage(e.getDamage() / 1.5);
 		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
 			if (e.getEntity() instanceof Item) {

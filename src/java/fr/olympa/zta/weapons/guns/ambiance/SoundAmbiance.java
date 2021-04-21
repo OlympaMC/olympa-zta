@@ -25,7 +25,7 @@ public class SoundAmbiance implements Runnable {
 	
 	@Override
 	public void run() {
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		Collection<? extends Player> players = OlympaZTA.getInstance().mobSpawning.world.getPlayers();
 		if (players.isEmpty()) return;
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (Iterator<AmbianceScenario> iterator = scenarios.iterator(); iterator.hasNext();) {
@@ -38,7 +38,7 @@ public class SoundAmbiance implements Runnable {
 		}
 		if (scenarios.size() == chances.length) return;
 		if (random.nextDouble() < chances[scenarios.size()]) {
-			float volume = (float) random.nextDouble(0.015, 0.08);
+			float volume = (float) random.nextDouble(0.012, 0.065);
 			float pitch = (float) random.nextDouble(0.7 + volume, 0.9);
 			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(volume, pitch);
 			scenarios.add(scenario);

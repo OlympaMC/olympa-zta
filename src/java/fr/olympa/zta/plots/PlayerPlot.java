@@ -184,7 +184,7 @@ public class PlayerPlot {
 	public boolean blockAction(Player p, Event e, Block block) {
 		OlympaPlayerZTA oplayer = OlympaPlayerZTA.get(p);
 		if (oplayer.getPlot() != this) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire ici !");
+			OlympaZTA.getInstance().plotsManager.sendDenyMessage(p);
 			return true;
 		}
 		
@@ -221,7 +221,7 @@ public class PlayerPlot {
 				ex.printStackTrace();
 			}
 		}else if (e instanceof BlockBreakEvent) {
-			
+			// pourquoi j'ai commencé ça ? à voir
 		}
 		return false;
 	}

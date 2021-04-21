@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.ranking.AbstractSQLRank;
 
 public class MoneyRanking extends AbstractSQLRank {
@@ -25,6 +26,11 @@ public class MoneyRanking extends AbstractSQLRank {
 	@Override
 	protected String getColumn() {
 		return "money";
+	}
+	
+	@Override
+	protected String formatScore(double score) {
+		return OlympaMoney.format(score);
 	}
 	
 }

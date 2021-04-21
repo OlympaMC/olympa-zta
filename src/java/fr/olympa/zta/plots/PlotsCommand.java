@@ -40,5 +40,12 @@ public class PlotsCommand extends ComplexCommand {
 	public void gui(CommandContext cmd) {
 		new PlayerPlotGUI(getOlympaPlayer()).create(player);
 	}
+	
+	@Cmd
+	public void globalInfos(CommandContext cmd) {
+		sendInfo("Invitations en mémoire: %d", manager.invitations.size());
+		sendInfo("Données internes de plots en mémoire: %d (= %d)", manager.plotsByID.size(), manager.plotsByPosition.size());
+		sendInfo("Données chargées de plots: %d", manager.plotsByID.values().stream().filter(x -> x.loadedPlot != null).count());
+	}
 
 }

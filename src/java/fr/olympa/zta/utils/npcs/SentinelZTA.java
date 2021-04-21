@@ -3,8 +3,11 @@ package fr.olympa.zta.utils.npcs;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -13,7 +16,7 @@ import org.mcmonkey.sentinel.SentinelTrait;
 
 import fr.olympa.zta.weapons.guns.PersistentGun;
 
-public class SentinelZTA extends SentinelIntegration {
+public class SentinelZTA extends SentinelIntegration implements Listener {
 	
 	@Override
 	public boolean tryAttack(SentinelTrait st, LivingEntity ent) {
@@ -36,6 +39,11 @@ public class SentinelZTA extends SentinelIntegration {
 			st.attackHelper.rechase();
 		}
 		return true;
+	}
+	
+	@EventHandler
+	public void onVelocity(PlayerVelocityEvent e) {
+		System.out.println("PlayersListener.onVelocity() " + e.getPlayer());
 	}
 	
 }

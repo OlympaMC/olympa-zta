@@ -55,6 +55,7 @@ public class QuestItemCreator implements LootCreator {
 		GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2),
 		
 		PARACHUTE(Material.DIAMOND_CHESTPLATE, "Parachute", -1, "Si vous le portez, vous serez en mesure de planer dès le saut depuis un endroit élevé.", "Item rarissime, prenez-en soin."),
+		BOOTS(Material.DIAMOND_BOOTS, "Bottes à ressort", -1, "Produites par Aperture Science, Inc., il s'agit de bottes empêchant tout dégât de chute et permettant de sauter haut.", "Item de très grande valeur."),
 		;
 		
 		private final String name;

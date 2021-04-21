@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -17,7 +18,9 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
@@ -227,6 +230,10 @@ public class Minigun extends AbstractObservable {
 					}
 					new BulletSimple(CommonGunConstants.BULLET_SPEED_MEDIUM_LOW, Gun.GunAccuracy.MEDIUM.getBulletSpread(), 3, 3).launchProjectile(inUse, bulletDirection);
 					playerPosition.getWorld().playSound(playerPosition, ZTASound.GUN_AUTO.getSound(), SoundCategory.PLAYERS, 1f + 0.5f, 1);
+					for (Entity en : playerPosition.getWorld().getNearbyEntities(playerPosition, 25, 25, 25, x -> x instanceof Zombie)) {
+						Zombie zombie = (Zombie) en;
+						if (zombie.getTarget() == null && ThreadLocalRandom.current().nextBoolean()) zombie.setTarget(inUse);
+					}
 					
 					state++;
 					if (state == MAX_STATE) {

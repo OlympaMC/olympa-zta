@@ -192,7 +192,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		loadIntegration("dynmap", DynmapLink::initialize);
 		loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());
-		loadIntegration("Sentinel", () -> JavaPlugin.getPlugin(SentinelPlugin.class).registerIntegration(new SentinelZTA()));
+		loadIntegration("Sentinel", () -> {
+			SentinelZTA sentinelZTA = new SentinelZTA();
+			JavaPlugin.getPlugin(SentinelPlugin.class).registerIntegration(sentinelZTA);
+			getServer().getPluginManager().registerEvents(sentinelZTA, this);
+		});
 
 		try {
 			gunRegistry = new GunRegistry();
@@ -211,7 +215,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			rankingLootChest = new LootChestRanking(second);
 			rankingMoney = new MoneyRanking(second);
 			rankingMoneyClan = new ClanMoneyRanking(second);
-			new HologramCycler(this, Arrays.asList(rankingLootChest.getHologram(), rankingMoney.getHologram(), rankingMoneyClan.getHologram()), 200).start();
+			new HologramCycler(this, Arrays.asList(rankingLootChest.getHologram(), rankingMoney.getHologram(), rankingMoneyClan.getHologram()), 150).start();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

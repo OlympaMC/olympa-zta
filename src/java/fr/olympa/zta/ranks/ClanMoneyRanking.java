@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.ranking.AbstractRank;
 import fr.olympa.api.sql.statement.OlympaStatement;
 
@@ -41,6 +42,11 @@ public class ClanMoneyRanking extends AbstractRank {
 			}
 			resultSet.close();
 		}
+	}
+	
+	@Override
+	protected String formatScore(double score) {
+		return OlympaMoney.format(score);
 	}
 	
 }

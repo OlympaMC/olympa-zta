@@ -57,10 +57,13 @@ public class PlayerPlotsManager {
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 
-	private Map<OlympaPlayerZTA, ObservableList<PlayerPlot>> invitations = new HashMap<>();
+	protected Map<OlympaPlayerZTA, ObservableList<PlayerPlot>> invitations = new HashMap<>();
 
-	private Map<Integer, InternalPlotDatas> plotsByID = new HashMap<>();
-	private Map<PlayerPlotLocation, InternalPlotDatas> plotsByPosition = new HashMap<>();
+	protected Map<Integer, InternalPlotDatas> plotsByID = new HashMap<>();
+	protected Map<PlayerPlotLocation, InternalPlotDatas> plotsByPosition = new HashMap<>();
+	
+	protected Map<Player, Long> messages = new HashMap<>();
+	
 	private World worldCrea;
 	private Schematic schematic;
 
@@ -245,6 +248,15 @@ public class PlayerPlotsManager {
 		}
 		return null;
 	}
+	
+	public void sendDenyMessage(Player p) {
+		long time = System.currentTimeMillis();
+		Long last = messages.get(p);
+		if (last == null || last.longValue() < time) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire ici !");
+			messages.put(p, time + 2000);
+		}
+	}
 
 	public void initSearch(OlympaPlayerZTA player) {
 		player.plotFind = new BukkitRunnable() {
@@ -277,7 +289,7 @@ public class PlayerPlotsManager {
 	private boolean blockEvent(Player p, Event e, Block block) {
 		PlayerPlot plot = getPlot(block.getLocation());
 		if (plot == null) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas le droit de construire ici !");
+			sendDenyMessage(p);
 			return true;
 		}
 		return plot.blockAction(p, e, block);

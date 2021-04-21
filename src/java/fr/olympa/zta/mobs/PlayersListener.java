@@ -29,9 +29,14 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
@@ -52,7 +57,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayersListener implements Listener {
 	
-	//private final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
+	private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
+	private static final PotionEffect BOOTS_EFFECT = new PotionEffect(PotionEffectType.JUMP, 99999999, 1, false, false);
+
+	private static final double ZTA_MAX_HEALTH = 40;
 	
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
@@ -129,10 +137,10 @@ public class PlayersListener implements Listener {
 		Player p = e.getPlayer();
 		for (PacketHandlers handler : PacketHandlers.values()) handler.addPlayer(p);
 		
-		if (p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() != 40) p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
+		if (p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() != 40) p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(ZTA_MAX_HEALTH);
 		
 		if (p.getHealth() == 0) {
-			p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+			p.setHealth(ZTA_MAX_HEALTH);
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu étais encore en combat lors de ta dernière déconnexion...");
 			p.teleport(OlympaZTA.getInstance().hub.getSpawnpoint());
 		}else p.setHealth(p.getHealth()); // pour update la barre
@@ -156,6 +164,7 @@ public class PlayersListener implements Listener {
 			});
 		}else {
 			p.sendTitle("§eOlympa §6§lZTA", "§eBienvenue !", 2, 50, 7);
+			p.setHealth(ZTA_MAX_HEALTH);
 			giveStartItems(p);
 		}
 	}
@@ -230,16 +239,29 @@ public class PlayersListener implements Listener {
 	public void onMove(PlayerMoveEvent e) {
 		Player p = e.getPlayer();
 		//System.out.println("PlayersListener.onMove() " + p.getFallDistance() + " " + p.isOnGround());
-		if (p.getFallDistance() > 3) {
+		if (p.getFallDistance() >= 3) {
 			if (p.getInventory().getChestplate() != null && (p.getInventory().getChestplate().getType() == Material.DIAMOND_CHESTPLATE)) {
 				//p.addPotionEffect(PARACHUTE_EFFECT);
 				Vector velocity = p.getVelocity();
 				if (velocity.getY() > -0.1) return;
 				velocity.setY(velocity.getY() * 0.8);
 				p.setVelocity(velocity);
-				//p.setFallDistance(0);
-				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
+				p.setFallDistance(3);
+				p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onArmor(PlayerArmorChangeEvent e) {
+		if (e.getSlotType() != SlotType.FEET) return;
+		boolean bootsOld = e.getOldItem() != null && e.getOldItem().getType() == Material.DIAMOND_BOOTS;
+		boolean bootsNew = e.getNewItem() != null && e.getNewItem().getType() == Material.DIAMOND_BOOTS;
+		if (bootsOld == bootsNew) return;
+		if (bootsOld) {
+			e.getPlayer().removePotionEffect(PotionEffectType.JUMP);
+		}else {
+			e.getPlayer().addPotionEffect(BOOTS_EFFECT);
 		}
 	}
 	

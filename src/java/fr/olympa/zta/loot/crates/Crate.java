@@ -76,7 +76,7 @@ public class Crate extends RandomizedInventory {
 				location.getWorld().spawnParticle(Particle.SMOKE_LARGE, location, 30 - diff, 0.8, 0, 0.8, 0.01);
 				if (diff < 15) location.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, location, 15 - diff, 0.8, 0, 0.8, 0.01);
 			}
-			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.3f, 1);
+			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 2f, 1);
 			if (block.getRelative(BlockFace.DOWN).getType() != Material.AIR) { // touché le sol
 				task.cancel();
 				task = null;
@@ -85,6 +85,7 @@ public class Crate extends RandomizedInventory {
 					OlympaZTA.getInstance().crates.unloadCrate(this);
 				}, 5 * 60 * 20);
 				location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.5f, 0.1f);
+				location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
 				super.fillInventory();
 			}
 			timerLine.updateGlobal();

@@ -133,7 +133,6 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		try {
 			enderChestContents = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
-			plot.set(OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true));
 			killedZombies.set(resultSet.getInt("killed_zombies"));
 			killedPlayers.set(resultSet.getInt("killed_players"));
 			deaths.set(resultSet.getInt("deaths"));
@@ -142,6 +141,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			openedChests.set(resultSet.getInt("opened_chests"));
 			kitVIPTime.set(resultSet.getLong("kit_vip_time"));
 			backVIPTime.set(resultSet.getLong("back_vip_time"));
+			plot.set(OlympaZTA.getInstance().plotsManager.getPlot(resultSet.getInt("plot"), true));
 		}catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
