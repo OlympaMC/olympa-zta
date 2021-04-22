@@ -42,7 +42,7 @@ public class Mobs {
 			customZombie = replaceEntity(CustomEntityZombie::new, "zombie", EntityTypes.ZOMBIE, "ZOMBIE", CustomEntityZombie.getAttributeBuilder());
 			customMommy = replaceEntity(CustomEntityMommy::new, "husk", EntityTypes.HUSK, "HUSK", CustomEntityMommy.getAttributeBuilder());
 			customDrowned = replaceEntity(CustomEntityDrowned::new, "drowned", EntityTypes.DROWNED, "DROWNED", CustomEntityDrowned.getAttributeBuilder());
-			OlympaZTA.getInstance().sendMessage("3 mobs custom ont été enregistrés.");
+			OlympaZTA.getInstance().sendMessage("§63 §emobs custom ont été enregistrés.");
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement des mobs custom.");
 			ex.printStackTrace();

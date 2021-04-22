@@ -246,7 +246,7 @@ public class PlayersListener implements Listener {
 				if (velocity.getY() > -0.1) return;
 				velocity.setY(velocity.getY() * 0.8);
 				p.setVelocity(velocity);
-				p.setFallDistance(3);
+				p.setFallDistance(2.8f);
 				p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
 			}
 		}

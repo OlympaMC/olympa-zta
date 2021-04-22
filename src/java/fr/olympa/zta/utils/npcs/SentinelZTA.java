@@ -15,6 +15,8 @@ import org.mcmonkey.sentinel.SentinelIntegration;
 import org.mcmonkey.sentinel.SentinelTrait;
 
 import fr.olympa.zta.weapons.guns.PersistentGun;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class SentinelZTA extends SentinelIntegration implements Listener {
 	
@@ -43,7 +45,11 @@ public class SentinelZTA extends SentinelIntegration implements Listener {
 	
 	@EventHandler
 	public void onVelocity(PlayerVelocityEvent e) {
-		System.out.println("PlayersListener.onVelocity() " + e.getPlayer());
+		if (CitizensAPI.getNPCRegistry().isNPC(e.getPlayer())) {
+			NPC npc = CitizensAPI.getNPCRegistry().getNPC(e.getPlayer());
+			SentinelTrait sentinel = npc.getTraitNullable(SentinelTrait.class);
+			if (sentinel != null && !sentinel.allowKnockback) e.setCancelled(true);
+		}
 	}
 	
 }

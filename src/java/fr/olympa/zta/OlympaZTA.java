@@ -356,6 +356,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		mobSpawning.start();
 		
 		Map<Location, PackBlock> packBlocks = getConfig().getStringList("packBlocks").stream().map(SpigotUtils::convertStringToLocation).collect(Collectors.toMap(x -> x, PackBlock::new));
+		sendMessage("§6%d §eblocs de packs d'équipement chargés.", packBlocks.size());
 		
 		OlympaCore.getInstance().getRegionManager().awaitWorldTracking("world", e -> e.getRegion().registerFlags(
 				new GunFlag(false, false),
@@ -365,7 +366,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new FishFlag(true),
 				new GameModeFlag(GameMode.ADVENTURE),
 				new PlayerBlockInteractFlag(false, true, true) {
+					@Override
 					public void interactEvent(PlayerInteractEvent event) {
+						System.out.println("OlympaZTA.onEnable().new PlayerBlockInteractFlag() {...}.interactEvent()");
 						PackBlock packBlock = packBlocks.get(event.getClickedBlock().getLocation());
 						if (packBlock != null) {
 							packBlock.click(event.getPlayer());

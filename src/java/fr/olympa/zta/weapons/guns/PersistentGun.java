@@ -23,7 +23,7 @@ public class PersistentGun extends Gun {
 		super(id, type);
 		ready = true;
 		ammos = (int) maxAmmos.getValue();
-		knockback.setBaseValue(0.01f);
+		knockback.setBaseValue(0);
 		fireVolume.setBaseValue(1f);
 	}
 	

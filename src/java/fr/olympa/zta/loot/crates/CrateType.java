@@ -62,6 +62,7 @@ public enum CrateType {
 			new ItemStackableCreator(18, Accessory.STOCK_STRONG),
 			new ItemStackableCreator(15, Accessory.CANNON_SILENT),
 			new QuestItemCreator(0.5, QuestItem.PARACHUTE),
+			new QuestItemCreator(0.5, QuestItem.BOOTS),
 			new ArmorCreator(20, ArmorType.MILITARY)
 			),
 	;
