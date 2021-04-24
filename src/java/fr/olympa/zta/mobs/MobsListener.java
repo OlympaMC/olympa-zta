@@ -22,6 +22,8 @@ import fr.olympa.zta.loot.creators.FoodCreator;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
+import fr.olympa.zta.loot.creators.QuestItemCreator;
+import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -29,14 +31,15 @@ import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 1, 20,
+	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 2, 20,
 			new AmmoCreator(22, 3, 4),
 			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
 			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
 			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
 			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),
 			new AmmoCreator(12, AmmoType.HANDWORKED, 2, 3, false),
-			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false)
+			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false),
+			new QuestItemCreator(7, QuestItem.AMAS)
 			);
 
 	@EventHandler

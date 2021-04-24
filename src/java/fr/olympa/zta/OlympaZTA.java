@@ -103,6 +103,7 @@ import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.Tab;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
@@ -154,6 +155,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public CratesManager crates;
 	public SoundAmbiance soundAmbiance;
 	public MinigunsManager miniguns;
+	public Tab tab;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -190,6 +192,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
 		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
+		try {
+			tab = new Tab();
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
 		loadIntegration("dynmap", DynmapLink::initialize);
 		loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());
 		loadIntegration("Sentinel", () -> {
@@ -368,7 +376,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new PlayerBlockInteractFlag(false, true, true) {
 					@Override
 					public void interactEvent(PlayerInteractEvent event) {
-						System.out.println("OlympaZTA.onEnable().new PlayerBlockInteractFlag() {...}.interactEvent()");
 						PackBlock packBlock = packBlocks.get(event.getClickedBlock().getLocation());
 						if (packBlock != null) {
 							packBlock.click(event.getPlayer());

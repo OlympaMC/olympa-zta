@@ -145,6 +145,7 @@ public class Gun implements Weapon {
 		return GunRegistry.GUN_KEY;
 	}
 	
+	@Override
 	public void onEntityHit(EntityDamageByEntityEvent e) {
 		Player damager = (Player) e.getDamager();
 		if (damageCaC == 0) {
@@ -161,13 +162,17 @@ public class Gun implements Weapon {
 		p.setCooldown(item.getType(), 0);
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 		int readyTime = -1;
+		float thisPotential = fireRate.getValue();
+		if (thisPotential <= 0) thisPotential = chargeTime.getValue();
 		if (previous instanceof Gun) {
 			Gun prev = (Gun) previous;
 			if (!prev.ready) {
-				readyTime = (int) Math.min(prev.fireRate.getValue(), fireRate.getValue());
+				float prevPotential = prev.fireRate.getValue();
+				if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
+				readyTime = (int) Math.min(prevPotential, thisPotential);
 			}
 		}
-		if (readyTime == -1 && !ready) readyTime = (int) fireRate.getValue();
+		if (readyTime == -1 && !ready) readyTime = (int) thisPotential;
 		if (readyTime != -1) {
 			ready = false;
 			updateItemName(item);
@@ -197,6 +202,7 @@ public class Gun implements Weapon {
 		}
 	}
 
+	@Override
 	public boolean drop(Player p, ItemStack item) {
 		reload(p, item);
 		return true;
@@ -205,6 +211,7 @@ public class Gun implements Weapon {
 	private BukkitTask task;
 	private long lastClick;
 
+	@Override
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		ItemStack item = e.getItem();
@@ -356,19 +363,19 @@ public class Gun implements Weapon {
 		return p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
 	}
 
-	private void reload(Player p, ItemStack item) {
-		if (reloading != null) return;
+	private boolean reload(Player p, ItemStack item) {
+		if (reloading != null) return false;
 		if (zoomed) toggleZoom(p, item);
 
 		int max = (int) maxAmmos.getValue();
-		if (max <= ammos) return;
+		if (max <= ammos) return false;
 
 		int toCharge;
 		int availableAmmos = shouldTakeItems(p) ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
 			showAmmos(p);
-			return;
+			return false;
 		}
 		if (type.isOneByOneCharge()) {
 			toCharge = 1;
@@ -385,23 +392,25 @@ public class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : max;
+					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : (type.isOneByOneCharge() ? 1 : max);
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
 					if (type.isOneByOneCharge() && maxAmmos.getValue() > ammos) {
 						reloading.cancel();
 						reloading = null;
-						reload(p, item); // relancer une charge
-					}else {
-						cancelReload(p, item);
+						if (!reload(p, item)) { // relancer une charge
+							updateItemName(item); // update si plus assez de munitions = recharge terminée
+						}
+						return;
 					}
+					cancelReload(p, item);
 					return;
 				}
 				StringBuilder status = new StringBuilder("§bRechargement... ");
 				boolean changed = false;
 				for (int i = 0; i < animationMax; i++) {
-					if (i >= current && !changed) {
+					if (!changed && i >= current) {
 						status.append("§c");
 						changed = true;
 					}
@@ -416,6 +425,7 @@ public class Gun implements Weapon {
 
 		updateItemName(item);
 		playChargeSound(p.getLocation());
+		return true;
 	}
 
 	private void toggleZoom(Player p, ItemStack item) {

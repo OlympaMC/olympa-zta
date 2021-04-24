@@ -108,15 +108,16 @@ public enum AmmoType{
 			if (is == null || is.getType() != fill) continue;
 			if (is.getAmount() == amount) {
 				p.getInventory().setItem(i, null);
-				return amount;
+				removed += amount;
+				break;
 			}else if (is.getAmount() > amount) {
 				removed += amount;
 				is.setAmount(is.getAmount() - amount);
-				return removed;
+				break;
 			}else if (is.getAmount() < amount) {
 				amount -= is.getAmount();
 				removed += is.getAmount();
-				p.getInventory().setItem(i, new ItemStack(Material.AIR));
+				p.getInventory().setItem(i, null);
 			}
 		}
 		return removed;

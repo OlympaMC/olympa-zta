@@ -1,9 +1,11 @@
 package fr.olympa.zta.mobs;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Drowned;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Zombie;
@@ -32,6 +35,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
@@ -40,9 +44,12 @@ import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.holograms.Hologram;
+import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
@@ -60,6 +67,8 @@ public class PlayersListener implements Listener {
 	private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
 	private static final PotionEffect BOOTS_EFFECT = new PotionEffect(PotionEffectType.JUMP, 99999999, 1, false, false);
 
+	private static final DecimalFormat DAMAGE_FORMAT = new DecimalFormat("0.00");
+	
 	private static final double ZTA_MAX_HEALTH = 40;
 	
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
@@ -68,6 +77,8 @@ public class PlayersListener implements Listener {
 	private Location packWaitingRoom;
 	
 	private List<Player> parachuting = new ArrayList<>();
+	
+	private Random random = new Random();
 	
 	public PlayersListener(Location packWaitingRoom) {
 		this.packWaitingRoom = packWaitingRoom;
@@ -167,6 +178,8 @@ public class PlayersListener implements Listener {
 			p.setHealth(ZTA_MAX_HEALTH);
 			giveStartItems(p);
 		}
+		
+		OlympaZTA.getInstance().tab.join(p);
 	}
 	
 	@EventHandler
@@ -263,6 +276,30 @@ public class PlayersListener implements Listener {
 		}else {
 			e.getPlayer().addPotionEffect(BOOTS_EFFECT);
 		}
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onDamage(EntityDamageByEntityEvent e) {
+		if (e.isCancelled() || e.getDamage() == 0) return;
+		if (!(e.getEntity() instanceof LivingEntity)) return;
+		if (!(e.getDamager() instanceof Player)) return;
+		LivingEntity en = (LivingEntity) e.getEntity();
+		Location lc = en.getEyeLocation().add(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5);
+		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false, true, new FixedLine<>("§4-§l" + DAMAGE_FORMAT.format(e.getFinalDamage()) + " §r§c❤"));
+		new BukkitRunnable() {
+			int i = 0;
+			
+			@Override
+			public void run() {
+				if (i < 15) {
+					hologram.move(lc.add(0.0D, 0.1D/* + i / 15*/, 0.0D));
+					i++;
+				}else {
+					hologram.remove();
+					cancel();
+				}
+			}
+		}.runTaskTimer(OlympaZTA.getInstance(), 20, 1);
 	}
 	
 	private void giveStartItems(Player p) {

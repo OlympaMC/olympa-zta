@@ -24,7 +24,7 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 			new Article<>(Food.COOKED_SALMON, 12));
 	
 	public FoodBuyingShop() {
-		super("foodshop", "Vente de nourriture", "Nourriture", DyeColor.CYAN, ARTICLES);
+		super("foodshop", "Rachat de nourriture", "Nourriture", DyeColor.CYAN, ARTICLES);
 	}
 	
 	@Override

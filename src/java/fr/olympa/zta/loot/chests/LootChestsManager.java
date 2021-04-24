@@ -42,11 +42,6 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 public class LootChestsManager implements Listener {
 
 	public static final NamespacedKey LOOTCHEST = new NamespacedKey(OlympaZTA.getInstance(), "loot_chest_id");
-
-	/*private final String tableName = "`zta_lootchests`";
-	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + tableName + " (`world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?)", true);
-	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
-	private final OlympaStatement updateLootStatement = new OlympaStatement("UPDATE " + tableName + " SET `loot_type` = ? WHERE (`id` = ?)");*/
 	
 	private SQLTable<LootChest> table;
 	
@@ -63,7 +58,7 @@ public class LootChestsManager implements Listener {
 	public LootChestsManager() throws SQLException {
 		table = new SQLTable<>("zta_lootchests",
 				Arrays.asList(columnID, columnWorld, columnX, columnY, columnZ, columnLootType),
-				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type"))));
+				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type").toUpperCase())));
 		table.createOrAlter();
 
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {

@@ -22,6 +22,7 @@ import fr.olympa.zta.weapons.guns.GunType;
 public enum CrateType {
 
 	BASIC(
+			"basique",
 			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 3, 9),
 			new MoneyCreator(20, PhysicalMoney.BANKNOTE_100, 1, 2),
 			new AmmoCreator(15, 5, 15),
@@ -43,6 +44,7 @@ public enum CrateType {
 			new ArmorCreator(20, ArmorType.MILITARY)
 			),
 	RARE(
+			"rare",
 			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 4, 10),
 			new MoneyCreator(25, PhysicalMoney.BANKNOTE_100, 2, 3),
 			new AmmoCreator(15, 5, 15),
@@ -67,15 +69,21 @@ public enum CrateType {
 			),
 	;
 
+	private String name;
 	private List<LootCreator> creatorsSimple = new ArrayList<>();
 	private List<LootCreator> creatorsAlways = new ArrayList<>();
 
-	private CrateType(LootCreator... creators) {
+	private CrateType(String name, LootCreator... creators) {
+		this.name = name;
 		for (LootCreator creator : creators) {
 			if (creator.getChance() == -1) {
 				creatorsAlways.add(creator);
 			}else creatorsSimple.add(creator);
 		}
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	public List<LootCreator> getCreatorsSimple() {

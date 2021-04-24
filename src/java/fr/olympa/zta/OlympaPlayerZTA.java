@@ -32,7 +32,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	public static final int MAX_SLOTS = 27;
 
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<OlympaPlayerZTA>("ender_chest", "VARBINARY(8000) NULL", Types.VARBINARY).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<OlympaPlayerZTA>("ender_chest", "VARBINARY(60000) NULL", Types.VARBINARY).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<OlympaPlayerZTA>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<OlympaPlayerZTA>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<OlympaPlayerZTA>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();

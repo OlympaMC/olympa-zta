@@ -13,6 +13,7 @@ import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_16_R3.AttributeProvider;
 import net.minecraft.server.v1_16_R3.DamageSource;
 import net.minecraft.server.v1_16_R3.DifficultyDamageScaler;
+import net.minecraft.server.v1_16_R3.Entity;
 import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityLiving;
 import net.minecraft.server.v1_16_R3.EntityTypes;
@@ -40,6 +41,8 @@ public class CustomEntityZombie extends EntityZombie {
 	private int primed = -1;
 
 	private Zombies zombieType;
+	
+	private Entity primer;
 	
 	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
 		super(type, world);
@@ -98,7 +101,7 @@ public class CustomEntityZombie extends EntityZombie {
 		super.tick();
 		if (primed != -1 && --primed == 0) {
 			killEntity();
-			world.createExplosion(null, super.locX(), super.locY(), super.locZ(), 3, false, Effect.NONE);
+			world.createExplosion(primer, super.locX(), super.locY(), super.locZ(), 3, false, Effect.NONE);
 		}
 	}
 	
@@ -124,6 +127,7 @@ public class CustomEntityZombie extends EntityZombie {
 			if (zombieType == Zombies.TNT) {
 				if (primed == -1) {
 					primed = 11;
+					primer = damagesource.getEntity();
 					world.playSound(null, locX(), locY(), locZ(), SoundEffects.ENTITY_CREEPER_PRIMED, SoundCategory.HOSTILE, 1, 1);
 				}
 			}else if (this.getGoalTarget() == null && damagesource.getEntity() instanceof EntityLiving) {

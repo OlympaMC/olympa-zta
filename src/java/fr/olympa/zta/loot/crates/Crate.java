@@ -37,11 +37,12 @@ public class Crate extends RandomizedInventory {
 	private BukkitTask task, unloadTask;
 	private Hologram hologram;
 	private DynamicLine<HologramLine> timerLine = new DynamicLine<>(x -> {
-		return diff > 0 ? ("§7En approche... " + diff) : ("§7§nDébloquée !" + (ItemUtils.getInventoryContentsLength(inv) == 0 ? "§7§l [vide]" : ""));
+		if (diff > 0) return "§7En approche... " + diff;
+		return "§7§nDébloquée !" + (ItemUtils.getInventoryContentsLength(inv) == 0 ? "§7§l [vide]" : "");
 	});
 	
 	public Crate(Location location, CrateType type) {
-		super("Caisse d'équipement", 3);
+		super("Caisse d'équipement " + type.getName(), 3);
 		this.location = location;
 		this.type = type;
 	}

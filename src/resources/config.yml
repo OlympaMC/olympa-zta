@@ -180,12 +180,12 @@ spawnRegionTypes: [SAFE, EASY]
 firstBuildSchem: "tente.schem"
 
 packBlocks:
-- "world 5631 12.8 5591"
-- "world 5629 12.8 5587"
+- "world 5631 13 5591"
+- "world 5629 13 5587"
 
 scoreHolograms:
-  first: "world 5641.1 13 5631.5"
-  second: "world 5623.9 13 5631.5"
+  first: "world 5641.1 12.8 5631.5"
+  second: "world 5623.9 12.8 5631.5"
 
 bank: [0, 1]
 auctions: [6]

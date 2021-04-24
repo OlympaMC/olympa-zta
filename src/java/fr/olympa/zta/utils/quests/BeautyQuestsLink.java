@@ -26,6 +26,7 @@ import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.objects.QuestObjectCreator;
+import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.players.events.PlayerAccountJoinEvent;
@@ -56,6 +57,7 @@ public class BeautyQuestsLink implements Listener {
 		QuestsAPI.registerReward(new QuestObjectCreator<>(GunReward.class, ItemUtils.item(Material.STICK, "§eOlympa ZTA - Arme"), GunReward::new));
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
 		QuestsAPI.registerMobFactory(new ZTAMobFactory());
+		QuestsAPI.registerStage(new StageType<>("ztaRegion", ZTARegionStage.class, "Trouver une région Olympa", ZTARegionStage::deserialize, ItemUtils.item(Material.WOODEN_AXE, "Trouver une région Olympa"), ZTARegionStage.Creation::new));
 		new BQCommand().register();
 		
 		OlympaGroup.PLAYER.setRuntimePermission("beautyquests.command", false);

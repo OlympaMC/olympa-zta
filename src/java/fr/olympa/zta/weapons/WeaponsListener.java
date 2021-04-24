@@ -1,5 +1,9 @@
 package fr.olympa.zta.weapons;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -38,7 +42,9 @@ public class WeaponsListener implements Listener {
 	public static final NamespacedKey GRENADE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "grenade");
 
 	public static boolean cancelDamageEvent = false; // dommage causé par le contact d'une balle
-
+	
+	private static final List<Material> NOT_WEAPON = Arrays.asList(Material.DIAMOND_AXE, Material.DIAMOND_HOE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE);
+	
 	@EventHandler
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (cancelDamageEvent) {
@@ -52,7 +58,14 @@ public class WeaponsListener implements Listener {
 		ItemStack item = damager.getInventory().getItemInMainHand();
 		
 		Weapon weapon = getWeapon(item);
-		if (weapon != null) weapon.onEntityHit(e);
+		if (weapon != null) {
+			weapon.onEntityHit(e);
+			if (damager.getFallDistance() > 0 && !damager.isOnGround()) {
+				e.setDamage(e.getDamage() * 1.5F);
+			}else e.setDamage(e.getDamage() + ThreadLocalRandom.current().nextDouble() - 0.5);
+		}else if (NOT_WEAPON.contains(item.getType())) {
+			e.setCancelled(true);
+		}
 	}
 
 	@EventHandler
@@ -112,8 +125,10 @@ public class WeaponsListener implements Listener {
 			Player p = (Player) e.getEntity();
 			if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
 				ItemStack item = e.getItem().getItemStack();
+				int prevAmount = p.getInventory().getItemInMainHand().getAmount();
 				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-					if (p.getInventory().getItemInMainHand().isSimilar(item)) {
+					ItemStack mainHand = p.getInventory().getItemInMainHand();
+					if (mainHand.getAmount() != prevAmount && mainHand.isSimilar(item)) {
 						checkHeld(p, item, true);
 					}
 				});

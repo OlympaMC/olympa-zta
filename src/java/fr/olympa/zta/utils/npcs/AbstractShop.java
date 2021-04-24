@@ -44,7 +44,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 
 	@Override
 	protected AbstractLine<HologramLine>[] getLines() {
-		return new AbstractLine[] { new BlinkingLine<HologramLine>((color, x) -> color + "§l" + holoName, OlympaZTA.getInstance(), 60, ChatColor.GOLD, ChatColor.YELLOW), new FixedLine<>("§8§n" + holoType) };
+		return new AbstractLine[] { new BlinkingLine<HologramLine>((color, x) -> color + "§l" + holoName, OlympaZTA.getInstance(), 60, ChatColor.GOLD, ChatColor.YELLOW), new FixedLine<>("§7§n" + holoType) };
 	}
 	
 	public abstract ItemStack getItemStack(T object);

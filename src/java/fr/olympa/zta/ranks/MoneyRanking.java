@@ -15,7 +15,7 @@ public class MoneyRanking extends AbstractSQLRank {
 	
 	@Override
 	public String getHologramName() {
-		return "§e§lOmega";
+		return "§e§lArgent personnel";
 	}
 	
 	@Override
