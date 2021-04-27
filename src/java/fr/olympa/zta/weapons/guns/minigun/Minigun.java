@@ -222,10 +222,14 @@ public class Minigun extends AbstractObservable {
 					if (bulletDirection == null) {
 						bulletDirection = facingDirection.clone();
 						bulletDirection.rotateAroundY(-angle);
-						if (facing.getModX() == 0) {
-							bulletDirection.rotateAroundX(yAngle);
-						}else {
+						if (facing == BlockFace.SOUTH) {
+							bulletDirection.rotateAroundX(-yAngle);
+						}else if (facing == BlockFace.EAST) {
 							bulletDirection.rotateAroundZ(yAngle);
+						}else if (facing == BlockFace.NORTH) {
+							bulletDirection.rotateAroundX(yAngle);
+						}else if (facing == BlockFace.WEST) {
+							bulletDirection.rotateAroundZ(-yAngle);
 						}
 					}
 					new BulletSimple(CommonGunConstants.BULLET_SPEED_MEDIUM_LOW, Gun.GunAccuracy.MEDIUM.getBulletSpread(), 3, 3).launchProjectile(inUse, bulletDirection);

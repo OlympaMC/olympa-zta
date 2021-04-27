@@ -18,15 +18,15 @@ import fr.olympa.zta.weapons.ItemStackable;
 
 public enum Accessory implements ItemStackable {
 
-	CANNON_CAC(AccessoryType.CANNON, Material.GLOWSTONE_DUST, "Baïonnette", "augmente les dégâts au corps-à-corps (+4)"){
+	CANNON_CAC(AccessoryType.CANNON, Material.GLOWSTONE_DUST, "Baïonnette", "augmente les dégâts au corps-à-corps (+3)"){
 		@Override
 		public void apply(Gun gun) {
-			gun.damageCaC += 4;
+			gun.damageCaC += 3;
 		}
 		
 		@Override
 		public void remove(Gun gun) {
-			gun.damageCaC -= 4;
+			gun.damageCaC -= 3;
 		}
 	},
 	CANNON_DAMAGE(AccessoryType.CANNON, Material.SUGAR, "Canon V2", "augmente le dégât des balles (+1)"){

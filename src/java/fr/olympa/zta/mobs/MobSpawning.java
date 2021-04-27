@@ -299,11 +299,11 @@ public class MobSpawning implements Runnable {
 	}
 	
 	public enum SpawnType {
-		NONE(15, 1, 5, 0, "§cerreur", null, null, null, null),
-		HARD(10, 2, 6, 0.1, "§c§lzone rouge", Color.RED, "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
-		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", Color.ORANGE, "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
-		EASY(17, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
-		SAFE(22, 1, 2, 0.008, "§a§lzone sécurisée", Color.LIME, "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+		NONE(15, 1, 5, 0, "§cerreur", null, null, null, null, null),
+		HARD(10, 2, 6, 0.1, "§c§lzone rouge", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+		EASY(17, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+		SAFE(22, 1, 2, 0.008, "§a§lzone sécurisée", Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
 		
@@ -313,6 +313,7 @@ public class MobSpawning implements Runnable {
 		private double explosiveProb;
 
 		public final Color color;
+		public final String htmlColor;
 		public final String name;
 		public final String description;
 		public final String title;
@@ -322,12 +323,13 @@ public class MobSpawning implements Runnable {
 		private List<Region> regions = new ArrayList<>();
 		private Flag flag;
 
-		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, String title, Color color, String name, String description, LootChestPicker lootchests) {
+		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, String title, Color color, String htmlColor, String name, String description, LootChestPicker lootchests) {
 			this.minDistanceSquared = minDistance * minDistance;
 			this.spawnAmount = spawnAmount;
 			this.maxEntitiesPerChunk = maxEntitiesPerChunk;
 			this.explosiveProb = explosiveProb;
 			this.color = color;
+			this.htmlColor = htmlColor;
 			this.name = name;
 			this.description = description;
 			this.title = title;

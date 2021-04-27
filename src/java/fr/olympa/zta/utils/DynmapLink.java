@@ -12,6 +12,7 @@ import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerDescription;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
@@ -70,23 +71,28 @@ public class DynmapLink {
 	public static void showMobArea(Region region, SpawnType spawn) {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
-		AreaMarker area = areasMarkers.createAreaMarker(spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.3, spawn.color.asRGB());
-		area.setDescription("<center><b>" + spawn.name + "</b></center><br><br>" + spawn.description);
+		area.setDescription("<center><b><p style=\"color:#" + spawn.htmlColor + ";\">" + spawn.name + "</p></b><br>" + spawn.description + "</center>");
 	}
 	
 	public static void showSafeArea(Region region, String id, String title) {
 		if (api == null) return;
 		
+		id = "Z" + id;
+		MarkerDescription sMarker;
 		if (region instanceof Cylinder) {
 			Cylinder cylinder = (Cylinder) region;
 			CircleMarker marker = areasMarkers.createCircleMarker(id, title, true, region.getWorld().getName(), cylinder.getCenterX(), 0, cylinder.getCenterZ(), cylinder.getRadius(), cylinder.getRadius(), false);
 			marker.setFillStyle(0.45, Color.AQUA.asRGB());
+			sMarker = marker;
 		}else {
 			List<Location> points = region.getLocations();
 			AreaMarker marker = areasMarkers.createAreaMarker(id, title, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 			marker.setFillStyle(0.45, Color.AQUA.asRGB());
+			sMarker = marker;
 		}
+		sMarker.setDescription("<center><b><p>" + title + "</p></b><br>Les zombies ne spawnent pas ici, vous êtes en sécurité.</center>");
 	}
 	
 	public static void showChest(LootChest chest) {
