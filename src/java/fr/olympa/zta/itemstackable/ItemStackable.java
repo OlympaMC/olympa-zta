@@ -1,4 +1,4 @@
-package fr.olympa.zta.weapons;
+package fr.olympa.zta.itemstackable;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -7,6 +7,10 @@ public interface ItemStackable {
 	public String getName();
 	
 	public String getId();
+	
+	public default String getUniqueId() {
+		return getClass().getSimpleName() + "-" + getId();
+	}
 	
 	public ItemStack createItem();
 	

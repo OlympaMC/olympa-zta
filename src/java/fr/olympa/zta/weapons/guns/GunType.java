@@ -14,9 +14,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
-import fr.olympa.zta.weapons.ItemStackable;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.Gun.GunAccuracy;
 import fr.olympa.zta.weapons.guns.Gun.GunMode;
@@ -27,7 +27,7 @@ import fr.olympa.zta.weapons.guns.bullets.BulletEffect.BulletEffectCreator;
 import fr.olympa.zta.weapons.guns.bullets.BulletExplosive;
 import fr.olympa.zta.weapons.guns.bullets.BulletSimple;
 
-public enum GunType implements ItemStackable{
+public enum GunType implements ItemStackable {
 	
 	REM_870(
 			"Remington 870 Express",

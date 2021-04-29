@@ -10,7 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.item.ImmutableItemStack;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.weapons.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 
 public class QuestItemCreator implements LootCreator {
 
@@ -71,7 +72,7 @@ public class QuestItemCreator implements LootCreator {
 				loreList.add("");
 				loreList.add("§8> §7Ressource de catégorie §l" + cat);
 			}
-			this.item = new ImmutableItemStack(ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new)));
+			this.item = new ImmutableItemStack(ItemStackableManager.processItem(ItemUtils.item(type, "§b" + name, loreList.toArray(String[]::new)), this));
 		}
 
 		@Override

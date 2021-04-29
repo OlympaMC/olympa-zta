@@ -58,6 +58,7 @@ public class BeautyQuestsLink implements Listener {
 		QuestsAPI.registerRequirement(new QuestObjectCreator<>(OlympaRegionRequirement.class, ItemUtils.item(Material.PAPER, "§eOlympa ZTA - région"), OlympaRegionRequirement::new));
 		QuestsAPI.registerMobFactory(new ZTAMobFactory());
 		QuestsAPI.registerStage(new StageType<>("ztaRegion", ZTARegionStage.class, "Trouver une région Olympa", ZTARegionStage::deserialize, ItemUtils.item(Material.WOODEN_AXE, "Trouver une région Olympa"), ZTARegionStage.Creation::new));
+		QuestsAPI.registerStage(new StageType<>("ztaItems", ItemStackableStage.class, "Rapporter des items Olympa", ItemStackableStage::deserialize, ItemUtils.item(Material.NETHER_BRICK, "Rapporter des items Olympa"), ItemStackableStage.Creation::new));
 		new BQCommand().register();
 		
 		OlympaGroup.PLAYER.setRuntimePermission("beautyquests.command", false);

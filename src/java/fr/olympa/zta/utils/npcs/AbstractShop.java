@@ -49,8 +49,10 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	public abstract ItemStack getItemStack(T object);
 	
-	public abstract void click(Article<T> article, Player p);
+	public abstract void click(Article<T> article, Player p, ClickType click);
 
+	public abstract String[] getLore();
+	
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent e) {
 		if (e.getNPC() == super.npc) new ShopGUI().create(e.getClicker());
@@ -69,7 +71,8 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
 			lore.add("");
-			lore.add(SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.price)));
+			for (String loreLine : AbstractShop.this.getLore()) lore.add(loreLine);
+			lore.add(lore.size() - AbstractShop.this.getLore().length, SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.price)));
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			return item;
@@ -77,7 +80,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 
 		@Override
 		public void click(Article<T> existing, Player p, ClickType click) {
-			AbstractShop.this.click(existing, p);
+			AbstractShop.this.click(existing, p, click);
 		}
 
 	}
@@ -92,14 +95,14 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 	}
 	
-	public static abstract class AbstractSellingShop<T> extends AbstractShop<T> {
+	public abstract static class AbstractSellingShop<T> extends AbstractShop<T> {
 		
 		protected AbstractSellingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
 			super(traitName, shopName, "Vente", holo, color, articles);
 		}
 		
 		@Override
-		public void click(Article<T> article, Player p) {
+		public void click(Article<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			if (player.getGameMoney().withdraw(article.price)) {
 				give(article.object, p);
@@ -110,21 +113,27 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			}
 		}
 		
+		@Override
+		public String[] getLore() {
+			return new String[] { "", "§6➤ §eClic pour acheter" };
+		}
+		
 		protected abstract void give(T object, Player p);
 		
 	}
 	
-	public static abstract class AbstractBuyingShop<T> extends AbstractShop<T> {
+	public abstract static class AbstractBuyingShop<T> extends AbstractShop<T> {
 		
 		protected AbstractBuyingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
 			super(traitName, shopName, "Rachat", holo, color, articles);
 		}
 		
 		@Override
-		public void click(Article<T> article, Player p) {
+		public void click(Article<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			if (take(article.object, p)) {
-				player.getGameMoney().give(article.price);
+			int amount = take(article.object, p, click.isShiftClick());
+			if (amount > 0) {
+				player.getGameMoney().give(amount * article.price);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 			}else {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
@@ -132,7 +141,12 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			}
 		}
 		
-		protected abstract boolean take(T object, Player p);
+		@Override
+		public String[] getLore() {
+			return new String[] { "", "§6➤ §eClic pour vendre", "§6➤ §eShift+clic pour vendre un stack" };
+		}
+		
+		protected abstract int take(T object, Player p, boolean shift);
 		
 	}
 

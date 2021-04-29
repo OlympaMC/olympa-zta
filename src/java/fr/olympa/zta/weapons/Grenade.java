@@ -15,6 +15,8 @@ import org.bukkit.persistence.PersistentDataType;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.weapons.guns.GunFlag;
 
 public enum Grenade implements Weapon, ItemStackable {
@@ -36,6 +38,7 @@ public enum Grenade implements Weapon, ItemStackable {
 		meta.getPersistentDataContainer().set(WeaponsListener.GRENADE_KEY, PersistentDataType.INTEGER, ordinal());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
+		ItemStackableManager.processItem(item, this);
 	}
 	
 	@Override

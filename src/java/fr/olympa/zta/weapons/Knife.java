@@ -16,6 +16,8 @@ import org.bukkit.util.RayTraceResult;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 
 public enum Knife implements Weapon, ItemStackable {
 	
@@ -45,6 +47,7 @@ public enum Knife implements Weapon, ItemStackable {
 		meta.getPersistentDataContainer().set(WeaponsListener.KNIFE_KEY, PersistentDataType.INTEGER, ordinal());
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
+		ItemStackableManager.processItem(item, this);
 	}
 	
 	@Override

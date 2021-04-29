@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.zta.weapons.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackable;
 
 public class ItemStackableCreator implements LootCreator {
 

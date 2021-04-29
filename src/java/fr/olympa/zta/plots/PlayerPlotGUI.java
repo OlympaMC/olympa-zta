@@ -41,7 +41,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 		super("Tom Hook", InventoryType.DISPENSER);
 		this.player = player;
 		this.plot = player.getPlot();
-		this.isChief = plot == null ? false : plot.getOwner() == player.getId();
+		this.isChief = plot != null && (plot.getOwner() == player.getId());
 
 		setState();
 	}
@@ -133,7 +133,8 @@ public class PlayerPlotGUI extends OlympaGUI {
 		}
 
 		if (slot != 4) return true;
-		if (plot == null && progress == null) {
+		if (progress != null) return true;
+		if (plot == null) {
 			if (click.isLeftClick()) {
 				int money = PlayerPlot.moneyRequiredPerLevel[0];
 				if (player.getGameMoney().withdraw(money)) {

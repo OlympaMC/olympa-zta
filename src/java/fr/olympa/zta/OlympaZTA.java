@@ -78,6 +78,7 @@ import fr.olympa.zta.enderchest.EnderChestManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.loot.chests.LootChestsManager;
 import fr.olympa.zta.loot.crates.CratesManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
@@ -102,6 +103,7 @@ import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
+import fr.olympa.zta.utils.AuctionsManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.Tab;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
@@ -113,7 +115,6 @@ import fr.olympa.zta.weapons.Grenade;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.TrainingManager;
 import fr.olympa.zta.weapons.WeaponsCommand;
-import fr.olympa.zta.weapons.WeaponsGiveGUI;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -228,11 +229,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			e.printStackTrace();
 		}
 		
-		for (GunType gun : GunType.values()) WeaponsGiveGUI.stackables.add(gun);
-		for (Knife knife : Knife.values()) WeaponsGiveGUI.stackables.add(knife);
-		for (Accessory accessory : Accessory.values()) WeaponsGiveGUI.stackables.add(accessory);
-		for (Grenade grenade : Grenade.values()) WeaponsGiveGUI.stackables.add(grenade);
-		for (QuestItem item : QuestItem.values()) WeaponsGiveGUI.stackables.add(item);
+		for (GunType gun : GunType.values()) ItemStackableManager.register(gun);
+		for (Knife knife : Knife.values()) ItemStackableManager.register(knife);
+		for (Accessory accessory : Accessory.values()) ItemStackableManager.register(accessory);
+		for (Grenade grenade : Grenade.values()) ItemStackableManager.register(grenade);
+		for (QuestItem item : QuestItem.values()) ItemStackableManager.register(item);
 		
 		AmmoType.CARTRIDGE.getName();
 
@@ -289,7 +290,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		try {
 			taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, "zta_tax", 0);
-			auctionsManager = new AuctionsManager(this, "zta_auctions", taxManager) {
+			auctionsManager = new AuctionsManagerZTA(this, "zta_auctions", taxManager) {
 				public int getMaxAuctions(MoneyPlayerInterface player) {
 					return player.getGroup().getPower() >= OlympaGroup.VIP.getPower() ? 20 : 10;
 				};

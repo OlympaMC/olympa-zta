@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.weapons.ItemStackable;
-import fr.olympa.zta.weapons.WeaponsGiveGUI;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
@@ -59,7 +59,7 @@ public class GunReward extends AbstractReward {
 	
 	@Override
 	public void itemClick(Player p, QuestObjectGUI<? extends QuestObject> gui, ItemStack clicked) {
-		new PagedGUI<>("Liste des armes", DyeColor.LIGHT_BLUE, WeaponsGiveGUI.stackables) {
+		new PagedGUI<>("Liste des armes", DyeColor.LIGHT_BLUE, ItemStackableManager.stackables) {
 			
 			@Override
 			public ItemStack getItemStack(ItemStackable object) {
@@ -91,7 +91,7 @@ public class GunReward extends AbstractReward {
 	@Override
 	protected void load(Map<String, Object> map) {
 		String typeID = (String) map.get("type");
-		type = WeaponsGiveGUI.stackables.stream()
+		type = ItemStackableManager.stackables.stream()
 				.filter(x -> x.getId().equals(typeID))
 				.findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown item stackable type: " + typeID));
 		if (map.containsKey("amount")) amount = (int) map.get("amount");
