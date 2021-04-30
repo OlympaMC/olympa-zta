@@ -2,7 +2,6 @@ package fr.olympa.zta.weapons.guns.ambiance;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
@@ -23,7 +22,7 @@ public class AutoScenario extends AmbianceScenario {
 	@Override
 	public void run(Player p) {
 		if (shouldFire) {
-			p.playSound(p.getLocation(), ZTASound.GUN_AUTO.getFarSound(), SoundCategory.AMBIENT, volume, pitch);
+			playSound(p, ZTASound.GUN_AUTO.getFarSound());
 		}
 	}
 	

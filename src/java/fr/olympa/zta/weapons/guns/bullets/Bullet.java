@@ -18,7 +18,7 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public abstract class Bullet{
 	
-	private static final Random random = new Random();
+	protected static final Random random = new Random();
 	
 	private final FixedMetadataValue metadata = new FixedMetadataValue(OlympaZTA.getInstance(), this);
 	

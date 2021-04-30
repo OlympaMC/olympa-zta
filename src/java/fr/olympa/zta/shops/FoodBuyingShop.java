@@ -22,6 +22,7 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 			new Article<>(Food.COOKED_PORKCHOP, 8),
 			new Article<>(Food.COOKED_RABBIT, 8),
 			new Article<>(Food.BREAD, 6),
+			new Article<>(Food.MUSHROOM_STEW, 7),
 			new Article<>(Food.CARROT, 6),
 			new Article<>(Food.COOKED_COD, 8),
 			new Article<>(Food.COOKED_SALMON, 8));

@@ -1,5 +1,6 @@
 package fr.olympa.zta.weapons.guns.ambiance;
 
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public abstract class AmbianceScenario {
@@ -15,5 +16,13 @@ public abstract class AmbianceScenario {
 	public void run(Player p) {}
 	
 	public abstract boolean shouldTerminate();
+	
+	protected void playSound(Player p, String sound) {
+		playSound(p, sound, 0, 0);
+	}
+	
+	protected void playSound(Player p, String sound, float deltaVolume, float deltaPitch) {
+		p.playSound(p.getLocation(), sound, SoundCategory.AMBIENT, volume + deltaVolume, pitch + deltaPitch);
+	}
 	
 }

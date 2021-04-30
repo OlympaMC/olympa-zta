@@ -23,4 +23,17 @@ public class ClansCommandZTA extends ClansCommand<ClanZTA, ClanPlayerDataZTA> {
 		}
 	}
 	
+	@Cmd (player = true)
+	public void refreshSize(CommandContext cmd) {
+		ClanZTA clan = getPlayerClan(true);
+		if (clan == null) return;
+		int maxSize = manager.getMaxSize(getOlympaPlayer());
+		if (maxSize > clan.getMaxSize()) {
+			sendSuccess("Modification de la taille du clan...");
+			clan.setMaxSize(maxSize);
+		}else {
+			sendError("La taille du clan ne peut être modifiée.");
+		}
+	}
+	
 }

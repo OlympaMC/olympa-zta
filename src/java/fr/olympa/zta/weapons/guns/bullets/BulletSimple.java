@@ -75,7 +75,7 @@ public class BulletSimple extends Bullet{
 	}
 
 	public void damage(LivingEntity entity, LivingEntity damager, float damage) {
-		entity.damage(damage, damager);
+		entity.damage(damage + random.nextDouble() - 0.5, damager);
 		entity.setNoDamageTicks(NO_DAMAGE_TICKS);
 	}
 

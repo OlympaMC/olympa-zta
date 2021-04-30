@@ -18,8 +18,8 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 
 	private ClanPlot plot;
 
-	public ClanZTAManagementGUI(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p, ClansManager<ClanZTA, ClanPlayerDataZTA> manager) {
-		super(p, manager, 2);
+	public ClanZTAManagementGUI(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p, ClanZTA clan, ClansManager<ClanZTA, ClanPlayerDataZTA> manager) {
+		super(p, clan, manager, clan.getMaxSize() == 5 ? 2 : 3);
 	}
 
 	@Override
@@ -44,6 +44,16 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 			return true;
 		}
 		return super.onClick(p, current, slot, click);
+	}
+	
+	@Override
+	protected int getPlayerSlot(int id) {
+		return (id >= 5 ? 13 : 9) + id;
+	}
+	
+	@Override
+	protected int getPlayerID(int slot) {
+		return slot - (slot > 18 ? 13 : 9);
 	}
 
 }

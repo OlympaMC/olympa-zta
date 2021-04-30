@@ -38,13 +38,14 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 		for (ClanPlayerDataZTA member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
 			if (!member.isConnected()) {
-				players.add(offline, "§c○ " + memberName);
+				if (players.size() <= 5) players.add(offline, "§c○ " + memberName);
 			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
 				players.add(0, "§6● §l" + memberName);
 				first = 1;
 				offline++;
 			}else {
 				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
+				if (players.size() > 5 && offline < players.size()) players.remove(players.size() - 1);
 				players.add(first, "§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
 				offline++;
 			}
@@ -55,7 +56,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	protected SQLColumn<ClanZTA> plotExpirationResetColumn;
 	
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
-		super(OlympaZTA.getInstance(), "zta_clans", 5);
+		super(OlympaZTA.getInstance(), "zta_clans");
 
 		new ClansCommandZTA(this, "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
 	}
@@ -77,7 +78,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 
 	@Override
 	public ClanManagementGUI<ClanZTA, ClanPlayerDataZTA> provideManagementGUI(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> player) {
-		return new ClanZTAManagementGUI(player, this);
+		return new ClanZTAManagementGUI(player, player.getClan(), this);
 	}
 
 	@Override
@@ -88,6 +89,11 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	@Override
 	protected ClanPlayerDataZTA provideClanData(OlympaPlayerInformations informations, ResultSet resultSet) throws SQLException {
 		return new ClanPlayerDataZTA(informations);
+	}
+	
+	@Override
+	public int getMaxSize(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p) {
+		return ZTAPermissions.CLAN_MORE_SPACE_PERMISSION.hasPermission(p) ? 10 : 5;
 	}
 	
 	@Override
