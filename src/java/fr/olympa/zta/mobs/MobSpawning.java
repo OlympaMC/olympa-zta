@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Color;
+import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -38,6 +39,7 @@ import com.google.common.collect.EvictingQueue;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.flags.Flag;
+import fr.olympa.api.utils.Point2D;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.chests.type.LootChestPicker;
@@ -210,6 +212,7 @@ public class MobSpawning implements Runnable {
 	private Map<ChunkSnapshot, SpawnType> getActiveChunks() {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		Set<Chunk> processedChunks = new HashSet<Chunk>(players.size() + 1, 1);
+		List<Point2D> points = new ArrayList<>(players.size() * 8);
 		Map<ChunkSnapshot, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);
 		for (Player p : players) {
 			Location lc = p.getLocation();
@@ -224,15 +227,17 @@ public class MobSpawning implements Runnable {
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
 					if (!chunk.isLoaded()) continue;
 					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
-					if (chunks.containsKey(snapshot)) continue;
+					Point2D point = new Point2D(chunk);
+					if (points.contains(point)) continue;
 					SpawnType type;
-					if (snapshot.getBlockType(0, snapshot.getHighestBlockYAt(0, 0), 0) == Material.WATER) {
+					if (snapshot.getBlockType(0, world.getHighestBlockYAt(chunk.getX() << 4, chunk.getZ() << 4, HeightMap.WORLD_SURFACE), 0) == Material.WATER) {
 						type = SpawnType.NONE;
 					}else type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
 						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
 						if (isInSafeZone(chunk)) continue;
 						chunks.put(snapshot, type);
+						points.add(point);
 					}
 				}
 			}
@@ -299,7 +304,7 @@ public class MobSpawning implements Runnable {
 	}
 	
 	public enum SpawnType {
-		NONE(15, 1, 5, 0, "§cerreur", null, null, null, null, null),
+		NONE(10, 1, 6, 0, "§cerreur", null, null, null, null, null),
 		HARD(10, 2, 6, 0.1, "§c§lzone rouge", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
 		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
 		EASY(15, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),

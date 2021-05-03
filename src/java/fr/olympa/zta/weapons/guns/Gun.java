@@ -394,7 +394,7 @@ public class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : (type.isOneByOneCharge() ? 1 : max);
+					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : Math.min(max, ammos + (type.isOneByOneCharge() ? 1 : max));
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 

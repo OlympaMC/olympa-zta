@@ -189,6 +189,7 @@ public class LootChestsManager implements Listener {
 		try {
 			Location loc = chest.getLocation();
 			LootChestType type = pickRandomChestType(loc);
+			if (type == null) return;
 			LootChest lootchest = createLootChest(loc, type);
 			Prefix.DEFAULT_GOOD.sendMessage(e.getPlayer(), "Le coffre de loot a été créé ! ID: " + lootchest.getID() + ", type: " + type.getName());
 		}catch (SQLException ex) {
