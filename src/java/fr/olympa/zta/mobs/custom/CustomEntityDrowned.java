@@ -30,20 +30,11 @@ import net.minecraft.server.v1_16_R3.WorldAccess;
 
 public class CustomEntityDrowned extends EntityDrowned {
 
-	private static Constructor<PathfinderGoal> drownedGoToWaterConstructor, drownedAttackConstructor, drownedSwimUpConstructor;
+	private static Constructor<PathfinderGoal> drownedGoToWaterConstructor, drownedSwimUpConstructor;
 	private static Function<EntityDrowned, PathfinderGoal> supplyDrownedGoToWater = (mob) -> {
 		try {
 			drownedGoToWaterConstructor.setAccessible(true);
 			return drownedGoToWaterConstructor.newInstance(mob, 1.0);
-		}catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
-		return null;
-	};
-	private static Function<EntityDrowned, PathfinderGoal> supplyDrownedAttack = (mob) -> {
-		try {
-			drownedAttackConstructor.setAccessible(true);
-			return drownedAttackConstructor.newInstance(mob, 1.0, false);
 		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}
@@ -62,7 +53,6 @@ public class CustomEntityDrowned extends EntityDrowned {
 	static {
 		try {
 			drownedGoToWaterConstructor = (Constructor<PathfinderGoal>) Reflection.getClass(ClassEnum.NMS, "EntityDrowned$c").getDeclaredConstructor(EntityCreature.class, double.class);
-			drownedAttackConstructor = (Constructor<PathfinderGoal>) Reflection.getClass(ClassEnum.NMS, "EntityDrowned$a").getDeclaredConstructor(EntityDrowned.class, double.class, boolean.class);
 			drownedSwimUpConstructor = (Constructor<PathfinderGoal>) Reflection.getClass(ClassEnum.NMS, "EntityDrowned$e").getDeclaredConstructor(EntityDrowned.class, double.class, int.class);
 		}catch (ReflectiveOperationException ex) {
 			ex.printStackTrace();
@@ -75,16 +65,15 @@ public class CustomEntityDrowned extends EntityDrowned {
 	}
 	
 	public static AttributeProvider.Builder getAttributeBuilder() {
-		return EntityDrowned.eS().a(GenericAttributes.MOVEMENT_SPEED, 0.4).a(GenericAttributes.ATTACK_DAMAGE, 10.0);
+		return EntityDrowned.eS().a(GenericAttributes.MOVEMENT_SPEED, 0.44).a(GenericAttributes.ATTACK_DAMAGE, 10.0);
 	}
 
 	@Override
 	protected void initPathfinder() {
 		this.goalSelector.a(1, supplyDrownedGoToWater.apply(this));
-		this.goalSelector.a(2, supplyDrownedAttack.apply(this));
+		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 		this.goalSelector.a(3, supplyDrownedSwipUp.apply(this, OlympaZTA.getInstance().mobSpawning.seaLevel));
 		this.goalSelector.a(4, new PathfinderGoalRandomStroll((EntityCreature) this, 1.0));
-		this.goalSelector.a(7, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this).a(CustomEntityZombie.class));
 		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 2, 32, true, false));
 	}
@@ -92,7 +81,7 @@ public class CustomEntityDrowned extends EntityDrowned {
 	@Override
 	public boolean i(EntityLiving entity) {
 		if (entity != null) {
-			return entity.isInWater() || entity.h(this) < 5;
+			return entity.isInWater() || entity.h(this) < 1030;
 		}
 		return false;
 	}
@@ -120,5 +109,26 @@ public class CustomEntityDrowned extends EntityDrowned {
 
 	@Override
 	protected void a(DifficultyDamageScaler var0) {} // populateDefaultEquipmentSlots
+	
+	public static class PathfinderGoalCustomDrownedAttack extends PathfinderGoalCustomZombieAttack {
+		
+		private EntityDrowned drowned;
+		
+		public PathfinderGoalCustomDrownedAttack(EntityDrowned drowned, double speedModifier, boolean trackTarget) {
+			super(drowned, speedModifier, trackTarget);
+			this.drowned = drowned;
+		}
+		
+		@Override
+		public boolean a() {
+			return super.a() && drowned.i(drowned.getGoalTarget());
+		}
+		
+		@Override
+		public boolean b() {
+			return super.b() && drowned.i(drowned.getGoalTarget());
+		}
+		
+	}
 
 }

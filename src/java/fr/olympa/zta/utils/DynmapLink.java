@@ -71,7 +71,7 @@ public class DynmapLink {
 	public static void showMobArea(Region region, SpawnType spawn) {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
-		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode(), spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode() + "A", spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 		area.setFillStyle(0.3, spawn.color.asRGB());
 		area.setDescription("<center><b><p style=\"color:#" + spawn.htmlColor + ";\">" + spawn.name + "</p></b><br>" + spawn.description + "</center>");
 	}
@@ -79,7 +79,7 @@ public class DynmapLink {
 	public static void showSafeArea(Region region, String id, String title) {
 		if (api == null) return;
 		
-		id = "Z" + id;
+		id = "Z" + id + "Z";
 		MarkerDescription sMarker;
 		if (region instanceof Cylinder) {
 			Cylinder cylinder = (Cylinder) region;

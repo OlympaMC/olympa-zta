@@ -7,13 +7,14 @@ import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.BlinkingLine;
 import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public class AuctionsTrait extends HologramTrait {
 
 	private AbstractLine<HologramLine>[] lines = new AbstractLine[] {
-			new BlinkingLine<>((color, x) -> color + "§l" + OlympaZTA.getInstance().auctionsManager.getOngoingAuctions().size() + " ventes", OlympaZTA.getInstance(), 60, ChatColor.YELLOW, ChatColor.GOLD),
+			new BlinkingLine<>((color, x) -> color + "§l" + Utils.withOrWithoutS(OlympaZTA.getInstance().auctionsManager.getOngoingAuctions().size(), "vente"), OlympaZTA.getInstance(), 60, ChatColor.YELLOW, ChatColor.GOLD),
 			FixedLine.EMPTY_LINE,
 			new FixedLine<>("§e§nHôtel des Ventes") };
 	

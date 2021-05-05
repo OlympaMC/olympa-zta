@@ -19,6 +19,7 @@ public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget
 		this.a(1);
 	}
 
+	@Override
 	public boolean a() { // shouldExecute
 		if (this.chance > 1 && this.e.getRandom().nextInt(this.chance) != 0) {
 			return false;
@@ -36,6 +37,7 @@ public class PathfinderGoalFixedDistanceTargetHuman extends PathfinderGoalTarget
 		return this.target != null;
 	}
 
+	@Override
 	public void c() { // startExecuting
 		super.c();
 		e.setGoalTarget(this.target, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);

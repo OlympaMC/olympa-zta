@@ -12,7 +12,7 @@ import fr.olympa.zta.itemstackable.ItemStackableManager;
 public class WeaponsGiveGUI extends PagedGUI<ItemStackable> {
 	
 	public WeaponsGiveGUI() {
-		super("Don d'arme", DyeColor.CYAN, ItemStackableManager.stackables, 6);
+		super("Don d'arme", DyeColor.CYAN, ItemStackableManager.stackables, 5);
 	}
 
 	@Override

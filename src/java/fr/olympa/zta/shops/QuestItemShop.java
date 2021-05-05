@@ -8,9 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import fr.olympa.api.item.ImmutableItemStack;
-import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
+import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 
 public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
@@ -26,11 +24,14 @@ public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	@Override
 	protected int take(QuestItem object, Player p, boolean shift) {
 		PlayerInventory inv = p.getInventory();
-		ImmutableItemStack item = object.getDemoItem();
-		int amount = shift ? Math.min(SpigotUtils.getItemAmount(inv, item), 64) : 1;
-		if (amount > 0 && SpigotUtils.containsItems(inv, item, amount)) {
-			SpigotUtils.removeItems(inv, item, amount);
+		if (shift) {
+			int amount = Math.min(object.getItemAmount(inv), 64);
+			if (amount > 0) object.removeItems(inv, amount);
 			return amount;
+		}
+		if (object.containsAmount(inv, 1)) {
+			object.removeItems(inv, 1);
+			return 1;
 		}
 		return 0;
 	}

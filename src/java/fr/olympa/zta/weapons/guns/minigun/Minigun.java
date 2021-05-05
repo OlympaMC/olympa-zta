@@ -96,7 +96,7 @@ public class Minigun extends AbstractObservable {
 		facingDirection = facing.getDirection();
 		
 		standLocation = playerPosition.clone();
-		standLocation.subtract(facing.getModZ() * -0.375, 0.2, facing.getModX() * 0.375);
+		standLocation.add(facing.getModZ() * 0.375 + facing.getModX() * 0.4, -0.27, facing.getModX() * -0.375 + facing.getModZ() * 0.4);
 		
 		Point2D point = Point2D.chunkPointFromLocation(playerPosition);
 		Chunk chunk = null;
@@ -136,19 +136,6 @@ public class Minigun extends AbstractObservable {
 	public void approach(Player p) {
 		if (isInUse()) return;
 		
-		p.teleport(playerPosition);
-		sitStand.addPassenger(p);
-		inUse = p;
-		bar.addPlayer(p);
-		OlympaZTA.getInstance().miniguns.inUse.put(p, this);
-		
-		rotationTask = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), () -> {
-			Location loc = p.getLocation();
-			if (lastLocation == null || lastLocation.getPitch() != loc.getPitch() || lastLocation.getYaw() != loc.getYaw()) move(p.getLocation());
-		}, 1, 1);
-		
-		if (lockUnload) p.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 2, (state - WARNING_STATE) * FIRE_RATE - 20 + 5, 20);
-		
 		PlayerConnection playerConnection = ((CraftPlayer) p).getHandle().playerConnection;
 		playerConnection.sendPacket(packetFakeWatcherGun);
 		playerConnection.sendPacket(packetFakeWatcherClip);
@@ -171,6 +158,19 @@ public class Minigun extends AbstractObservable {
 				super.write(ctx, msg, promise);
 			}
 		});
+		
+		p.teleport(playerPosition);
+		sitStand.addPassenger(p);
+		inUse = p;
+		bar.addPlayer(p);
+		OlympaZTA.getInstance().miniguns.inUse.put(p, this);
+		
+		rotationTask = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), () -> {
+			Location loc = p.getLocation();
+			if (lastLocation == null || lastLocation.getPitch() != loc.getPitch() || lastLocation.getYaw() != loc.getYaw()) move(p.getLocation());
+		}, 1, 1);
+		
+		if (lockUnload) p.sendTitle("§cSurchauffe!", "§7Patientez quelques instants...", 2, (state - WARNING_STATE) * FIRE_RATE - 20 + 5, 20);
 	}
 	
 	public void leave(boolean eject) {
@@ -286,7 +286,7 @@ public class Minigun extends AbstractObservable {
 	public void spawn() {
 		if (isSpawned) return;
 		
-		ItemStack item = new ItemStack(Material.IRON_HORSE_ARMOR);
+		ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
 		ItemMeta meta = item.getItemMeta();
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
@@ -304,7 +304,7 @@ public class Minigun extends AbstractObservable {
 		DelegateDataWatcher<Byte> fakeWatcherMarker = new DelegateDataWatcher<>(EntityArmorStand.b, (byte) (b0 & ~16));
 		packetFakeWatcherGun = new PacketPlayOutEntityMetadata(gunStand.getEntityId(), fakeWatcherMarker, false);
 		
-		sitStand = playerPosition.getWorld().spawn(playerPosition.clone().add(0, 0.3, 0), ArmorStand.class);
+		sitStand = playerPosition.getWorld().spawn(playerPosition.clone().add(0, 0.48, 0), ArmorStand.class);
 		sitStand.setInvisible(true);
 		sitStand.setInvulnerable(true);
 		sitStand.setGravity(false);

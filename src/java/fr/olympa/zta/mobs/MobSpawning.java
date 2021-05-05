@@ -21,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Color;
-import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -218,7 +217,9 @@ public class MobSpawning implements Runnable {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
 			if (!processedChunks.add(centralChunk)) continue; // chunk déjà calculé
-			if (SpawnType.getSpawnType(centralChunk) == null) continue;
+			
+			if (centralChunk.getBlock(0, seaLevel, 0).getType() != Material.WATER && SpawnType.getSpawnType(centralChunk) == null) continue;
+			
 			if (entityCount(centralChunk) > criticalEntitiesPerChunk) continue;
 			int x = lc.getBlockX() / 16 - chunkRadius;
 			int z = lc.getBlockZ() / 16 - chunkRadius;
@@ -230,7 +231,7 @@ public class MobSpawning implements Runnable {
 					Point2D point = new Point2D(chunk);
 					if (points.contains(point)) continue;
 					SpawnType type;
-					if (snapshot.getBlockType(0, world.getHighestBlockYAt(chunk.getX() << 4, chunk.getZ() << 4, HeightMap.WORLD_SURFACE), 0) == Material.WATER) {
+					if (snapshot.getBlockType(0, seaLevel, 0) == Material.WATER) {
 						type = SpawnType.NONE;
 					}else type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
@@ -257,7 +258,7 @@ public class MobSpawning implements Runnable {
 	public void addSafeZone(Region region, String id, String title) {
 		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR), new SpawnType.SpawningFlag(null));
 		safeRegions.add(region);
-		DynmapLink.showSafeArea(region, "z" + id, title);
+		DynmapLink.showSafeArea(region, id, title);
 	}
 
 	public boolean isInSafeZone(Chunk chunk) {
@@ -304,7 +305,7 @@ public class MobSpawning implements Runnable {
 	}
 	
 	public enum SpawnType {
-		NONE(10, 1, 6, 0, "§cerreur", null, null, null, null, null),
+		NONE(12, 1, 5, 0, "§cerreur", null, null, null, null, null),
 		HARD(10, 2, 6, 0.1, "§c§lzone rouge", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
 		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
 		EASY(15, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
