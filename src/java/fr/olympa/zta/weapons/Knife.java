@@ -77,7 +77,7 @@ public enum Knife implements Weapon, ItemStackable {
 		
 		if (e.getDamager() instanceof LivingEntity) {
 			Location damagerLoc = ((LivingEntity) e.getDamager()).getEyeLocation();
-			RayTraceResult rayTrace = e.getEntity().getBoundingBox().expand(0.3).rayTrace(damagerLoc.toVector(), damagerLoc.getDirection(), 5);
+			RayTraceResult rayTrace = e.getEntity().getBoundingBox().expand(0.4).rayTrace(damagerLoc.toVector(), damagerLoc.getDirection(), 5);
 			if (rayTrace != null) {
 				damagerLoc.getWorld().spawnParticle(Particle.BLOCK_CRACK, rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6, BLOOD_DATA);
 			}else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());

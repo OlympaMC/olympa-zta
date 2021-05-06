@@ -1,6 +1,7 @@
 package fr.olympa.zta.weapons;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -177,4 +178,23 @@ public class WeaponsCommand extends ComplexCommand {
 		}else sendError("Il y a eu un problème lors de la suppression de l'objet.");
 	}
 
+	@Cmd (args = "PLAYERS")
+	public void gunsLoad(CommandContext cmd) {
+		Player target;
+		if (cmd.getArgumentsLength() == 0) {
+			target = getPlayer();
+			if (target == null) {
+				sendIncorrectSyntax();
+				return;
+			}
+		}else target = cmd.getArgument(0);
+		
+		try {
+			sendSuccess("§2%d §aguns chargés depuis l'inventaire de §2%s§a.", OlympaZTA.getInstance().gunRegistry.loadFromItems(target.getInventory().getContents()), target.getName());
+		}catch (SQLException e) {
+			e.printStackTrace();
+			sendError(e);
+		}
+	}
+	
 }

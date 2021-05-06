@@ -93,6 +93,8 @@ import fr.olympa.zta.mobs.PlayersListener;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.plots.PlayerPlotsManager;
 import fr.olympa.zta.plots.TomHookTrait;
+import fr.olympa.zta.primes.BountyTrait;
+import fr.olympa.zta.primes.PrimesManager;
 import fr.olympa.zta.ranks.ClanMoneyRanking;
 import fr.olympa.zta.ranks.KillPlayerRanking;
 import fr.olympa.zta.ranks.KillZombieRanking;
@@ -157,6 +159,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public SoundAmbiance soundAmbiance;
 	public MinigunsManager miniguns;
 	public Tab tab;
+	public PrimesManager primes;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -211,6 +214,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			gunRegistry = new GunRegistry();
 		}catch (Exception ex) {
 			throw new RuntimeException("Registry failed to load", ex);
+		}
+		
+		try {
+			primes = new PrimesManager();
+		}catch (Exception ex) {
+			sendMessage("§cLes primes n'ont pas chargé.");
+			ex.printStackTrace();
 		}
 		
 		try {
@@ -404,6 +414,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
+		if (primes != null) checkForTrait(BountyTrait.class, "bountyTrait", getConfig().getIntegerList("bountyMan"));
 	}
 
 	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {

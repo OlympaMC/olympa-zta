@@ -53,7 +53,7 @@ public class MobsListener implements Listener {
 			}else {
 				if (!entity.hasMetadata("ztaZombieType")) return;
 				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
-				if (zombie == Zombies.COMMON || zombie == Zombies.DROWNED) {
+				if (zombie == Zombies.COMMON/* || zombie == Zombies.DROWNED*/) {
 					killer.killedZombies.increment();
 					for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
 						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
