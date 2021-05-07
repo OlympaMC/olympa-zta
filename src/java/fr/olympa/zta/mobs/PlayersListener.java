@@ -131,7 +131,7 @@ public class PlayersListener implements Listener {
 		}else if (cause != null && cause.getCause() == DamageCause.DROWNING) {
 			reason = "s'est noyé.";
 		}
-		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		Prefix.DEFAULT.sendMessage(p, "§oTon cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		e.setDeathMessage(op.getGroup().getColor() + p.getName() + "§e " + reason);
 		e.getDrops().clear();
 	}
@@ -199,7 +199,7 @@ public class PlayersListener implements Listener {
 		Player p = e.getPlayer();
 		Location oldPosition = packPositions.remove(p);
 		if (oldPosition != null) p.teleport(oldPosition);
-		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
+		//for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p); pas besoin de les enlever vu que le joueur quitte
 		OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
 		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {

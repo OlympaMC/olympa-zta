@@ -22,6 +22,7 @@ public class BountyTrait extends HologramTrait {
 	
 	public BountyTrait() {
 		super("bountyMan");
+		OlympaZTA.getInstance().primes.getPrimes().observe("hologram_trait", ((BlinkingLine<HologramLine>) lines[0])::updateGlobal);
 	}
 	
 	@Override

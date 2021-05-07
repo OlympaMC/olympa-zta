@@ -41,6 +41,7 @@ public class BulletSimple extends Bullet{
 			LivingEntity hitEntity = (LivingEntity) e.getHitEntity();
 			WeaponsListener.cancelDamageEvent = true;
 			if (hitEntity instanceof ArmorStand) return;
+			if (hitEntity.isInvulnerable()) return;
 			float damage = hitEntity instanceof Player ? playerDamage : entityDamage;
 
 			boolean npc = CitizensAPI.getNPCRegistry().isNPC(hitEntity);

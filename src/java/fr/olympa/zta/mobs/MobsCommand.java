@@ -49,8 +49,8 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd (args = { "kill|remove", "DOUBLE" }, min = 0, syntax = "[action] [rayon]")
 	public void killZombies(CommandContext cmd) {
-		boolean remove = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("remove");
-		double radius = cmd.getArgument(1, 0);
+		boolean remove = cmd.getArgumentsLength() != 0 && cmd.getArgument(0).equals("remove");
+		double radius = cmd.getArgument(1, 0D);
 		if (radius < 0) {
 			sendIncorrectSyntax();
 			return;

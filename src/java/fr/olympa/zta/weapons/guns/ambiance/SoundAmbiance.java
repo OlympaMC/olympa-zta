@@ -38,7 +38,7 @@ public class SoundAmbiance implements Runnable {
 		}
 		if (scenarios.size() == chances.length) return;
 		if (random.nextDouble() < chances[scenarios.size()]) {
-			float volume = (float) random.nextDouble(0.012, 0.065);
+			float volume = (float) random.nextDouble(0.009, 0.05);
 			float pitch = (float) random.nextDouble(0.7 + volume, 0.9);
 			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(volume, pitch);
 			scenarios.add(scenario);

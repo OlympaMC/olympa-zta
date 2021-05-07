@@ -217,13 +217,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			primes = new PrimesManager();
-		}catch (Exception ex) {
-			sendMessage("§cLes primes n'ont pas chargé.");
-			ex.printStackTrace();
-		}
-		
-		try {
 			Location first = getConfig().getLocation("scoreHolograms.first");
 			Location second = getConfig().getLocation("scoreHolograms.second");
 			
@@ -282,6 +275,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		try {
 			pluginManager.registerEvents(miniguns = new MinigunsManager(new File(getDataFolder(), "miniguns.yml")), this);
 		}catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		try {
+			pluginManager.registerEvents(primes = new PrimesManager(), this);
+		}catch (Exception ex) {
+			sendMessage("§cLes primes n'ont pas chargé.");
 			ex.printStackTrace();
 		}
 
