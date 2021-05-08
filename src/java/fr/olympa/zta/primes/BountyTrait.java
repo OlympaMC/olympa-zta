@@ -16,7 +16,7 @@ public class BountyTrait extends HologramTrait {
 	
 	private AbstractLine<HologramLine>[] lines =
 			new AbstractLine[] {
-					new BlinkingLine<>((color, x) -> color + "§l" + Utils.withOrWithoutS(OlympaZTA.getInstance().primes.getPrimes().size(), "vente"), OlympaZTA.getInstance(), 60, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE),
+					new BlinkingLine<>((color, x) -> color + "§l" + Utils.withOrWithoutS(OlympaZTA.getInstance().primes.getPrimes().size(), "prime"), OlympaZTA.getInstance(), 60, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE),
 					FixedLine.EMPTY_LINE,
 					new FixedLine<>("§d§nChasseur de Primes") };
 	

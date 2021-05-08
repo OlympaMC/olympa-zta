@@ -1,5 +1,6 @@
 package fr.olympa.zta.clans.plots;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -215,14 +217,26 @@ public class ClanPlot {
 		
 		@Override
 		protected void handleOtherBlock(PlayerInteractEvent event) {
-			handleCancellable(event, null, OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
+			handleCancellable(event, null, clan != null && OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
 		}
 		
 		@Override
 		protected void handleInventoryBlock(PlayerInteractEvent event) {
 			if (OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan) {
 				handleCancellable(event, null, true);
-			}else handleCancellable(event, null, !CONTAINER_MATERIALS.contains(event.getClickedBlock().getType()));
+				return;
+			}
+			if (CONTAINER_MATERIALS.contains(event.getClickedBlock().getType())) {
+				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
+					try {
+						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(((Container) event.getClickedBlock().getState()).getInventory().getContents());
+						if (items != 0) OlympaZTA.getInstance().sendMessage("%d items chargés depuis un coffre du plot de clan %d de %s.", items, id, clan.getName());
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				});
+				handleCancellable(event, null, false);
+			}else handleCancellable(event, null, true);
 		}
 		
 	}

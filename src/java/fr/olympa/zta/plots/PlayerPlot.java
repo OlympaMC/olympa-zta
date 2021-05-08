@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -232,7 +233,15 @@ public class PlayerPlot {
 		
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.CHEST) {
-				return owner != oplayer.getId();
+				if (owner != oplayer.getId()) return true;
+				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
+					try {
+						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(((Chest) e.getClickedBlock().getState()).getInventory().getContents());
+						if (items != 0) OlympaZTA.getInstance().sendMessage("%d items chargés depuis un coffre du plot %d de %s.", items, id, oplayer.getName());
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				});
 			}
 		}
 		return false;

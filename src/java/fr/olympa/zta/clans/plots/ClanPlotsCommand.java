@@ -1,5 +1,6 @@
 package fr.olympa.zta.clans.plots;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -22,6 +23,10 @@ import fr.olympa.zta.ZTAPermissions;
 public class ClanPlotsCommand extends ComplexCommand {
 	
 	private ClanPlotsManager manager;
+	
+	private ClanPlotPaginator paginatorAll = new ClanPlotPaginator(10, "Parcelles de clans", "all", () -> new ArrayList<>(manager.getPlots().values()));
+	private ClanPlotPaginator paginatorRent = new ClanPlotPaginator(10, "Parcelles de clans louées", "rent", () -> manager.getPlots().values().stream().filter(x -> x.getClan() != null).collect(Collectors.toList()));
+	private ClanPlotPaginator paginatorFree = new ClanPlotPaginator(10, "Parcelles de clans vides", "free", () -> manager.getPlots().values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList()));
 	
 	public ClanPlotsCommand(ClanPlotsManager manager) {
 		super(OlympaZTA.getInstance(), "clanplots", "Permet de gérer les parcelles de clan.", ZTAPermissions.CLAN_PLOTS_MANAGE_COMMAND);
@@ -87,6 +92,30 @@ public class ClanPlotsCommand extends ComplexCommand {
 		ClanPlot plot = cmd.getArgument(0);
 		player.teleport(plot.getSpawn());
 		sendSuccess("Tu as été téléporté au spawn du plot %d.", plot.getID());
+	}
+	
+	@Cmd (args = { "all|rent|free", "INTEGER" })
+	public void list(CommandContext cmd) {
+		ClanPlotPaginator paginator;
+		switch (cmd.getArgument(0, "all")) {
+		case "all":
+			paginator = paginatorAll;
+			break;
+		case "rent":
+			paginator = paginatorRent;
+			break;
+		case "free":
+			paginator = paginatorFree;
+			break;
+		default:
+			paginator = null;
+			break;
+		}
+		if (paginator == null) {
+			sendIncorrectSyntax();
+			return;
+		}
+		sendComponents(paginator.getPage(cmd.getArgument(1, 1)));
 	}
 	
 }

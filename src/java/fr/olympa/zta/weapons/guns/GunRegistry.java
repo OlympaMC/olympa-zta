@@ -178,7 +178,7 @@ public class GunRegistry {
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
-		if (items == null) return 0;
+		if (items == null || items.length == 0) return 0;
 		synchronized (toEvict) {
 			Set<Integer> ids = new HashSet<>();
 			for (ItemStack item : items) {
@@ -186,7 +186,7 @@ public class GunRegistry {
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
-				if (id == 0 && im.hasLore()) {
+				/*if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
 						int index = s.indexOf("[I");
 						if (index != -1) {
@@ -197,7 +197,7 @@ public class GunRegistry {
 							break;
 						}
 					}
-				}
+				}*/
 				if (id != 0) {
 					if (registry.containsKey(id)) {
 						toEvict.remove((Object) id);
