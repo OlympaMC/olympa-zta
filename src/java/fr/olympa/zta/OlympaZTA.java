@@ -107,6 +107,7 @@ import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.SitManager;
 import fr.olympa.zta.utils.Tab;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
@@ -260,6 +261,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			};
 		}, this);
 		pluginManager.registerEvents(crates = new CratesManager(), this);
+		pluginManager.registerEvents(new SitManager(), this);
 		if (beautyQuestsLink != null) pluginManager.registerEvents(beautyQuestsLink, this);
 		
 		try {

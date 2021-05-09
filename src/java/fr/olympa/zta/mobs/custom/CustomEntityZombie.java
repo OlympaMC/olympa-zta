@@ -47,7 +47,7 @@ public class CustomEntityZombie extends EntityZombie {
 	public CustomEntityZombie(EntityTypes<? extends CustomEntityZombie> type, World world) {
 		super(type, world);
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.27 + random.nextDouble() * 0.02);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5 + random.nextDouble());
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.6 + random.nextDouble() * 1.5);
 	}
 	
 	public static AttributeProvider.Builder getAttributeBuilder() {

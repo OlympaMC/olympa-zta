@@ -104,10 +104,15 @@ public class PrimesManager implements Listener {
 		
 		for (Prime prime : primes) {
 			if (prime.getTarget().getId() == deadP.getId()) {
-				removePrime(prime, null, ex -> ZTAPermissions.PROBLEM_MONITORING.sendMessage(Prefix.ERROR.toString() + "Une erreur est survenue lors de la terminaison d'une prime."));
-				double paid = OlympaZTA.getInstance().taxManager.pay(OlympaPlayerZTA.get(killer), prime.getBounty());
-				Prefix.BROADCAST_SERVER.sendMessage(Bukkit.getOnlinePlayers(), "§aLa prime de §l%s§a placée sur la tête de %s par %s a été remportée par %s !", prime.getBountyFormatted(), p.getName(), prime.getBuyer().getName(), killer.getName());
-				Prefix.DEFAULT_GOOD.sendMessage(killer, "§eTu as reçu la prime de %s TTC (%s hors taxes de l'État).", OlympaMoney.format(paid), prime.getBountyFormatted());
+				OlympaPlayerZTA killerP = OlympaPlayerZTA.get(killer);
+				if (killerP.getClan() != null && killerP.getClan() == deadP.getClan()) {
+					Prefix.DEFAULT_BAD.sendMessage(killer, "Tu ne peux pas récupérer la prime sur la tête de %s, il s'agit d'un membre de ton clan.", p.getName());
+				}else {
+					removePrime(prime, null, ex -> ZTAPermissions.PROBLEM_MONITORING.sendMessage(Prefix.ERROR.toString() + "Une erreur est survenue lors de la terminaison d'une prime."));
+					double paid = OlympaZTA.getInstance().taxManager.pay(killerP, prime.getBounty());
+					Prefix.BROADCAST_SERVER.sendMessage(Bukkit.getOnlinePlayers(), "§aLa prime de §l%s§a placée sur la tête de §l%s§a par %s a été remportée par §l%s§a !", prime.getBountyFormatted(), p.getName(), prime.getBuyer().getName(), killer.getName());
+					Prefix.DEFAULT_GOOD.sendMessage(killer, "§eTu as reçu la prime de %s TTC (%s hors taxes de l'État).", OlympaMoney.format(paid), prime.getBountyFormatted());
+				}
 				return;
 			}
 		}

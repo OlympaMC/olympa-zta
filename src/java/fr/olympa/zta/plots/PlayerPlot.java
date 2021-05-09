@@ -18,6 +18,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
@@ -215,7 +216,11 @@ public class PlayerPlot {
 		if (chest) {
 			if (e instanceof BlockPlaceEvent) {
 				chests++;
-			}else chests--;
+			}else {
+				if (block.getType() == Material.CHEST && owner != oplayer.getId()) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas détruire le coffre du propriétaire.");
+				}else chests--;
+			}
 			try {
 				OlympaZTA.getInstance().plotsManager.updateChests(this, chests);
 			}catch (SQLException ex) {
@@ -233,10 +238,14 @@ public class PlayerPlot {
 		
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.CHEST) {
-				if (owner != oplayer.getId()) return true;
+				if (owner != oplayer.getId()) {
+					Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Tu ne peux pas ouvrir le coffre du propriétaire. Utilise les coffres piégés pour les invités.");
+					return true;
+				}
+				ItemStack[] inventory = ((Chest) e.getClickedBlock().getState()).getInventory().getContents();
 				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
 					try {
-						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(((Chest) e.getClickedBlock().getState()).getInventory().getContents());
+						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(inventory);
 						if (items != 0) OlympaZTA.getInstance().sendMessage("%d items chargés depuis un coffre du plot %d de %s.", items, id, oplayer.getName());
 					}catch (SQLException ex) {
 						ex.printStackTrace();

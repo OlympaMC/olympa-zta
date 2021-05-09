@@ -15,6 +15,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -227,9 +228,10 @@ public class ClanPlot {
 				return;
 			}
 			if (CONTAINER_MATERIALS.contains(event.getClickedBlock().getType())) {
+				ItemStack[] inventory = ((Container) event.getClickedBlock().getState()).getInventory().getContents();
 				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
 					try {
-						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(((Container) event.getClickedBlock().getState()).getInventory().getContents());
+						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(inventory);
 						if (items != 0) OlympaZTA.getInstance().sendMessage("%d items chargés depuis un coffre du plot de clan %d de %s.", items, id, clan.getName());
 					}catch (SQLException ex) {
 						ex.printStackTrace();

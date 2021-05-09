@@ -24,7 +24,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -32,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
@@ -146,9 +146,9 @@ public class WeaponsListener implements Listener {
 		checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), false);
 	}
 
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), true);
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onPlayerLoad(OlympaPlayerLoadEvent e) {
+		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), true));
 	}
 	
 	public static Weapon getWeapon(ItemStack item) {

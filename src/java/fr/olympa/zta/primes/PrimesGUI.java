@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -27,25 +29,40 @@ import fr.olympa.zta.OlympaZTA;
 public class PrimesGUI extends PagedGUI<Prime> {
 	
 	private static final NumberFormat numberFormat = new DecimalFormat("0");
-	private static final ItemStack primeItem;
+	private static final ItemStack primeItem, primeUnavailableItem;
 	
 	static {
 		primeItem = new ItemStack(Material.STICK);
 		ItemMeta meta = primeItem.getItemMeta();
 		meta.setCustomModelData(1);
+		meta.addEnchant(Enchantment.DURABILITY, 1, true);
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.setDisplayName("§d§lDéposer une prime");
 		meta.setLore(SpigotUtils.wrapAndAlign("Choisis le nom du joueur et la quantité d'Omegas transmis à celui qui le tuera.", 30));
 		primeItem.setItemMeta(meta);
+		
+		primeUnavailableItem = new ItemStack(Material.STICK);
+		meta = primeUnavailableItem.getItemMeta();
+		meta.setCustomModelData(1);
+		meta.setDisplayName("§c§mDéposer une prime");
+		List<String> lore = SpigotUtils.wrapAndAlign("Choisis le nom du joueur et la quantité d'Omegas transmis à celui qui le tuera.", 30);
+		lore.add("");
+		lore.add("§8> §cVous avez déjà fait une prime.");
+		meta.setLore(lore);
+		primeUnavailableItem.setItemMeta(meta);
 	}
 	
 	private OlympaPlayerZTA player;
+	private boolean canStart;
 	
 	protected PrimesGUI(OlympaPlayerZTA player, List<Prime> bounties) {
 		super("Primes", DyeColor.RED, bounties, 5, false);
 		this.player = player;
 		
 		setItems();
-		setBarItem(2, primeItem);
+		
+		canStart = bounties.stream().noneMatch(x -> x.getBuyer().getId() == player.getId());
+		setBarItem(2, canStart ? primeItem : primeUnavailableItem);
 	}
 	
 	@Override
@@ -73,13 +90,17 @@ public class PrimesGUI extends PagedGUI<Prime> {
 			OlympaZTA.getInstance().primes.removePrime(prime, () -> {
 				Prefix.DEFAULT_GOOD.sendMessage(p, "La prime a été supprimée. Tu as récupéré tes %s.", prime.getBountyFormatted());
 				player.getGameMoney().give(prime.getBounty());
+				
+				itemChanged();
+				canStart = true;
+				setBarItem(2, primeItem);
 			}, null);
 		}
 	}
 	
 	@Override
 	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
-		if (barSlot == 2) {
+		if (canStart && barSlot == 2) {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Écris le nom du joueur sur lequel mettre ta prime.");
 			new TextEditor<>(p, target -> {
 				if (target == p) {
