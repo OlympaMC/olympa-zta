@@ -14,7 +14,7 @@ import fr.olympa.api.utils.spigot.SpigotUtils;
 public enum QuestItem implements ItemStackable {
 	DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
 	FERRAILLE(Material.IRON_INGOT, "Ferraille", 1),
-	KEROSENE(Material.CLAY_BALL, "Kéorsène", 1),
+	KEROSENE(Material.CLAY_BALL, "Kérosène", 1),
 	PILE(Material.RABBIT_HIDE, "Pile magnétique", 1),
 	ANTIDOTE(Material.LEATHER, "Antidote", 1),
 	IEM_BROUILLEUR(Material.SCUTE, "Brouilleur I.E.M.", 1),

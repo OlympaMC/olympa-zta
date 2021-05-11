@@ -6,7 +6,9 @@ import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -81,6 +83,13 @@ public enum Knife implements Weapon, ItemStackable {
 			if (rayTrace != null) {
 				damagerLoc.getWorld().spawnParticle(Particle.BLOCK_CRACK, rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6, BLOOD_DATA);
 			}else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());
+		}
+	}
+	
+	@Override
+	public void onInteract(PlayerInteractEvent e) {
+		if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+			if (OlympaZTA.getInstance().glass.hit(e.getClickedBlock())) e.setCancelled(true);
 		}
 	}
 	

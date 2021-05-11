@@ -55,11 +55,11 @@ public abstract class RandomizedInventory extends OlympaGUI implements Randomize
 		if (loot == null) throw new RuntimeException("No loot in slot " + slot);
 		if (click.isShiftClick() && p.getInventory().firstEmpty() == -1) {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
-			return false;
+			return true;
 		}
 		ItemStack realItem = loot.getRealItem();
 		if (realItem != null) inv.setItem(slot, realItem);
-		currentLoots.remove(slot);
+		if (click != ClickType.RIGHT || realItem.getAmount() > 1) currentLoots.remove(slot);
 		return false;
 	}
 	

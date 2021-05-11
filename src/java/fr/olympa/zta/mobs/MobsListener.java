@@ -34,7 +34,7 @@ public class MobsListener implements Listener {
 	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 2, 20,
 			new AmmoCreator(22, 3, 4),
 			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
-			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
+			new FoodCreator(15, Food.BAKED_POTATO, 2, 4),
 			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
 			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),
 			new AmmoCreator(12, AmmoType.HANDWORKED, 2, 3, false),

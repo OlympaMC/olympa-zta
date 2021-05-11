@@ -32,7 +32,7 @@ import fr.olympa.zta.clans.ClanZTA;
 
 public class ClanPlot {
 
-	private static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
+	public static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
 	
 	public static final int PAYMENT_DURATION_DAYS = 7;
 	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000;

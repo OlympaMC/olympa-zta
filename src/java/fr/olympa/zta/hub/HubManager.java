@@ -23,6 +23,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
+import fr.olympa.zta.glass.GlassSmashFlag;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.DynmapLink;
@@ -50,7 +51,12 @@ public class HubManager implements Listener {
 		this.spawnpoint = spawnpoint;
 		this.spawnRegions = new HashSet<>(spawnRegions);
 
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new FoodFlag(true, false), new GunFlag(true, false), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL,
+				new DynmapLink.DynmapHideFlag(),
+				new FoodFlag(true, false),
+				new GunFlag(true, false),
+				new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR),
+				new GlassSmashFlag(true));
 	}
 
 	public void addSpawnRegion(SpawnType region) {

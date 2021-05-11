@@ -23,7 +23,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -246,6 +248,16 @@ public class PlayersListener implements Listener {
 	@EventHandler
 	public void onPlayerMoveRegions(AsyncPlayerMoveRegionsEvent e) {
 		OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onHunger(FoodLevelChangeEvent e) {
+		if (!e.isCancelled()) System.out.println("PlayersListener.onHunger() cancelled " + e.isCancelled() + " to " + e.getFoodLevel());
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onInteract(PlayerInteractEvent e) {
+		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + e.getHand().name());
 	}
 	
 	@EventHandler

@@ -1,5 +1,8 @@
 package fr.olympa.zta.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -15,9 +18,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import net.md_5.bungee.api.ChatMessageType;
@@ -25,7 +25,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class SitManager implements Listener {
 	
-	private BiMap<Player, Location> sitting = HashBiMap.create();
+	private Map<Player, Location> sitting = new HashMap<>();
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
@@ -46,8 +46,8 @@ public class SitManager implements Listener {
 				BlockFace facing = stairs.getFacing();
 				double xMod = facing.getModX() * -0.12;
 				double zMod = facing.getModZ() * -0.12;
-				Location location = e.getClickedBlock().getLocation().add(0.5 + xMod, 0.3, 0.5 + zMod);
-				location.setYaw(facing.getModX() * 90f);
+				Location location = e.getClickedBlock().getLocation().add(0.5 + xMod, 0.32, 0.5 + zMod);
+				location.setYaw(facing == BlockFace.SOUTH ? 180f : (facing.getModX() * 90f));
 				ArmorStand stand = p.getWorld().spawn(location, ArmorStand.class, x -> {
 					x.setPersistent(false);
 					x.setInvisible(true);

@@ -58,6 +58,7 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.FishFlag;
+import fr.olympa.api.region.tracking.flags.FoodFlag;
 import fr.olympa.api.region.tracking.flags.GameModeFlag;
 import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
@@ -75,6 +76,8 @@ import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.clans.plots.ClanPlotsManager;
 import fr.olympa.zta.enderchest.EnderChestManager;
+import fr.olympa.zta.glass.GlassSmashFlag;
+import fr.olympa.zta.glass.GlassSmashManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
@@ -105,6 +108,7 @@ import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
 import fr.olympa.zta.shops.QuestItemShop;
+import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.SitManager;
@@ -161,6 +165,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public MinigunsManager miniguns;
 	public Tab tab;
 	public PrimesManager primes;
+	public GlassSmashManager glass;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -184,6 +189,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public PlayerObservableLine<Scoreboard<OlympaPlayerZTA>> lineDeaths = new PlayerObservableLine<>(x -> "§7Morts: §6" + x.getOlympaPlayer().deaths.get(), (x) -> x.getOlympaPlayer().deaths);
 
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
+	
+	private Tyrolienne tyrolienne;
 	
 	@Override
 	public void onEnable() {
@@ -286,6 +293,20 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			sendMessage("§cLes primes n'ont pas chargé.");
 			ex.printStackTrace();
 		}
+		
+		try {
+			pluginManager.registerEvents(glass = new GlassSmashManager(), this);
+		}catch (Exception ex) {
+			sendMessage("§cLe système de cassage des vitres n'a pas chargé.");
+			ex.printStackTrace();
+		}
+		
+		try {
+			pluginManager.registerEvents(tyrolienne = new Tyrolienne(getConfig().getLocation("tyrolienne.from"), getConfig().getLocation("tyrolienne.to")), this);
+		}catch (Exception ex) {
+			sendMessage("§cLa tyrolienne pas chargé.");
+			ex.printStackTrace();
+		}
 
 		try {
 			String schemName = getConfig().getString("firstBuildSchem");
@@ -385,7 +406,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new PhysicsFlag(true),
 				new PlayerBlocksFlag(true),
 				new FishFlag(true),
+				new FoodFlag(false, false),
 				new GameModeFlag(GameMode.ADVENTURE),
+				new GlassSmashFlag(false),
 				new PlayerBlockInteractFlag(false, true, true) {
 					@Override
 					public void interactEvent(PlayerInteractEvent event) {
@@ -464,7 +487,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public void onDisable(){
 		super.onDisable();
 		training.unload();
-
+		if (tyrolienne != null) tyrolienne.unload();
+		
 		HandlerList.unregisterAll((Plugin) this);
 		mobSpawning.end();
 		scoreboards.unload();

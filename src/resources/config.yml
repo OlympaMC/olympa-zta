@@ -187,6 +187,10 @@ scoreHolograms:
   first: "world 5641.1 12.8 5631.5"
   second: "world 5623.9 12.8 5631.5"
 
+tyrolienne:
+  from: "world 5634 15 5500"
+  to: "world 5634 15 5577"
+
 bank: [0, 1]
 auctions: [6]
 tomHookNPC: [2]

@@ -12,6 +12,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import fr.olympa.zta.OlympaPlayerZTA;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.WeaponsListener;
 import fr.olympa.zta.weapons.guns.Gun;
@@ -59,7 +60,7 @@ public class BulletSimple extends Bullet{
 			hitEntity.getWorld().spawnParticle(Particle.BLOCK_CRACK, blood, 5, Knife.BLOOD_DATA);
 			damage(hitEntity, shooter, damage);
 		}else if (e.getHitBlock() != null) {
-			e.getEntity().getWorld().spawnParticle(Particle.BLOCK_CRACK, e.getHitBlock().getLocation().add(0, 0.5, 0), 3, e.getHitBlock().getBlockData());
+			if (!OlympaZTA.getInstance().glass.hit(e.getHitBlock())) e.getEntity().getWorld().spawnParticle(Particle.BLOCK_CRACK, e.getHitBlock().getLocation().add(0, 0.5, 0), 3, e.getHitBlock().getBlockData());
 		}
 	}
 	

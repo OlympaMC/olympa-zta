@@ -26,6 +26,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class PlayerPlot {
 
@@ -191,7 +192,7 @@ public class PlayerPlot {
 		}
 		
 		boolean chest = false;
-		if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST) {
+		if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
 			chest = true;
 			if (e instanceof BlockPlaceEvent && chests >= chestsPerLevel[level - 1]) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite des %d coffres pour une parcelle de niveau %d.", chestsPerLevel[level - 1], level);
