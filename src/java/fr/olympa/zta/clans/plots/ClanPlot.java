@@ -29,6 +29,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClanZTA;
+import fr.olympa.zta.glass.GlassSmashFlag;
 
 public class ClanPlot {
 
@@ -59,7 +60,7 @@ public class ClanPlot {
 		this.sign = sign;
 		this.spawn = spawn;
 		
-		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag());
+		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag(), new GlassSmashFlag(true));
 	}
 
 	public ClanZTA getClan() {

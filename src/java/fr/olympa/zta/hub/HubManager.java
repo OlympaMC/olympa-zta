@@ -53,7 +53,7 @@ public class HubManager implements Listener {
 
 		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL,
 				new DynmapLink.DynmapHideFlag(),
-				new FoodFlag(true, false),
+				new FoodFlag(true, true, false),
 				new GunFlag(true, false),
 				new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR),
 				new GlassSmashFlag(true));

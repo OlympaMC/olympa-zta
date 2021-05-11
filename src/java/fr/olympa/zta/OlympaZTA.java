@@ -406,7 +406,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new PhysicsFlag(true),
 				new PlayerBlocksFlag(true),
 				new FishFlag(true),
-				new FoodFlag(false, false),
+				new FoodFlag(false),
 				new GameModeFlag(GameMode.ADVENTURE),
 				new GlassSmashFlag(false),
 				new PlayerBlockInteractFlag(false, true, true) {

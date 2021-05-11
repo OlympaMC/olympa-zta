@@ -90,6 +90,8 @@ public enum Knife implements Weapon, ItemStackable {
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 			if (OlympaZTA.getInstance().glass.hit(e.getClickedBlock())) e.setCancelled(true);
+		}else if (e.getAction() == Action.LEFT_CLICK_AIR) {
+			if (OlympaZTA.getInstance().glass.hit(e.getPlayer().getTargetBlockExact(3))) e.setCancelled(true);
 		}
 	}
 	

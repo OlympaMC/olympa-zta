@@ -25,7 +25,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -252,13 +251,13 @@ public class PlayersListener implements Listener {
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onHunger(FoodLevelChangeEvent e) {
-		if (!e.isCancelled()) System.out.println("PlayersListener.onHunger() cancelled " + e.isCancelled() + " to " + e.getFoodLevel());
+		if (e.isCancelled() && !OlympaZTA.getInstance().hub.isInHub(e.getEntity().getLocation())) System.out.println("PlayersListener.onHunger() cancelled " + e.isCancelled() + " to " + e.getFoodLevel() + " for " + e.getEntity().getName());
 	}
 	
-	@EventHandler (priority = EventPriority.MONITOR)
+	/*@EventHandler (priority = EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEvent e) {
-		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + e.getHand().name());
-	}
+		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + (e.getHand() == null ? "null hand" : e.getHand().name()) + " " + (e.getClickedBlock() == null ? "no block" : "block"));
+	}*/
 	
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
