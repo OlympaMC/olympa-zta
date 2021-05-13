@@ -107,10 +107,12 @@ public class BeautyQuestsLink implements Listener {
 	private synchronized void checkScoreboard(Player p, boolean forceCreation) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return;
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
+		if (!player.parameterQuestsBoard.get()) return;
+		
 		if (!QuestsAPI.getQuestsStarteds(acc, true).isEmpty()) {
 			if (!forceCreation && scoreboards.containsKey(p)) return;
 			scoreboards.putIfAbsent(p, 0);
-			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
 			if (scoreboard == null) return;
 			
@@ -118,8 +120,14 @@ public class BeautyQuestsLink implements Listener {
 		}else {
 			if (!scoreboards.containsKey(p)) return;
 			scoreboards.remove(p);
-			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			if (OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player) != null) OlympaZTA.getInstance().scoreboards.create(player); // reset le scoreboard
+			OlympaZTA.getInstance().scoreboards.refresh(player); // reset le scoreboard
+		}
+	}
+	
+	public void updateBoardParameter(OlympaPlayerZTA player, boolean enabled) {
+		if (!enabled && scoreboards.containsKey(player.getPlayer())) {
+			scoreboards.remove(player.getPlayer());
+			OlympaZTA.getInstance().scoreboards.refresh(player);
 		}
 	}
 	

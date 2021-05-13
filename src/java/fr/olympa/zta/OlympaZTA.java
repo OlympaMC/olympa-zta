@@ -439,7 +439,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
-		if (primes != null) checkForTrait(BountyTrait.class, "bountyTrait", getConfig().getIntegerList("bountyMan"));
+		checkForTrait(FoodBuyingShop.class, "gunShop", getConfig().getIntegerList("gunShop"));
+		if (primes != null) checkForTrait(BountyTrait.class, "bountyMan", getConfig().getIntegerList("bountyMan"));
 	}
 
 	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {

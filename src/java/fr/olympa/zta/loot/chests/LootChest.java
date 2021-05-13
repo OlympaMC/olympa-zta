@@ -119,11 +119,11 @@ public class LootChest extends RandomizedInventory {
 	}
 
 	public int getMinItems() {
-		return 2;
+		return 1;
 	}
 
 	public int getMaxItems() {
-		return 4;
+		return 3;
 	}
 
 	public List<LootCreator> getObjectList() {

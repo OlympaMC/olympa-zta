@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.utils.RandomizedPicker.Chanced;
 import fr.olympa.api.utils.RandomizedPicker.FixedPicker;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
 public class SoundAmbiance implements Runnable {
@@ -33,7 +34,7 @@ public class SoundAmbiance implements Runnable {
 			if (scenario.shouldTerminate()) {
 				iterator.remove();
 			}else {
-				players.forEach(scenario::run);
+				players.stream().filter(x -> OlympaPlayerZTA.get(x).parameterAmbient.get()).forEach(scenario::run);
 			}
 		}
 		if (scenarios.size() == chances.length) return;

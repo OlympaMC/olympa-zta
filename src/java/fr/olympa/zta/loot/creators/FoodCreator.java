@@ -52,8 +52,10 @@ public class FoodCreator implements LootCreator {
 		GOLDEN_APPLE("Pomme d'or"),
 		COOKIE("Cookie"),
 		COOKED_PORKCHOP("Viande de porc cuite"),
-		COOKED_SALMON("Saumon cuit");
-
+		COOKED_SALMON("Saumon cuit"),
+		DRIED_KELP("Biscuit militaire"),
+		;
+		
 		private Material type;
 		private String name;
 		

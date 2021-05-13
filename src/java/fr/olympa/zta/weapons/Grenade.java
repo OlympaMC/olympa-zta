@@ -75,7 +75,7 @@ public enum Grenade implements Weapon, ItemStackable {
 			Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
 				itemEntity.remove();
 				p.getWorld().createExplosion(itemEntity.getLocation(), 4.5f, false, false, p);
-			}, 75);
+			}, 65);
 		}
 	}
 

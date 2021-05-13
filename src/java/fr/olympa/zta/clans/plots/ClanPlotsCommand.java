@@ -94,6 +94,21 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("Tu as été téléporté au spawn du plot %d.", plot.getID());
 	}
 	
+	@Cmd (player = true, args = "PLOT", min = 1)
+	public void editRegion(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		Player p = getPlayer();
+		Prefix.INFO.sendMessage(p, "Sélectionne la région de la parcelle.");
+		new RegionEditor(p, (region) -> {
+			if (region == null) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "La région sélectionnée n'est pas correcte.");
+				return;
+			}
+			plot.getTrackedRegion().updateRegion(region);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "La région du plot %d a été modifiée.", plot.getID());
+		}).enterOrLeave();
+	}
+	
 	@Cmd (args = { "all|rent|free", "INTEGER" })
 	public void list(CommandContext cmd) {
 		ClanPlotPaginator paginator;

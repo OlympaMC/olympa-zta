@@ -99,7 +99,7 @@ public class PlayersListener implements Listener {
 				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
 					kept.add(itemStack);
 					contents[i] = null;
-				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.BATTE.isItem(itemStack)) {
+				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.BATTE.isItem(itemStack) || itemStack.getType() == Material.DRIED_KELP) {
 					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
 				}
 			}
@@ -315,7 +315,7 @@ public class PlayersListener implements Listener {
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(10), Knife.BATTE.createItem(), AmmoType.LIGHT.getAmmo(5, true));
+		p.getInventory().addItem(Food.DRIED_KELP.get(25), Knife.BATTE.createItem(), AmmoType.LIGHT.getAmmo(5, true));
 	}
 	
 }

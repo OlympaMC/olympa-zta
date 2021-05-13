@@ -83,7 +83,7 @@ public class Tyrolienne implements Listener {
 		double t = -(a * (x1 - ploc.getX()) + b * (y1 - ploc.getY()) + c * (z1 - ploc.getZ())) / (a * a + b * b + c * c);
 		Location loc = new Location(p.getWorld(), x1 + a * t + 0.5, y1 + b * t, z1 + c * t + 0.5);
 		
-		players.put(p, new TyrolienneRunner(p, loc.subtract(0, 3, 0).setDirection(step), step, point));
+		players.put(p, new TyrolienneRunner(p, loc.subtract(0, 3, 0).setDirection(step), step, point.clone().add(0.5, 0, 0.5)));
 	}
 	
 	public void unload() {
@@ -135,7 +135,7 @@ public class Tyrolienne implements Listener {
 			headBottom.addPassenger(headTop);
 			
 			task = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), () -> {
-				if (p.getLocation().distanceSquared(point) < 10) {
+				if (p.getLocation().distanceSquared(point) < 8) {
 					stop(false);
 				}else {
 					Vector istep;
