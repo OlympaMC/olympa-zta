@@ -14,7 +14,7 @@ public class GlassSmashCommand extends OlympaCommand {
 	private GlassSmashManager glass;
 	
 	public GlassSmashCommand(GlassSmashManager glass) {
-		super(OlympaZTA.getInstance(), "glassSmash", ZTAPermissions.GLASS_MANAGE_COMMAND);
+		super(OlympaZTA.getInstance(), "glassSmash", "Active/désactive le cassage des vitres.", ZTAPermissions.GLASS_MANAGE_COMMAND);
 		this.glass = glass;
 	}
 	

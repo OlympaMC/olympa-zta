@@ -13,7 +13,7 @@ public class PlotsCommand extends ComplexCommand {
 	private PlayerPlotsManager manager;
 
 	public PlotsCommand(PlayerPlotsManager manager) {
-		super(OlympaZTA.getInstance(), "plot", "Permet de gérer les parcelles", ZTAPermissions.PLOTS_MANAGE_COMMAND, "plots");
+		super(OlympaZTA.getInstance(), "plot", "Permet de gérer les parcelles.", ZTAPermissions.PLOTS_MANAGE_COMMAND, "plots");
 		this.manager = manager;
 	}
 

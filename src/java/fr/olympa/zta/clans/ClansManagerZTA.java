@@ -62,7 +62,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
 		super(OlympaZTA.getInstance(), "zta_clans");
 
-		new ClansCommandZTA(this, "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
+		new ClansCommandZTA(this, ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	public void updateBoardParameter(OlympaPlayerZTA player, ClanBoardSetting setting) {
-		if (setting == ClanBoardSetting.NEVER) OlympaZTA.getInstance().scoreboards.refresh(player);
+		if (setting == ClanBoardSetting.NEVER || setting == ClanBoardSetting.ONLINE_FIVE) OlympaZTA.getInstance().scoreboards.refresh(player);
 	}
 	
 }

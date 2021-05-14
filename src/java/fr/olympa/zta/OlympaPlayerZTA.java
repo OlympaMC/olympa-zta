@@ -50,6 +50,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_BACK_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("back_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	/* Parameters */
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PARAMETER_AMBIENT = new SQLColumn<OlympaPlayerZTA>("param_ambient", "BOOLEAN NOT NULL DEFAULT 1", Types.BOOLEAN).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PARAMETER_BLOOD = new SQLColumn<OlympaPlayerZTA>("param_blood", "BOOLEAN NOT NULL DEFAULT 1", Types.BOOLEAN).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PARAMETER_QUESTS_BOARD = new SQLColumn<OlympaPlayerZTA>("param_quests_board", "BOOLEAN NOT NULL DEFAULT 1", Types.BOOLEAN).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PARAMETER_CLAN_BOARD = new SQLColumn<OlympaPlayerZTA>("param_clan_board", "TINYINT(3) NOT NULL DEFAULT 0", Types.TINYINT).setUpdatable();
 	
@@ -57,7 +58,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT,
 			COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS,
 			COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME,
-			COLUMN_PARAMETER_AMBIENT, COLUMN_PARAMETER_QUESTS_BOARD, COLUMN_PARAMETER_CLAN_BOARD);
+			COLUMN_PARAMETER_AMBIENT, COLUMN_PARAMETER_BLOOD, COLUMN_PARAMETER_QUESTS_BOARD, COLUMN_PARAMETER_CLAN_BOARD);
 	
 	private ClanZTA clan = null;
 	public BukkitTask plotFind = null; // pas persistant
@@ -75,6 +76,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableLong backVIPTime = new ObservableLong(0);
 	
 	public ObservableBoolean parameterAmbient = new ObservableBoolean(true);
+	public ObservableBoolean parameterBlood = new ObservableBoolean(true);
 	public ObservableBoolean parameterQuestsBoard = new ObservableBoolean(true);
 	public ObservableValue<ClanBoardSetting> parameterClanBoard = new ObservableValue<ClanBoardSetting>(ClanBoardSetting.ONLINE_FIVE);
 	
@@ -100,6 +102,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		kitVIPTime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPTime.get(), null, null));
 		backVIPTime.observe("datas", () -> COLUMN_BACK_VIP_TIME.updateAsync(this, backVIPTime.get(), null, null));
 		parameterAmbient.observe("datas", () -> COLUMN_PARAMETER_AMBIENT.updateAsync(this, parameterAmbient.get(), null, null));
+		parameterBlood.observe("datas", () -> COLUMN_PARAMETER_BLOOD.updateAsync(this, parameterBlood.get(), null, null));
 		parameterQuestsBoard.observe("datas", () -> COLUMN_PARAMETER_QUESTS_BOARD.updateAsync(this, parameterQuestsBoard.get(), null, null));
 		parameterClanBoard.observe("datas", () -> COLUMN_PARAMETER_CLAN_BOARD.updateAsync(this, parameterClanBoard.get().ordinal(), null, null));
 		

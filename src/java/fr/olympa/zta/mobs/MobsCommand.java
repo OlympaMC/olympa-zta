@@ -18,7 +18,7 @@ import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 public class MobsCommand extends ComplexCommand {
 
 	public MobsCommand() {
-		super(OlympaZTA.getInstance(), "mobs", "Gestion des mobs", ZTAPermissions.MOBS_COMMAND);
+		super(OlympaZTA.getInstance(), "mobs", "Gère les mobs du ZTA.", ZTAPermissions.MOBS_COMMAND);
 		super.addArgumentParser("MOBTYPE", Zombies.class);
 	}
 

@@ -1,9 +1,12 @@
 package fr.olympa.zta.weapons;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -17,9 +20,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
 
 import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
+import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
 
 public enum Knife implements Weapon, ItemStackable {
 	
@@ -81,13 +86,14 @@ public enum Knife implements Weapon, ItemStackable {
 			Location damagerLoc = ((LivingEntity) e.getDamager()).getEyeLocation();
 			RayTraceResult rayTrace = e.getEntity().getBoundingBox().expand(0.4).rayTrace(damagerLoc.toVector(), damagerLoc.getDirection(), 5);
 			if (rayTrace != null) {
-				damagerLoc.getWorld().spawnParticle(Particle.BLOCK_CRACK, rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6, BLOOD_DATA);
+				spawnBlood(rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6);
 			}else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());
 		}
 	}
 	
 	@Override
 	public void onInteract(PlayerInteractEvent e) {
+		if (e.isCancelled()) return;
 		if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 			if (OlympaZTA.getInstance().glass.hit(e.getClickedBlock())) e.setCancelled(true);
 		}else if (e.getAction() == Action.LEFT_CLICK_AIR) {
@@ -103,6 +109,14 @@ public enum Knife implements Weapon, ItemStackable {
 	@Override
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		p.removePotionEffect(PotionEffectType.SPEED);
+	}
+	
+	public static void spawnBlood(Location location, int count) {
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(CraftParticle.toNMS(Particle.BLOCK_CRACK, BLOOD_DATA), false, location.getX(), location.getY(), location.getZ(), 0.0f, 0.0f, 0.0f, 1.0f, count);
+		Bukkit.getOnlinePlayers().stream().filter(p -> p.getLocation().distanceSquared(location) < 1024 && OlympaPlayerZTA.get(p).parameterBlood.get()).forEach(p -> {
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+		});
+		//location.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, count, BLOOD_DATA);
 	}
 	
 }

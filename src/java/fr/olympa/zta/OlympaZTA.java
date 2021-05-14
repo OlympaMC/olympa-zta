@@ -103,6 +103,7 @@ import fr.olympa.zta.ranks.KillPlayerRanking;
 import fr.olympa.zta.ranks.KillZombieRanking;
 import fr.olympa.zta.ranks.LootChestRanking;
 import fr.olympa.zta.ranks.MoneyRanking;
+import fr.olympa.zta.settings.PlayerSettingsCommand;
 import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
@@ -353,6 +354,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		new WeaponsCommand().register();
 		new MobsCommand().register();
 		new HubCommand().register();
+		new PlayerSettingsCommand().register();
 		new SpreadManageCommand().register();
 		new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
 		new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();

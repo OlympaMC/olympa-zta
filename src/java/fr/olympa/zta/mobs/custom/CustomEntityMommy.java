@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs.custom;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
@@ -27,6 +28,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	private int lastTick = MinecraftServer.currentTick;
 	
 	private ItemStack[] contents;
+	private boolean contentsLoaded = false;
 	
 	public CustomEntityMommy(EntityTypes<CustomEntityMommy> type, World world) {
 		super(type, world);
@@ -39,6 +41,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
 		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
+		contentsLoaded = true;
 	}
 	
 	@Override
@@ -61,6 +64,16 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {
 		if (contents != null) {
 			OlympaZTA.getInstance().sendMessage("%d items droppés depuis un zombie momifié.", contents.length);
+			if (!contentsLoaded) {
+				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
+					try {
+						OlympaZTA.getInstance().gunRegistry.loadFromItems(Arrays.stream(contents).map(CraftItemStack::asCraftMirror).toArray(org.bukkit.inventory.ItemStack[]::new));
+					}catch (SQLException e) {
+						OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement des armes sur un zombie.");
+						e.printStackTrace();
+					}
+				});
+			}
 			for (ItemStack item : contents) {
 				a(item);
 			}

@@ -125,9 +125,15 @@ public class BeautyQuestsLink implements Listener {
 	}
 	
 	public void updateBoardParameter(OlympaPlayerZTA player, boolean enabled) {
-		if (!enabled && scoreboards.containsKey(player.getPlayer())) {
-			scoreboards.remove(player.getPlayer());
-			OlympaZTA.getInstance().scoreboards.refresh(player);
+		if (!enabled) {
+			if (scoreboards.containsKey(player.getPlayer())) {
+				scoreboards.remove(player.getPlayer());
+				OlympaZTA.getInstance().scoreboards.refresh(player);
+			}
+		}else {
+			if (!scoreboards.containsKey(player.getPlayer())) {
+				checkScoreboard(player.getPlayer(), true);
+			}
 		}
 	}
 	

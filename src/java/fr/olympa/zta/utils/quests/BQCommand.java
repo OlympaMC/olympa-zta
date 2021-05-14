@@ -15,7 +15,7 @@ import fr.skytasul.quests.players.PlayersManager;
 public class BQCommand extends OlympaCommand {
 	
 	public BQCommand() {
-		super(OlympaZTA.getInstance(), "missions", "Permet de voir ses missions", (OlympaSpigotPermission) null, "mission");
+		super(OlympaZTA.getInstance(), "missions", "Ouvre l'inventaire des missions.", (OlympaSpigotPermission) null, "mission");
 		setAllowConsole(false);
 	}
 	

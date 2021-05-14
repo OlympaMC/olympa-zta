@@ -57,7 +57,7 @@ public class BulletSimple extends Bullet{
 				blood = hitEntity.getLocation().add(0, 1, 0);
 				if (stats) OlympaPlayerZTA.get(shooter).otherShots.increment();
 			}
-			hitEntity.getWorld().spawnParticle(Particle.BLOCK_CRACK, blood, 5, Knife.BLOOD_DATA);
+			Knife.spawnBlood(blood, 5);
 			damage(hitEntity, shooter, damage);
 		}else if (e.getHitBlock() != null) {
 			if (!OlympaZTA.getInstance().glass.hit(e.getHitBlock())) e.getEntity().getWorld().spawnParticle(Particle.BLOCK_CRACK, e.getHitBlock().getLocation().add(0, 0.5, 0), 3, e.getHitBlock().getBlockData());
