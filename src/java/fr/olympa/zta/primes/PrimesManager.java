@@ -26,6 +26,7 @@ import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
+import net.citizensnpcs.api.CitizensAPI;
 
 public class PrimesManager implements Listener {
 	
@@ -97,6 +98,7 @@ public class PrimesManager implements Listener {
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.isCancelled()) return;
+		if (CitizensAPI.getNPCRegistry().isNPC(e.getEntity())) return;
 		Player p = e.getEntity();
 		Player killer = p.getKiller();
 		if (killer == null) return;

@@ -39,7 +39,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 		for (ClanPlayerDataZTA member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
 			if (!member.isConnected()) {
-				if (x.getOlympaPlayer().parameterClanBoard.get() == ClanBoardSetting.ONLINE_FIVE && players.size() <= 5) players.add(offline, "§c○ " + memberName);
+				if (players.size() < 5 && x.getOlympaPlayer().parameterClanBoard.get() == ClanBoardSetting.ONLINE_FIVE) players.add(offline, "§c○ " + memberName);
 			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
 				if (players.size() >= 5 && offline < players.size()) players.remove(players.size() - 1);
 				players.add(0, "§6● §l" + memberName);

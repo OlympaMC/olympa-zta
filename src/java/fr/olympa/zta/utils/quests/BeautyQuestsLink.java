@@ -44,10 +44,9 @@ public class BeautyQuestsLink implements Listener {
 		int id = scoreboards.get(player).intValue();
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
-		quest.hasFinished(acc);
 		scoreboards.put(player, id);
 		String questName = quest.isRepeatable() ? "\n§7§lMission quotidienne:" : ("\n§7Mission: §6§l" + quest.getName());
-		return String.join("\n", SpigotUtils.wordWrap(questName + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 35));
+		return String.join("\n", SpigotUtils.wordWrap(questName + "\n§7" + quest.getBranchesManager().getDescriptionLine(acc, Source.SCOREBOARD), 35));
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {

@@ -226,7 +226,12 @@ public class PlayersListener implements Listener {
 			break;
 		case FAILED_DOWNLOAD:
 		case SUCCESSFULLY_LOADED:
-			Prefix.DEFAULT_GOOD.sendMessage(p, e.getStatus() == Status.FAILED_DOWNLOAD ? "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !" : "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+			if (e.getStatus() == Status.FAILED_DOWNLOAD) {
+				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !");
+			}else {
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+				OlympaCore.getInstance().usesPack(p);
+			}
 			Location lastLoc = packPositions.remove(p);
 			if (lastLoc != null) {
 				Prefix.DEFAULT.sendMessage(p, "Vous allez être envoyé à votre dernière position....");

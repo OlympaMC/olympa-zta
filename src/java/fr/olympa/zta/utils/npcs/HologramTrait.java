@@ -26,7 +26,7 @@ public abstract class HologramTrait extends Trait {
 	}
 	
 	private Location getHologramLocation(Location npcLocation) {
-		return npcLocation.add(0, npc.getEntity().getHeight() + (Boolean.valueOf(Objects.toString(npc.data().get(NPC.NAMEPLATE_VISIBLE_METADATA))) ? 0.2 : 0), 0);
+		return npcLocation.add(0, npc.getEntity().getHeight() + (Boolean.valueOf(Objects.toString(npc.data().get(NPC.NAMEPLATE_VISIBLE_METADATA))) ? 0.32 : 0), 0);
 	}
 	
 	protected abstract AbstractLine<HologramLine>[] getLines();

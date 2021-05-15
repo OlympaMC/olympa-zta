@@ -80,6 +80,7 @@ public class SoundAmbiance implements Runnable {
 		GUN_GENERIC("zta.guns.generic", "zta.guns.generic_far"),
 		EXPLOSION_CIVIL("zta.explosions.civil"),
 		ZOMBIE_AMBIENT("entity.zombie.ambient"),
+		HELICO_LANDING("zta.quests.helicopter_landing")
 		;
 	
 		private final String sound, farSound;

@@ -108,6 +108,7 @@ import fr.olympa.zta.shops.CivilBlockShop;
 import fr.olympa.zta.shops.CorporationBlockShop;
 import fr.olympa.zta.shops.FoodBuyingShop;
 import fr.olympa.zta.shops.FraterniteBlockShop;
+import fr.olympa.zta.shops.GunShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
@@ -441,7 +442,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		checkForTrait(CorporationBlockShop.class, "blockshopcorporation", getConfig().getIntegerList("blockShopCorporation"));
 		checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 		checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
-		checkForTrait(FoodBuyingShop.class, "gunShop", getConfig().getIntegerList("gunShop"));
+		checkForTrait(GunShop.class, "gunShop", getConfig().getIntegerList("gunShop"));
 		if (primes != null) checkForTrait(BountyTrait.class, "bountyMan", getConfig().getIntegerList("bountyMan"));
 	}
 

@@ -25,7 +25,7 @@ public class ArmorCreator implements LootCreator {
 	
 	@Override
 	public String getTitle() {
-		return "Pièce de : " + type.getName();
+		return type.getName() + " (1 pc)";
 	}
 
 }

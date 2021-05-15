@@ -45,6 +45,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HEADSHOTS = new SQLColumn<OlympaPlayerZTA>("headshots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OTHER_SHOTS = new SQLColumn<OlympaPlayerZTA>("other_shots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OPENED_CHESTS = new SQLColumn<OlympaPlayerZTA>("opened_chests", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLAY_TIME = new SQLColumn<OlympaPlayerZTA>("play_time", "BIGINT NOT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	/* Times */
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("kit_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_BACK_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("back_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
@@ -56,12 +57,13 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	
 	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(
 			COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT,
-			COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS,
+			COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_PLAY_TIME,
 			COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME,
 			COLUMN_PARAMETER_AMBIENT, COLUMN_PARAMETER_BLOOD, COLUMN_PARAMETER_QUESTS_BOARD, COLUMN_PARAMETER_CLAN_BOARD);
 	
 	private ClanZTA clan = null;
 	public BukkitTask plotFind = null; // pas persistant
+	public long joinTime;
 	/* Données */
 	private ItemStack[] enderChestContents = new ItemStack[0];
 	private OlympaMoney money = new OlympaMoney(100);
@@ -72,6 +74,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt headshots = new ObservableInt(0);
 	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
+	public ObservableLong playTime = new ObservableLong(0);
 	public ObservableLong kitVIPTime = new ObservableLong(0);
 	public ObservableLong backVIPTime = new ObservableLong(0);
 	
@@ -99,6 +102,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		headshots.observe("datas", () -> COLUMN_HEADSHOTS.updateAsync(this, headshots.get(), null, null));
 		otherShots.observe("datas", () -> COLUMN_OTHER_SHOTS.updateAsync(this, otherShots.get(), null, null));
 		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateAsync(this, openedChests.get(), null, null));
+		playTime.observe("datas", () -> COLUMN_PLAY_TIME.updateAsync(this, playTime.get(), null, null));
 		kitVIPTime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPTime.get(), null, null));
 		backVIPTime.observe("datas", () -> COLUMN_BACK_VIP_TIME.updateAsync(this, backVIPTime.get(), null, null));
 		parameterAmbient.observe("datas", () -> COLUMN_PARAMETER_AMBIENT.updateAsync(this, parameterAmbient.get(), null, null));
@@ -110,6 +114,14 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		if (OlympaZTA.getInstance().rankingKillZombie != null) killedZombies.observe("ranking", () -> OlympaZTA.getInstance().rankingKillZombie.handleNewScore(getName(), null, killedZombies.get()));
 		if (OlympaZTA.getInstance().rankingKillPlayer != null) killedPlayers.observe("ranking", () -> OlympaZTA.getInstance().rankingKillPlayer.handleNewScore(getName(), null, killedPlayers.get()));
 		if (OlympaZTA.getInstance().rankingLootChest != null) openedChests.observe("ranking", () -> OlympaZTA.getInstance().rankingLootChest.handleNewScore(getName(), null, openedChests.get()));
+		
+		joinTime = System.currentTimeMillis();
+	}
+	
+	@Override
+	public void unloaded() {
+		super.unloaded();
+		if (joinTime != 0) playTime.add(System.currentTimeMillis() - joinTime);
 	}
 
 	@Override

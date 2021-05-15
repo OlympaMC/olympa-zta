@@ -21,18 +21,18 @@ import fr.olympa.zta.weapons.guns.GunType;
 public enum PackType implements RandomizedPicker<LootCreator> {
 
 	BASIC(
-			10000,
+			2000,
 			11,
-			2,
-			2,
+			4,
+			4,
 			"basique du militaire",
 			new AmmoCreator(-1, AmmoType.HEAVY, 20, 30, true),
-			new FoodCreator(20, Food.COOKED_BEEF, 10, 15),
+			new FoodCreator(-1, Food.COOKED_BEEF, 10, 15),
 			new ItemStackableCreator(7, GunType.P22),
 			new ItemStackableCreator(8, GunType.KSG),
-			new ArmorCreator(20, ArmorType.MILITARY)),
+			new ArmorCreator(-1, ArmorType.MILITARY)),
 	AMMOS(
-			2000,
+			1000,
 			13,
 			5,
 			7,

@@ -1,6 +1,5 @@
 package fr.olympa.zta.weapons;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -113,7 +112,7 @@ public enum Knife implements Weapon, ItemStackable {
 	
 	public static void spawnBlood(Location location, int count) {
 		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(CraftParticle.toNMS(Particle.BLOCK_CRACK, BLOOD_DATA), false, location.getX(), location.getY(), location.getZ(), 0.0f, 0.0f, 0.0f, 1.0f, count);
-		Bukkit.getOnlinePlayers().stream().filter(p -> p.getLocation().distanceSquared(location) < 1024 && OlympaPlayerZTA.get(p).parameterBlood.get()).forEach(p -> {
+		location.getWorld().getPlayers().stream().filter(p -> p.getLocation().distanceSquared(location) < 1024 && OlympaPlayerZTA.get(p).parameterBlood.get()).forEach(p -> {
 			((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
 		});
 		//location.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, count, BLOOD_DATA);
