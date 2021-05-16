@@ -21,6 +21,9 @@
 		<repository>
 			<id>mikeprimm</id>
 			<url>http://repo.mikeprimm.com/</url>
+			<snapshots>
+				<updatePolicy>interval:10080</updatePolicy>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
@@ -68,12 +71,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.mcmonkey</groupId>
-            <artifactId>sentinel</artifactId>
-            <version>2.2.6-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>org.mcmonkey</groupId>
+			<artifactId>sentinel</artifactId>
+			<version>2.2.6-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-core</artifactId>

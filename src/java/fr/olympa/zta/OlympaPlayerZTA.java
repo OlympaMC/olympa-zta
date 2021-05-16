@@ -176,6 +176,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			headshots.set(resultSet.getInt("headshots"));
 			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
+			playTime.set(resultSet.getLong("play_time"));
 			kitVIPTime.set(resultSet.getLong("kit_vip_time"));
 			backVIPTime.set(resultSet.getLong("back_vip_time"));
 			parameterAmbient.set(resultSet.getBoolean("param_ambient"));
