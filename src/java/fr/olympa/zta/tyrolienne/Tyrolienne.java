@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -24,7 +23,7 @@ import org.spigotmc.event.entity.EntityDismountEvent;
 
 import fr.olympa.api.region.shapes.Cuboid;
 import fr.olympa.api.region.tracking.ActionResult;
-import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -62,8 +61,8 @@ public class Tyrolienne implements Listener {
 		
 		OlympaCore.getInstance().getRegionManager().registerRegion(new Cuboid(from.clone().subtract(0, 2, 0), to), "tyrolienne" + hashCode(), EventPriority.NORMAL, new Flag() {
 			@Override
-			public ActionResult enters(Player p, Set<TrackedRegion> to) {
-				if (p.getGameMode() != GameMode.SPECTATOR && !players.containsKey(p)) start(p);
+			public ActionResult enters(EntryEvent event) {
+				if (event.getPlayer().getGameMode() != GameMode.SPECTATOR && !players.containsKey(event.getPlayer())) start(event.getPlayer());
 				return ActionResult.ALLOW;
 			}
 		});

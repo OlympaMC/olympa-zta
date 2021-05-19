@@ -37,9 +37,13 @@ import org.bukkit.scheduler.BukkitTask;
 import com.google.common.collect.EvictingQueue;
 
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.ActionResult;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.region.tracking.RegionEvent.RegionEventReason;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.chests.type.LootChestPicker;
 import fr.olympa.zta.loot.chests.type.LootChestType;
@@ -305,11 +309,11 @@ public class MobSpawning implements Runnable {
 	}
 	
 	public enum SpawnType {
-		NONE(12, 1, 5, 0, "§cerreur", null, null, null, null, null),
-		HARD(10, 2, 6, 0.1, "§c§lzone rouge", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
-		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
-		EASY(15, 1, 4, 0.012, "§d§lzone modérée", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
-		SAFE(21, 1, 2, 0.008, "§a§lzone sécurisée", Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+		NONE(12, 1, 5, 0, "§c§lerreur", "§cerreur", null, null, null, null, null),
+		HARD(10, 2, 6, 0.1, "§c§lzone rouge", "§7§ogare au zombies!", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+		MEDIUM(12, 2, 5, 0.08, "§6§lzone à risques", "§7§osoyez sur vos gardes", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+		EASY(15, 1, 4, 0.012, "§d§lzone modérée", "§7§ogardez vos distances", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+		SAFE(21, 1, 2, 0.008, "§a§lzone sécurisée", "§7§orestez vigilant", Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
 		
@@ -318,27 +322,29 @@ public class MobSpawning implements Runnable {
 		private int maxEntitiesPerChunk;
 		private double explosiveProb;
 
+		public final String title;
+		public final String subtitle;
 		public final Color color;
 		public final String htmlColor;
 		public final String name;
 		public final String description;
-		public final String title;
 
 		private final LootChestPicker lootchests;
 
 		private List<Region> regions = new ArrayList<>();
 		private Flag flag;
 
-		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, String title, Color color, String htmlColor, String name, String description, LootChestPicker lootchests) {
+		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, String title, String subtitle, Color color, String htmlColor, String name, String description, LootChestPicker lootchests) {
 			this.minDistanceSquared = minDistance * minDistance;
 			this.spawnAmount = spawnAmount;
 			this.maxEntitiesPerChunk = maxEntitiesPerChunk;
 			this.explosiveProb = explosiveProb;
+			this.title = title;
+			this.subtitle = subtitle;
 			this.color = color;
 			this.htmlColor = htmlColor;
 			this.name = name;
 			this.description = description;
-			this.title = title;
 			this.lootchests = lootchests;
 
 			if (name != null) flag = new SpawningFlag(this);
@@ -387,6 +393,17 @@ public class MobSpawning implements Runnable {
 			public SpawningFlag(SpawnType type) {
 				this.type = type;
 				if (type != null) super.setMessages(RADAR + " vous entrez dans une " + type.title + "§r " + RADAR, null, ChatMessageType.ACTION_BAR);
+			}
+			
+			@Override
+			public ActionResult enters(EntryEvent event) {
+				if (type != null && event.getReason() != RegionEventReason.JOIN) {
+					OlympaPlayerZTA player = OlympaPlayerZTA.get(event.getPlayer());
+					if (player.parameterZoneTitle.get()) {
+						event.getPlayer().sendTitle(type.title, type.subtitle, 7, 43, 10);
+					}
+				}
+				return super.enters(event);
 			}
 		}
 	}

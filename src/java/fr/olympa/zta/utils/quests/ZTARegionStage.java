@@ -1,7 +1,6 @@
 package fr.olympa.zta.utils.quests;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +11,8 @@ import fr.olympa.api.editor.RegionEditor;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.ActionResult;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
@@ -50,17 +51,17 @@ public class ZTARegionStage extends AbstractStage {
 		super.load();
 		region = OlympaCore.getInstance().getRegionManager().registerRegion(regionShape, "questRegion" + branch.getQuest().getID() + "b" + branch.getID() + "s" + branch.getID(this) + "i" + regionID++, EventPriority.NORMAL, new Flag() {
 			@Override
-			public ActionResult enters(Player p, Set<TrackedRegion> to) {
+			public ActionResult enters(EntryEvent event) {
 				if (!exit) {
-					if (hasStarted(p) && canUpdate(p)) OlympaZTA.getInstance().getTask().runTask(() -> finishStage(p));
+					if (hasStarted(event.getPlayer()) && canUpdate(event.getPlayer())) OlympaZTA.getInstance().getTask().runTask(() -> finishStage(event.getPlayer()));
 				}
 				return ActionResult.ALLOW;
 			}
 			
 			@Override
-			public ActionResult leaves(Player p, Set<TrackedRegion> to) {
+			public ActionResult leaves(ExitEvent event) {
 				if (exit) {
-					if (hasStarted(p) && canUpdate(p)) OlympaZTA.getInstance().getTask().runTask(() -> finishStage(p));
+					if (hasStarted(event.getPlayer()) && canUpdate(event.getPlayer())) OlympaZTA.getInstance().getTask().runTask(() -> finishStage(event.getPlayer()));
 				}
 				return ActionResult.ALLOW;
 			}

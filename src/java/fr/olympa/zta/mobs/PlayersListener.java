@@ -54,6 +54,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.weapons.ArmorType;
@@ -179,8 +180,6 @@ public class PlayersListener implements Listener {
 			p.setHealth(ZTA_MAX_HEALTH);
 			giveStartItems(p);
 		}
-		
-		OlympaZTA.getInstance().tab.join(p);
 	}
 	
 	@EventHandler
@@ -251,7 +250,9 @@ public class PlayersListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerMoveRegions(AsyncPlayerMoveRegionsEvent e) {
-		OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
+		if (e.getDifference().stream().anyMatch(region -> region.getFlag(SpawningFlag.class) != null)) {
+			OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
+		}
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)

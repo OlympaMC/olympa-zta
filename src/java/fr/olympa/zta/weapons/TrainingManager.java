@@ -2,7 +2,6 @@ package fr.olympa.zta.weapons;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -27,7 +26,7 @@ import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.ActionResult;
-import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.Prefix;
@@ -65,10 +64,10 @@ public class TrainingManager implements Listener {
 		
 		OlympaCore.getInstance().getRegionManager().registerRegion(playersRegion, "training_players", EventPriority.HIGH, new GunFlag(false, true), new DropFlag(true), new Flag() {
 			@Override
-			public ActionResult leaves(Player p, Set<TrackedRegion> to) {
-				TrainingSlot slot = getTrainingSlot(p);
+			public ActionResult leaves(ExitEvent event) {
+				TrainingSlot slot = getTrainingSlot(event.getPlayer());
 				if (slot != null) slot.exit(false);
-				return super.leaves(p, to);
+				return super.leaves(event);
 			}
 		});
 		OlympaCore.getInstance().getHologramsManager().createHologram(enterButton.clone().add(0.5, 1, 0.5), false, true, new CyclingLine<>(Arrays.asList("§6§lSTAND DE TIR", "§e§lSTAND DE TIR"), 40), slotsLine, FixedLine.EMPTY_LINE, new FixedLine<>("§aCliquez sur le bouton"), new FixedLine<>("§apour rejoindre le stand."), new FixedLine<>("§7(munitions données)"));
