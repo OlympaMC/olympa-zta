@@ -18,7 +18,7 @@ public class DynmapCommand extends OlympaCommand {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		sendHoverAndURL(Prefix.DEFAULT_GOOD, "La carte virtuelle est accessible à l'adresse §l§nwww.olympa.fr:8124§a !", "§eClique pour l'ouvrir...", "www.olympa.fr:8124");
+		sendHoverAndURL(Prefix.DEFAULT_GOOD, "La carte virtuelle est accessible à l'adresse §l§nwww.olympa.fr:8124§a !", "§eClique pour l'ouvrir...", "http://olympa.fr:8124");
 		return false;
 	}
 	

@@ -318,9 +318,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
+			int i = 0;
 			tab = new TabManager(this)
-					.addText(3, "§6§l   Olympa").addText(5, "§e Serveur multi-jeux").addText(10, "§7➤ Aide").addText(11, "§7 Utilise /help").addText(12, "§7 pour une liste").addText(13, "§7 des commandes.")
-					.addText(35, "§7  Bon jeu").addText(36, "§7 sur Olympa !")
+					.addText(3, "§6§l    Olympa").addText(5, "§e  Serveur multi-jeux").addText(i = 11, "§7 ➤ Aide").addText(++i, "§7  Utilise /help").addText(++i, "§7  pour une liste").addText(++i, "§7  des commandes.")
+					.addText(i = 21, "  §7⬛⬛⬛⬛⬛⬛⬛⬛").addText(++i, "  §7⬛⬛⬛§e⬛⬛§7⬛⬛⬛").addText(++i, "  §7⬛⬛§e⬛§7⬛⬛§e⬛§7⬛⬛").addText(++i, "  §7⬛§e⬛§7⬛⬛⬛⬛§e⬛§7⬛").addText(++i, "  §7⬛§e⬛§7⬛⬛⬛⬛§e⬛§7⬛").addText(++i, "  §7⬛⬛§e⬛§7⬛⬛§e⬛§7⬛⬛").addText(++i, "  §7⬛§e⬛⬛§7⬛⬛§e⬛⬛§7⬛").addText(++i, "  §7⬛⬛⬛⬛⬛⬛⬛⬛")
+					.addText(35, "§7    Bon jeu").addText(36, "§7  sur §lOlympa§7 !")
 					.build();
 		}catch (Exception ex) {
 			ex.printStackTrace();
