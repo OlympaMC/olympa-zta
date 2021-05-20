@@ -66,6 +66,7 @@ import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
+import fr.olympa.api.scoreboard.tab.TabManager;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.trades.TradesManager;
 import fr.olympa.api.utils.Utils;
@@ -114,7 +115,6 @@ import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.SitManager;
-import fr.olympa.zta.utils.TabManager;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
@@ -318,10 +318,10 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			pluginManager.registerEvents(tab = new TabManager()
+			tab = new TabManager(this)
 					.addText(3, "§6§l   Olympa").addText(5, "§e Serveur multi-jeux").addText(10, "§7➤ Aide").addText(11, "§7 Utilise /help").addText(12, "§7 pour une liste").addText(13, "§7 des commandes.")
 					.addText(35, "§7  Bon jeu").addText(36, "§7 sur Olympa !")
-					.build(), this);
+					.build();
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
