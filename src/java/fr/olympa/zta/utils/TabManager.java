@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,9 +22,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import fr.olympa.api.utils.Reflection;
-import net.citizensnpcs.api.event.NPCSpawnEvent;
-import net.citizensnpcs.api.trait.trait.MobType;
-import net.citizensnpcs.util.Util;
 import net.minecraft.server.v1_16_R3.ChatComponentText;
 import net.minecraft.server.v1_16_R3.EnumChatFormat;
 import net.minecraft.server.v1_16_R3.EnumGamemode;
@@ -57,7 +53,7 @@ public class TabManager implements Listener {
 	}
 	
 	public TabManager build() {
-		String randomized = "f" + Integer.toString(ThreadLocalRandom.current().nextInt());
+		String randomized = Integer.toString(Math.abs(ThreadLocalRandom.current().nextInt()));
 		
 		List<String> players = new ArrayList<>(20);
 		for (int i = 0; i < 20; i++) {
@@ -65,23 +61,24 @@ public class TabManager implements Listener {
 			fakePlayers.add(createPlayer(playerName, texts.containsKey(i) ? new ChatComponentText(texts.get(i)) : ChatComponentText.d));
 			players.add(playerName);
 		}
-		createTeam("000AAA" + randomized, players).forEach(teamPackets::add);
+		createTeam("+00AAA" + randomized, players).forEach(teamPackets::add);
 		
 		players = new ArrayList<>(59);
 		for (int i = 20; i < 80; i++) {
 			String playerName = randomized + "é" + format.format(i);
-			fakePlayers.add(createPlayer(playerName, texts.containsKey(i + 40) ? new ChatComponentText(texts.get(i + 40)) : ChatComponentText.d));
+			fakePlayers.add(createPlayer(playerName, i >= 60 && texts.containsKey(i - 40) ? new ChatComponentText(texts.get(i - 40)) : ChatComponentText.d));
 			players.add(playerName);
 		}
-		createTeam("___ZZa" + randomized, players).forEach(teamPackets::add);
+		createTeam("A__ZZA" + randomized, players).forEach(teamPackets::add);
 		
-		npcTeamName = "___ZZZ" + randomized;
+		npcTeamName = "___zzz" + randomized;
 		//createTeam(npcTeamName, null).forEach(teamPackets::add);
 		
 		return this;
 	}
 
 	private List<PacketPlayOutScoreboardTeam> createTeam(String teamName, List<String> players) {
+		Validate.isTrue(teamName.length() <= 16, "Team " + teamName + " length greater than 16 characters");
 		PacketPlayOutScoreboardTeam packetTeam = new PacketPlayOutScoreboardTeam();
 		Reflection.setFieldValue(packetTeam, "a", teamName);
 		Reflection.setFieldValue(packetTeam, "e", "never");
@@ -178,17 +175,12 @@ public class TabManager implements Listener {
 		}
 	}
 	
-	@EventHandler
+	/*@EventHandler
 	public void onNPCSpawn(NPCSpawnEvent e) {
 		if (e.getNPC().getTraitNullable(MobType.class).getType() == EntityType.PLAYER) {
-			/*Entity entity = e.getNPC().getEntity();
-			PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam();
-			Reflection.setFieldValue(packet, "i", 3);
-			Reflection.setFieldValue(packet, "a", "___ZZZ");
-			Reflection.setFieldValue(packet, "h", Arrays.asList(entity.getName()));*/
 			Util.generateTeamFor(e.getNPC(), e.getNPC().getEntity().getName(), npcTeamName);
 		}
-	}
+	}*/
 	
 	class FakePlayer {
 		UUID uuid;
