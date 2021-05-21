@@ -95,7 +95,7 @@ public class Mobs {
 			entityTypesField.set(null, type);*/
 			Object staticFieldBase = unsafe.staticFieldBase(entityTypesField);
 			long staticFieldOffset = unsafe.staticFieldOffset(entityTypesField);
-			unsafe.putObject(staticFieldBase, staticFieldOffset, "it works");
+			unsafe.putObject(staticFieldBase, staticFieldOffset, type);
 			
 			Field attributesMapField = AttributeDefaults.class.getDeclaredField("b");
 			attributesMapField.setAccessible(true);
@@ -106,7 +106,7 @@ public class Mobs {
 				//attributesMapField.set(null, attributesMap);
 				staticFieldBase = unsafe.staticFieldBase(attributesMapField);
 				staticFieldOffset = unsafe.staticFieldOffset(attributesMapField);
-				unsafe.putObject(staticFieldBase, staticFieldOffset, "it works");
+				unsafe.putObject(staticFieldBase, staticFieldOffset, attributesMap);
 			}
 			attributesMap.put(type, attributesBuilder.a());
 			
