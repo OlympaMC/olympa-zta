@@ -70,8 +70,8 @@ import fr.olympa.api.scoreboard.tab.TabManager;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.trades.TradesManager;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.api.utils.spigot.CustomDayDuration;
 import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.api.utils.spigot.TeleportationManager;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -115,6 +115,7 @@ import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
 import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.SitManager;
+import fr.olympa.zta.utils.TeleportationManagerZTA;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
@@ -148,7 +149,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	
 	public BeautyQuestsLink beautyQuestsLink;
 
-	public TeleportationManager teleportationManager;
+	public TeleportationManagerZTA teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
 	public LootChestsManager lootChestsManager;
@@ -168,6 +169,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public TabManager tab;
 	public PrimesManager primes;
 	public GlassSmashManager glass;
+	public CustomDayDuration customDay;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -247,7 +249,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
 		
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
-		teleportationManager = new TeleportationManager(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
+		teleportationManager = new TeleportationManagerZTA(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
@@ -416,7 +418,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				new FishFlag(true),
 				new FoodFlag(false),
 				new GameModeFlag(GameMode.ADVENTURE),
-				new GlassSmashFlag(false),
+				new GlassSmashFlag(true),
 				new PlayerBlockInteractFlag(false, true, true) {
 					@Override
 					public void interactEvent(PlayerInteractEvent event) {
@@ -440,6 +442,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				FixedLine.EMPTY_LINE,
 				CyclingLine.olympaAnimation());
 
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 16000, 12000);
+		
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
 		checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.command.complex.ArgumentParser;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -33,11 +34,10 @@ public class WeaponsCommand extends ComplexCommand {
 
 	public WeaponsCommand() {
 		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes.", ZTAPermissions.WEAPONS_COMMAND, "armes");
-		addArgumentParser(
-				"GUN",
-				sender -> Collections.EMPTY_LIST,
+		addArgumentParser("GUN", new ArgumentParser<>(
+				(sender, arg) -> Collections.emptyList(),
 				x -> OlympaZTA.getInstance().gunRegistry.getGun(Integer.parseInt(x)),
-				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre.");
+				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre."));
 	}
 
 	@Override
@@ -195,6 +195,11 @@ public class WeaponsCommand extends ComplexCommand {
 			e.printStackTrace();
 			sendError(e);
 		}
+	}
+	
+	@Cmd (player = true)
+	public void removeItems(CommandContext cmd) {
+		new ItemRemoveGUI().create(player);
 	}
 	
 }

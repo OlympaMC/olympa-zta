@@ -1,7 +1,6 @@
 package fr.olympa.zta.mobs.custom;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +27,7 @@ import net.minecraft.server.v1_16_R3.EntityZombie;
 import net.minecraft.server.v1_16_R3.EnumMobSpawn;
 import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.MinecraftKey;
+import sun.misc.Unsafe;
 
 public class Mobs {
 
@@ -82,21 +82,31 @@ public class Mobs {
 
 			CustomEntityRegistry registry = (CustomEntityRegistry) IRegistry.ENTITY_TYPE;
 			registry.put(registry.a(overrideType), new MinecraftKey(overrideName), type);
+			
+			final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+			unsafeField.setAccessible(true);
+			final Unsafe unsafe = (Unsafe) unsafeField.get(null);
 
 			Field entityTypesField = EntityTypes.class.getField(overrideTypeFieldName);
 			entityTypesField.setAccessible(true);
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
+			/*Field modifiersField = Field.class.getDeclaredField("modifiers");
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(entityTypesField, entityTypesField.getModifiers() & ~Modifier.FINAL);
-			entityTypesField.set(null, type);
+			entityTypesField.set(null, type);*/
+			Object staticFieldBase = unsafe.staticFieldBase(entityTypesField);
+			long staticFieldOffset = unsafe.staticFieldOffset(entityTypesField);
+			unsafe.putObject(staticFieldBase, staticFieldOffset, "it works");
 			
 			Field attributesMapField = AttributeDefaults.class.getDeclaredField("b");
 			attributesMapField.setAccessible(true);
-			modifiersField.setInt(attributesMapField, attributesMapField.getModifiers() & ~Modifier.FINAL);
+			//modifiersField.setInt(attributesMapField, attributesMapField.getModifiers() & ~Modifier.FINAL);
 			Map<EntityTypes<? extends EntityLiving>, AttributeProvider> attributesMap = (Map<EntityTypes<? extends EntityLiving>, AttributeProvider>) attributesMapField.get(null);
 			if (attributesMap instanceof ImmutableMap) {
 				attributesMap = new HashMap<>(attributesMap);
-				attributesMapField.set(null, attributesMap);
+				//attributesMapField.set(null, attributesMap);
+				staticFieldBase = unsafe.staticFieldBase(attributesMapField);
+				staticFieldOffset = unsafe.staticFieldOffset(attributesMapField);
+				unsafe.putObject(staticFieldBase, staticFieldOffset, "it works");
 			}
 			attributesMap.put(type, attributesBuilder.a());
 			

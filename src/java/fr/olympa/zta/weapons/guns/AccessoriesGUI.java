@@ -42,11 +42,13 @@ public class AccessoriesGUI extends OlympaGUI{
 		}
 	}
 	
+	@Override
 	public boolean onClose(Player p) {
 		ItemUtils.setRawLore(editedItem, gun.getLore(true));
 		return true;
 	}
 	
+	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) { // clic avec rien dans la main
 		AccessoryType accessoryType = AccessoryType.getFromSlot(slot);
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
@@ -61,6 +63,7 @@ public class AccessoriesGUI extends OlympaGUI{
 		return false; // laisse le joueur prendre l'item
 	}
 	
+	@Override
 	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) { // clic avec quelque chose dans la main
 		AccessoryType accessoryType = AccessoryType.getFromSlot(slot);
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
@@ -72,10 +75,18 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (accessory == null) return true; // si l'objet en main n'est pas un accessoire : cancel
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
 		
+		ItemStack item = null;
+		if (cursor.getAmount() > 1) {
+			item = new ItemStack(cursor);
+			item.setAmount(cursor.getAmount() - 1);
+		}
+		final ItemStack newItem = item;
+		cursor.setAmount(1);
+		
 		if (current.getType() == Material.LIME_STAINED_GLASS_PANE) {
 			new BukkitRunnable(){
 				public void run(){
-					p.setItemOnCursor(null); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
+					p.setItemOnCursor(newItem); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
 				}
 			}.runTask(OlympaZTA.getInstance());
 		}

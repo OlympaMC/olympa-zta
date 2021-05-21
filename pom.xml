@@ -9,18 +9,25 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>16</maven.compiler.source>
+		<maven.compiler.target>16</maven.compiler.target>
 	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-snapshots</id>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<repositories>
 		<repository>
 			<id>citizens</id>
-			<url>http://repo.citizensnpcs.co/</url>
+			<url>https://repo.citizensnpcs.co/</url>
 		</repository>
 		<repository>
 			<id>mikeprimm</id>
-			<url>http://repo.mikeprimm.com/</url>
+			<url>https://repo.mikeprimm.com/</url>
 			<snapshots>
 				<updatePolicy>interval:10080</updatePolicy>
 			</snapshots>
@@ -109,7 +116,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.3.0-SNAPSHOT</version>
 				<configuration>
 					<minimizeJar>true</minimizeJar>
 					<finalName>OlympaZTA</finalName>
