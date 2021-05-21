@@ -262,7 +262,7 @@ public class MobSpawning implements Runnable {
 	}
 
 	public void addSafeZone(Region region, String id, String title) {
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR), new SpawnType.SpawningFlag(null, true));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, id, EventPriority.HIGH, new Flag().setMessages(RADAR + " vous entrez dans une " + title + "§r " + RADAR, RADAR + " vous sortez d'une " + title + "§r " + RADAR, ChatMessageType.ACTION_BAR), new SpawnType.SpawningFlag(null, false));
 		safeRegions.add(region);
 		DynmapLink.showSafeArea(region, id, title);
 	}
