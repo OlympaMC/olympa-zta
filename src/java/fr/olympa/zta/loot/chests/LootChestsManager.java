@@ -154,7 +154,7 @@ public class LootChestsManager implements Listener {
 			if (chest == null) return;
 
 			e.setCancelled(true);
-			chest.click(player);
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> chest.click(player));
 		}
 	}
 	

@@ -5,6 +5,7 @@ import java.util.Random;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.weapons.guns.GunType;
 
 public class ItemStackableCreator implements LootCreator {
 
@@ -38,6 +39,11 @@ public class ItemStackableCreator implements LootCreator {
 		@Override
 		public ItemStack getRealItem() {
 			return stackable.createItem();
+		}
+		
+		@Override
+		public boolean isStackable() {
+			return !(stackable instanceof GunType);
 		}
 
 	}

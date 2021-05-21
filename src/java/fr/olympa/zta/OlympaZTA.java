@@ -113,9 +113,9 @@ import fr.olympa.zta.shops.GunShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
-import fr.olympa.zta.utils.DynmapLink;
 import fr.olympa.zta.utils.SitManager;
 import fr.olympa.zta.utils.TeleportationManagerZTA;
+import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
@@ -442,7 +442,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				FixedLine.EMPTY_LINE,
 				CyclingLine.olympaAnimation());
 
-		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 16000, 12000);
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 16800, 12000);
 		
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
@@ -499,17 +499,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	@Override
 	public void onDisable(){
 		super.onDisable();
-		training.unload();
+		if (gunRegistry != null) gunRegistry.unload();
+		
+		if (training != null) training.unload();
 		if (tyrolienne != null) tyrolienne.unload();
-		
+		if (customDay != null) customDay.unload();
 		HandlerList.unregisterAll((Plugin) this);
-		mobSpawning.end();
-		scoreboards.unload();
-		combat.unload();
-		crates.unload();
-		soundAmbiance.stop();
 		
-		gunRegistry.unload();
+		if (mobSpawning != null) mobSpawning.end();
+		if (scoreboards != null) scoreboards.unload();
+		if (combat != null) combat.unload();
+		if (crates != null) crates.unload();
+		if (soundAmbiance != null) soundAmbiance.stop();
 	}
 	
 	private void loadIntegration(String pluginName, Runnable runnable) {

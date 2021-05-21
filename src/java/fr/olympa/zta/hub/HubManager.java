@@ -25,7 +25,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.weapons.guns.GunFlag;
 import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.ChatMessageType;

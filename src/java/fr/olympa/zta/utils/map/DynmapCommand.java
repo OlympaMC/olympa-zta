@@ -1,4 +1,4 @@
-package fr.olympa.zta.utils;
+package fr.olympa.zta.utils.map;
 
 import java.util.List;
 

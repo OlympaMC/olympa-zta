@@ -27,7 +27,7 @@ import fr.olympa.api.sql.SQLTable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 
 public class ClanPlotsManager implements Listener {
 

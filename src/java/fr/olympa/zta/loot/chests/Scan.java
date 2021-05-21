@@ -28,7 +28,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot.ClanPlotFlag;
 import fr.olympa.zta.loot.chests.type.LootChestPicker.LootChestCreator;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 
 public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-/commit/9e31ec544f2363357fdb38d0fc5729e79b12bcbe
 

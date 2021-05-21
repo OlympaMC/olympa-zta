@@ -58,14 +58,24 @@ public class CustomEntityZombie extends EntityZombie {
 		this.zombieType = zombieType;
 		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), zombieType));
 		switch (zombieType) {
-		case TRAINING:
-			setSilent(true);
-			break;
-		case TNT:
-			setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
 		case COMMON:
 			this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 			initTargetGoals();
+			break;
+		case TNT:
+			setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+		case SPEED:
+			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.31);
+			setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+			break;
+		case TANK:
+			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.22);
+			getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(6);
+			getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
+			setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+			break;
+		case TRAINING:
+			setSilent(true);
 			break;
 		}
 	}

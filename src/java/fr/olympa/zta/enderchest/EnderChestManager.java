@@ -30,7 +30,7 @@ import fr.olympa.api.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 
 public class EnderChestManager implements Listener {
 	

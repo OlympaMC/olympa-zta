@@ -22,7 +22,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.RandomizedInventory;
 import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.loot.creators.LootCreator;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 

@@ -118,7 +118,12 @@ public class Mobs {
 	}
 
 	public enum Zombies {
-		COMMON(customZombie, "Infecté"), TNT(customZombie, "Infecté explosif"), TRAINING(customZombie, "Zombie d'entraînement"), DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
+		COMMON(customZombie, "Infecté"),
+		TNT(customZombie, "Infecté explosif"),
+		SPEED(customZombie, "Infecté rapide"),
+		TANK(customZombie, "Infecté tank"),
+		TRAINING(customZombie, "Zombie d'entraînement"),
+		DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
 
 		private final EntityTypes<? extends EntityZombie> type;
 		private String name;

@@ -204,10 +204,11 @@ public class Gun implements Weapon {
 		}
 	}
 
-	@Override
-	public boolean drop(Player p, ItemStack item) {
-		reload(p, item);
-		return true;
+	public void drop(Player p, ItemStack item) {
+		if (Bukkit.isPrimaryThread()) {
+			reload(p, item);
+		}else
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> reload(p, item));
 	}
 
 	private BukkitTask task;

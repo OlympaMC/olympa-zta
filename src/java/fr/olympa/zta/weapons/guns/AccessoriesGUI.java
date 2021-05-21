@@ -87,6 +87,7 @@ public class AccessoriesGUI extends OlympaGUI{
 			new BukkitRunnable(){
 				public void run(){
 					p.setItemOnCursor(newItem); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
+					if (newItem != null) inv.getItem(slot).setAmount(1);
 				}
 			}.runTask(OlympaZTA.getInstance());
 		}

@@ -80,7 +80,7 @@ public class PlayerPlotsManager {
 
 		worldCrea = Bukkit.createWorld(new WorldCreator("plots").generator(new PlotChunkGenerator()).generateStructures(false).environment(Environment.NORMAL));
 		worldCrea.setSpawnLocation(0, worldCrea.getHighestBlockYAt(0, 0), 0);
-		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 5);
+		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 4);
 		worldCrea.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 		worldCrea.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
 		worldCrea.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);

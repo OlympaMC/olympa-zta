@@ -1,4 +1,4 @@
-package fr.olympa.zta.utils;
+package fr.olympa.zta.utils.map;
 
 import java.util.List;
 
@@ -71,9 +71,10 @@ public class DynmapLink {
 	public static void showMobArea(Region region, SpawnType spawn) {
 		if (api == null) return;
 		List<Location> points = region.getLocations();
-		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode() + "A", spawn.name, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
-		area.setFillStyle(0.3, spawn.color.asRGB());
-		area.setDescription("<center><b><p style=\"color:#" + spawn.htmlColor + ";\">" + spawn.name + "</p></b><br>" + spawn.description + "</center>");
+		DynmapZoneConfig config = spawn.dynmap;
+		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode() + "A", config.name(), true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
+		area.setFillStyle(0.3, config.color().asRGB());
+		area.setDescription("<center><b><p style=\"color:#" + config.htmlColor() + ";\">" + config.name() + "</p></b><br>" + config.description() + "</center>");
 	}
 	
 	public static void showSafeArea(Region region, String id, String title) {

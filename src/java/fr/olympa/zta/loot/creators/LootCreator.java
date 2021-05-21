@@ -28,6 +28,10 @@ public interface LootCreator extends Chanced {
 			return null;
 		}
 
+		public boolean isStackable() {
+			return true;
+		}
+		
 		public void onRemove() {}
 
 	}

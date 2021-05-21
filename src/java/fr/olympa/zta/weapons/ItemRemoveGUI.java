@@ -1,5 +1,8 @@
 package fr.olympa.zta.weapons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -11,6 +14,7 @@ import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 
@@ -58,6 +62,17 @@ public class ItemRemoveGUI extends OlympaGUI {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "%d items supprimés, dont %d guns (et %d guns déchargés).", items, guns, gunsUnloaded);
 		}
 		return slot >= 18;
+	}
+	
+	@Override
+	public boolean onClose(Player p) {
+		List<ItemStack> items = new ArrayList<>();
+		for (int i = 0; i < 18; i++) {
+			ItemStack item = inv.getItem(i);
+			if (item != null) items.add(item);
+		}
+		SpigotUtils.giveItems(p, items.toArray(ItemStack[]::new));
+		return true;
 	}
 	
 }

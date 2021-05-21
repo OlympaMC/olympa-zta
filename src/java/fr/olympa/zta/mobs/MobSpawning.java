@@ -51,7 +51,8 @@ import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapZoneConfig;
 import net.md_5.bungee.api.ChatMessageType;
 import net.minecraft.server.v1_16_R3.Entity;
 
@@ -151,7 +152,7 @@ public class MobSpawning implements Runnable {
 									for (Location loc : entities) {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 									}
-									for (int j = 0; j < spawn.spawnAmount; j++) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, (spawn.explosiveProb != 0) && random.nextDouble() < spawn.explosiveProb ? Zombies.TNT : Zombies.COMMON));
+									for (int j = 0; j < spawn.spawning.spawnAmount(); j++) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, (spawn.spawning.explosiveProb() != 0) && random.nextDouble() < spawn.spawning.explosiveProb() ? Zombies.TNT : Zombies.COMMON));
 									continue mobs;
 								}
 							}
@@ -240,7 +241,7 @@ public class MobSpawning implements Runnable {
 						type = SpawnType.NONE;
 					}else type = SpawnType.getSpawnType(chunk);
 					if (type != null) {
-						if (entityCount(chunk) > type.maxEntitiesPerChunk) continue;
+						if (entityCount(chunk) > type.spawning.maxEntitiesPerChunk()) continue;
 						if (isInSafeZone(chunk)) continue;
 						chunks.put(snapshot, type);
 						points.add(point);
@@ -310,44 +311,66 @@ public class MobSpawning implements Runnable {
 	}
 	
 	public enum SpawnType {
-		NONE(12, 1, 5, 0, false, "§c§lerreur", "§cerreur", null, null, null, null, null),
-		HARD(10, 2, 6, 0.1, true, "§c§lzone rouge", "§7§ogare au zombies!", Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés.", new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
-		MEDIUM(12, 2, 5, 0.08, true, "§6§lzone à risques", "§7§osoyez sur vos gardes", Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone.", new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
-		EASY(15, 1, 4, 0.012, true, "§d§lzone modérée", "§7§ogardez vos distances", Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
-		SAFE(21, 1, 2, 0.008, false, "§a§lzone sécurisée", "§7§orestez vigilant", Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté.", new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+		NONE(
+				new MobSpawningConfig(12, 1, 5, 0),
+				false,
+				"§c§lerreur",
+				"§cerreur",
+				null,
+				null),
+		HARD(
+				new MobSpawningConfig(10, 2, 6, 0.1),
+				true,
+				"§c§lzone rouge",
+				"§7§ogare au zombies!",
+				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
+				new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+		MEDIUM(
+				new MobSpawningConfig(12, 2, 5, 0.08),
+				true,
+				"§6§lzone à risques",
+				"§7§osoyez sur vos gardes",
+				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
+				new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+		EASY(
+				new MobSpawningConfig(15, 1, 4, 0.012),
+				true,
+				"§d§lzone modérée",
+				"§7§ogardez vos distances",
+				new DynmapZoneConfig(Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
+				new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+		SAFE(
+				new MobSpawningConfig(21, 1, 2, 0.008),
+				false,
+				"§a§lzone sécurisée",
+				"§7§orestez vigilant",
+				new DynmapZoneConfig(Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté."),
+				new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
 		
 		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
 		
-		private int minDistanceSquared;
-		private int spawnAmount;
-		private int maxEntitiesPerChunk;
-		private double explosiveProb;
-
+		public final MobSpawningConfig spawning;
+		public final int minDistanceSquared;
+		
 		public final String title;
 		public final String subtitle;
-		public final Color color;
-		public final String htmlColor;
-		public final String name;
-		public final String description;
+		
+		public final DynmapZoneConfig dynmap;
 
 		private final LootChestPicker lootchests;
 
 		private List<Region> regions = new ArrayList<>();
 		private Flag flag;
 
-		private SpawnType(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb, boolean glassSmash, String title, String subtitle, Color color, String htmlColor, String name, String description, LootChestPicker lootchests) {
-			this.minDistanceSquared = minDistance * minDistance;
-			this.spawnAmount = spawnAmount;
-			this.maxEntitiesPerChunk = maxEntitiesPerChunk;
-			this.explosiveProb = explosiveProb;
+		private SpawnType(MobSpawningConfig spawning, boolean glassSmash, String title, String subtitle, DynmapZoneConfig dynmap, LootChestPicker lootchests) {
+			this.spawning = spawning;
 			this.title = title;
 			this.subtitle = subtitle;
-			this.color = color;
-			this.htmlColor = htmlColor;
-			this.name = name;
-			this.description = description;
+			this.dynmap = dynmap;
 			this.lootchests = lootchests;
 
+			minDistanceSquared = spawning.minDistance() * spawning.minDistance();
+			
 			flag = new SpawningFlag(this, glassSmash);
 		}
 

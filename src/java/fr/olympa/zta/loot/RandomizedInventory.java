@@ -53,9 +53,22 @@ public abstract class RandomizedInventory extends OlympaGUI implements Randomize
 		if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) return true;
 		Loot loot = currentLoots.get(slot);
 		if (loot == null) throw new RuntimeException("No loot in slot " + slot);
-		if (click.isShiftClick() && p.getInventory().firstEmpty() == -1) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
-			return true;
+		if (click.isShiftClick()) {
+			if (p.getInventory().firstEmpty() == -1) {
+				boolean valid = false;
+				if (loot.isStackable() && current.getMaxStackSize() > 1) {
+					for (ItemStack item : p.getInventory().getStorageContents()) {
+						if (item.getAmount() < item.getMaxStackSize() && item.isSimilar(current)) {
+							valid = true;
+							break;
+						}
+					}
+				}
+				if (!valid) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas d'espace pour cet item dans ton inventaire...");
+					return true;
+				}
+			}
 		}
 		ItemStack realItem = loot.getRealItem();
 		if (realItem != null) inv.setItem(slot, realItem);

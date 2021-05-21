@@ -23,7 +23,8 @@ public class DropHandler extends ChannelDuplexHandler{
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
 				ItemStack item = p.getInventory().getItemInMainHand();
 				Gun gun = OlympaZTA.getInstance().gunRegistry.getGun(item);
-				if (gun != null && gun.drop(p, item)) {
+				if (gun != null) {
+					gun.drop(p, item);
 					p.updateInventory();
 					return; // super.channelRead pas appelé si l'action est annulée
 				}
