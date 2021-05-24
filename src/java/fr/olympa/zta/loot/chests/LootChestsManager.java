@@ -63,7 +63,7 @@ public class LootChestsManager implements Listener {
 
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				chests.putAll(table.selectAll().stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
+				chests.putAll(table.selectAll(null).stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
 				OlympaZTA.getInstance().sendMessage("§e%d§7 coffres de loot chargés !", chests.size());
 			}catch (SQLException e) {
 				e.printStackTrace();

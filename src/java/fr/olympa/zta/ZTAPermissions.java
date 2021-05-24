@@ -26,6 +26,7 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission ENDERCHEST_MORE_SPACE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
 	
 	public static final OlympaSpigotPermission CLANS_PLAYERS_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission CLANS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	
 	public static final OlympaSpigotPermission MONEY_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission MONEY_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);

@@ -53,7 +53,7 @@ public class PrimesManager implements Listener {
 		});
 		table.createOrAlter();
 		
-		List<Prime> primes = table.selectAll();
+		List<Prime> primes = table.selectAll(null);
 		List<Prime> toRemove = new ArrayList<>();
 		for (Iterator<Prime> iterator = primes.iterator(); iterator.hasNext();) {
 			Prime prime = iterator.next();

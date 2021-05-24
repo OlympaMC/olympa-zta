@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.event.entity.EntityPotionEffectEvent.Cause;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -25,6 +26,8 @@ import net.minecraft.server.v1_16_R3.GenericAttributes;
 import net.minecraft.server.v1_16_R3.GroupDataEntity;
 import net.minecraft.server.v1_16_R3.ItemStack;
 import net.minecraft.server.v1_16_R3.Items;
+import net.minecraft.server.v1_16_R3.MobEffect;
+import net.minecraft.server.v1_16_R3.MobEffects;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import net.minecraft.server.v1_16_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_16_R3.PathfinderGoalMeleeAttack;
@@ -59,20 +62,27 @@ public class CustomEntityZombie extends EntityZombie {
 		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), zombieType));
 		switch (zombieType) {
 		case COMMON:
-			this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 			initTargetGoals();
+			initAttack();
 			break;
 		case TNT:
 			setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+			initTargetGoals();
+			break;
 		case SPEED:
-			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.31);
+			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3);
 			setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+			addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
+			initTargetGoals();
+			initAttack();
 			break;
 		case TANK:
 			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.22);
-			getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(6);
-			getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
+			getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7);
+			getAttributeInstance(GenericAttributes.ARMOR).setValue(5);
 			setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+			initTargetGoals();
+			initAttack();
 			break;
 		case TRAINING:
 			setSilent(true);
@@ -84,6 +94,10 @@ public class CustomEntityZombie extends EntityZombie {
 	protected void initPathfinder() { // addBehaviourGoals
 		//this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
 		this.goalSelector.a(7, new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
+	}
+	
+	protected void initAttack() {
+		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
 	}
 
 	protected void initTargetGoals() {

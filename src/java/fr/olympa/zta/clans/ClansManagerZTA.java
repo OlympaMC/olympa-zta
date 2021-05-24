@@ -62,7 +62,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
 		super(OlympaZTA.getInstance(), "zta_clans");
 
-		new ClansCommandZTA(this, ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
+		new ClansCommandZTA(this).register();
 	}
 
 	@Override
