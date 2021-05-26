@@ -1,5 +1,5 @@
 name: OlympaZTA
-version: 0.1
+version: @plugin_version@
 api-version: 1.15
 depend: [OlympaCore, Citizens]
 softdepend: [dynmap, BeautyQuests, Sentinel]
