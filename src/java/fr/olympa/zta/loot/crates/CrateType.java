@@ -1,8 +1,7 @@
 package fr.olympa.zta.loot.crates;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
@@ -23,74 +22,69 @@ public enum CrateType {
 
 	BASIC(
 			"basique",
-			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 3, 9),
-			new MoneyCreator(20, PhysicalMoney.BANKNOTE_100, 1, 2),
-			new AmmoCreator(15, 5, 15),
-			new AmmoCreator(15, AmmoType.HEAVY, 4, 8, true),
-			new AmmoCreator(15, AmmoType.LIGHT, 4, 8, true),
-			new AmmoCreator(15, AmmoType.HANDWORKED, 4, 8, true),
-			new AmmoCreator(15, AmmoType.CARTRIDGE, 3, 6, true),
-			new FoodCreator(20, Food.GOLDEN_CARROT, 3, 7),
-			new FoodCreator(20, Food.COOKED_BEEF, 5, 15),
-			new ItemStackableCreator(1, GunType.STONER),
-			new ItemStackableCreator(7, GunType.DRAGUNOV),
-			new ItemStackableCreator(8, GunType.SDMR),
-			new ItemStackableCreator(13, GunType.M16),
-			new ItemStackableCreator(13, GunType.BENELLI),
-			new ItemStackableCreator(16, Knife.SURIN),
-			new ItemStackableCreator(15, Accessory.SCOPE_STRONG),
-			new ItemStackableCreator(15, Accessory.STOCK_STRONG),
-			new ItemStackableCreator(15, Accessory.CANNON_DAMAGE),
-			new ArmorCreator(20, ArmorType.MILITARY)
+			new PickerBuilder<LootCreator>()
+			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 3, 9))
+			.add(20, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 1, 2))
+			.add(15, new AmmoCreator(5, 15))
+			.add(15, new AmmoCreator(AmmoType.HEAVY, 4, 8, true))
+			.add(15, new AmmoCreator(AmmoType.LIGHT, 4, 8, true))
+			.add(15, new AmmoCreator(AmmoType.HANDWORKED, 4, 8, true))
+			.add(15, new AmmoCreator(AmmoType.CARTRIDGE, 3, 6, true))
+			.add(20, new FoodCreator(Food.GOLDEN_CARROT, 3, 7))
+			.add(20, new FoodCreator(Food.COOKED_BEEF, 5, 15))
+			.add(1, new ItemStackableCreator(GunType.STONER))
+			.add(7, new ItemStackableCreator(GunType.DRAGUNOV))
+			.add(8, new ItemStackableCreator(GunType.SDMR))
+			.add(13, new ItemStackableCreator(GunType.M16))
+			.add(13, new ItemStackableCreator(GunType.BENELLI))
+			.add(16, new ItemStackableCreator(Knife.SURIN))
+			.add(15, new ItemStackableCreator(Accessory.SCOPE_STRONG))
+			.add(15, new ItemStackableCreator(Accessory.STOCK_STRONG))
+			.add(15, new ItemStackableCreator(Accessory.CANNON_DAMAGE))
+			.add(20, new ArmorCreator(ArmorType.MILITARY))
+			.build(6, 8)
 			),
 	RARE(
 			"rare",
-			new MoneyCreator(-1, PhysicalMoney.BANKNOTE_10, 4, 10),
-			new MoneyCreator(25, PhysicalMoney.BANKNOTE_100, 2, 3),
-			new AmmoCreator(15, 5, 15),
-			new AmmoCreator(15, AmmoType.HEAVY, 5, 10, true),
-			new AmmoCreator(15, AmmoType.LIGHT, 5, 10, true),
-			new AmmoCreator(15, AmmoType.HANDWORKED, 5, 10, true),
-			new AmmoCreator(15, AmmoType.CARTRIDGE, 4, 8, true),
-			new FoodCreator(15, Food.GOLDEN_CARROT, 5, 10),
-			new FoodCreator(15, Food.COOKED_BEEF, 10, 15),
-			new FoodCreator(15, Food.GOLDEN_APPLE, 2, 5),
-			new ItemStackableCreator(5, GunType.STONER),
-			new ItemStackableCreator(9, GunType.DRAGUNOV),
-			new ItemStackableCreator(7, GunType.SDMR),
-			new ItemStackableCreator(13, GunType.M16),
-			new ItemStackableCreator(15, Knife.SURIN),
-			new ItemStackableCreator(18, Accessory.SCOPE_STRONG),
-			new ItemStackableCreator(18, Accessory.STOCK_STRONG),
-			new ItemStackableCreator(15, Accessory.CANNON_SILENT),
-			new QuestItemCreator(0.5, QuestItem.PARACHUTE),
-			new QuestItemCreator(0.5, QuestItem.BOOTS),
-			new ArmorCreator(20, ArmorType.MILITARY)
+			new PickerBuilder<LootCreator>()
+			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 4, 10))
+			.add(25, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 2, 3))
+			.add(15, new AmmoCreator(5, 15))
+			.add(15, new AmmoCreator(AmmoType.HEAVY, 5, 10, true))
+			.add(15, new AmmoCreator(AmmoType.LIGHT, 5, 10, true))
+			.add(15, new AmmoCreator(AmmoType.HANDWORKED, 5, 10, true))
+			.add(15, new AmmoCreator(AmmoType.CARTRIDGE, 4, 8, true))
+			.add(15, new FoodCreator(Food.GOLDEN_CARROT, 5, 10))
+			.add(15, new FoodCreator(Food.COOKED_BEEF, 10, 15))
+			.add(15, new FoodCreator(Food.GOLDEN_APPLE, 2, 5))
+			.add(5, new ItemStackableCreator(GunType.STONER))
+			.add(9, new ItemStackableCreator(GunType.DRAGUNOV))
+			.add(7, new ItemStackableCreator(GunType.SDMR))
+			.add(13, new ItemStackableCreator(GunType.M16))
+			.add(15, new ItemStackableCreator(Knife.SURIN))
+			.add(18, new ItemStackableCreator(Accessory.SCOPE_STRONG))
+			.add(18, new ItemStackableCreator(Accessory.STOCK_STRONG))
+			.add(15, new ItemStackableCreator(Accessory.CANNON_SILENT))
+			.add(0.5, new QuestItemCreator(QuestItem.PARACHUTE))
+			.add(0.5, new QuestItemCreator(QuestItem.BOOTS))
+			.add(20, new ArmorCreator(ArmorType.MILITARY))
+			.build(6, 8)
 			),
 	;
 
 	private String name;
-	private List<LootCreator> creatorsSimple = new ArrayList<>();
-	private List<LootCreator> creatorsAlways = new ArrayList<>();
+	private RandomizedMultiPicker<LootCreator> picker;
 
-	private CrateType(String name, LootCreator... creators) {
+	private CrateType(String name, RandomizedMultiPicker<LootCreator> picker) {
 		this.name = name;
-		for (LootCreator creator : creators) {
-			if (creator.getChance() == -1) {
-				creatorsAlways.add(creator);
-			}else creatorsSimple.add(creator);
-		}
+		this.picker = picker;
 	}
 	
 	public String getName() {
 		return name;
 	}
-
-	public List<LootCreator> getCreatorsSimple() {
-		return creatorsSimple;
-	}
-
-	public List<LootCreator> getCreatorsAlways() {
-		return creatorsAlways;
+	
+	public RandomizedMultiPicker<LootCreator> getPicker() {
+		return picker;
 	}
 }

@@ -11,11 +11,11 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.LootCreator.Loot;
 
-public abstract class RandomizedInventory extends OlympaGUI implements RandomizedPicker<LootCreator> {
+public abstract class RandomizedInventory extends OlympaGUI {
 	
 	private Map<Integer, Loot> currentLoots = new HashMap<>();
 	private Random random = new Random();
@@ -30,7 +30,7 @@ public abstract class RandomizedInventory extends OlympaGUI implements Randomize
 	
 	protected void fillInventory() {
 		clearInventory();
-		for (LootCreator creator : pick(random)) {
+		for (LootCreator creator : getLootPicker().pickMulti(random)) {
 			int slot;
 			do {
 				slot = random.nextInt(inv.getSize());
@@ -47,6 +47,8 @@ public abstract class RandomizedInventory extends OlympaGUI implements Randomize
 		currentLoots.clear();
 		inv.clear();
 	}
+	
+	protected abstract RandomizedMultiPicker<LootCreator> getLootPicker();
 	
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {

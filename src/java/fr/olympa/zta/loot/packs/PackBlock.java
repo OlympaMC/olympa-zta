@@ -76,7 +76,7 @@ public class PackBlock {
 						if (player.getGameMoney().withdraw(type.getPrice())) {
 							location.getWorld().spawnParticle(Particle.FLAME, location.getX(), location.getY() + (y / 10D), location.getZ(), 15, 0D, 0D, 0D, 0.08);
 							location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-							List<LootCreator> picked = type.pick(random);
+							List<LootCreator> picked = type.getPicker().pickMulti(random);
 							ItemStack[] items = picked.stream().map(x -> {
 								Loot loot = x.create(random);
 								ItemStack realItem = loot.getRealItem();

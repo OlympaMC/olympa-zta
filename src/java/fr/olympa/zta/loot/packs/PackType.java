@@ -1,11 +1,10 @@
 package fr.olympa.zta.loot.packs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
@@ -18,86 +17,78 @@ import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunType;
 
-public enum PackType implements RandomizedPicker<LootCreator> {
+public enum PackType {
 
 	BASIC(
 			2000,
 			11,
-			4,
-			4,
 			"basique du militaire",
-			new AmmoCreator(-1, AmmoType.HEAVY, 20, 30, true),
-			new FoodCreator(-1, Food.COOKED_BEEF, 10, 15),
-			new ItemStackableCreator(7, GunType.P22),
-			new ItemStackableCreator(8, GunType.KSG),
-			new ArmorCreator(-1, ArmorType.MILITARY)),
+			new PickerBuilder<LootCreator>()
+				.addAlways(new AmmoCreator(AmmoType.HEAVY, 20, 30, true))
+				.addAlways(new FoodCreator(Food.COOKED_BEEF, 10, 15))
+				.add(7, new ItemStackableCreator(GunType.P22))
+				.add(8, new ItemStackableCreator(GunType.KSG))
+				.addAlways(new ArmorCreator(ArmorType.MILITARY))
+				.build(4, 4)),
 	AMMOS(
 			1000,
 			13,
-			5,
-			7,
 			"de munitions",
-			new AmmoCreator(-1, 32, 64),
-			new AmmoCreator(-1, AmmoType.HEAVY, 64, 64, true),
-			new AmmoCreator(-1, AmmoType.LIGHT, 64, 64, true),
-			new AmmoCreator(-1, AmmoType.HANDWORKED, 64, 64, true),
-			new AmmoCreator(-1, AmmoType.CARTRIDGE, 48, 48, true),
-			new AmmoCreator(25, AmmoType.HEAVY, 32, 32, false),
-			new AmmoCreator(25, AmmoType.LIGHT, 32, 32, false),
-			new AmmoCreator(25, AmmoType.HANDWORKED, 32, 32, false),
-			new AmmoCreator(25, AmmoType.CARTRIDGE, 24, 24, false)),
+			new PickerBuilder<LootCreator>()
+			.addAlways(new AmmoCreator(32, 64))
+			.addAlways(new AmmoCreator(AmmoType.HEAVY, 64, 64, true))
+			.addAlways(new AmmoCreator(AmmoType.LIGHT, 64, 64, true))
+			.addAlways(new AmmoCreator(AmmoType.HANDWORKED, 64, 64, true))
+			.addAlways(new AmmoCreator(AmmoType.CARTRIDGE, 48, 48, true))
+			.add(25, new AmmoCreator(AmmoType.HEAVY, 32, 32, false))
+			.add(25, new AmmoCreator(AmmoType.LIGHT, 32, 32, false))
+			.add(25, new AmmoCreator(AmmoType.HANDWORKED, 32, 32, false))
+			.add(25, new AmmoCreator(AmmoType.CARTRIDGE, 24, 24, false))
+			.build(5, 7)),
 	RARE(
 			10000,
 			30,
-			1,
-			1,
 			"arme rare",
-			new FoodCreator(20, Food.GOLDEN_APPLE, 10, 10),
-			new ItemStackableCreator(10, GunType.STONER),
-			new ItemStackableCreator(15, GunType.DRAGUNOV),
-			new ItemStackableCreator(20, GunType.SDMR)),
+			new PickerBuilder<LootCreator>()
+			.add(20, new FoodCreator(Food.GOLDEN_APPLE, 10, 10))
+			.add(10, new ItemStackableCreator(GunType.STONER))
+			.add(15, new ItemStackableCreator(GunType.DRAGUNOV))
+			.add(20, new ItemStackableCreator(GunType.SDMR))
+			.build(1, 1)),
 	ACCESSORIES(
 			5000,
 			15,
-			2,
-			2,
 			"d'accessoires",
-			new AmmoCreator(-1, 10, 15),
-			new ItemStackableCreator(8, Accessory.CANNON_CAC),
-			new ItemStackableCreator(8, Accessory.CANNON_DAMAGE),
-			new ItemStackableCreator(10, Accessory.CANNON_POWER),
-			new ItemStackableCreator(8, Accessory.CANNON_SILENT),
-			new ItemStackableCreator(9, Accessory.CANNON_STABILIZER),
-			new ItemStackableCreator(10, Accessory.SCOPE_LIGHT),
-			new ItemStackableCreator(9, Accessory.SCOPE_STRONG),
-			new ItemStackableCreator(10, Accessory.STOCK_LIGHT),
-			new ItemStackableCreator(8, Accessory.STOCK_STRONG)
-			),
+			new PickerBuilder<LootCreator>()
+			.addAlways(new AmmoCreator(10, 15))
+			.add(8, new ItemStackableCreator(Accessory.CANNON_CAC))
+			.add(8, new ItemStackableCreator(Accessory.CANNON_DAMAGE))
+			.add(10, new ItemStackableCreator(Accessory.CANNON_POWER))
+			.add(8, new ItemStackableCreator(Accessory.CANNON_SILENT))
+			.add(9, new ItemStackableCreator(Accessory.CANNON_STABILIZER))
+			.add(10, new ItemStackableCreator(Accessory.SCOPE_LIGHT))
+			.add(9, new ItemStackableCreator(Accessory.SCOPE_STRONG))
+			.add(10, new ItemStackableCreator(Accessory.STOCK_LIGHT))
+			.add(8, new ItemStackableCreator(Accessory.STOCK_STRONG))
+			.build(2, 2)),
 	;
 
 	private int price, slot;
-	private int min, max;
 	private String name;
-	private List<LootCreator> creatorsSimple = new ArrayList<>(), creatorsAlways = new ArrayList<>();
 	private String[] lootsDescription;
+	private RandomizedMultiPicker<LootCreator> picker;
 
-	private PackType(int price, int slot, int min, int max, String name, LootCreator... creators) {
+	private PackType(int price, int slot, String name, RandomizedMultiPicker<LootCreator> picker) {
 		this.price = price;
 		this.slot = slot;
-		this.min = min;
-		this.max = max;
 		this.name = name;
-		for (LootCreator creator : creators) {
-			if (creator.getChance() == -1) {
-				creatorsAlways.add(creator);
-			}else creatorsSimple.add(creator);
-		}
-		lootsDescription = new String[creatorsSimple.size() + creatorsAlways.size() + 4];
+		this.picker = picker;
+		lootsDescription = new String[picker.getObjectList().size() + picker.getAlwaysObjectList().size() + 4];
 		int i = 0;
 		lootsDescription[i++] = "";
 		lootsDescription[i++] = "§7§nContient :";
-		for (LootCreator creator : creatorsAlways) lootsDescription[i++] = "§a● " + creator.getTitle();
-		for (LootCreator creator : creatorsSimple) lootsDescription[i++] = "§8● §7" + creator.getTitle();
+		for (LootCreator creator : picker.getAlwaysObjectList()) lootsDescription[i++] = "§a● " + creator.getTitle();
+		for (LootCreator creator : picker.getObjectList().keySet()) lootsDescription[i++] = "§8● §7" + creator.getTitle();
 		lootsDescription[i++] = "";
 		lootsDescription[i++] = SpigotUtils.getBarsWithLoreLength(name, Arrays.asList(lootsDescription), OlympaMoney.format(price));
 	}
@@ -118,24 +109,8 @@ public enum PackType implements RandomizedPicker<LootCreator> {
 		return lootsDescription;
 	}
 	
-	@Override
-	public int getMinItems() {
-		return min;
-	}
-	
-	@Override
-	public int getMaxItems() {
-		return max;
-	}
-	
-	@Override
-	public List<LootCreator> getObjectList() {
-		return creatorsSimple;
-	}
-
-	@Override
-	public List<LootCreator> getAlwaysObjectList() {
-		return creatorsAlways;
+	public RandomizedMultiPicker<LootCreator> getPicker() {
+		return picker;
 	}
 	
 }

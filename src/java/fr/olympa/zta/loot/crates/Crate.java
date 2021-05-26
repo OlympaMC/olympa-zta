@@ -1,7 +1,5 @@
 package fr.olympa.zta.loot.crates;
 
-import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +18,7 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.lines.BlinkingLine;
 import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.RandomizedInventory;
@@ -128,23 +127,8 @@ public class Crate extends RandomizedInventory {
 	}
 	
 	@Override
-	public int getMinItems() {
-		return 6;
-	}
-	
-	@Override
-	public int getMaxItems() {
-		return 8;
-	}
-	
-	@Override
-	public List<LootCreator> getObjectList() {
-		return type.getCreatorsSimple();
-	}
-	
-	@Override
-	public List<LootCreator> getAlwaysObjectList() {
-		return type.getCreatorsAlways();
+	protected RandomizedMultiPicker<LootCreator> getLootPicker() {
+		return type.getPicker();
 	}
 	
 }

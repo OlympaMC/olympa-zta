@@ -9,16 +9,10 @@ import fr.olympa.zta.weapons.guns.GunType;
 
 public class ItemStackableCreator implements LootCreator {
 
-	private double chance;
 	private ItemStackable stackable;
 	
-	public ItemStackableCreator(double chance, ItemStackable stackable) {
-		this.chance = chance;
+	public ItemStackableCreator(ItemStackable stackable) {
 		this.stackable = stackable;
-	}
-
-	public double getChance() {
-		return chance;
 	}
 
 	public Loot create(Random random) {

@@ -5,17 +5,10 @@ import fr.olympa.zta.itemstackable.QuestItem;
 
 public class QuestItemCreator implements LootCreator {
 
-	private double chance;
 	private QuestItem questItem;
 
-	public QuestItemCreator(double chance, QuestItem questItem) {
-		this.chance = chance;
+	public QuestItemCreator(QuestItem questItem) {
 		this.questItem = questItem;
-	}
-	
-	@Override
-	public double getChance() {
-		return chance;
 	}
 
 	@Override

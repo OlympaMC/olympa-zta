@@ -13,20 +13,15 @@ public class AmmoCreator implements LootCreator {
 	private int max;
 	private boolean filled;
 
-	public AmmoCreator(double chance, int min, int max) {
-		this(chance, null, min, max, false);
+	public AmmoCreator(int min, int max) {
+		this(null, min, max, false);
 	}
 
-	public AmmoCreator(double chance, AmmoType type, int min, int max, boolean filled) {
+	public AmmoCreator(AmmoType type, int min, int max, boolean filled) {
 		this.type = type;
-		this.chance = chance;
 		this.min = min;
 		this.max = max;
 		this.filled = filled;
-	}
-
-	public double getChance() {
-		return chance;
 	}
 
 	public Loot create(Random random) {

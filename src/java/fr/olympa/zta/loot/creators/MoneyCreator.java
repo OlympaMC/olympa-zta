@@ -10,20 +10,13 @@ import fr.olympa.zta.utils.PhysicalMoney;
 
 public class MoneyCreator implements LootCreator {
 
-	private double chance;
 	private ItemStack banknote;
 	private int min, max;
 
-	public MoneyCreator(double chance, ItemStack banknote, int min, int max) {
-		this.chance = chance;
+	public MoneyCreator(ItemStack banknote, int min, int max) {
 		this.banknote = banknote;
 		this.min = min;
 		this.max = max;
-	}
-
-	@Override
-	public double getChance() {
-		return chance;
 	}
 
 	@Override

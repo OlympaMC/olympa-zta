@@ -33,6 +33,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.EvictingQueue;
 
@@ -42,11 +43,15 @@ import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.region.tracking.RegionEvent.RegionEventReason;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.utils.Point2D;
+import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.RandomizedPicker.ConditionalPickerBuilder;
+import fr.olympa.api.utils.RandomizedPicker.Conditioned;
+import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
+import fr.olympa.api.utils.spigot.CustomDayDuration;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.glass.GlassSmashFlag;
-import fr.olympa.zta.loot.chests.type.LootChestPicker;
 import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
@@ -58,6 +63,10 @@ import net.minecraft.server.v1_16_R3.Entity;
 
 public class MobSpawning implements Runnable {
 
+	public static final ConditionalPickerBuilder<Zombies> DEFAULT_ZOMBIE_PICKER = new PickerBuilder<Zombies>()
+			.add(1, Zombies.COMMON)
+			.add(0.12, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
+			.add(0.06, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";
 
@@ -152,7 +161,7 @@ public class MobSpawning implements Runnable {
 									for (Location loc : entities) {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared) continue y; // trop près d'autre entité
 									}
-									for (int j = 0; j < spawn.spawning.spawnAmount(); j++) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, (spawn.spawning.explosiveProb() != 0) && random.nextDouble() < spawn.spawning.explosiveProb() ? Zombies.TNT : Zombies.COMMON));
+									for (int j = 0; j < spawn.spawning.spawnAmount(); j++) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, spawn.spawning.getZombiePicker().pickOne(random)));
 									continue mobs;
 								}
 							}
@@ -312,40 +321,40 @@ public class MobSpawning implements Runnable {
 	
 	public enum SpawnType {
 		NONE(
-				new MobSpawningConfig(12, 1, 5, 0),
+				new MobSpawningConfig(12, 1, 5, null),
 				false,
 				"§c§lerreur",
 				"§cerreur",
 				null,
 				null),
 		HARD(
-				new MobSpawningConfig(10, 2, 6, 0.1),
+				new MobSpawningConfig(10, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.01, Zombies.TNT).build()),
 				true,
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
-				new LootChestPicker().add(LootChestType.CIVIL, 0.5).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.4)),
+				new PickerBuilder<LootChestType>().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
 		MEDIUM(
-				new MobSpawningConfig(12, 2, 5, 0.08),
+				new MobSpawningConfig(12, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).build()),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",
 				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
-				new LootChestPicker().add(LootChestType.CIVIL, 0.7).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.2)),
+				new PickerBuilder<LootChestType>().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
 		EASY(
-				new MobSpawningConfig(15, 1, 4, 0.012),
+				new MobSpawningConfig(15, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build()),
 				true,
 				"§d§lzone modérée",
 				"§7§ogardez vos distances",
 				new DynmapZoneConfig(Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
-				new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.1).add(LootChestType.MILITARY, 0.1)),
+				new PickerBuilder<LootChestType>().add(0.8, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.1, LootChestType.MILITARY).build()),
 		SAFE(
-				new MobSpawningConfig(21, 1, 2, 0.008),
+				new MobSpawningConfig(21, 1, 2, DEFAULT_ZOMBIE_PICKER.clone().add(0.008, Zombies.TNT).build()),
 				false,
 				"§a§lzone sécurisée",
 				"§7§orestez vigilant",
 				new DynmapZoneConfig(Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté."),
-				new LootChestPicker().add(LootChestType.CIVIL, 0.8).add(LootChestType.CONTRABAND, 0.2));
+				new PickerBuilder<LootChestType>().add(0.8, LootChestType.CIVIL).add(0.2, LootChestType.CONTRABAND).build());
 		
 		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
 		
@@ -357,12 +366,12 @@ public class MobSpawning implements Runnable {
 		
 		public final DynmapZoneConfig dynmap;
 
-		private final LootChestPicker lootchests;
+		private final RandomizedPicker<LootChestType> lootchests;
 
 		private List<Region> regions = new ArrayList<>();
 		private Flag flag;
 
-		private SpawnType(MobSpawningConfig spawning, boolean glassSmash, String title, String subtitle, DynmapZoneConfig dynmap, LootChestPicker lootchests) {
+		private SpawnType(MobSpawningConfig spawning, boolean glassSmash, String title, String subtitle, DynmapZoneConfig dynmap, RandomizedPicker<LootChestType> lootchests) {
 			this.spawning = spawning;
 			this.title = title;
 			this.subtitle = subtitle;
@@ -374,7 +383,7 @@ public class MobSpawning implements Runnable {
 			flag = new SpawningFlag(this, glassSmash);
 		}
 
-		public LootChestPicker getLootChests() {
+		public RandomizedPicker<LootChestType> getLootChests() {
 			return lootchests;
 		}
 
@@ -431,6 +440,40 @@ public class MobSpawning implements Runnable {
 				return super.enters(event);
 			}
 		}
+	}
+	
+	public static class TimeConditioned implements Conditioned<Zombies> {
+		
+		private Zombies zombie;
+		private int minTime;
+		private int maxTime;
+		
+		public TimeConditioned(Zombies zombie, int minTime) {
+			this(zombie, minTime, 24000);
+		}
+		
+		public TimeConditioned(Zombies zombie, int minTime, int maxTime) {
+			this.zombie = zombie;
+			this.minTime = minTime;
+			this.maxTime = maxTime;
+		}
+		
+		@Override
+		public Zombies getObject() {
+			return zombie;
+		}
+		
+		@Override
+		public Class<?> getArgumentType() {
+			return null;
+		}
+		
+		@Override
+		public boolean isValid(@Nullable Object arg) {
+			long time = OlympaZTA.getInstance().mobSpawning.world.getTime();
+			return minTime < time && time < maxTime;
+		}
+		
 	}
 
 }

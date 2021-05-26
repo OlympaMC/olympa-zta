@@ -1,6 +1,5 @@
 package fr.olympa.zta.loot.chests;
 
-import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -16,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -118,25 +118,14 @@ public class LootChest extends RandomizedInventory {
 		return location;
 	}
 
-	public int getMinItems() {
-		return 1;
-	}
-
-	public int getMaxItems() {
-		return 3;
-	}
-
-	public List<LootCreator> getObjectList() {
-		return type.getCreatorsSimple();
-	}
-
-	public List<LootCreator> getAlwaysObjectList() {
-		return type.getCreatorsAlways();
-	}
-
 	@Override
 	public Inventory getInventory() {
 		return inv;
+	}
+	
+	@Override
+	protected RandomizedMultiPicker<LootCreator> getLootPicker() {
+		return type.getPicker();
 	}
 
 }

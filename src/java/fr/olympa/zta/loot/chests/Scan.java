@@ -26,7 +26,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot.ClanPlotFlag;
-import fr.olympa.zta.loot.chests.type.LootChestPicker.LootChestCreator;
+import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.utils.map.DynmapLink;
 
@@ -85,9 +85,9 @@ public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-
 					if (!lootChest.getLocation().equals(block.getLocation())) lootChest = null; // misplaced chest
 				}
 				if (lootChest == null) {
-					LootChestCreator creator = spawn.getLootChests().pick(random).get(0);
+					LootChestType type = spawn.getLootChests().pickOne(random);
 					try {
-						manager.createLootChest(chestBlock.getLocation(), creator.getType());
+						manager.createLootChest(chestBlock.getLocation(), type);
 						chestsCreated++;
 					}catch (SQLException e) {
 						e.printStackTrace();

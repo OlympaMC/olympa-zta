@@ -1,17 +1,20 @@
 package fr.olympa.zta.mobs;
 
+import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
+
 public class MobSpawningConfig {
 	
 	private final int minDistance;
 	private final int spawnAmount;
 	private final int maxEntitiesPerChunk;
-	private final double explosiveProb;
+	private final RandomizedPicker<Zombies> zombiePicker;
 	
-	public MobSpawningConfig(int minDistance, int spawnAmount, int maxEntitiesPerChunk, double explosiveProb) {
+	public MobSpawningConfig(int minDistance, int spawnAmount, int maxEntitiesPerChunk, RandomizedPicker<Zombies> zombiePicker) {
 		this.minDistance = minDistance;
 		this.spawnAmount = spawnAmount;
 		this.maxEntitiesPerChunk = maxEntitiesPerChunk;
-		this.explosiveProb = explosiveProb;
+		this.zombiePicker = zombiePicker;
 	}
 	
 	public int minDistance() {
@@ -26,8 +29,8 @@ public class MobSpawningConfig {
 		return maxEntitiesPerChunk;
 	}
 	
-	public double explosiveProb() {
-		return explosiveProb;
+	public RandomizedPicker<Zombies> getZombiePicker() {
+		return zombiePicker;
 	}
 	
 }

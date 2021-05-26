@@ -1,18 +1,21 @@
 package fr.olympa.zta.weapons.guns.ambiance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.utils.RandomizedPicker.Chanced;
-import fr.olympa.api.utils.RandomizedPicker.FixedPicker;
+import fr.olympa.api.utils.RandomizedPicker.FixedMultiPicker;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
@@ -21,7 +24,7 @@ public class SoundAmbiance implements Runnable {
 	private final double[] chances = { 0.06, 0.005 };
 	
 	private BukkitTask task;
-	private FixedPicker<Scenario> scenarioPicker = new FixedPicker<>(1, 1, 0, Scenario.values());
+	private RandomizedMultiPicker<Scenario> scenarioPicker = new FixedMultiPicker<Scenario>(Arrays.stream(Scenario.values()).collect(Collectors.toMap(x -> x, x -> x.getChance())), Collections.emptyList(), 1, 1, 0);
 	private List<AmbianceScenario> scenarios = new ArrayList<>();
 	
 	@Override
@@ -41,7 +44,7 @@ public class SoundAmbiance implements Runnable {
 		if (random.nextDouble() < chances[scenarios.size()]) {
 			float volume = (float) random.nextDouble(0.009, 0.05);
 			float pitch = (float) random.nextDouble(0.7 + volume, 0.9);
-			AmbianceScenario scenario = scenarioPicker.pick(random).get(0).creator.apply(volume, pitch);
+			AmbianceScenario scenario = scenarioPicker.pickOne(random).creator.apply(volume, pitch);
 			scenarios.add(scenario);
 		}
 	}
@@ -51,7 +54,7 @@ public class SoundAmbiance implements Runnable {
 		task = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), this, 30, 1);
 	}
 	
-	private enum Scenario implements Chanced {
+	private enum Scenario {
 		SILENT(45, SilentScenario::new),
 		AUTO(11, AutoScenario::new),
 		SIMPLE(15, SimpleScenario::new),
@@ -66,7 +69,6 @@ public class SoundAmbiance implements Runnable {
 			this.creator = creator;
 		}
 		
-		@Override
 		public double getChance() {
 			return chance;
 		}

@@ -12,23 +12,17 @@ import fr.olympa.api.utils.Utils;
 public class FoodCreator implements LootCreator {
 
 	private Food type;
-	private double chance;
 	private int min;
 	private int max;
 
-	public FoodCreator(double chance, Food type) {
-		this(chance, type, 1, 1);
+	public FoodCreator(Food type) {
+		this(type, 1, 1);
 	}
 
-	public FoodCreator(double chance, Food type, int min, int max) {
+	public FoodCreator(Food type, int min, int max) {
 		this.type = type;
-		this.chance = chance;
 		this.min = min;
 		this.max = max;
-	}
-
-	public double getChance() {
-		return chance;
 	}
 
 	public Loot create(Random random) {

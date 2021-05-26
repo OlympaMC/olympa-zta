@@ -14,7 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
-import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -31,16 +32,16 @@ import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 2, 20,
-			new AmmoCreator(22, 3, 4),
-			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
-			new FoodCreator(15, Food.BAKED_POTATO, 2, 4),
-			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
-			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),
-			new AmmoCreator(12, AmmoType.HANDWORKED, 2, 3, false),
-			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false),
-			new QuestItemCreator(7, QuestItem.AMAS)
-			);
+	private RandomizedMultiPicker<LootCreator> zombieLoots = new PickerBuilder<LootCreator>()
+			.add(22, new AmmoCreator(3, 4))
+			.add(40, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
+			.add(15, new FoodCreator(Food.BAKED_POTATO, 2, 4))
+			.add(12, new AmmoCreator(AmmoType.LIGHT, 2, 3, false))
+			.add(12, new AmmoCreator(AmmoType.HEAVY, 2, 3, false))
+			.add(12, new AmmoCreator(AmmoType.HANDWORKED, 2, 3, false))
+			.add(8, new AmmoCreator(AmmoType.CARTRIDGE, 1, 2, false))
+			.add(7, new QuestItemCreator(QuestItem.AMAS))
+			.build(0, 2, 20);
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
@@ -55,7 +56,7 @@ public class MobsListener implements Listener {
 				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
 				if (zombie == Zombies.COMMON/* || zombie == Zombies.DROWNED*/) {
 					killer.killedZombies.increment();
-					for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
+					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current())) {
 						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
 					}
 				}

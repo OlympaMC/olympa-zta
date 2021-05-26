@@ -137,7 +137,7 @@ public class LootChestsManager implements Listener {
 		for (TrackedRegion region : OlympaCore.getInstance().getRegionManager().getApplicableRegions(location)) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);
 			if (flag == null) continue;
-			return flag.type.getLootChests().pick(random).get(0).getType();
+			return flag.type.getLootChests().pickOne(random);
 		}
 		return null;
 	}

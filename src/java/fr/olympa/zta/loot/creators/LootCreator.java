@@ -4,14 +4,12 @@ import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.utils.RandomizedPicker.Chanced;
-
-public interface LootCreator extends Chanced {
+public interface LootCreator {
 
 	public abstract Loot create(Random random);
 	
 	public abstract String getTitle();
-
+	
 	public class Loot {
 
 		private final ItemStack item;

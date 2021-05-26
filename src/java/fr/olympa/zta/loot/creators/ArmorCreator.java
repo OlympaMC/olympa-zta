@@ -7,16 +7,10 @@ import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 
 public class ArmorCreator implements LootCreator {
 
-	private double chance;
 	private ArmorType type;
 
-	public ArmorCreator(double chance, ArmorType type) {
-		this.chance = chance;
+	public ArmorCreator(ArmorType type) {
 		this.type = type;
-	}
-
-	public double getChance() {
-		return chance;
 	}
 
 	public Loot create(Random random) {
