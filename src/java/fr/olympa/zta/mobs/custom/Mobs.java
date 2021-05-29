@@ -119,9 +119,9 @@ public class Mobs {
 
 	public enum Zombies {
 		COMMON(customZombie, "Infecté"),
-		TNT(customZombie, "Infecté explosif"),
-		SPEED(customZombie, "Infecté rapide"),
-		TANK(customZombie, "Infecté tank"),
+		TNT(customZombie, "§cInfecté explosif"),
+		SPEED(customZombie, "§bInfecté rapide"),
+		TANK(customZombie, "§4Infecté tank"),
 		TRAINING(customZombie, "Zombie d'entraînement"),
 		DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
 

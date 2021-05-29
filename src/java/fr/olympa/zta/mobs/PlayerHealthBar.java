@@ -9,16 +9,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 
 public class PlayerHealthBar {
 	
-	private static final int DEFAULT_COOLDOWN = 12;
+	private static final int DEAD_COOLDOWN = 3;
+	private static final int DEFAULT_COOLDOWN = 6;
 	
 	private BossBar bar;
 	private LivingEntity entity;
 	private BukkitTask task;
 	private int cooldown;
-	private double lastHealth;
 	
 	public PlayerHealthBar(Player p) {
 		bar = Bukkit.createBossBar("§4❤", BarColor.RED, BarStyle.SOLID);
@@ -26,27 +27,31 @@ public class PlayerHealthBar {
 		bar.addPlayer(p);
 	}
 	
-	public void show(LivingEntity newEntity) {
-		cooldown = DEFAULT_COOLDOWN;
-		if (entity == newEntity) return;
+	public void show(LivingEntity newEntity, double damage) {
 		entity = newEntity;
 		
-		lastHealth = entity.getHealth();
-		updateBar();
-		lastHealth = -1;
+		double health = Math.max(0, entity.getHealth() - damage);
+		double maxHealth = entity.getMaxHealth();
+		String name = entity.getCustomName();
+		if (name == null && entity.hasMetadata("ztaZombieType")) {
+			Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
+			name = zombie.getName();
+		}
+		if (name == null) {
+			name = entity.getName();
+		}
+		bar.setTitle("§7" + name + "§7 : §c" + Integer.toString((int) Math.ceil(health)) + "/" + Integer.toString((int) maxHealth) + "❤");
+		bar.setProgress(health / maxHealth);
+		
+		cooldown = health == 0 ? DEAD_COOLDOWN : DEFAULT_COOLDOWN;
 		
 		if (task == null) {
 			bar.setVisible(true);
 			task = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
 				if (--cooldown == 0) {
 					hide();
-				}else {
-					double newHealth = entity.getHealth();
-					if (Math.abs(newHealth - lastHealth) <= 0.5) return; // pas d'update si trop faible différence
-					lastHealth = newHealth;
-					updateBar();
 				}
-			}, 10, 10);
+			}, 0, 20);
 		}
 	}
 	
@@ -56,12 +61,6 @@ public class PlayerHealthBar {
 			task.cancel();
 			task = null;
 		}
-	}
-	
-	private void updateBar() {
-		double maxHealth = entity.getMaxHealth();
-		bar.setTitle("§7" + entity.getName() + "§7 : §c" + Integer.toString((int) lastHealth) + "/" + Integer.toString((int) maxHealth) + "❤");
-		bar.setProgress(lastHealth / maxHealth);
 	}
 	
 }
