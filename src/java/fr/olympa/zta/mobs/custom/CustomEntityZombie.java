@@ -57,7 +57,7 @@ public class CustomEntityZombie extends EntityZombie {
 		return EntityZombie.eS().a(GenericAttributes.FOLLOW_RANGE, 22.0);
 	}
 	
-	public void setZombieType(Zombies zombieType) {
+	public void setZombieType(Zombies zombieType, boolean first) {
 		this.zombieType = zombieType;
 		getBukkitEntity().setMetadata("ztaZombieType", new FixedMetadataValue(OlympaZTA.getInstance(), zombieType));
 		switch (zombieType) {
@@ -66,21 +66,27 @@ public class CustomEntityZombie extends EntityZombie {
 			initAttack();
 			break;
 		case TNT:
-			setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+			if (first) setSlot(EnumItemSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
 			initTargetGoals();
 			break;
 		case SPEED:
-			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3);
-			setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
-			addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
+			if (first) {
+				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29);
+				setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
+			}
 			initTargetGoals();
 			initAttack();
 			break;
 		case TANK:
-			getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.22);
-			getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7);
-			getAttributeInstance(GenericAttributes.ARMOR).setValue(5);
-			setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+			if (first) {
+				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.215);
+				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7);
+				getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
+				setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+				setSlot(EnumItemSlot.LEGS, new ItemStack(Items.NETHERITE_LEGGINGS));
+				setSlot(EnumItemSlot.FEET, new ItemStack(Items.NETHERITE_BOOTS));
+			}
 			initTargetGoals();
 			initAttack();
 			break;
@@ -179,7 +185,7 @@ public class CustomEntityZombie extends EntityZombie {
 	@Override
 	public void loadData(NBTTagCompound nbttagcompound) {
 		super.loadData(nbttagcompound);
-		if (nbttagcompound.hasKey("ZTAType")) setZombieType(Zombies.valueOf(nbttagcompound.getString("ZTAType")));
+		if (nbttagcompound.hasKey("ZTAType")) setZombieType(Zombies.valueOf(nbttagcompound.getString("ZTAType")), false);
 	}
 	
 	public static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {

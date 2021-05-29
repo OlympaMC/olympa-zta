@@ -65,7 +65,7 @@ public class MobSpawning implements Runnable {
 
 	public static final ConditionalPickerBuilder<Zombies> DEFAULT_ZOMBIE_PICKER = new PickerBuilder<Zombies>()
 			.add(1, Zombies.COMMON)
-			.add(0.12, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
+			.add(0.11, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
 			.add(0.06, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";

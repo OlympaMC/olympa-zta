@@ -7,7 +7,6 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class AmmoCreator implements LootCreator {
 
-	private double chance;
 	private AmmoType type;
 	private int min;
 	private int max;

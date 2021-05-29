@@ -299,7 +299,7 @@ public class PlayersListener implements Listener {
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (e.isCancelled() || e.getDamage() == 0) return;
 		if (!(e.getEntity() instanceof LivingEntity)) return;
-		if (!(e.getDamager() instanceof Player)) return;
+		if (!(e.getDamager()instanceof Player damager)) return;
 		LivingEntity en = (LivingEntity) e.getEntity();
 		Location lc = en.getEyeLocation().add(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5);
 		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false, true, new FixedLine<>("§4-§l" + DAMAGE_FORMAT.format(e.getFinalDamage()) + " §r§c❤"));
@@ -317,6 +317,12 @@ public class PlayersListener implements Listener {
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 20, 1);
+		
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(damager);
+		if (player.parameterHealthBar.get()) {
+			if (player.healthBar == null) player.healthBar = new PlayerHealthBar(damager);
+			player.healthBar.show(en);
+		}
 	}
 	
 	private void giveStartItems(Player p) {
