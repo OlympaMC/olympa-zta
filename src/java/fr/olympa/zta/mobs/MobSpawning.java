@@ -328,14 +328,14 @@ public class MobSpawning implements Runnable {
 				null,
 				null),
 		HARD(
-				new MobSpawningConfig(10, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.01, Zombies.TNT).build()),
+				new MobSpawningConfig(10, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.1, Zombies.TNT).add(0.01, Zombies.SPEED).add(0.002, Zombies.TANK).build()),
 				true,
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
 				new PickerBuilder<LootChestType>().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
 		MEDIUM(
-				new MobSpawningConfig(12, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).build()),
+				new MobSpawningConfig(12, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build()),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",

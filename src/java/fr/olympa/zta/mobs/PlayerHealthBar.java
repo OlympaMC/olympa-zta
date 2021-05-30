@@ -17,7 +17,6 @@ public class PlayerHealthBar {
 	private static final int DEFAULT_COOLDOWN = 6;
 	
 	private BossBar bar;
-	private LivingEntity entity;
 	private BukkitTask task;
 	private int cooldown;
 	
@@ -27,9 +26,7 @@ public class PlayerHealthBar {
 		bar.addPlayer(p);
 	}
 	
-	public void show(LivingEntity newEntity, double damage) {
-		entity = newEntity;
-		
+	public void show(LivingEntity entity, double damage) {
 		double health = Math.max(0, entity.getHealth() - damage);
 		double maxHealth = entity.getMaxHealth();
 		String name = entity.getCustomName();

@@ -155,6 +155,7 @@ public class ClanPlot {
 			sign.setLine(3, "§eExpire le §n" + getExpirationDate());
 		}
 		sign.update();
+		manager.updateBook();
 	}
 
 	public void signClick(Player p) {

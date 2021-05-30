@@ -271,7 +271,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
-			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
+			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager, getConfig().getLocation("clanPlotsBook")), this);
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
@@ -442,7 +442,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				FixedLine.EMPTY_LINE,
 				CyclingLine.olympaAnimation());
 
-		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 16800, 12000);
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2);
 		
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));

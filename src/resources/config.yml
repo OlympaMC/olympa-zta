@@ -191,6 +191,8 @@ tyrolienne:
   from: "world 5634 15 5500"
   to: "world 5634 15 5577"
 
+clanPlotsBook: "world 5622 12 5581"
+
 bank: [0, 1]
 auctions: [6]
 tomHookNPC: [2]
