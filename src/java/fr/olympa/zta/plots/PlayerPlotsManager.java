@@ -39,7 +39,7 @@ import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.observable.ObservableList;
+import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;

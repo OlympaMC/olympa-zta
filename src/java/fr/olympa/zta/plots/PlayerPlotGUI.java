@@ -20,7 +20,7 @@ import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.observable.ObservableList;
+import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 

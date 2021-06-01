@@ -14,8 +14,9 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
-import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
-import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
+import fr.olympa.api.utils.RandomizedPickerBase;
+import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -32,7 +33,7 @@ import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private RandomizedMultiPicker<LootCreator> zombieLoots = new PickerBuilder<LootCreator>()
+	private RandomizedMultiPicker<LootCreator> zombieLoots = RandomizedPickerBase.<LootCreator>newBuilder()
 			.add(22, new AmmoCreator(3, 4))
 			.add(40, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
 			.add(15, new FoodCreator(Food.BAKED_POTATO, 2, 4))
@@ -41,7 +42,7 @@ public class MobsListener implements Listener {
 			.add(12, new AmmoCreator(AmmoType.HANDWORKED, 2, 3, false))
 			.add(8, new AmmoCreator(AmmoType.CARTRIDGE, 1, 2, false))
 			.add(7, new QuestItemCreator(QuestItem.AMAS))
-			.build(0, 2, 20);
+			.build(0, 2, 20.0);
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {

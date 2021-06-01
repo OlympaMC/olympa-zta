@@ -21,9 +21,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
-import fr.olympa.api.spigot.linesCyclingLine;
-import fr.olympa.api.spigot.linesDynamicLine;
-import fr.olympa.api.spigot.linesFixedLine;
+import fr.olympa.api.spigot.lines.CyclingLine;
+import fr.olympa.api.spigot.lines.DynamicLine;
+import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.region.tracking.ActionResult;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.ExitEvent;

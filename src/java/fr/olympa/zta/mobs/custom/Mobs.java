@@ -55,7 +55,7 @@ public class Mobs {
 		location.setYaw(random.nextInt(360));
 		location.add(0.5, 0, 0.5); // sinon entités sont spawnées dans les coins des blocs et risquent de s'étouffer
 		EntityZombie zombie = spawnMob(zombieType.getType(), location, SpawnReason.NATURAL);
-		if (zombie instanceof CustomEntityZombie) ((CustomEntityZombie) zombie).setZombieType(zombieType);
+		if (zombie instanceof CustomEntityZombie) ((CustomEntityZombie) zombie).setZombieType(zombieType, true);
 	}
 
 	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, ItemStack contents[], String name) {
@@ -119,9 +119,9 @@ public class Mobs {
 
 	public enum Zombies {
 		COMMON(customZombie, "Infecté"),
-		TNT(customZombie, "Infecté explosif"),
-		SPEED(customZombie, "Infecté rapide"),
-		TANK(customZombie, "Infecté tank"),
+		TNT(customZombie, "§cInfecté explosif"),
+		SPEED(customZombie, "§bInfecté rapide"),
+		TANK(customZombie, "§4Infecté tank"),
 		TRAINING(customZombie, "Zombie d'entraînement"),
 		DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
 

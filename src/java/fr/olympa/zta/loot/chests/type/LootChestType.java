@@ -1,7 +1,7 @@
 package fr.olympa.zta.loot.chests.type;
 
-import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
-import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
+import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;

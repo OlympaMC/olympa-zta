@@ -31,7 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;

@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 import org.bukkit.metadata.FixedMetadataValue;
 
-import fr.olympa.api.utils.Reflection;
-import fr.olympa.api.utils.Reflection.ClassEnum;
+import fr.olympa.api.spigot.utils.Reflection;
+import fr.olympa.api.spigot.utils.Reflection.ClassEnum;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.CustomEntityZombie.PathfinderGoalCustomZombieAttack;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;

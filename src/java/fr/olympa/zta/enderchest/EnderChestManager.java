@@ -21,9 +21,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import fr.olympa.api.enderchest.EnderChestCommand;
+import fr.olympa.api.spigot.enderchest.EnderChestCommand;
 import fr.olympa.api.spigot.holograms.Hologram;
-import fr.olympa.api.spigot.linesCyclingLine;
+import fr.olympa.api.spigot.lines.CyclingLine;
 import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.common.sql.statement.StatementType;

@@ -5,13 +5,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -19,6 +23,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.region.Region;
@@ -28,6 +34,10 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class ClanPlotsManager implements Listener {
 
@@ -50,7 +60,12 @@ public class ClanPlotsManager implements Listener {
 
 	private Map<Integer, ClanPlot> plots = new HashMap<>();
 
-	public ClanPlotsManager(ClansManagerZTA clans) throws SQLException {
+	private Location bookLocation;
+	private ItemStack book;
+	
+	public ClanPlotsManager(ClansManagerZTA clans, Location bookLocation) throws SQLException {
+		this.bookLocation = bookLocation;
+		
 		table = new SQLTable<>("zta_clan_plots",
 				Arrays.asList(columnID, columnRegion, columnClan, columnSign, columnSpawn, columnPrice, columnNextPayment),
 				resultSet -> {
@@ -62,7 +77,7 @@ public class ClanPlotsManager implements Listener {
 						plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
 						return plot;
 					}catch (Exception ex) {
-						OlympaZTA.getInstance().getLogger().severe("Une erreur est survenue lors du chargement d'une parcelle.");
+						OlympaZTA.getInstance().getLogger().severe("Une erreur est BookMeta survenue lors du chargement d'une parcelle.");
 						ex.printStackTrace();
 						return null;
 					}
@@ -71,7 +86,66 @@ public class ClanPlotsManager implements Listener {
 
 		plots = table.selectAll(null).stream().filter(Objects::nonNull).collect(Collectors.toMap(ClanPlot::getID, Function.identity()));
 		
+		book = new ItemStack(Material.WRITTEN_BOOK);
+		updateBook();
+		
 		new ClanPlotsCommand(this).register();
+	}
+	
+	public void updateBook() {
+		BookMeta meta = (BookMeta) book.getItemMeta();
+		meta.pages(Collections.EMPTY_LIST);
+		
+		List<ClanPlot> rent = plots.values().stream().filter(x -> x.getClan() != null).collect(Collectors.toList());
+		List<ClanPlot> free = plots.values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList());
+		
+		TextComponent compo = Component.text("\n  Parcelles de Clans\n\n\n", NamedTextColor.DARK_GRAY, TextDecoration.BOLD);
+		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
+		compo.append(Component.text(plots.size() + " parcelles sur le monde\n\n", NamedTextColor.BLACK));
+		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
+		compo.append(Component.text(rent.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("louées\n", NamedTextColor.RED, TextDecoration.BOLD)));
+		compo.append(Component.text(free.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("libres", NamedTextColor.GOLD, TextDecoration.BOLD)));
+		meta.addPages(compo);
+		
+		compo = Component.text(" Parcelles louées :", NamedTextColor.DARK_GRAY);
+		int amount = 0;
+		for (int i = 0; i < rent.size(); i++) {
+			if (amount++ == 2) {
+				meta.addPages(compo);
+				amount = 1;
+				compo = Component.text().build();
+			}
+			ClanPlot plot = rent.get(i);
+			compo.append(Component.text("\n\n➤ ", NamedTextColor.DARK_GRAY));
+			compo.append(Component.text("#" + plot.getID(), NamedTextColor.GOLD));
+			compo.append(Component.text(", x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ", louée à "));
+			TextComponent clanCompo = Component.text(plot.getClan().getName(), NamedTextColor.GOLD);
+			clanCompo.hoverEvent(Component.text(plot.getClan().getNameAndTag(), NamedTextColor.YELLOW));
+			compo.append(clanCompo);
+			/*compo.append(Component.text(" ["));
+			compo.append(Component.text(plot.getClan().getTag()));*/
+			compo.append(Component.text(" jusqu'au "));
+			compo.append(Component.text(plot.getExpirationDate(), NamedTextColor.GOLD));
+		}
+		meta.addPages(compo);
+		
+		compo = Component.text(" Parcelles libres :", NamedTextColor.DARK_GRAY);
+		amount = 0;
+		for (int i = 0; i < rent.size(); i++) {
+			if (amount++ == 2) {
+				meta.addPages(compo);
+				amount = 1;
+				compo = Component.text().build();
+			}
+			ClanPlot plot = rent.get(i);
+			compo.append(Component.text("\n\n➤ ", NamedTextColor.DARK_GRAY));
+			compo.append(Component.text("#" + plot.getID(), NamedTextColor.GOLD));
+			compo.append(Component.text(", x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ", à louer pour "));
+			compo.append(Component.text(plot.getPriceFormatted(), NamedTextColor.GOLD));
+		}
+		meta.addPages(compo);
+		
+		book.setItemMeta(meta);
 	}
 
 	public ClanPlot create(Region region, int price, Block sign, Location spawn) throws SQLException, IOException {
@@ -108,6 +182,10 @@ public class ClanPlotsManager implements Listener {
 		if (clickedBlock.getType().name().contains("_SIGN")) {
 			Sign sign = (Sign) clickedBlock.getState();
 			if (sign.getPersistentDataContainer().has(SIGN_KEY, PersistentDataType.INTEGER)) plots.get(sign.getPersistentDataContainer().get(SIGN_KEY, PersistentDataType.INTEGER)).signClick(e.getPlayer());
+		}
+		if (clickedBlock.getLocation().equals(bookLocation)) {
+			e.setCancelled(true);
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> e.getPlayer().openBook(book));
 		}
 	}
 

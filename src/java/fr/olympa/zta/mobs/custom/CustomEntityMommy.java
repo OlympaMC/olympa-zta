@@ -14,7 +14,6 @@ import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.GenericAttributes;
 import net.minecraft.server.v1_16_R3.ItemStack;
-import net.minecraft.server.v1_16_R3.MinecraftServer;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import net.minecraft.server.v1_16_R3.NBTTagList;
 import net.minecraft.server.v1_16_R3.PathfinderGoal;
@@ -25,14 +24,14 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	public final int MOMMY_DIE_TICKS = 6000;
 	
 	private int dieTime = MOMMY_DIE_TICKS;
-	private int lastTick = MinecraftServer.currentTick;
+	//private int lastTick = MinecraftServer.currentTick;
 	
 	private ItemStack[] contents;
 	private boolean contentsLoaded = false;
 	
 	public CustomEntityMommy(EntityTypes<CustomEntityMommy> type, World world) {
 		super(type, world);
-		setZombieType(Zombies.COMMON);
+		setZombieType(Zombies.COMMON, true);
 	}
 	
 	public static AttributeProvider.Builder getAttributeBuilder() {
@@ -53,9 +52,10 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	public void tick() {
 		super.tick();
 		if (!killed) {
-			int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
+			/*int elapsedTicks = MinecraftServer.currentTick - this.lastTick; TROP DE RISQUE DE PERTE DE STUFF
 			this.lastTick = MinecraftServer.currentTick;
-			dieTime -= elapsedTicks;
+			dieTime -= elapsedTicks;*/
+			dieTime--;
 			if (dieTime < 0) this.killEntity();
 		}
 	}

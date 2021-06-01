@@ -22,7 +22,7 @@ import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.common.sql.SQLTable;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.observable.ObservableList;
+import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;

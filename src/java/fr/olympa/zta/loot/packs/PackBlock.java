@@ -18,8 +18,8 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.item.ItemUtils;
-import fr.olympa.api.spigot.linesBlinkingLine;
-import fr.olympa.api.spigot.linesFixedLine;
+import fr.olympa.api.spigot.lines.BlinkingLine;
+import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;

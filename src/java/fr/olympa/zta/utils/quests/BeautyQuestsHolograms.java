@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.spigot.holograms.Hologram;
-import fr.olympa.api.spigot.linesFixedLine;
+import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.skytasul.quests.api.AbstractHolograms;
 

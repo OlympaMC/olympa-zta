@@ -256,7 +256,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 		teleportationManager = new TeleportationManagerZTA(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
 
-		PluginManager pluginManager = this.getServer().getPluginManager();
+		PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(this, this);
 		pluginManager.registerEvents(new WeaponsListener(), this);
 		pluginManager.registerEvents(new MobsListener(), this);
@@ -266,6 +266,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
 		pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
 		pluginManager.registerEvents(combat = new CombatManager(this, 10) {
+			@Override
 			public boolean canEnterCombat(Player damager, Player damaged) {
 				return !CitizensAPI.getNPCRegistry().isNPC(damaged) && !CitizensAPI.getNPCRegistry().isNPC(damager);
 			}
@@ -277,7 +278,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 		try {
 			pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
-			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager), this);
+			pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager, getConfig().getLocation("clanPlotsBook")), this);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
@@ -339,6 +340,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		try {
 			taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, "zta_tax", 0);
 			auctionsManager = new AuctionsManagerZTA(this, "zta_auctions", taxManager) {
+				@Override
 				public int getMaxAuctions(MoneyPlayerInterface player) {
 					return player.getGroup().getPower() >= OlympaGroup.VIP.getPower() ? 20 : 10;
 				}
@@ -448,7 +450,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						FixedLine.EMPTY_LINE,
 						CyclingLine.olympaAnimation());
 
-		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 16800, 12000);
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2);
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));

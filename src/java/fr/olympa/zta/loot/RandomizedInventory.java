@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
+import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.LootCreator.Loot;
 
