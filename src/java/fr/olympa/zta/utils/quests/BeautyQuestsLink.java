@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.spigot.item.ItemUtils;
-import fr.olympa.api.spigot.linesTimer.Line;
+import fr.olympa.api.spigot.lines.TimerLine;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;

@@ -18,7 +18,7 @@ import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.lines.BlinkingLine;
 import fr.olympa.api.spigot.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
+import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.RandomizedInventory;

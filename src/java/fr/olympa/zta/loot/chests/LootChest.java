@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
+import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
