@@ -1,6 +1,7 @@
 package fr.olympa.zta.mobs;
 
-import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.utils.RandomizedPickerBase.ConditionalPicker;
+import fr.olympa.zta.mobs.MobSpawning.MobSpawningContext;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 
 public class MobSpawningConfig {
@@ -8,9 +9,9 @@ public class MobSpawningConfig {
 	private final int minDistance;
 	private final int spawnAmount;
 	private final int maxEntitiesPerChunk;
-	private final RandomizedPicker<Zombies> zombiePicker;
+	private final ConditionalPicker<Zombies, MobSpawningContext> zombiePicker;
 	
-	public MobSpawningConfig(int minDistance, int spawnAmount, int maxEntitiesPerChunk, RandomizedPicker<Zombies> zombiePicker) {
+	public MobSpawningConfig(int minDistance, int spawnAmount, int maxEntitiesPerChunk, ConditionalPicker<Zombies, MobSpawningContext> zombiePicker) {
 		this.minDistance = minDistance;
 		this.spawnAmount = spawnAmount;
 		this.maxEntitiesPerChunk = maxEntitiesPerChunk;
@@ -29,7 +30,7 @@ public class MobSpawningConfig {
 		return maxEntitiesPerChunk;
 	}
 	
-	public RandomizedPicker<Zombies> getZombiePicker() {
+	public ConditionalPicker<Zombies, MobSpawningContext> getZombiePicker() {
 		return zombiePicker;
 	}
 	
