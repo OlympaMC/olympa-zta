@@ -29,7 +29,7 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.api.utils.observable.AbstractObservable;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.CommonGunConstants;
 import fr.olympa.zta.weapons.guns.Gun;

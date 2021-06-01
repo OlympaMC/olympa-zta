@@ -45,10 +45,10 @@ import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
 import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.linesFixedLine;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;

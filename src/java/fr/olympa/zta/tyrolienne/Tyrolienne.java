@@ -21,10 +21,10 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
-import fr.olympa.api.region.shapes.Cuboid;
-import fr.olympa.api.region.tracking.ActionResult;
-import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
-import fr.olympa.api.region.tracking.flags.Flag;
+import fr.olympa.api.spigot.region.shapes.Cuboid;
+import fr.olympa.api.spigot.region.tracking.ActionResult;
+import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.spigot.region.tracking.flags.Flag;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import net.md_5.bungee.api.ChatMessageType;

@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import fr.olympa.api.item.ImmutableItemStack;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 

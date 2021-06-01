@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.utils.PhysicalMoney;
 

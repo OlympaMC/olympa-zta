@@ -20,10 +20,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.region.Region;
-import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.region.Region;
+import fr.olympa.api.spigot.region.tracking.TrackedRegion;
+import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;

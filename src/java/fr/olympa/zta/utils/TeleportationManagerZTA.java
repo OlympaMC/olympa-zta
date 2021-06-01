@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import fr.olympa.api.permission.OlympaSpigotPermission;
-import fr.olympa.api.utils.spigot.TeleportationManager;
+import fr.olympa.api.common.permission.OlympaSpigotPermission;
+import fr.olympa.api.spigot.utils.TeleportationManager;
 import fr.olympa.zta.OlympaZTA;
 
 public class TeleportationManagerZTA extends TeleportationManager {

@@ -3,10 +3,10 @@ package fr.olympa.zta.utils.npcs;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.lines.AbstractLine;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.linesAbstractLine;
+import fr.olympa.api.spigot.linesBlinkingLine;
+import fr.olympa.api.spigot.linesFixedLine;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;

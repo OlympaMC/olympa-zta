@@ -5,8 +5,8 @@ import java.util.Random;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ImmutableItemStack;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
 
 public class FoodCreator implements LootCreator {

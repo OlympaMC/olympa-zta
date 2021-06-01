@@ -11,8 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;

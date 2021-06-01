@@ -7,9 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ImmutableItemStack;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 
 public enum QuestItem implements ItemStackable {
 	DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),

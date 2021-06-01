@@ -30,9 +30,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.sql.SQLTable;
+import fr.olympa.api.spigot.region.tracking.TrackedRegion;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.common.sql.SQLTable;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;

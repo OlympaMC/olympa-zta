@@ -16,9 +16,9 @@ import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.region.Region;
-import fr.olympa.api.region.tracking.flags.DamageFlag;
-import fr.olympa.api.region.tracking.flags.FoodFlag;
+import fr.olympa.api.spigot.region.Region;
+import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
+import fr.olympa.api.spigot.region.tracking.flags.FoodFlag;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;

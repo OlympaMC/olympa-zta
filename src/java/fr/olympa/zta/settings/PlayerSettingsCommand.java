@@ -5,8 +5,8 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.spigot.command.OlympaCommand;
+import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.zta.OlympaZTA;
 
 public class PlayerSettingsCommand extends OlympaCommand {

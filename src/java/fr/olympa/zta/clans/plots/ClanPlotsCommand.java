@@ -6,17 +6,17 @@ import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.editor.RegionEditor;
-import fr.olympa.api.editor.TextEditor;
-import fr.olympa.api.editor.WaitBlockClick;
-import fr.olympa.api.editor.WaitClick;
-import fr.olympa.api.editor.parsers.NumberParser;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.editor.RegionEditor;
+import fr.olympa.api.spigot.editor.TextEditor;
+import fr.olympa.api.spigot.editor.WaitBlockClick;
+import fr.olympa.api.spigot.editor.WaitClick;
+import fr.olympa.api.spigot.editor.parsers.NumberParser;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 

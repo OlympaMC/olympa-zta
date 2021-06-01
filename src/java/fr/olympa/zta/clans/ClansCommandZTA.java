@@ -1,8 +1,8 @@
 package fr.olympa.zta.clans;
 
-import fr.olympa.api.clans.ClansCommand;
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
+import fr.olympa.api.spigot.clans.ClansCommand;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 

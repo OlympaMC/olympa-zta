@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
-import fr.olympa.api.ranking.AbstractSQLRank;
+import fr.olympa.api.spigot.ranking.AbstractSQLRank;
 
 public class KillPlayerRanking extends AbstractSQLRank {
 	

@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.gui.OlympaGUI;
+import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.zta.loot.creators.LootCreator;

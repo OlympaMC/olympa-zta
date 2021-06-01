@@ -22,11 +22,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import fr.olympa.api.enderchest.EnderChestCommand;
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.lines.CyclingLine;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.sql.statement.OlympaStatement;
-import fr.olympa.api.sql.statement.StatementType;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.linesCyclingLine;
+import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
+import fr.olympa.api.common.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;

@@ -2,10 +2,10 @@ package fr.olympa.zta.loot.packs;
 
 import java.util.Arrays;
 
-import fr.olympa.api.economy.OlympaMoney;
+import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.utils.RandomizedPicker.PickerBuilder;
 import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;

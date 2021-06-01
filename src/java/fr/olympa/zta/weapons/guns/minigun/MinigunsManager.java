@@ -21,7 +21,7 @@ import org.spigotmc.event.entity.EntityDismountEvent;
 
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.api.utils.observable.Observable.Observer;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class MinigunsManager implements Listener {

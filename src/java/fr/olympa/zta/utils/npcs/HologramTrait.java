@@ -5,8 +5,8 @@ import java.util.Objects;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.lines.AbstractLine;
 import fr.olympa.core.spigot.OlympaCore;
 import net.citizensnpcs.api.event.NPCTeleportEvent;
 import net.citizensnpcs.api.npc.NPC;

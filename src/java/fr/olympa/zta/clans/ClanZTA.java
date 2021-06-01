@@ -1,10 +1,10 @@
 package fr.olympa.zta.clans;
 
-import fr.olympa.api.clans.Clan;
-import fr.olympa.api.clans.ClanPlayerInterface;
-import fr.olympa.api.clans.ClansManager;
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
+import fr.olympa.api.spigot.clans.Clan;
+import fr.olympa.api.spigot.clans.ClanPlayerInterface;
+import fr.olympa.api.spigot.clans.ClansManager;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;

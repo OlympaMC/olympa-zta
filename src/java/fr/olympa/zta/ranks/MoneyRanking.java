@@ -4,8 +4,8 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.ranking.AbstractSQLRank;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.ranking.AbstractSQLRank;
 
 public class MoneyRanking extends AbstractSQLRank {
 	

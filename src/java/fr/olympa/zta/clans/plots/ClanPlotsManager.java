@@ -21,10 +21,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.region.Region;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.sql.SQLTable;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.region.Region;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.common.sql.SQLTable;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;

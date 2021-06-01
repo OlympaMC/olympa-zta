@@ -16,11 +16,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.sql.SQLTable;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.common.sql.SQLTable;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;

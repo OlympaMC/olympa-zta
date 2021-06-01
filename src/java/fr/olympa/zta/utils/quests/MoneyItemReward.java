@@ -7,8 +7,8 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.zta.utils.PhysicalMoney;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;

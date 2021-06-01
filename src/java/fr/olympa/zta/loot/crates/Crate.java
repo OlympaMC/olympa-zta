@@ -12,11 +12,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.DynamicLine;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.linesBlinkingLine;
+import fr.olympa.api.spigot.linesDynamicLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.RandomizedPicker.RandomizedMultiPicker;
 import fr.olympa.core.spigot.OlympaCore;

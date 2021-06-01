@@ -16,12 +16,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.linesBlinkingLine;
+import fr.olympa.api.spigot.linesFixedLine;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;

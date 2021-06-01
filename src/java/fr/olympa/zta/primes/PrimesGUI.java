@@ -14,15 +14,15 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fr.olympa.api.editor.TextEditor;
-import fr.olympa.api.editor.parsers.MoneyAmountParser;
-import fr.olympa.api.editor.parsers.PlayerParser;
-import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.gui.templates.PagedGUI;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.editor.TextEditor;
+import fr.olympa.api.spigot.editor.parsers.MoneyAmountParser;
+import fr.olympa.api.spigot.editor.parsers.PlayerParser;
+import fr.olympa.api.spigot.gui.Inventories;
+import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 

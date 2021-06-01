@@ -1,6 +1,6 @@
 package fr.olympa.zta.glass;
 
-import fr.olympa.api.region.tracking.flags.AbstractProtectionFlag;
+import fr.olympa.api.spigot.region.tracking.flags.AbstractProtectionFlag;
 
 public class GlassSmashFlag extends AbstractProtectionFlag {
 	

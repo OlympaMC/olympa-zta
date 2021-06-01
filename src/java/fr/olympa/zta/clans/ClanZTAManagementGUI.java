@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.clans.ClanPlayerInterface;
-import fr.olympa.api.clans.ClansManager;
-import fr.olympa.api.clans.gui.ClanManagementGUI;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.clans.ClanPlayerInterface;
+import fr.olympa.api.spigot.clans.ClansManager;
+import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;

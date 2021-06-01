@@ -2,7 +2,7 @@ package fr.olympa.zta.bank;
 
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.zta.OlympaPlayerZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;

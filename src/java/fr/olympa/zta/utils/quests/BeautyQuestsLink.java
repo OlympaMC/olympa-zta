@@ -13,11 +13,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.TimerLine;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.linesTimerLine;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.api.QuestsAPI;

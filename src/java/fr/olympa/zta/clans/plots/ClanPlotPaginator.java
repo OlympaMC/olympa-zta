@@ -3,7 +3,7 @@ package fr.olympa.zta.clans.plots;
 import java.util.List;
 import java.util.function.Supplier;
 
-import fr.olympa.api.command.Paginator;
+import fr.olympa.api.common.command.Paginator;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;

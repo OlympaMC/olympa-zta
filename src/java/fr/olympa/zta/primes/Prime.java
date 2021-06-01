@@ -3,8 +3,8 @@ package fr.olympa.zta.primes;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.zta.OlympaZTA;
 
 public class Prime {
