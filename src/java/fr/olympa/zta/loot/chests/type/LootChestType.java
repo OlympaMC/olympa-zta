@@ -1,6 +1,6 @@
 package fr.olympa.zta.loot.chests.type;
 
-import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
@@ -22,7 +22,7 @@ public enum LootChestType {
 
 	CIVIL(
 			"civil",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.add(3, new ItemStackableCreator(GunType.M1911))
 			.add(1.44, new ItemStackableCreator(GunType.COBRA))
 			.add(2.28, new ItemStackableCreator(GunType.REM_870))
@@ -51,7 +51,7 @@ public enum LootChestType {
 			.build(1, 3)),
 	MILITARY(
 			"militaire",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.add(2.0, new ItemStackableCreator(GunType.P22))
 			.add(1.0, new ItemStackableCreator(GunType.SDMR))
 			.add(1.2, new ItemStackableCreator(GunType.BARRETT))
@@ -80,7 +80,7 @@ public enum LootChestType {
 			.build(1, 3)),
 	CONTRABAND(
 			"de contrebandier",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.add(1.65, new ItemStackableCreator(GunType.G19))
 			.add(1.54, new ItemStackableCreator(GunType.SKORPION))
 			.add(1.43, new ItemStackableCreator(GunType.AK_20))

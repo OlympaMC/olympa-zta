@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.utils.SpigotUtils;
-import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
@@ -23,7 +23,7 @@ public enum PackType {
 			2000,
 			11,
 			"basique du militaire",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 				.addAlways(new AmmoCreator(AmmoType.HEAVY, 20, 30, true))
 				.addAlways(new FoodCreator(Food.COOKED_BEEF, 10, 15))
 				.add(7, new ItemStackableCreator(GunType.P22))
@@ -34,7 +34,7 @@ public enum PackType {
 			1000,
 			13,
 			"de munitions",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.addAlways(new AmmoCreator(32, 64))
 			.addAlways(new AmmoCreator(AmmoType.HEAVY, 64, 64, true))
 			.addAlways(new AmmoCreator(AmmoType.LIGHT, 64, 64, true))
@@ -49,7 +49,7 @@ public enum PackType {
 			10000,
 			30,
 			"arme rare",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.add(20, new FoodCreator(Food.GOLDEN_APPLE, 10, 10))
 			.add(10, new ItemStackableCreator(GunType.STONER))
 			.add(15, new ItemStackableCreator(GunType.DRAGUNOV))
@@ -59,7 +59,7 @@ public enum PackType {
 			5000,
 			15,
 			"d'accessoires",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.addAlways(new AmmoCreator(10, 15))
 			.add(8, new ItemStackableCreator(Accessory.CANNON_CAC))
 			.add(8, new ItemStackableCreator(Accessory.CANNON_DAMAGE))

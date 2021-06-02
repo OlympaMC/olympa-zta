@@ -1,6 +1,6 @@
 package fr.olympa.zta.loot.crates;
 
-import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
+import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
@@ -22,7 +22,7 @@ public enum CrateType {
 
 	BASIC(
 			"basique", 
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 3, 9))
 			.add(20, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 1, 2))
 			.add(15, new AmmoCreator(5, 15))
@@ -46,7 +46,7 @@ public enum CrateType {
 			),
 	RARE(
 			"rare",
-			new PickerBuilder<LootCreator>()
+			RandomizedPickerBase.<LootCreator>newBuilder()
 			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 4, 10))
 			.add(25, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 2, 3))
 			.add(15, new AmmoCreator(5, 15))

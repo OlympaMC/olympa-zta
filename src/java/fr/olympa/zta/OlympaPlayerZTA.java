@@ -22,6 +22,7 @@ import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.spigot.clans.ClanPlayerInterface;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.enderchest.EnderChestPlayerInterface;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.trades.TradeBag;
 import fr.olympa.api.spigot.trades.TradePlayerInterface;
 import fr.olympa.zta.clans.ClanZTA;
@@ -29,7 +30,6 @@ import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.mobs.PlayerHealthBar;
 import fr.olympa.zta.plots.PlayerPlot;
 import fr.olympa.zta.settings.ClanBoardSetting;
-import fr.skytasul.quests.gui.ItemUtils;
 
 public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA>, EnderChestPlayerInterface, TradePlayerInterface {
 
