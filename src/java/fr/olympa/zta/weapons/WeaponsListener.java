@@ -155,12 +155,14 @@ public class WeaponsListener implements Listener {
 		if (item == null) return null;
 		if (!item.hasItemMeta()) return null;
 		ItemMeta meta = item.getItemMeta();
-		if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
-			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
+		if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER)) {
+			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(GunRegistry.GUN_KEY, PersistentDataType.INTEGER));
 		}else if (meta.getPersistentDataContainer().has(GRENADE_KEY, PersistentDataType.INTEGER)) {
 			return Grenade.values()[meta.getPersistentDataContainer().get(GRENADE_KEY, PersistentDataType.INTEGER)];
-		}else if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER)) {
-			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(GunRegistry.GUN_KEY, PersistentDataType.INTEGER));
+		}else if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
+			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
+		}else if (meta.getPersistentDataContainer().has(Bandage.BANDAGE.getKey(), PersistentDataType.BYTE)) {
+			return Bandage.BANDAGE;
 		}
 		return null;
 	}

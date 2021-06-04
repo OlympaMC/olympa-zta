@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
 import fr.olympa.api.utils.RandomizedPickerBase;
-import fr.olympa.api.utils.RandomizedPickerBase.PickerBuilder;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;

@@ -59,14 +59,12 @@ public enum QuestItem implements ItemStackable {
 	}
 	
 	public ItemStack getItem(int amount) {
-		ItemStack item = this.item.toMutableStack();
-		item.setAmount(amount);
-		return item;
+		return item.toMutableStack(amount);
 	}
 	
 	@Override
 	public ItemStack createItem() {
-		return getItem(1);
+		return item.toMutableStack();
 	}
 	
 	@Override

@@ -27,9 +27,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.common.sql.SQLTable;
+import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
@@ -93,6 +93,8 @@ public class ClanPlotsManager implements Listener {
 	}
 	
 	public void updateBook() {
+		if (book == null) return;
+		
 		BookMeta meta = (BookMeta) book.getItemMeta();
 		meta.pages(Collections.EMPTY_LIST);
 		

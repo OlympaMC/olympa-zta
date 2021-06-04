@@ -121,6 +121,7 @@ import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
+import fr.olympa.zta.weapons.Bandage;
 import fr.olympa.zta.weapons.Grenade;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.TrainingManager;
@@ -248,6 +249,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			ItemStackableManager.register(grenade);
 		for (QuestItem item : QuestItem.values())
 			ItemStackableManager.register(item);
+		ItemStackableManager.register(Bandage.BANDAGE);
 
 		AmmoType.CARTRIDGE.getName();
 
