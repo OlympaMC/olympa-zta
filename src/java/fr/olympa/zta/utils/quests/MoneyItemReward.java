@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.item.ItemUtils;
-import fr.olympa.zta.utils.PhysicalMoney;
+import fr.olympa.zta.bank.PhysicalMoney;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;

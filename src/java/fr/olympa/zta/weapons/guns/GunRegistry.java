@@ -24,6 +24,7 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.bank.PhysicalMoney;
 
 public class GunRegistry {
 	
@@ -188,6 +189,7 @@ public class GunRegistry {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
+				if (im.getPersistentDataContainer().isEmpty()) continue;
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
 				/*if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
@@ -206,6 +208,17 @@ public class GunRegistry {
 						toEvict.remove((Object) id);
 					}else {
 						if (!ids.add(id)) OlympaZTA.getInstance().sendMessage("§cL'objet du registre %d était contenu en double dans un inventaire.", id);
+					}
+				}else { // TODO remove after migration
+					if (!im.hasCustomModelData() && im.getPersistentDataContainer().has(PhysicalMoney.BANKNOTE_KEY, PersistentDataType.INTEGER)) {
+						im.setCustomModelData(1);
+						int money = im.getPersistentDataContainer().get(PhysicalMoney.BANKNOTE_KEY, PersistentDataType.INTEGER);
+						if (money == 1) {
+							item.setType(PhysicalMoney.BANKNOTE_1.getType());
+						}else if (money == 10) {
+							item.setType(PhysicalMoney.BANKNOTE_10.getType());
+						}
+						item.setItemMeta(im);
 					}
 				}
 			}

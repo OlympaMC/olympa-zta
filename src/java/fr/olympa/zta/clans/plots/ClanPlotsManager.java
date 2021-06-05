@@ -38,6 +38,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 public class ClanPlotsManager implements Listener {
 
@@ -51,7 +52,7 @@ public class ClanPlotsManager implements Listener {
 	private SQLTable<ClanPlot> table;
 	
 	public SQLColumn<ClanPlot> columnID = new SQLColumn<ClanPlot>("id", "INT(11) UNSIGNED NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(ClanPlot::getID);
-	public SQLColumn<ClanPlot> columnRegion = new SQLColumn<ClanPlot>("region", "VARBINARY(8000) NOT NULL", Types.VARBINARY);
+	public SQLColumn<ClanPlot> columnRegion = new SQLColumn<ClanPlot>("region", "VARBINARY(8000) NOT NULL", Types.VARBINARY).setUpdatable();
 	public SQLColumn<ClanPlot> columnClan = new SQLColumn<ClanPlot>("clan", "INT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
 	public SQLColumn<ClanPlot> columnSign = new SQLColumn<ClanPlot>("sign", "VARCHAR(100) NOT NULL", Types.VARCHAR);
 	public SQLColumn<ClanPlot> columnSpawn = new SQLColumn<ClanPlot>("spawn", "VARCHAR(100) NOT NULL", Types.VARCHAR);
@@ -100,19 +101,23 @@ public class ClanPlotsManager implements Listener {
 		
 		List<ClanPlot> rent = plots.values().stream().filter(x -> x.getClan() != null).collect(Collectors.toList());
 		List<ClanPlot> free = plots.values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList());
+		System.out.println(rent.size() + " louées, " + free.size() + " libres");
 		
+		int p = 1;
 		TextComponent compo = Component.text("\n  Parcelles de Clans\n\n\n", NamedTextColor.DARK_GRAY, TextDecoration.BOLD);
 		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
 		compo.append(Component.text(plots.size() + " parcelles sur le monde\n\n", NamedTextColor.BLACK));
 		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
 		compo.append(Component.text(rent.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("louées\n", NamedTextColor.RED, TextDecoration.BOLD)));
 		compo.append(Component.text(free.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("libres", NamedTextColor.GOLD, TextDecoration.BOLD)));
+		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
 		meta.addPages(compo);
 		
 		compo = Component.text(" Parcelles louées :", NamedTextColor.DARK_GRAY);
 		int amount = 0;
 		for (int i = 0; i < rent.size(); i++) {
 			if (amount++ == 2) {
+				System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
 				meta.addPages(compo);
 				amount = 1;
 				compo = Component.text().build();
@@ -129,12 +134,14 @@ public class ClanPlotsManager implements Listener {
 			compo.append(Component.text(" jusqu'au "));
 			compo.append(Component.text(plot.getExpirationDate(), NamedTextColor.GOLD));
 		}
+		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
 		meta.addPages(compo);
 		
 		compo = Component.text(" Parcelles libres :", NamedTextColor.DARK_GRAY);
 		amount = 0;
 		for (int i = 0; i < rent.size(); i++) {
 			if (amount++ == 2) {
+				System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
 				meta.addPages(compo);
 				amount = 1;
 				compo = Component.text().build();
@@ -145,6 +152,7 @@ public class ClanPlotsManager implements Listener {
 			compo.append(Component.text(", x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ", à louer pour "));
 			compo.append(Component.text(plot.getPriceFormatted(), NamedTextColor.GOLD));
 		}
+		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
 		meta.addPages(compo);
 		
 		book.setItemMeta(meta);
@@ -187,6 +195,7 @@ public class ClanPlotsManager implements Listener {
 		}
 		if (clickedBlock.getLocation().equals(bookLocation)) {
 			e.setCancelled(true);
+			System.out.println("ClanPlotsManager.onInteract() OPEn");
 			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> e.getPlayer().openBook(book));
 		}
 	}

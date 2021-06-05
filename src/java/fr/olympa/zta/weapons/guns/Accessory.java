@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -149,12 +150,14 @@ public enum Accessory implements ItemStackable {
 	private final AccessoryType type;
 	private final String name;
 	
+	private final NamespacedKey key;
 	private final ItemStack item;
 	
 	private Accessory(AccessoryType type, Material material, String name, String... effects) {
 		this.type = type;
 		this.name = name;
 		
+		key = ItemStackableManager.register(this);
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§a" + name);
@@ -167,8 +170,8 @@ public enum Accessory implements ItemStackable {
 		meta.setLore(lore);
 		meta.setCustomModelData(1);
 		meta.getPersistentDataContainer().set(AccessoriesGUI.ACCESSORY_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		item.setItemMeta(meta);
-		ItemStackableManager.processItem(item, this);
 	}
 	
 	public AccessoryType getType() {
@@ -183,6 +186,11 @@ public enum Accessory implements ItemStackable {
 	@Override
 	public String getId() {
 		return name();
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
 	}
 	
 	@Override

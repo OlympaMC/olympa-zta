@@ -43,12 +43,12 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.spigot.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.holograms.Hologram;
 import fr.olympa.api.spigot.lines.FixedLine;
-import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -75,6 +75,7 @@ public class PlayersListener implements Listener {
 	
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
+	private List<String> playersWithPacks = new ArrayList<>();
 	private Map<Player, Location> packPositions = new HashMap<>();
 	private Location packWaitingRoom;
 	
@@ -84,6 +85,11 @@ public class PlayersListener implements Listener {
 	
 	public PlayersListener(Location packWaitingRoom) {
 		this.packWaitingRoom = packWaitingRoom;
+		
+		OlympaCore.getInstance().registerPackListener((player, server, set) -> {
+			if (server.equals(OlympaCore.getInstance().getServerName())) return;
+			playersWithPacks.remove(player);
+		});
 	}
 	
 	@EventHandler
@@ -180,6 +186,10 @@ public class PlayersListener implements Listener {
 			p.setHealth(ZTA_MAX_HEALTH);
 			giveStartItems(p);
 		}
+		
+		if (!playersWithPacks.contains(p.getName())) {
+			p.setResourcePack("https://drive.google.com/uc?export=download&id=1meIjucmWnLxC9hzjNAd8cN7LK2k-M6t7", "BF241BBD1F48F7FD068F32350DC3F4F285F676C1");
+		}else OlympaZTA.getInstance().sendMessage("Le joueur %s a déjà son pack de resources pour le ZTA.", p.getName());
 	}
 	
 	@EventHandler
@@ -223,13 +233,13 @@ public class PlayersListener implements Listener {
 		case DECLINED:
 			Prefix.BAD.sendMessage(p, "Tu as désactivé l'utilisation du pack de resources. Pour plus de fun et une meilleure expérience de jeu, accepte-le depuis ton menu Multijoueur !");
 			break;
-		case FAILED_DOWNLOAD:
-		case SUCCESSFULLY_LOADED:
+		case FAILED_DOWNLOAD, SUCCESSFULLY_LOADED:
 			if (e.getStatus() == Status.FAILED_DOWNLOAD) {
 				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !");
+				playersWithPacks.remove(p.getName());
 			}else {
 				Prefix.DEFAULT_GOOD.sendMessage(p, "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
-				OlympaCore.getInstance().usesPack(p);
+				playersWithPacks.add(p.getName());
 			}
 			Location lastLoc = packPositions.remove(p);
 			if (lastLoc != null) {

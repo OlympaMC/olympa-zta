@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
-import fr.olympa.zta.utils.PhysicalMoney;
+import fr.olympa.zta.bank.PhysicalMoney;
 
 public class MoneyCreator implements LootCreator {
 

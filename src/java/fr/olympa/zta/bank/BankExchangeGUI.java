@@ -11,14 +11,13 @@ import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
-import fr.olympa.zta.utils.PhysicalMoney;
 
 public class BankExchangeGUI extends OlympaGUI {
 
 	private static ItemStack add = ItemUtils.item(Material.GREEN_STAINED_GLASS_PANE, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic gauche : §7Augmenter de 1", "§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100");
 	private static ItemStack remove = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic gauche : §7Baisser de 1", "§8§l> Clic droit : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100");
-	private static ItemStack transfer = ItemUtils.item(Material.PRISMARINE_CRYSTALS, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
-	private static ItemStack withdraw = ItemUtils.item(Material.BRICK, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
+	private static ItemStack transfer = ItemUtils.item(Material.PRISMARINE_CRYSTALS, 1, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
+	private static ItemStack withdraw = ItemUtils.item(Material.NAUTILUS_SHELL, 1, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
 
 	private OlympaPlayerZTA player;
 

@@ -1,15 +1,19 @@
 package fr.olympa.zta.weapons;
 
+import java.util.Arrays;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.item.ImmutableItemStack;
-import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import net.md_5.bungee.api.ChatMessageType;
@@ -22,12 +26,19 @@ public class Bandage implements ItemStackable, Weapon {
 
 	public static final Bandage BANDAGE = new Bandage();
 	
-	private final ImmutableItemStack stack;
+	private final ImmutableItemStack item;
 	private final NamespacedKey key;
 	
 	private Bandage() {
 		key = ItemStackableManager.register(this);
-		stack = new ImmutableItemStack(ItemStackableManager.processItem(ItemUtils.item(MATERIAL, "§cBandage", "§8➤ §7Utilisable toutes les 15 secondes.\n\n§8➤ §c Redonne 5x ❤"), this));
+		ItemStack item = new ItemStack(MATERIAL);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§cBandage");
+		meta.setLore(Arrays.asList("§8> §7Utilisable toutes les 15 secondes.", "", "§8> §cRedonne 5x ❤"));
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
+		meta.setCustomModelData(1);
+		item.setItemMeta(meta);
+		this.item = new ImmutableItemStack(item);
 	}
 	
 	@Override
@@ -41,19 +52,20 @@ public class Bandage implements ItemStackable, Weapon {
 	}
 	
 	public ItemStack getItem(int amount) {
-		return stack.toMutableStack(amount);
+		return item.toMutableStack(amount);
 	}
 	
 	@Override
 	public ItemStack createItem() {
-		return stack.toMutableStack();
+		return item.toMutableStack();
 	}
 	
 	@Override
 	public ImmutableItemStack getDemoItem() {
-		return stack;
+		return item;
 	}
 	
+	@Override
 	public NamespacedKey getKey() {
 		return key;
 	}
@@ -64,10 +76,19 @@ public class Bandage implements ItemStackable, Weapon {
 		Player player = e.getPlayer();
 		if (!player.hasCooldown(MATERIAL)) {
 			if (!e.getItem().equals(player.getInventory().getItemInMainHand())) return;
-			player.setHealth(e.getPlayer().getHealth() + 10);
-			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1.2, 0), 7, 0.5, 0.9, 0.5);
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§8➤ §cTu as été heal !"));
+			double health = player.getHealth();
+			double maxHealth = player.getMaxHealth();
+			if (health == maxHealth) return;
+			player.setHealth(Math.min(health + 10, maxHealth));
+			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§c§lTu as été heal !"));
 			player.setCooldown(MATERIAL, COOLDOWN);
+			
+			int amount = e.getItem().getAmount();
+			if (amount == 1) {
+				player.getInventory().setItemInMainHand(null);
+			}else e.getItem().setAmount(amount - 1);
 			e.setCancelled(true);
 		}
 	}

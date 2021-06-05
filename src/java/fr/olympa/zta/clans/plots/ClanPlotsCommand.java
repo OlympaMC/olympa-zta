@@ -1,5 +1,7 @@
 package fr.olympa.zta.clans.plots;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,8 @@ import fr.olympa.api.spigot.editor.WaitBlockClick;
 import fr.olympa.api.spigot.editor.WaitClick;
 import fr.olympa.api.spigot.editor.parsers.NumberParser;
 import fr.olympa.api.spigot.item.ItemUtils;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
@@ -87,6 +89,22 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("%d panneaux ont été mis à jour.", i);
 	}
 	
+	@Cmd (hide = true)
+	public void updateDBRegions(CommandContext cmd) {
+		int i = 0;
+		for (ClanPlot plot : manager.getPlots().values()) {
+			try {
+				plot.setRegion(plot.getTrackedRegion().getRegion());
+				i++;
+			}catch (SQLException | IOException e) {
+				e.printStackTrace();
+				sendError(e);
+			}
+			i++;
+		}
+		sendSuccess("%d régions ont été mises à jour.", i);
+	}
+	
 	@Cmd (player = true, args = "PLOT", min = 1, syntax = "<plot ID>")
 	public void teleport(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
@@ -104,8 +122,13 @@ public class ClanPlotsCommand extends ComplexCommand {
 				Prefix.DEFAULT_BAD.sendMessage(p, "La région sélectionnée n'est pas correcte.");
 				return;
 			}
-			plot.getTrackedRegion().updateRegion(region);
-			Prefix.DEFAULT_GOOD.sendMessage(p, "La région du plot %d a été modifiée.", plot.getID());
+			try {
+				plot.setRegion(region);
+				Prefix.DEFAULT_GOOD.sendMessage(p, "La région du plot %d a été modifiée.", plot.getID());
+			}catch (SQLException | IOException e) {
+				e.printStackTrace();
+				sendError(e);
+			}
 		}).enterOrLeave();
 	}
 	

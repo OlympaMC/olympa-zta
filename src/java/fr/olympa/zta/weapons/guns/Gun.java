@@ -30,7 +30,6 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
@@ -115,11 +114,11 @@ public class Gun implements Weapon {
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
 		meta.getPersistentDataContainer().set(getKey(), PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(type.getKey(), PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		meta.setLore(getLore(accessories));
 		item.setItemMeta(meta);
 		updateItemName(item);
-		ItemStackableManager.processItem(item, type);
 		return item;
 	}
 

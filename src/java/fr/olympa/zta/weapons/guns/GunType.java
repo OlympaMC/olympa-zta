@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,6 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
@@ -468,6 +470,7 @@ public enum GunType implements ItemStackable {
 	private final PotionEffect heldEffect;
 	private final List<AccessoryType> allowedAccessories;
 	
+	private final NamespacedKey key;
 	private final List<String> lore;
 	private final ItemStack demoItem;
 	
@@ -499,6 +502,8 @@ public enum GunType implements ItemStackable {
 		lore.add("");
 		lore.add("§8§lMunitions > " + ammoType.getColoredName() + " §8(x" + maxAmmos + ")");
 		
+		key = ItemStackableManager.register(this);
+		
 		demoItem = new ItemStack(material);
 		ItemMeta meta = demoItem.getItemMeta();
 		meta.setDisplayName("§e" + name);
@@ -516,6 +521,11 @@ public enum GunType implements ItemStackable {
 	@Override
 	public String getId() {
 		return name();
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
 	}
 	
 	public String getDescription() {

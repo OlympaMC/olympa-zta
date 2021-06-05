@@ -165,19 +165,23 @@ public class MobSpawning implements Runnable {
 										if (loc.distanceSquared(location) < spawn.minDistanceSquared)
 											continue y; // trop près d'autre entité
 									for (int j = 0; j < spawn.spawning.spawnAmount(); j++)
-										spawnQueue.add(new AbstractMap.SimpleEntry<>(location, spawn.spawning.getZombiePicker().pickOne(random)));
+										spawnQueue.add(new AbstractMap.SimpleEntry<>(location, spawn.spawning.getZombiePicker().pickOne(random, new MobSpawningContext())));
 									continue mobs;
 								}
 							}
 						}
 					}
 				}
+			}catch (Exception ex) {
+				OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du spawn de mobs.");
+				ex.printStackTrace();
+				end();
 			} finally {
 				queueLock.unlock();
-				long elapsed = System.currentTimeMillis() - time;
-				computeTimes.add(elapsed);
 				if (!enabled)
 					break;
+				long elapsed = System.currentTimeMillis() - time;
+				computeTimes.add(elapsed);
 				try {
 					if (elapsed < 5000)
 						Thread.sleep(5000 - elapsed);
@@ -213,7 +217,7 @@ public class MobSpawning implements Runnable {
 					for (Iterator<Entry<Location, Zombies>> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						try {
 							Entry<Location, Zombies> loc = iterator.next();
-							if (loc.getKey().getChunk().isLoaded()) {
+							if (loc.getKey().isChunkLoaded()) {
 								Mobs.spawnCommonZombie(loc.getValue(), loc.getKey());
 								lastSpawnedMobs++;
 							}
@@ -229,6 +233,8 @@ public class MobSpawning implements Runnable {
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 20L, 50L);
+		
+		OlympaZTA.getInstance().sendMessage("Le spawn de mobs a démarré.");
 		return true;
 	}
 
@@ -252,9 +258,8 @@ public class MobSpawning implements Runnable {
 			int z = lc.getBlockZ() / 16 - chunkRadius;
 			for (int ax = 0; ax <= chunkRadiusDoubled; ax++)
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
+					if (!world.isChunkLoaded(x + ax, z + az)) continue;
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
-					if (!chunk.isLoaded())
-						continue;
 					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
 					Point2D point = new Point2D(chunk);
 					if (points.contains(point))
@@ -333,6 +338,8 @@ public class MobSpawning implements Runnable {
 		spawnQueue.clear();
 		queueSize.clear();
 		computeTimes.clear();
+		
+		OlympaZTA.getInstance().sendMessage("Le spawn de mobs est désormais inactif.");
 	}
 
 	public enum SpawnType {
@@ -388,6 +395,7 @@ public class MobSpawning implements Runnable {
 		private Flag flag;
 
 		SpawnType(MobSpawningConfig spawning, boolean glassSmash, String title, String subtitle, DynmapZoneConfig dynmap, RandomizedPicker<LootChestType> lootchests) {
+			if (spawning.getZombiePicker() != null) System.out.println(name() + " DEFAULT " + DEFAULT_ZOMBIE_PICKER.build().getConditionedObjectsList().size() + " SPAWNING " + spawning.getZombiePicker().getConditionedObjectsList().size());
 			this.spawning = spawning;
 			this.title = title;
 			this.subtitle = subtitle;
@@ -489,6 +497,19 @@ public class MobSpawning implements Runnable {
 		public boolean isValid(MobSpawningContext context) {
 			long time = OlympaZTA.getInstance().mobSpawning.world.getTime();
 			return minTime < time && time < maxTime;
+		}
+		
+		@Override
+		public int hashCode() {
+			int hash = 11 * zombie.ordinal();
+			hash += 7 * minTime;
+			hash += 7 * maxTime;
+			return hash;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof TimeConditioned other && other.zombie == zombie && other.minTime == minTime && other.maxTime == maxTime;
 		}
 
 	}

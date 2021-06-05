@@ -2,6 +2,7 @@ package fr.olympa.zta.weapons;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_16_R3.CraftParticle;
@@ -39,6 +40,7 @@ public enum Knife implements Weapon, ItemStackable {
 	private final String name;
 	private final float playerDamage, entityDamage;
 	
+	private final NamespacedKey key;
 	private final ItemStack item;
 	
 	private Knife(Material material, String name, String description, float playerDamage, float entityDamage) {
@@ -46,14 +48,15 @@ public enum Knife implements Weapon, ItemStackable {
 		this.playerDamage = playerDamage;
 		this.entityDamage = entityDamage;
 		
+		key = ItemStackableManager.register(this);
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
 		meta.setLore(SpigotUtils.wrapAndAlign(description, 35));
 		meta.getPersistentDataContainer().set(WeaponsListener.KNIFE_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
-		ItemStackableManager.processItem(item, this);
 	}
 	
 	@Override
@@ -64,6 +67,11 @@ public enum Knife implements Weapon, ItemStackable {
 	@Override
 	public String getId() {
 		return name();
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
 	}
 	
 	@Override

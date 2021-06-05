@@ -2,6 +2,7 @@ package fr.olympa.zta.loot.crates;
 
 import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
@@ -11,7 +12,6 @@ import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
 import fr.olympa.zta.loot.creators.QuestItemCreator;
-import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.Accessory;

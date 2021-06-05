@@ -1,11 +1,13 @@
 package fr.olympa.zta.utils;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Stairs;
@@ -25,7 +27,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class SitManager implements Listener {
 	
-	private Map<Player, Location> sitting = new HashMap<>();
+	private Map<Location, Sitting> sits = new HashMap<>();
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
@@ -38,11 +40,12 @@ public class SitManager implements Listener {
 				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cTu ne peux t'asseoir en étant en créatif."));
 				return;
 			}
-			if (sitting.containsValue(e.getClickedBlock().getLocation())) {
+			if (sits.containsKey(e.getClickedBlock().getLocation())) {
 				Prefix.BAD.sendMessage(p, "Cette chaise est déjà occupée.");
 			}else {
 				Stairs stairs = (Stairs) e.getClickedBlock().getBlockData();
 				if (stairs.getShape() != Shape.STRAIGHT || stairs.getHalf() == Half.TOP) return;
+				if (e.getClickedBlock().getRelative(BlockFace.UP).getType() != Material.AIR) return;
 				BlockFace facing = stairs.getFacing();
 				double xMod = facing.getModX() * -0.12;
 				double zMod = facing.getModZ() * -0.12;
@@ -55,8 +58,9 @@ public class SitManager implements Listener {
 					x.setSmall(true);
 					x.setGravity(false);
 				});
+				Location previous = p.getLocation();
 				stand.addPassenger(p);
-				sitting.put(p, e.getClickedBlock().getLocation());
+				sits.put(e.getClickedBlock().getLocation(), new Sitting(p, previous));
 				Bukkit.getScheduler().runTaskLaterAsynchronously(OlympaZTA.getInstance(), () -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§aTu es maintenant assis !")), 3);
 			}
 		}
@@ -64,13 +68,19 @@ public class SitManager implements Listener {
 	
 	@EventHandler
 	public void onLeaveVehicle(EntityDismountEvent e) {
-		Location block = sitting.remove(e.getEntity());
-		if (block != null) {
-			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-				e.getDismounted().remove();
-				e.getEntity().teleport(block.add(0, 1, 0).setDirection(e.getEntity().getLocation().getDirection()));
-			});
+		for (Iterator<Sitting> iterator = sits.values().iterator(); iterator.hasNext();) {
+			Sitting sitting = iterator.next();
+			if (sitting.player().equals(e.getEntity())) {
+				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+					e.getEntity().teleport(sitting.previous().setDirection(e.getEntity().getLocation().getDirection()));
+					e.getDismounted().remove();
+				});
+				iterator.remove();
+				break;
+			}
 		}
 	}
 	
 }
+
+record Sitting(Player player, Location previous) {}

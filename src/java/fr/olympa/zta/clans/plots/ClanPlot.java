@@ -1,5 +1,6 @@
 package fr.olympa.zta.clans.plots;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +25,7 @@ import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.region.tracking.TrackedRegion;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -84,6 +86,11 @@ public class ClanPlot {
 
 	public TrackedRegion getTrackedRegion() {
 		return region;
+	}
+	
+	public void setRegion(Region region) throws SQLException, IOException {
+		this.region.updateRegion(region);
+		manager.columnRegion.updateValue(this, SpigotUtils.serialize(region));
 	}
 
 	public int getPrice() {
