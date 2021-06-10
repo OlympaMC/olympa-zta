@@ -45,8 +45,8 @@ public class PrimesManager implements Listener {
 	public PrimesManager() throws SQLException {
 		table = new SQLTable<>("zta_primes", Arrays.asList(columnID, columnBuyer, columnTarget, columnBounty, columnExpiration), resultSet -> {
 			int id = resultSet.getInt("id");
-			OlympaPlayerInformations buyer = AccountProvider.getPlayerInformations(resultSet.getLong("buyer"));
-			OlympaPlayerInformations target = AccountProvider.getPlayerInformations(resultSet.getLong("target"));
+			OlympaPlayerInformations buyer = AccountProvider.getter().getPlayerInformations(resultSet.getLong("buyer"));
+			OlympaPlayerInformations target = AccountProvider.getter().getPlayerInformations(resultSet.getLong("target"));
 			double bounty = resultSet.getDouble("bounty");
 			long expiration = resultSet.getLong("expiration");
 			return new Prime(id, buyer, target, bounty, expiration);

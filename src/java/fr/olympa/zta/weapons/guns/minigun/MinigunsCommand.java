@@ -27,7 +27,7 @@ public class MinigunsCommand extends ComplexCommand {
 	public MinigunsCommand(MinigunsManager miniguns) {
 		super(OlympaZTA.getInstance(), "miniguns", "Permet de gérer les miniguns.", ZTAPermissions.MINIGUNS_COMMAND);
 		this.miniguns = miniguns;
-		super.addArgumentParser("MINIGUN", sender -> miniguns.getMiniguns().keySet().stream().map(String::valueOf).collect(Collectors.toList()), arg -> {
+		super.addArgumentParser("MINIGUN", (sender, arg) -> miniguns.getMiniguns().keySet().stream().map(String::valueOf).collect(Collectors.toList()), arg -> {
 			try {
 				Minigun minigun = miniguns.getMinigun(Integer.parseInt(arg));
 				if (minigun != null) return minigun;

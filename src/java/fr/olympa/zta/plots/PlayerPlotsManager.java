@@ -53,7 +53,7 @@ public class PlayerPlotsManager {
 	private final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`x`, `z`, `owner`) VALUES (?, ?, ?)", true);
 	private final OlympaStatement setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?");
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
-	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProvider.getPluginPlayerTable().getName() + " WHERE `plot` = ?");
+	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProvider.getter().getPluginPlayerTable().getName() + " WHERE `plot` = ?");
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 

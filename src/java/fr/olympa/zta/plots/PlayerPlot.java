@@ -91,7 +91,7 @@ public class PlayerPlot {
 
 	public void kick(OlympaPlayerInformations player) {
 		if (!players.remove(player.getId())) return;
-		OlympaPlayerZTA oplayer = AccountProvider.get(player.getUUID());
+		OlympaPlayerZTA oplayer = AccountProvider.getter().get(player.getUUID());
 		if (oplayer == null) {
 			try {
 				OlympaZTA.getInstance().plotsManager.removePlayerPlot(player);
@@ -164,7 +164,7 @@ public class PlayerPlot {
 
 				Sign signState = (Sign) sign.getState();
 				signState.setLine(1, "Parcelle de");
-				signState.setLine(2, AccountProvider.getPlayerInformations(owner).getName());
+				signState.setLine(2, AccountProvider.getter().getPlayerInformations(owner).getName());
 				signState.update();
 			}else {
 				try {

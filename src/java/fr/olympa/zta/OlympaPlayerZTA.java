@@ -211,7 +211,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	}
 
 	public static OlympaPlayerZTA get(Player p) {
-		return AccountProvider.get(p.getUniqueId());
+		return AccountProvider.getter().get(p.getUniqueId());
 	}
 
 	@Override

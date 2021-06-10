@@ -16,7 +16,7 @@ public class BankTrait extends Trait {
 	@EventHandler
 	public void onNPCRightClick(NPCRightClickEvent e) {
 		if (e.getNPC() != npc) return;
-		new BankExchangeGUI((OlympaPlayerZTA) AccountProvider.get(e.getClicker().getUniqueId())).create(e.getClicker());
+		new BankExchangeGUI((OlympaPlayerZTA) AccountProvider.getter().get(e.getClicker().getUniqueId())).create(e.getClicker());
 	}
 
 }

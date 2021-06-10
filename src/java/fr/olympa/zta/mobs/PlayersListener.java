@@ -133,7 +133,7 @@ public class PlayersListener implements Listener {
 					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
 				}else reason = "s'est fait tuer par un §cinfecté§e.";
 			}else if (damager instanceof Player) {
-				OlympaPlayer oplayer = AccountProvider.get(damager.getUniqueId());
+				OlympaPlayer oplayer = AccountProvider.getter().get(damager.getUniqueId());
 				if (oplayer != null) reason = "s'est fait tuer par " + oplayer.getGroup().getColor() + damager.getName() + "§e.";
 			}
 		}else if (cause != null && cause.getCause() == DamageCause.DROWNING) {
@@ -212,7 +212,7 @@ public class PlayersListener implements Listener {
 		Location oldPosition = packPositions.remove(p);
 		if (oldPosition != null) p.teleport(oldPosition);
 		//for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p); pas besoin de les enlever vu que le joueur quitte
-		OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
+		OlympaPlayerZTA oplayer = AccountProvider.getter().get(p.getUniqueId());
 		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents());
