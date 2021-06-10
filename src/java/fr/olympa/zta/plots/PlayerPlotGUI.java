@@ -170,7 +170,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 		@Override
 		public ItemStack getItemStack(PlayerPlot object) {
-			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getPlayerInformations(object.getOwner()).getName());
+			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getter().getPlayerInformations(object.getOwner()).getName());
 		}
 
 		@Override
@@ -190,7 +190,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
 		private PlotGuestsGUI(PlayerPlot plot) {
-			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 3);
+			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getter().getPlayerInformations(x)).collect(Collectors.toList()), 3);
 			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 

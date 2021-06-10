@@ -207,7 +207,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		sendMessage("Recettes par défaut supprimées.");
 
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
-		AccountProvider.setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
+		AccountProvider.getter().setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		loadIntegration("dynmap", DynmapLink::initialize);
 		loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());

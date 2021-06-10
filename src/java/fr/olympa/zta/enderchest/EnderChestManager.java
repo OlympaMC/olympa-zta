@@ -102,7 +102,7 @@ public class EnderChestManager implements Listener {
 		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 			Player p = e.getPlayer();
 			e.setCancelled(true);
-			command.getEnderChestGUI(AccountProvider.get(p.getUniqueId())).create(p);
+			command.getEnderChestGUI(AccountProvider.getter().get(p.getUniqueId())).create(p);
 			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}
