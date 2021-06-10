@@ -16,7 +16,7 @@ import fr.olympa.api.common.observable.ObservableBoolean;
 import fr.olympa.api.common.observable.ObservableInt;
 import fr.olympa.api.common.observable.ObservableLong;
 import fr.olympa.api.common.observable.ObservableValue;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.provider.OlympaPlayerObject;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.spigot.clans.ClanPlayerInterface;
@@ -211,7 +211,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	}
 
 	public static OlympaPlayerZTA get(Player p) {
-		return AccountProvider.getter().get(p.getUniqueId());
+		return AccountProviderAPI.getter().get(p.getUniqueId());
 	}
 
 	@Override

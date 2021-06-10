@@ -38,7 +38,7 @@ import org.mcmonkey.sentinel.SentinelPlugin;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.spigot.CombatManager;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
@@ -207,7 +207,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		sendMessage("Recettes par défaut supprimées.");
 
 		OlympaPermission.registerPermissions(ZTAPermissions.class);
-		AccountProvider.getter().setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
+		AccountProviderAPI.getter().setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, "zta", OlympaPlayerZTA.COLUMNS);
 
 		loadIntegration("dynmap", DynmapLink::initialize);
 		loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());

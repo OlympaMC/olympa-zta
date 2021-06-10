@@ -18,7 +18,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.common.sql.SQLTable;
 import fr.olympa.api.utils.Prefix;
@@ -45,8 +45,8 @@ public class PrimesManager implements Listener {
 	public PrimesManager() throws SQLException {
 		table = new SQLTable<>("zta_primes", Arrays.asList(columnID, columnBuyer, columnTarget, columnBounty, columnExpiration), resultSet -> {
 			int id = resultSet.getInt("id");
-			OlympaPlayerInformations buyer = AccountProvider.getter().getPlayerInformations(resultSet.getLong("buyer"));
-			OlympaPlayerInformations target = AccountProvider.getter().getPlayerInformations(resultSet.getLong("target"));
+			OlympaPlayerInformations buyer = AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("buyer"));
+			OlympaPlayerInformations target = AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("target"));
 			double bounty = resultSet.getDouble("bounty");
 			long expiration = resultSet.getLong("expiration");
 			return new Prime(id, buyer, target, bounty, expiration);

@@ -18,7 +18,7 @@ import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.spigot.gui.templates.PagedGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -170,7 +170,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 		@Override
 		public ItemStack getItemStack(PlayerPlot object) {
-			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getter().getPlayerInformations(object.getOwner()).getName());
+			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProviderAPI.getter().getPlayerInformations(object.getOwner()).getName());
 		}
 
 		@Override
@@ -190,7 +190,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 
 	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
 		private PlotGuestsGUI(PlayerPlot plot) {
-			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getter().getPlayerInformations(x)).collect(Collectors.toList()), 3);
+			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProviderAPI.getter().getPlayerInformations(x)).collect(Collectors.toList()), 3);
 			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 

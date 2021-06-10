@@ -24,7 +24,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import fr.olympa.api.spigot.enderchest.EnderChestCommand;
 import fr.olympa.api.spigot.holograms.Hologram;
 import fr.olympa.api.spigot.lines.CyclingLine;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.common.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
@@ -102,7 +102,7 @@ public class EnderChestManager implements Listener {
 		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 			Player p = e.getPlayer();
 			e.setCancelled(true);
-			command.getEnderChestGUI(AccountProvider.getter().get(p.getUniqueId())).create(p);
+			command.getEnderChestGUI(AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}

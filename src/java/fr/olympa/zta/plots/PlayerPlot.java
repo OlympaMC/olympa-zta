@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -91,7 +91,7 @@ public class PlayerPlot {
 
 	public void kick(OlympaPlayerInformations player) {
 		if (!players.remove(player.getId())) return;
-		OlympaPlayerZTA oplayer = AccountProvider.getter().get(player.getUUID());
+		OlympaPlayerZTA oplayer = AccountProviderAPI.getter().get(player.getUUID());
 		if (oplayer == null) {
 			try {
 				OlympaZTA.getInstance().plotsManager.removePlayerPlot(player);
@@ -164,7 +164,7 @@ public class PlayerPlot {
 
 				Sign signState = (Sign) sign.getState();
 				signState.setLine(1, "Parcelle de");
-				signState.setLine(2, AccountProvider.getter().getPlayerInformations(owner).getName());
+				signState.setLine(2, AccountProviderAPI.getter().getPlayerInformations(owner).getName());
 				signState.update();
 			}else {
 				try {
