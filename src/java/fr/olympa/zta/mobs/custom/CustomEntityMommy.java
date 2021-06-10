@@ -10,18 +10,16 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_16_R3.AttributeProvider;
 import net.minecraft.server.v1_16_R3.DamageSource;
-import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.GenericAttributes;
 import net.minecraft.server.v1_16_R3.ItemStack;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import net.minecraft.server.v1_16_R3.NBTTagList;
-import net.minecraft.server.v1_16_R3.PathfinderGoal;
 import net.minecraft.server.v1_16_R3.World;
 
 public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
-	public final int MOMMY_DIE_TICKS = 6000;
+	public final int MOMMY_DIE_TICKS = 7 * 60 * 20;
 	
 	private int dieTime = MOMMY_DIE_TICKS;
 	//private int lastTick = MinecraftServer.currentTick;
@@ -44,8 +42,13 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	}
 	
 	@Override
-	protected void initTargetGoals() {
-		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 1, 20, true, false));
+	protected int getTargetChance() {
+		return 1;
+	}
+	
+	@Override
+	protected int getTargetDistance() {
+		return 20;
 	}
 	
 	@Override

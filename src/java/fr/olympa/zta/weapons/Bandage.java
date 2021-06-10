@@ -80,7 +80,7 @@ public class Bandage implements ItemStackable, Weapon {
 			double maxHealth = player.getMaxHealth();
 			if (health == maxHealth) return;
 			player.setHealth(Math.min(health + 10, maxHealth));
-			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1);
+			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
 			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§c§lTu as été heal !"));
 			player.setCooldown(MATERIAL, COOLDOWN);

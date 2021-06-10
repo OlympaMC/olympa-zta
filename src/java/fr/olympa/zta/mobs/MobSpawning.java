@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -239,7 +240,7 @@ public class MobSpawning implements Runnable {
 	}
 
 	private Map<ChunkSnapshot, SpawnType> getActiveChunks() {
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		List<Player> players = Bukkit.getOnlinePlayers().stream().filter(x -> x.getGameMode() != GameMode.SPECTATOR).collect(Collectors.toList());
 		Set<Chunk> processedChunks = new HashSet<>(players.size() + 1, 1);
 		List<Point2D> points = new ArrayList<>(players.size() * 8);
 		Map<ChunkSnapshot, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);

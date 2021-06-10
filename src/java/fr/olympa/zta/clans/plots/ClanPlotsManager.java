@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -23,8 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.common.sql.SQLColumn;
@@ -34,11 +30,12 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClansManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextComponent.Builder;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 public class ClanPlotsManager implements Listener {
 
@@ -62,7 +59,7 @@ public class ClanPlotsManager implements Listener {
 	private Map<Integer, ClanPlot> plots = new HashMap<>();
 
 	private Location bookLocation;
-	private ItemStack book;
+	private Book book;
 	
 	public ClanPlotsManager(ClansManagerZTA clans, Location bookLocation) throws SQLException {
 		this.bookLocation = bookLocation;
@@ -87,75 +84,62 @@ public class ClanPlotsManager implements Listener {
 
 		plots = table.selectAll(null).stream().filter(Objects::nonNull).collect(Collectors.toMap(ClanPlot::getID, Function.identity()));
 		
-		book = new ItemStack(Material.WRITTEN_BOOK);
 		updateBook();
 		
 		new ClanPlotsCommand(this).register();
 	}
 	
 	public void updateBook() {
-		if (book == null) return;
-		
-		BookMeta meta = (BookMeta) book.getItemMeta();
-		meta.pages(Collections.EMPTY_LIST);
+		net.kyori.adventure.inventory.Book.Builder builder = Book.builder();
+		builder.title(Component.text("Parcelles de clans"));
+		builder.author(Component.text("Olympa"));
 		
 		List<ClanPlot> rent = plots.values().stream().filter(x -> x.getClan() != null).collect(Collectors.toList());
 		List<ClanPlot> free = plots.values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList());
-		System.out.println(rent.size() + " louées, " + free.size() + " libres");
 		
-		int p = 1;
-		TextComponent compo = Component.text("\n  Parcelles de Clans\n\n\n", NamedTextColor.DARK_GRAY, TextDecoration.BOLD);
+		Builder compo = Component.text().color(NamedTextColor.DARK_GRAY);
+		compo.append(Component.text("\nΩ", NamedTextColor.GOLD));
+		compo.append(Component.text(" | Parcelles de Clans\n\n\n").decorate(TextDecoration.BOLD));
 		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
-		compo.append(Component.text(plots.size() + " parcelles sur le monde\n\n", NamedTextColor.BLACK));
+		compo.append(Component.text(plots.size() + " parcelles sur    le monde\n\n", NamedTextColor.BLACK));
 		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
-		compo.append(Component.text(rent.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("louées\n", NamedTextColor.RED, TextDecoration.BOLD)));
-		compo.append(Component.text(free.size() + " parcelles", NamedTextColor.BLACK).append(Component.text("libres", NamedTextColor.GOLD, TextDecoration.BOLD)));
-		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
-		meta.addPages(compo);
+		compo.append(Component.text(rent.size() + " parcelles ").append(Component.text("   louées\n", NamedTextColor.RED, TextDecoration.BOLD)));
+		compo.append(Component.text("§7➤ ", NamedTextColor.GRAY));
+		compo.append(Component.text(free.size() + " parcelles ").append(Component.text("   libres", NamedTextColor.GOLD, TextDecoration.BOLD)));
 		
-		compo = Component.text(" Parcelles louées :", NamedTextColor.DARK_GRAY);
-		int amount = 0;
+		int amount = 3;
 		for (int i = 0; i < rent.size(); i++) {
-			if (amount++ == 2) {
-				System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
-				meta.addPages(compo);
-				amount = 1;
-				compo = Component.text().build();
+			if (amount++ >= 3) {
+				builder.addPage(compo.build());
+				amount = 0;
+				compo = Component.text().content(" Parcelles louées :").color(NamedTextColor.DARK_GRAY);
 			}
 			ClanPlot plot = rent.get(i);
-			compo.append(Component.text("\n\n➤ ", NamedTextColor.DARK_GRAY));
+			compo.append(Component.text("\n\n➤ ", NamedTextColor.GRAY));
 			compo.append(Component.text("#" + plot.getID(), NamedTextColor.GOLD));
-			compo.append(Component.text(", x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ", louée à "));
+			compo.append(Component.text(" (x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ") louée à "));
 			TextComponent clanCompo = Component.text(plot.getClan().getName(), NamedTextColor.GOLD);
-			clanCompo.hoverEvent(Component.text(plot.getClan().getNameAndTag(), NamedTextColor.YELLOW));
 			compo.append(clanCompo);
-			/*compo.append(Component.text(" ["));
-			compo.append(Component.text(plot.getClan().getTag()));*/
-			compo.append(Component.text(" jusqu'au "));
+			compo.append(Component.text(" → "));
 			compo.append(Component.text(plot.getExpirationDate(), NamedTextColor.GOLD));
 		}
-		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
-		meta.addPages(compo);
 		
-		compo = Component.text(" Parcelles libres :", NamedTextColor.DARK_GRAY);
-		amount = 0;
-		for (int i = 0; i < rent.size(); i++) {
-			if (amount++ == 2) {
-				System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
-				meta.addPages(compo);
-				amount = 1;
-				compo = Component.text().build();
+		amount = 4;
+		for (int i = 0; i < free.size(); i++) {
+			if (amount++ >= 4) {
+				builder.addPage(compo.build());
+				amount = 0;
+				compo = Component.text().content(" Parcelles libres :").color(NamedTextColor.DARK_GRAY);
 			}
-			ClanPlot plot = rent.get(i);
-			compo.append(Component.text("\n\n➤ ", NamedTextColor.DARK_GRAY));
+			ClanPlot plot = free.get(i);
+			compo.append(Component.text("\n\n➤ ", NamedTextColor.GRAY));
 			compo.append(Component.text("#" + plot.getID(), NamedTextColor.GOLD));
-			compo.append(Component.text(", x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ", à louer pour "));
+			compo.append(Component.text(" (x:" + plot.getSign().getBlockX() + " y:" + plot.getSign().getBlockZ() + ") à louer pour "));
 			compo.append(Component.text(plot.getPriceFormatted(), NamedTextColor.GOLD));
 		}
-		System.out.println("Page " + p++ + " : " + GsonComponentSerializer.gson().serialize(compo));
-		meta.addPages(compo);
+		builder.addPage(compo.build());
 		
-		book.setItemMeta(meta);
+		book = builder.build();
 	}
 
 	public ClanPlot create(Region region, int price, Block sign, Location spawn) throws SQLException, IOException {
@@ -195,7 +179,6 @@ public class ClanPlotsManager implements Listener {
 		}
 		if (clickedBlock.getLocation().equals(bookLocation)) {
 			e.setCancelled(true);
-			System.out.println("ClanPlotsManager.onInteract() OPEn");
 			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> e.getPlayer().openBook(book));
 		}
 	}

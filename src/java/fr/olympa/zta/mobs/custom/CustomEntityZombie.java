@@ -71,7 +71,8 @@ public class CustomEntityZombie extends EntityZombie {
 			break;
 		case SPEED:
 			if (first) {
-				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29);
+				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(5);
+				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
 				setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
 				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
 			}
@@ -108,7 +109,15 @@ public class CustomEntityZombie extends EntityZombie {
 
 	protected void initTargetGoals() {
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this));
-		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 4, 8, true, false));
+		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, getTargetChance(), getTargetDistance(), true, false));
+	}
+	
+	protected int getTargetChance() {
+		return 4;
+	}
+	
+	protected int getTargetDistance() {
+		return 8;
 	}
 	
 	@Override
