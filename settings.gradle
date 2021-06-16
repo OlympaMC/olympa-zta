@@ -1,4 +1,6 @@
 rootProject.name = 'olympa-zta'
 
-include 'olympa-api'
-project(':olympa-api').projectDir = new File(settingsDir, "../olympa-api")
+/*include 'olympa-api'
+project(':olympa-api').projectDir = new File(settingsDir, "../olympa-api")*/
+
+includeFlat 'olympa-api'
