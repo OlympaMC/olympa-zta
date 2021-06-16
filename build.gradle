@@ -11,7 +11,7 @@ repositories {
     maven {
         url = uri('https://repo.citizensnpcs.co/')
         content{
-       		includeGroup "net.citizensnpc"
+       		includeGroup "net.citizensnpcs"
         	includeGroup "org.mcmonkey"
         }
     }
