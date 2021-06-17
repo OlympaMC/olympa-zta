@@ -50,7 +50,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	public abstract ItemStack getItemStack(T object);
 	
-	public abstract void click(AbstractArticle<T> article, Player p, ClickType click);
+	public abstract boolean click(AbstractArticle<T> article, Player p, ClickType click);
 
 	public abstract String[] getLore();
 	
@@ -81,7 +81,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 
 		@Override
 		public void click(AbstractArticle<T> existing, Player p, ClickType click) {
-			AbstractShop.this.click(existing, p, click);
+			if (AbstractShop.this.click(existing, p, click)) setItems();
 		}
 
 	}
@@ -94,6 +94,10 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		public void take(int amount) {}
+		
+		public boolean needsUpdate() {
+			return false;
+		}
 		
 		public abstract double getPrice();
 		
@@ -129,6 +133,11 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
+		public boolean needsUpdate() {
+			return true;
+		}
+		
+		@Override
 		public void take(int amount) {
 			economy.use(amount * getPrice());
 		}
@@ -142,7 +151,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
-		public void click(AbstractArticle<T> article, Player p, ClickType click) {
+		public boolean click(AbstractArticle<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			if (player.getGameMoney().withdraw(article.getPrice())) {
 				give(article.object, p);
@@ -151,6 +160,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour acheter cet objet.");
 			}
+			return false;
 		}
 		
 		@Override
@@ -169,16 +179,18 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
-		public void click(AbstractArticle<T> article, Player p, ClickType click) {
+		public boolean click(AbstractArticle<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			int amount = take(article.object, p, click.isShiftClick());
 			if (amount > 0) {
 				player.getGameMoney().give(amount * article.getPrice());
 				article.take(amount);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
+				return article.needsUpdate();
 			}else {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas vendre cet objet.");
+				return false;
 			}
 		}
 		

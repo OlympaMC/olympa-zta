@@ -318,7 +318,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		}
 		
 		try {
-			economies = new FluctuatingEconomiesManager(this, "zta");
+			economies = new FluctuatingEconomiesManager(this, "zta", ZTAPermissions.ECONOMIES_MANAGE_COMMAND);
 		}catch (Exception ex) {
 			sendMessage("§cLes économies n'ont pas chargé.");
 			ex.printStackTrace();

@@ -28,6 +28,8 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission CLANS_PLAYERS_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission CLANS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	
+	public static final OlympaSpigotPermission ECONOMIES_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	
 	public static final OlympaSpigotPermission MONEY_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission MONEY_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaSpigotPermission MONEY_COMMAND_MANAGE = new OlympaSpigotPermission(OlympaGroup.RESP);
