@@ -165,7 +165,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		
 		@Override
 		public String[] getLore() {
-			return new String[] { "", "§6➤ §eClic pour acheter" };
+			return new String[] { "", "§6➤ §eClic : acheter x1" };
 		}
 		
 		protected abstract void give(T object, Player p);
@@ -196,7 +196,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		
 		@Override
 		public String[] getLore() {
-			return new String[] { "", "§6➤ §eClic pour vendre", "§6➤ §eShift+clic pour vendre un stack" };
+			return new String[] { "", "§6➤ §eClic : vendre x1", "§6➤ §eShift+clic : vendre x64" };
 		}
 		
 		protected abstract int take(T object, Player p, boolean shift);
