@@ -13,27 +13,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.economy.fluctuating.FluctuatingEconomy;
 import fr.olympa.api.spigot.gui.templates.PagedGUI;
 import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.lines.AbstractLine;
 import fr.olympa.api.spigot.lines.BlinkingLine;
 import fr.olympa.api.spigot.lines.FixedLine;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public abstract class AbstractShop<T> extends HologramTrait {
 
-	private List<Article<T>> articles;
+	private List<AbstractArticle<T>> articles;
 	
 	private String shopName;
 	private String holoType, holoName;
 	private DyeColor color;
 
-	protected AbstractShop(String traitName, String shopName, String holoType, String holoName, DyeColor color, List<Article<T>> articles) {
+	protected AbstractShop(String traitName, String shopName, String holoType, String holoName, DyeColor color, List<AbstractArticle<T>> articles) {
 		super(traitName);
 		this.shopName = shopName;
 		this.holoType = holoType;
@@ -49,7 +50,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	public abstract ItemStack getItemStack(T object);
 	
-	public abstract void click(Article<T> article, Player p, ClickType click);
+	public abstract void click(AbstractArticle<T> article, Player p, ClickType click);
 
 	public abstract String[] getLore();
 	
@@ -58,53 +59,85 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		if (e.getNPC() == super.npc) new ShopGUI().create(e.getClicker());
 	}
 
-	class ShopGUI extends PagedGUI<Article<T>> {
+	class ShopGUI extends PagedGUI<AbstractArticle<T>> {
 		
 		public ShopGUI() {
 			super(shopName, color, articles, Math.min(6, Math.max((int) Math.ceil(articles.size() / 9D), 3)));
 		}
 
 		@Override
-		public ItemStack getItemStack(Article<T> object) {
+		public ItemStack getItemStack(AbstractArticle<T> object) {
 			ItemStack item = AbstractShop.this.getItemStack(object.object);
 			ItemMeta meta = item.getItemMeta();
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
 			lore.add("");
 			for (String loreLine : AbstractShop.this.getLore()) lore.add(loreLine);
-			lore.add(lore.size() - AbstractShop.this.getLore().length, SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.price)));
+			lore.add(lore.size() - AbstractShop.this.getLore().length, SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.getPrice())));
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			return item;
 		}
 
 		@Override
-		public void click(Article<T> existing, Player p, ClickType click) {
+		public void click(AbstractArticle<T> existing, Player p, ClickType click) {
 			AbstractShop.this.click(existing, p, click);
 		}
 
 	}
 
-	public static class Article<T> {
+	public abstract static class AbstractArticle<T> {
 		public final T object;
+		
+		public AbstractArticle(T object) {
+			this.object = object;
+		}
+		
+		public abstract double getPrice();
+		
+	}
+	
+	public static class Article<T> extends AbstractArticle<T> {
 		public final double price;
 
 		public Article(T object, double price) {
-			this.object = object;
+			super(object);
 			this.price = price;
 		}
+		
+		@Override
+		public double getPrice() {
+			return price;
+		}
+		
+	}
+	
+	public static class FluctuatingArticle<T> extends AbstractArticle<T> {
+		
+		private FluctuatingEconomy economy;
+		
+		public FluctuatingArticle(T object, FluctuatingEconomy economy) {
+			super(object);
+			this.economy = economy;
+		}
+		
+		@Override
+		public double getPrice() {
+			return economy.getValue();
+		}
+		
 	}
 	
 	public abstract static class AbstractSellingShop<T> extends AbstractShop<T> {
 		
-		protected AbstractSellingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
+		protected AbstractSellingShop(String traitName, String shopName, String holo, DyeColor color, List<AbstractArticle<T>> articles) {
 			super(traitName, shopName, "Vente", holo, color, articles);
 		}
 		
 		@Override
-		public void click(Article<T> article, Player p, ClickType click) {
+		public void click(AbstractArticle<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			if (player.getGameMoney().withdraw(article.price)) {
+			if (player.getGameMoney().withdraw(article.getPrice())) {
 				give(article.object, p);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 			}else {
@@ -124,16 +157,16 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	public abstract static class AbstractBuyingShop<T> extends AbstractShop<T> {
 		
-		protected AbstractBuyingShop(String traitName, String shopName, String holo, DyeColor color, List<Article<T>> articles) {
+		protected AbstractBuyingShop(String traitName, String shopName, String holo, DyeColor color, List<AbstractArticle<T>> articles) {
 			super(traitName, shopName, "Rachat", holo, color, articles);
 		}
 		
 		@Override
-		public void click(Article<T> article, Player p, ClickType click) {
+		public void click(AbstractArticle<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			int amount = take(article.object, p, click.isShiftClick());
 			if (amount > 0) {
-				player.getGameMoney().give(amount * article.price);
+				player.getGameMoney().give(amount * article.getPrice());
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 			}else {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);

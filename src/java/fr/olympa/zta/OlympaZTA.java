@@ -50,6 +50,7 @@ import fr.olympa.api.spigot.command.essentials.KitCommand.SimpleKit;
 import fr.olympa.api.spigot.command.essentials.tp.TpaHandler;
 import fr.olympa.api.spigot.economy.MoneyCommand;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
+import fr.olympa.api.spigot.economy.fluctuating.FluctuatingEconomiesManager;
 import fr.olympa.api.spigot.economy.tax.TaxManager;
 import fr.olympa.api.spigot.holograms.HologramCycler;
 import fr.olympa.api.spigot.lines.CyclingLine;
@@ -171,6 +172,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public PrimesManager primes;
 	public GlassSmashManager glass;
 	public CustomDayDuration customDay;
+	public FluctuatingEconomiesManager economies;
 
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -312,6 +314,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			pluginManager.registerEvents(tyrolienne = new Tyrolienne(getConfig().getLocation("tyrolienne.from"), getConfig().getLocation("tyrolienne.to")), this);
 		} catch (Exception ex) {
 			sendMessage("§cLa tyrolienne pas chargé.");
+			ex.printStackTrace();
+		}
+		
+		try {
+			economies = new FluctuatingEconomiesManager(this, "zta");
+		}catch (Exception ex) {
+			sendMessage("§cLes économies n'ont pas chargé.");
 			ex.printStackTrace();
 		}
 

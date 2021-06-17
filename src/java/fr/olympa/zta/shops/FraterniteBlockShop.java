@@ -8,7 +8,7 @@ import org.bukkit.Material;
 
 public class FraterniteBlockShop extends BlockShop {
 
-	private static final List<Article<Material>> materials = Arrays.asList(
+	private static final List<AbstractArticle<Material>> materials = Arrays.asList(
 			new Article<>(Material.IRON_BLOCK, 50),
 			new Article<>(Material.IRON_TRAPDOOR, 50),
 			new Article<>(Material.IRON_DOOR, 50),

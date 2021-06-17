@@ -4,8 +4,12 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import org.bukkit.Color;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.event.entity.EntityPotionEffectEvent.Cause;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.core.spigot.OlympaCore;
@@ -40,6 +44,15 @@ import net.minecraft.server.v1_16_R3.WorldAccess;
 public class CustomEntityZombie extends EntityZombie {
 
 	private static final Random random = new Random();
+	private static final ItemStack speedBoots;
+	
+	static {
+		org.bukkit.inventory.ItemStack bitem = new org.bukkit.inventory.ItemStack(Material.LEATHER_BOOTS);
+		LeatherArmorMeta meta = (LeatherArmorMeta) bitem.getItemMeta();
+		meta.setColor(Color.fromRGB(8381434));
+		bitem.setItemMeta(meta);
+		speedBoots = CraftItemStack.asNMSCopy(bitem);
+	}
 	
 	private int primed = -1;
 
@@ -73,7 +86,7 @@ public class CustomEntityZombie extends EntityZombie {
 			if (first) {
 				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(5);
 				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
-				setSlot(EnumItemSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+				setSlot(EnumItemSlot.FEET, speedBoots);
 				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
 			}
 			initTargetGoals();
@@ -93,6 +106,8 @@ public class CustomEntityZombie extends EntityZombie {
 			break;
 		case TRAINING:
 			setSilent(true);
+			break;
+		default:
 			break;
 		}
 	}

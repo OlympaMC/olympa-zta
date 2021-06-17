@@ -8,7 +8,8 @@ import org.bukkit.Material;
 
 public class CivilBlockShop extends BlockShop {
 
-	private static final List<Article<Material>> materials = Arrays.asList(
+	private static final List<AbstractArticle<Material>> materials =
+			Arrays.asList(
 			new Article<>(Material.COBBLESTONE, 10),
 			new Article<>(Material.GRANITE, 10),
 			new Article<>(Material.DIORITE, 10),

@@ -8,7 +8,7 @@ import org.bukkit.Material;
 
 public class CorporationBlockShop extends BlockShop {
 
-	private static final List<Article<Material>> materials = Arrays.asList(
+	private static final List<AbstractArticle<Material>> materials = Arrays.asList(
 			new Article<>(Material.NOTE_BLOCK, 50),
 			new Article<>(Material.JUKEBOX, 100),
 			new Article<>(Material.PAINTING, 500),

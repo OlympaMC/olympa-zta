@@ -13,7 +13,7 @@ import fr.olympa.zta.weapons.guns.GunType;
 
 public class GunShop extends AbstractSellingShop<GunType> {
 	
-	private static final List<Article<GunType>> ARTICLES = Arrays.asList(
+	private static final List<AbstractArticle<GunType>> ARTICLES = Arrays.asList(
 			new Article<>(GunType.BENELLI, 500),
 			new Article<>(GunType.M1897, 500));
 	
