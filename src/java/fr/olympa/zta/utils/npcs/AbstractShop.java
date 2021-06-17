@@ -89,9 +89,11 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	public abstract static class AbstractArticle<T> {
 		public final T object;
 		
-		public AbstractArticle(T object) {
+		protected AbstractArticle(T object) {
 			this.object = object;
 		}
+		
+		public void take(int amount) {}
 		
 		public abstract double getPrice();
 		
@@ -124,6 +126,11 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		@Override
 		public double getPrice() {
 			return economy.getValue();
+		}
+		
+		@Override
+		public void take(int amount) {
+			economy.use(amount * getPrice());
 		}
 		
 	}
@@ -167,6 +174,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			int amount = take(article.object, p, click.isShiftClick());
 			if (amount > 0) {
 				player.getGameMoney().give(amount * article.getPrice());
+				article.take(amount);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 			}else {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
