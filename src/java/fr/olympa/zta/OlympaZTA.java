@@ -140,6 +140,10 @@ import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitInfo;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
@@ -461,7 +465,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						FixedLine.EMPTY_LINE,
 						CyclingLine.olympaAnimation());
 
-		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2);
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2).setNightRunnable(() -> {
+			Bukkit.getOnlinePlayers().forEach(x -> x.sendActionBar(Component.text("La nuit tombe...", NamedTextColor.GRAY).append(Component.text(" prenez garde !", Style.style(NamedTextColor.GRAY, TextDecoration.ITALIC)))));
+		});
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 		checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));

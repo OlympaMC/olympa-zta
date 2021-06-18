@@ -21,14 +21,14 @@ import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 	
 	private static boolean registered = false;
-	private static final FluctuatingEconomy BREAD_ECO = new FixedFluctuatingEconomy("bread_sell", 4, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
-	private static final FluctuatingEconomy POTATO_ECO = new FixedFluctuatingEconomy("potato_sell", 4, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
-	private static final FluctuatingEconomy CARROT_ECO = new FixedFluctuatingEconomy("carrot_sell", 4, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
+	private static final FluctuatingEconomy BREAD_ECO = new FixedFluctuatingEconomy("bread_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
+	private static final FluctuatingEconomy CARROT_ECO = new FixedFluctuatingEconomy("carrot_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
+	private static final FluctuatingEconomy POTATO_ECO = new FixedFluctuatingEconomy("potato_sell", 5, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
 	private static final List<AbstractArticle<Food>> ARTICLES =
 			Arrays.asList(
 					new FluctuatingArticle<>(Food.BREAD, BREAD_ECO),
-					new FluctuatingArticle<>(Food.BAKED_POTATO, POTATO_ECO),
 					new FluctuatingArticle<>(Food.CARROT, CARROT_ECO),
+					new FluctuatingArticle<>(Food.BAKED_POTATO, POTATO_ECO),
 					new Article<>(Food.GOLDEN_CARROT, 10),
 					new Article<>(Food.COOKIE, 5),
 					new Article<>(Food.COOKED_BEEF, 8),

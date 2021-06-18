@@ -66,8 +66,8 @@ public class MobSpawning implements Runnable {
 
 	public static final IConditionalBuilder<Zombies, MobSpawningContext> DEFAULT_ZOMBIE_PICKER = RandomizedPickerBase.<Zombies>newBuilder()
 			.add(1, Zombies.COMMON)
-			.add(0.11, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
-			.add(0.06, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
+			.add(0.14, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
+			.add(0.09, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";
 
@@ -127,7 +127,9 @@ public class MobSpawning implements Runnable {
 					ChunkSnapshot chunk = entry.getKey();
 					SpawnType spawn = entry.getValue();
 					int attempts = 0;
-					int mobs = /*random.nextInt(spawn.spawnAmount + 1)*/ 1;
+					int mobs = spawn.spawning.spawnAmount();
+					/*if (mobs > 1) */mobs = random.nextInt(mobs + 1);
+					if (world.getTime() > CustomDayDuration.NIGHT_TIME) mobs++;
 					mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
 						if (++attempts == 5)
 							break;
@@ -145,8 +147,8 @@ public class MobSpawning implements Runnable {
 						} else {
 							int highestY = chunk.getHighestBlockYAt(x, z);
 							int y = random.nextInt(Math.min(highestY - 1, 40)); // à partir de quelle hauteur ça va tenter de faire spawn
-							Material prev = chunk.getBlockType(x, y, z);
-							y: for (; y < highestY; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
+							Material prev = chunk.getBlockType(x, y - 1, z);
+							y: for (; y < highestY + 1; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
 								boolean possible = !UNSPAWNABLE_ON.contains(prev);
 								prev = chunk.getBlockType(x, y, z);
 								if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good

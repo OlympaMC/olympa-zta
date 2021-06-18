@@ -80,7 +80,7 @@ public class HubManager implements Listener {
 	}
 
 	public void teleport(Player p) {
-		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au hub."), () -> DynmapLink.setPlayerVisiblity(p, false));
+		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au spawn."), () -> DynmapLink.setPlayerVisiblity(p, false));
 	}
 
 	public void startRandomTeleport(Player p) {
