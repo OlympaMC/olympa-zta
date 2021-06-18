@@ -146,7 +146,7 @@ public class MobSpawning implements Runnable {
 							}
 						} else {
 							int highestY = chunk.getHighestBlockYAt(x, z);
-							int y = random.nextInt(Math.min(highestY - 1, 40)); // à partir de quelle hauteur ça va tenter de faire spawn
+							int y = random.nextInt(Math.min(highestY - 1, 40)) + 1; // à partir de quelle hauteur ça va tenter de faire spawn
 							Material prev = chunk.getBlockType(x, y - 1, z);
 							y: for (; y < highestY + 1; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
 								boolean possible = !UNSPAWNABLE_ON.contains(prev);
