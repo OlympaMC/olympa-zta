@@ -123,15 +123,25 @@ public class Gun implements Weapon {
 	}
 
 	public void updateItemName(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public void updateItemCustomModel(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setCustomModelData(zoomed ? 2 : 1);
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setCustomModelData(zoomed ? 2 : 1);
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public List<String> getLore(boolean accessories) {

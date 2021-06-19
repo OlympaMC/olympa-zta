@@ -54,7 +54,7 @@ public class HubManager implements Listener {
 				new DynmapLink.DynmapHideFlag(),
 				new FoodFlag(true, true, false),
 				new GunFlag(true, false),
-				new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
+				new DamageFlag(true).setMessages("§e§lBienvenue au Spawn !", null, ChatMessageType.ACTION_BAR));
 	}
 
 	public void addSpawnRegion(SpawnType region) {
