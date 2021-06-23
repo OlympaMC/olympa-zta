@@ -122,20 +122,26 @@ public class Mobs {
 		TNT(customZombie, "§cInfecté explosif"),
 		SPEED(customZombie, "§bInfecté rapide"),
 		TANK(customZombie, "§4Infecté tank"),
-		TRAINING(customZombie, "Zombie d'entraînement"),
-		DROWNED(customDrowned, "Infecté noyé", EntityType.DROWNED);
+		TRAINING(customZombie, "Zombie d'entraînement", false),
+		DROWNED(customDrowned, "Infecté noyé", false, EntityType.DROWNED);
 
 		private final EntityTypes<? extends EntityZombie> type;
 		private String name;
+		private boolean loot;
 		private EntityType bukkitType;
 
 		private Zombies(EntityTypes<? extends EntityZombie> type, String name) {
-			this(type, name, EntityType.ZOMBIE);
+			this(type, name, true, EntityType.ZOMBIE);
 		}
 		
-		private Zombies(EntityTypes<? extends EntityZombie> type, String name, EntityType bukkitType) {
+		private Zombies(EntityTypes<? extends EntityZombie> type, String name, boolean loot) {
+			this(type, name, loot, EntityType.ZOMBIE);
+		}
+		
+		private Zombies(EntityTypes<? extends EntityZombie> type, String name, boolean loot, EntityType bukkitType) {
 			this.type = type;
 			this.name = name;
+			this.loot = loot;
 			this.bukkitType = bukkitType;
 		}
 
@@ -145,6 +151,10 @@ public class Mobs {
 		
 		public String getName() {
 			return name;
+		}
+		
+		public boolean isLooting() {
+			return loot;
 		}
 		
 		public EntityType getBukkitType() {
