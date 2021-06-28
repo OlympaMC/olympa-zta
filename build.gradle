@@ -26,6 +26,10 @@ repositories {
         	includeGroup "fr.skytasul"
         }
     }
+
+    maven {
+        url = uri('https://papermc.io/repo/repository/maven-public/')
+    }
 }
 
 configurations.all {
@@ -36,8 +40,8 @@ configurations.all {
 
 dependencies {
     compileOnly 'fr.olympa:olympa-api:0.0.1-SNAPSHOT'
-    compileOnly 'net.citizensnpcs:citizens-main:2.0.27-SNAPSHOT'
-    compileOnly 'net.citizensnpcs:citizens-v1_16_R3:2.0.27-SNAPSHOT'
+    compileOnly 'net.citizensnpcs:citizens-main:2.0.28-SNAPSHOT'
+    compileOnly 'net.citizensnpcs:citizens-v1_16_R3:2.0.28-SNAPSHOT'
     compileOnly 'org.mcmonkey:sentinel:2.2.6-SNAPSHOT'
     compileOnly 'fr.skytasul:beautyquests-core:0.19.0-SNAPSHOT'
     compileOnly('us.dynmap:dynmap-api:3.1-SNAPSHOT'){

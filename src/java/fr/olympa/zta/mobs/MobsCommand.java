@@ -34,6 +34,7 @@ public class MobsCommand extends ComplexCommand {
 		}
 		sendInfo("§7Nombre d'§eentités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
 		sendInfo("§7Quantité maximale d'§eentités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
+		sendInfo("§7Ticks entre deux spawn de mobs/secondes entre deux calculs : §l%d/%d", spawning.spawnTicks, spawning.calculationMillis / 1000);
 		if (player != null) sendInfo("§7Vous êtes actuellement dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
 	}
 
@@ -101,6 +102,12 @@ public class MobsCommand extends ComplexCommand {
 	public void setMaximumChunkEntities(CommandContext cmd) {
 		OlympaZTA.getInstance().mobSpawning.criticalEntitiesPerChunk = cmd.getArgument(0);
 		sendSuccess("Vous avez modifié la quantité maximale d'entités par chunk.");
+	}
+	
+	@Cmd (min = 1, args = "INTEGER")
+	public void setSpawnTicks(CommandContext cmd) {
+		OlympaZTA.getInstance().mobSpawning.setSpawnTicks(cmd.getArgument(0));
+		sendSuccess("Vous avez modifié l'intervalle de spawn.");
 	}
 
 }
