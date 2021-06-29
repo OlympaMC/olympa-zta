@@ -47,7 +47,7 @@ public class BankExchangeGUI extends OlympaGUI {
 	}
 
 	private void updateMoney() {
-		ItemUtils.lore(inv.getItem(0), "§8> Compte bancaire : §7§l" + player.getGameMoney().getFormatted(), "§8> Mon porte-feuille : §7§l" + PhysicalMoney.getPlayerMoney(player.getPlayer()) + OlympaMoney.OMEGA);
+		ItemUtils.lore(inv.getItem(0), "§8> Compte bancaire : §7§l" + player.getGameMoney().getFormatted(), "§8> Mon porte-feuille : §7§l" + PhysicalMoney.getPlayerMoney((Player) player.getPlayer()) + OlympaMoney.OMEGA);
 	}
 
 	@Override

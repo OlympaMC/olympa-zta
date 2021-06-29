@@ -3,6 +3,9 @@ package fr.olympa.zta.clans;
 import fr.olympa.api.spigot.clans.Clan;
 import fr.olympa.api.spigot.clans.ClanPlayerInterface;
 import fr.olympa.api.spigot.clans.ClansManager;
+
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -81,12 +84,12 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 						BaseComponent lastCompo = components[components.length - 1];
 						lastCompo.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§eClique ici pour ne plus afficher ce message.")));
 						lastCompo.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/clans dismissExpirationMessage"));
-						member.getPlayer().spigot().sendMessage(components);
+						((Player) member.getPlayer()).sendMessage(components);
 					}else resetExpirationTime();
 				}
 			}else {
 				if (cachedPlot.getNextPayment() - System.currentTimeMillis() < ClanPlot.PAYMENT_DURATION_MILLIS) {
-					member.getPlayer().sendMessage(format("La parcelle du clan n'a pas été payée cette semaine. Celle-ci risque d'expirer par défaut de paiement."));
+					((Player) member.getPlayer()).sendMessage(format("La parcelle du clan n'a pas été payée cette semaine. Celle-ci risque d'expirer par défaut de paiement."));
 				}
 			}
 		}

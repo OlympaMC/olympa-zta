@@ -185,7 +185,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public ClanMoneyRanking rankingMoneyClan;
 
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
-		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions(x.getOlympaPlayer().getPlayer());
+		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions((Player) x.getOlympaPlayer().getPlayer());
 		String title = "§c§kdddddddd";
 		for (TrackedRegion region : regions) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);

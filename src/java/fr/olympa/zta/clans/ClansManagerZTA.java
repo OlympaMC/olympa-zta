@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
@@ -31,7 +33,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7Mon clan:");
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getOlympaPlayer().getClan();
-		Player p = x.getOlympaPlayer().getPlayer();
+		Player p = (Player) x.getOlympaPlayer().getPlayer();
 		List<String> players = new ArrayList<>(5);
 		int first = 0;
 		int offline = 0;
@@ -46,10 +48,10 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 				first = 1;
 				offline++;
 			}else {
-				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
+				Location loc = ((Entity) member.getConnectedPlayer().getPlayer()).getLocation();
 				if (players.size() >= 5 && offline < players.size()) players.remove(players.size() - 1);
 				char dir = inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc);
-				String health = String.valueOf((int) member.getConnectedPlayer().getPlayer().getHealth()) + "❤";
+				String health = String.valueOf((int) ((Damageable) member.getConnectedPlayer().getPlayer()).getHealth()) + "❤";
 				players.add(first, "§e● " + memberName + " §l" + dir + " §c(" + health + ")");
 				offline++;
 			}
