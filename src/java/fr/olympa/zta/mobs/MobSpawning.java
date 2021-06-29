@@ -152,7 +152,7 @@ public class MobSpawning implements Runnable {
 							int highestY = chunk.getHighestBlockYAt(x, z);
 							int y = random.nextInt(Math.min(highestY - 1, 40)) + 1; // à partir de quelle hauteur ça va tenter de faire spawn
 							Material prev = chunk.getBlockType(x, y - 1, z);
-							y: for (; y < highestY + 1; y++) { // loop depuis l'hauteur aléatoire jusqu'à 140 (pas de spawn au dessus)
+							y: for (; y < highestY + 1; y++) { // loop depuis la hauteur random jusqu'à la hauteur max
 								boolean possible = !UNSPAWNABLE_ON.contains(prev);
 								prev = chunk.getBlockType(x, y, z);
 								if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
@@ -168,8 +168,11 @@ public class MobSpawning implements Runnable {
 										continue;
 									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null)
 										continue; // si on est dans une parcelle de clan pas de spawn
-									for (EntityLocation entityLocation : entities) if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared))
+									for (EntityLocation entityLocation : entities)
+										if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared)) {
+											//System.out.println("fail distance");
 											continue y; // trop près d'autre entité
+										}
 									for (int j = 0; j < spawn.spawning.spawnAmount(); j++)
 										spawnQueue.add(new AbstractMap.SimpleEntry<>(location, spawn.spawning.zombiePicker().pickOne(random, new MobSpawningContext())));
 									continue mobs;
@@ -242,6 +245,22 @@ public class MobSpawning implements Runnable {
 		
 		OlympaZTA.getInstance().sendMessage("Le spawn de mobs a démarré.");
 		return true;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void end() {
+		enabled = false;
+
+		spawnTask.cancel();
+
+		spawnQueue.clear();
+		queueSize.clear();
+		computeTimes.clear();
+		
+		OlympaZTA.getInstance().sendMessage("Le spawn de mobs est désormais inactif.");
 	}
 	
 	public void setSpawnTicks(int spawnTicks) {
@@ -337,22 +356,6 @@ public class MobSpawning implements Runnable {
 		return String.format("%d joueurs %d zombies %d noyés %d autres", players, zombies, drowned, others);
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void end() {
-		enabled = false;
-
-		spawnTask.cancel();
-
-		spawnQueue.clear();
-		queueSize.clear();
-		computeTimes.clear();
-		
-		OlympaZTA.getInstance().sendMessage("Le spawn de mobs est désormais inactif.");
-	}
-
 	public enum SpawnType {
 		NONE(
 				new MobSpawningConfig(12, 10, 1, 5, null),
@@ -362,21 +365,21 @@ public class MobSpawning implements Runnable {
 				null,
 				null),
 		HARD(
-				new MobSpawningConfig(12, 16, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.1, Zombies.TNT).add(0.01, Zombies.SPEED).add(0.002, Zombies.TANK).build()),
+				new MobSpawningConfig(11, 16, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.1, Zombies.TNT).add(0.01, Zombies.SPEED).add(0.002, Zombies.TANK).build()),
 				true,
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
 		MEDIUM(
-				new MobSpawningConfig(14, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build()),
+				new MobSpawningConfig(13, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build()),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",
 				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
 		EASY(
-				new MobSpawningConfig(16, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build()),
+				new MobSpawningConfig(15, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build()),
 				true,
 				"§d§lzone modérée",
 				"§7§ogardez vos distances",
@@ -533,7 +536,7 @@ public class MobSpawning implements Runnable {
 	public record EntityLocation(Location location, boolean player) {
 		
 		public boolean closeEnough(Location other, int entitySquared, int playerSquared) {
-			return other.distanceSquared(other) < (player ? playerSquared : entitySquared);
+			return other.distanceSquared(location) < (player ? playerSquared : entitySquared);
 		}
 		
 	}

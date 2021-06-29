@@ -466,7 +466,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						CyclingLine.olympaAnimation());
 
 		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2).setNightRunnable(() -> {
-			sendMessage("Début de la nuit...");
 			Bukkit.getOnlinePlayers().forEach(x -> x.sendActionBar(Component.text("La nuit tombe...", NamedTextColor.GRAY).append(Component.text(" prenez garde !", Style.style(NamedTextColor.GRAY, TextDecoration.ITALIC)))));
 		});
 

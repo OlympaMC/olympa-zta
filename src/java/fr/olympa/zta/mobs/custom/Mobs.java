@@ -58,12 +58,13 @@ public class Mobs {
 		if (zombie instanceof CustomEntityZombie) ((CustomEntityZombie) zombie).setZombieType(zombieType, true);
 	}
 
-	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, ItemStack contents[], String name) {
+	public static Zombie spawnMomifiedZombie(Location loc, ItemStack[] armor, ItemStack contents[], Player p) {
 		CustomEntityMommy entityZombie = spawnMob(customMommy, loc, SpawnReason.CUSTOM);
 		entityZombie.setContents(contents);
+		entityZombie.setPlayer(p.getName());
 		Zombie zombie = (Zombie) entityZombie.getBukkitEntity();
 		zombie.getEquipment().setArmorContents(armor);
-		zombie.setCustomName(name);
+		zombie.setCustomName("§7§l" + p.getName() + "§7 momifié");
 		zombie.setCustomNameVisible(true);
 		zombie.getWorld().getEntitiesByClass(Player.class).stream().map(player -> new AbstractMap.SimpleEntry<>(player, loc.distanceSquared(player.getLocation()))).filter(entry -> entry.getValue() <= 900).sorted((o1, o2) -> Double.compare(o1.getValue(), o2.getValue())).findFirst().ifPresent(entry -> zombie.setTarget(entry.getKey()));
 		return zombie;

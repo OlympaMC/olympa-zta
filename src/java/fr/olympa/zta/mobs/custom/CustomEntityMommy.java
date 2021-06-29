@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
@@ -24,6 +25,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	private int dieTime = MOMMY_DIE_TICKS;
 	//private int lastTick = MinecraftServer.currentTick;
 	
+	private String player;
 	private ItemStack[] contents;
 	private boolean contentsLoaded = false;
 	
@@ -39,6 +41,11 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
 		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
 		contentsLoaded = true;
+	}
+	
+	public void setPlayer(String player) {
+		this.player = player;
+		getBukkitEntity().setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), player));
 	}
 	
 	@Override
@@ -112,6 +119,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 			}
 		}
 		nbttagcompound.set("PlayerInventory", nbtList);
+		nbttagcompound.setString("PlayerDead", player);
 	}
 	
 	@Override
@@ -124,6 +132,8 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 			contents = nbtList.stream().map(x -> ItemStack.a((NBTTagCompound) x)).toArray(ItemStack[]::new);
 			System.out.println("Loaded " + contents.length + " contents from NBT");
 		}
+		
+		if (nbttagcompound.hasKey("PlayerDead")) setPlayer(nbttagcompound.getString("PlayerDead"));
 	}
 	
 }

@@ -59,9 +59,13 @@ public class MobsListener implements Listener {
 					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current())) {
 						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
 					}
+					return;
 				}
 			}
 		}
+		if (entity.hasMetadata("player")) return;
+		
+		e.getDrops().clear();
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)

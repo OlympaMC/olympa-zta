@@ -3,14 +3,17 @@ package fr.olympa.zta.mobs;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Drowned;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -32,12 +35,10 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
@@ -66,7 +67,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayersListener implements Listener {
 	
-	private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
+	//private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
 	private static final PotionEffect BOOTS_EFFECT = new PotionEffect(PotionEffectType.JUMP, 99999999, 1, false, false);
 
 	private static final DecimalFormat DAMAGE_FORMAT = new DecimalFormat("0.00");
@@ -79,7 +80,7 @@ public class PlayersListener implements Listener {
 	private Map<Player, Location> packPositions = new HashMap<>();
 	private Location packWaitingRoom;
 	
-	private List<Player> parachuting = new ArrayList<>();
+	private Set<Player> parachuting = new HashSet<>();
 	
 	private Random random = new Random();
 	
@@ -115,8 +116,7 @@ public class PlayersListener implements Listener {
 		Location loc = p.getLocation();
 		ItemStack[] armor = p.getInventory().getArmorContents();
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, contents, "§7§l" + p.getName() + "§7 momifié");
-			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
+			Mobs.spawnMomifiedZombie(loc, armor, contents, p);
 		});
 		EntityDamageEvent cause = p.getLastDamageCause();
 		String reason = "est mort.";
@@ -283,13 +283,15 @@ public class PlayersListener implements Listener {
 		//System.out.println("PlayersListener.onMove() " + p.getFallDistance() + " " + p.isOnGround());
 		if (p.getFallDistance() >= 3) {
 			if (p.getInventory().getChestplate() != null && (p.getInventory().getChestplate().getType() == Material.DIAMOND_CHESTPLATE)) {
-				//p.addPotionEffect(PARACHUTE_EFFECT);
-				Vector velocity = p.getVelocity();
-				if (velocity.getY() > -0.1) return;
-				velocity.setY(velocity.getY() * 0.8);
-				p.setVelocity(velocity);
-				p.setFallDistance(2.8f);
-				p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
+				if (parachuting.add(p)) {
+					Chicken chicken = p.getWorld().spawn(p.getLocation(), Chicken.class, x -> {
+						//x.setAware(false);
+						x.setLeashHolder(p);
+						x.setPersistent(false);
+					});
+					if (!p.addPassenger(chicken)) System.out.println("FAIL PARACHUTE");
+					p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
+				}
 			}
 		}
 	}

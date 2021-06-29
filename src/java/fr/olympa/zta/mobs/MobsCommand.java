@@ -8,7 +8,11 @@ import org.bukkit.entity.Zombie;
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.lines.DynamicLine;
+import fr.olympa.api.spigot.lines.TimerLine;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
@@ -17,6 +21,10 @@ import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 
 public class MobsCommand extends ComplexCommand {
 
+	private DynamicLine<Scoreboard<OlympaPlayerZTA>> mobTracker = new TimerLine<>(x -> {
+		return "\n§7Zombies: §e" + OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class).size();
+	}, OlympaZTA.getInstance(), 20);
+	
 	public MobsCommand() {
 		super(OlympaZTA.getInstance(), "mobs", "Gère les mobs du ZTA.", ZTAPermissions.MOBS_COMMAND);
 		super.addArgumentParser("MOBTYPE", Zombies.class);
@@ -36,6 +44,11 @@ public class MobsCommand extends ComplexCommand {
 		sendInfo("§7Quantité maximale d'§eentités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
 		sendInfo("§7Ticks entre deux spawn de mobs/secondes entre deux calculs : §l%d/%d", spawning.spawnTicks, spawning.calculationMillis / 1000);
 		if (player != null) sendInfo("§7Vous êtes actuellement dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+	}
+	
+	@Cmd (player = true)
+	public void addScoreboardTracker(CommandContext cmd) {
+		OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(getOlympaPlayer()).addLine(mobTracker);
 	}
 
 	@Cmd (player = true, args = { "MOBTYPE", "INTEGER" }, min = 0, syntax = "[type] [quantité]")
