@@ -38,7 +38,7 @@ public class BeautyQuestsLink implements Listener {
 	
 	private Map<Player, Integer> scoreboards = new HashMap<>();
 	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<Scoreboard<OlympaPlayerZTA>>(scoreboard -> {
-		Player player = scoreboard.getOlympaPlayer().getPlayer();
+		Player player = (Player) scoreboard.getOlympaPlayer().getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		List<Quest> started = QuestsAPI.getQuestsStarteds(acc, true);
 		int id = scoreboards.get(player).intValue();
@@ -131,7 +131,7 @@ public class BeautyQuestsLink implements Listener {
 			}
 		}else {
 			if (!scoreboards.containsKey(player.getPlayer())) {
-				checkScoreboard(player.getPlayer(), true);
+				checkScoreboard((Player) player.getPlayer(), true);
 			}
 		}
 	}
