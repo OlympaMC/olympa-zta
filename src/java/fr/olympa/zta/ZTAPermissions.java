@@ -13,6 +13,7 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission PLAYER_SPREAD_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission GLASS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission PARACHUTE_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission MINIGUNS_COMMAND = new OlympaSpigotPermission(OlympaGroup.BUILDER);
 	public static final OlympaSpigotPermission PROBLEM_MONITORING = new OlympaSpigotPermission(OlympaGroup.DEV);

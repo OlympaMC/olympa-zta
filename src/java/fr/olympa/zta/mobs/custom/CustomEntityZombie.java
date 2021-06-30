@@ -1,5 +1,6 @@
 package fr.olympa.zta.mobs.custom;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,6 @@ import net.minecraft.server.v1_16_R3.AttributeProvider;
 import net.minecraft.server.v1_16_R3.DamageSource;
 import net.minecraft.server.v1_16_R3.DifficultyDamageScaler;
 import net.minecraft.server.v1_16_R3.Entity;
-import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityLiving;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.EntityZombie;
@@ -84,8 +84,8 @@ public class CustomEntityZombie extends EntityZombie {
 			break;
 		case SPEED:
 			if (first) {
-				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(5);
-				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.32);
+				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(5.3);
+				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3);
 				setSlot(EnumItemSlot.FEET, speedBoots);
 				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
 			}
@@ -111,20 +111,24 @@ public class CustomEntityZombie extends EntityZombie {
 			break;
 		}
 	}
+	
+	public boolean isZombie(Zombies type) {
+		return zombieType == type;
+	}
 
 	@Override
 	protected void initPathfinder() { // addBehaviourGoals
 		//this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction((EntityCreature) this, 1.0));
-		this.goalSelector.a(7, new PathfinderGoalRandomStrollLand((EntityCreature) this, 1.0));
+		this.goalSelector.a(7, new PathfinderGoalRandomStrollLand(this, 1.0));
 	}
 	
 	protected void initAttack() {
-		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
+		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, isZombie(Zombies.SPEED) ? 1.135 : 1.0, false, isZombie(Zombies.SPEED) ? 11 : 19));
 	}
 
 	protected void initTargetGoals() {
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this));
-		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, getTargetChance(), getTargetDistance(), true, false));
+		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman(this, getTargetChance(), getTargetDistance(), true, false));
 	}
 	
 	protected int getTargetChance() {
@@ -132,7 +136,7 @@ public class CustomEntityZombie extends EntityZombie {
 	}
 	
 	protected int getTargetDistance() {
-		return 8;
+		return isZombie(Zombies.SPEED) ? 16 : 8;
 	}
 	
 	@Override
@@ -214,11 +218,27 @@ public class CustomEntityZombie extends EntityZombie {
 	
 	public static class PathfinderGoalCustomZombieAttack extends PathfinderGoalMeleeAttack {
 
+		private static final Field ticksUntilNextAttack;
+		
+		static {
+			Field field;
+			try {
+				field = PathfinderGoalMeleeAttack.class.getDeclaredField("i");
+				field.setAccessible(true);
+			}catch (ReflectiveOperationException ex) {
+				ex.printStackTrace();
+				field = null;
+			}
+			ticksUntilNextAttack = field;
+		}
+		
 		private EntityZombie zombie;
+		private int attackInterval;
 
-		public PathfinderGoalCustomZombieAttack(EntityZombie zombie, double speedModifier, boolean trackTarget) {
+		public PathfinderGoalCustomZombieAttack(EntityZombie zombie, double speedModifier, boolean trackTarget, int attackInterval) {
 			super(zombie, speedModifier, trackTarget);
 			this.zombie = zombie;
+			this.attackInterval = attackInterval;
 		}
 
 		@Override
@@ -231,6 +251,20 @@ public class CustomEntityZombie extends EntityZombie {
 		public void d() {
 			super.d();
 			zombie.setAggressive(false);
+		}
+		
+		@Override
+		protected void g() {
+			try {
+				ticksUntilNextAttack.setInt(this, k());
+			}catch (ReflectiveOperationException ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		@Override
+		protected int k() {
+			return attackInterval;
 		}
 
 	}

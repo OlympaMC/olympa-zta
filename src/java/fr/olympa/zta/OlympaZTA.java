@@ -84,6 +84,7 @@ import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
+import fr.olympa.zta.itemstackable.ParachuteModule;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.chests.LootChestsManager;
 import fr.olympa.zta.loot.crates.CratesManager;
@@ -379,6 +380,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			getLogger().severe("Une erreur est survenue lors du chargement des coffres de l'end.");
 		}
 
+		try {
+			new ParachuteModule(this);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			getLogger().severe("Une erreur est survenue lors du chargement des parachutes.");
+		}
+		
 		soundAmbiance = new SoundAmbiance();
 		soundAmbiance.start();
 

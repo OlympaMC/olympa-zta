@@ -119,7 +119,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 			}
 		}
 		nbttagcompound.set("PlayerInventory", nbtList);
-		nbttagcompound.setString("PlayerDead", player);
+		if (player != null) nbttagcompound.setString("PlayerDead", player);
 	}
 	
 	@Override

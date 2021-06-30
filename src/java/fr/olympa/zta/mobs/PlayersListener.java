@@ -3,17 +3,14 @@ package fr.olympa.zta.mobs;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Drowned;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -29,7 +26,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
@@ -62,12 +58,9 @@ import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import net.citizensnpcs.api.CitizensAPI;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayersListener implements Listener {
 	
-	//private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
 	private static final PotionEffect BOOTS_EFFECT = new PotionEffect(PotionEffectType.JUMP, 99999999, 1, false, false);
 
 	private static final DecimalFormat DAMAGE_FORMAT = new DecimalFormat("0.00");
@@ -79,8 +72,6 @@ public class PlayersListener implements Listener {
 	private List<String> playersWithPacks = new ArrayList<>();
 	private Map<Player, Location> packPositions = new HashMap<>();
 	private Location packWaitingRoom;
-	
-	private Set<Player> parachuting = new HashSet<>();
 	
 	private Random random = new Random();
 	
@@ -276,25 +267,6 @@ public class PlayersListener implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + (e.getHand() == null ? "null hand" : e.getHand().name()) + " " + (e.getClickedBlock() == null ? "no block" : "block"));
 	}*/
-	
-	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		//System.out.println("PlayersListener.onMove() " + p.getFallDistance() + " " + p.isOnGround());
-		if (p.getFallDistance() >= 3) {
-			if (p.getInventory().getChestplate() != null && (p.getInventory().getChestplate().getType() == Material.DIAMOND_CHESTPLATE)) {
-				if (parachuting.add(p)) {
-					Chicken chicken = p.getWorld().spawn(p.getLocation(), Chicken.class, x -> {
-						//x.setAware(false);
-						x.setLeashHolder(p);
-						x.setPersistent(false);
-					});
-					if (!p.addPassenger(chicken)) System.out.println("FAIL PARACHUTE");
-					p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
-				}
-			}
-		}
-	}
 	
 	@EventHandler
 	public void onArmor(PlayerArmorChangeEvent e) {

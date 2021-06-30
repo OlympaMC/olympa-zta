@@ -71,11 +71,11 @@ public class CustomEntityDrowned extends EntityDrowned {
 	@Override
 	protected void initPathfinder() {
 		this.goalSelector.a(1, supplyDrownedGoToWater.apply(this));
-		this.goalSelector.a(2, new PathfinderGoalCustomZombieAttack(this, 1.0, false));
+		this.goalSelector.a(2, new PathfinderGoalCustomDrownedAttack(this, 1.0, false, 20));
 		this.goalSelector.a(3, supplyDrownedSwipUp.apply(this, OlympaZTA.getInstance().mobSpawning.seaLevel));
-		this.goalSelector.a(4, new PathfinderGoalRandomStroll((EntityCreature) this, 1.0));
+		this.goalSelector.a(4, new PathfinderGoalRandomStroll(this, 1.0));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this).a(CustomEntityZombie.class));
-		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 2, 32, true, false));
+		this.targetSelector.a(2, new PathfinderGoalFixedDistanceTargetHuman(this, 2, 32, true, false));
 	}
 
 	@Override
@@ -114,8 +114,8 @@ public class CustomEntityDrowned extends EntityDrowned {
 		
 		private EntityDrowned drowned;
 		
-		public PathfinderGoalCustomDrownedAttack(EntityDrowned drowned, double speedModifier, boolean trackTarget) {
-			super(drowned, speedModifier, trackTarget);
+		public PathfinderGoalCustomDrownedAttack(EntityDrowned drowned, double speedModifier, boolean trackTarget, int attackInterval) {
+			super(drowned, speedModifier, trackTarget, attackInterval);
 			this.drowned = drowned;
 		}
 		
