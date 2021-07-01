@@ -22,6 +22,7 @@ import org.bukkit.util.RayTraceResult;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.ItemDropBehavior;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
@@ -77,6 +78,11 @@ public enum Knife implements Weapon, ItemStackable {
 	@Override
 	public ItemStack createItem() {
 		return item.clone();
+	}
+	
+	@Override
+	public ItemDropBehavior loot(Player p, ItemStack item) {
+		return this == BATTE ? ItemDropBehavior.DISAPPEAR : ItemDropBehavior.DROP;
 	}
 	
 	public boolean isItem(ItemStack item) {

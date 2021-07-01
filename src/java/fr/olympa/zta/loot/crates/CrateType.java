@@ -3,7 +3,7 @@ package fr.olympa.zta.loot.crates;
 import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.bank.PhysicalMoney;
-import fr.olympa.zta.itemstackable.QuestItem;
+import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
@@ -11,7 +11,6 @@ import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
-import fr.olympa.zta.loot.creators.QuestItemCreator;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.Accessory;
@@ -65,8 +64,8 @@ public enum CrateType {
 			.add(18, new ItemStackableCreator(Accessory.SCOPE_STRONG))
 			.add(18, new ItemStackableCreator(Accessory.STOCK_STRONG))
 			.add(15, new ItemStackableCreator(Accessory.CANNON_SILENT))
-			.add(0.5, new QuestItemCreator(QuestItem.PARACHUTE))
-			.add(0.5, new QuestItemCreator(QuestItem.BOOTS))
+			.add(0.5, new ItemStackableCreator(Artifacts.PARACHUTE))
+			.add(0.5, new ItemStackableCreator(Artifacts.BOOTS))
 			.add(20, new ArmorCreator(ArmorType.MILITARY))
 			.build(6, 8)
 			),

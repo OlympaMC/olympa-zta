@@ -55,6 +55,7 @@ public class ClanPlotsManager implements Listener {
 	public SQLColumn<ClanPlot> columnSpawn = new SQLColumn<ClanPlot>("spawn", "VARCHAR(100) NOT NULL", Types.VARCHAR);
 	public SQLColumn<ClanPlot> columnPrice = new SQLColumn<ClanPlot>("price", "INT NOT NULL", Types.INTEGER);
 	public SQLColumn<ClanPlot> columnNextPayment = new SQLColumn<ClanPlot>("next_payment", "BIGINT NOT NULL DEFAULT -1", Types.BIGINT).setUpdatable();
+	public SQLColumn<ClanPlot> columnLastChiefPayment = new SQLColumn<ClanPlot>("last_chief_payment", "BIGINT NOT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 
 	private Map<Integer, ClanPlot> plots = new HashMap<>();
 
@@ -73,6 +74,7 @@ public class ClanPlotsManager implements Listener {
 						int clanID = resultSet.getInt("clan");
 						if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
 						plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
+						plot.setLastChiefPayment(resultSet.getLong("last_chief_payment"), false);
 						return plot;
 					}catch (Exception ex) {
 						OlympaZTA.getInstance().getLogger().severe("Une erreur est BookMeta survenue lors du chargement d'une parcelle.");

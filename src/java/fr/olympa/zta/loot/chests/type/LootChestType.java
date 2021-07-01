@@ -3,6 +3,7 @@ package fr.olympa.zta.loot.chests.type;
 import fr.olympa.api.utils.RandomizedPickerBase;
 import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.bank.PhysicalMoney;
+import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
@@ -48,6 +49,8 @@ public enum LootChestType {
 			.add(3.6, new QuestItemCreator(QuestItem.DECHET))
 			.add(3.6, new QuestItemCreator(QuestItem.AMAS))
 			.add(0.8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 5))
+			.add(0.0002, new ItemStackableCreator(Artifacts.PARACHUTE))
+			.add(0.0002, new ItemStackableCreator(Artifacts.BOOTS))
 			.build(1, 3)),
 	MILITARY(
 			"militaire",
@@ -77,6 +80,8 @@ public enum LootChestType {
 			.add(4.905, new QuestItemCreator(QuestItem.DECHET))
 			.add(4.905, new QuestItemCreator(QuestItem.AMAS))
 			.add(1.09, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 5))
+			.add(0.0002, new ItemStackableCreator(Artifacts.PARACHUTE))
+			.add(0.0002, new ItemStackableCreator(Artifacts.BOOTS))
 			.build(1, 3)),
 	CONTRABAND(
 			"de contrebandier",
@@ -106,6 +111,8 @@ public enum LootChestType {
 			.add(3.6, new QuestItemCreator(QuestItem.DECHET))
 			.add(3.6, new QuestItemCreator(QuestItem.AMAS))
 			.add(0.8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 5))
+			.add(0.0002, new ItemStackableCreator(Artifacts.PARACHUTE))
+			.add(0.0002, new ItemStackableCreator(Artifacts.BOOTS))
 			.build(1, 3)),
 					;
 	

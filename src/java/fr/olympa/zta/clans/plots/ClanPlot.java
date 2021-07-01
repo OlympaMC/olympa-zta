@@ -38,7 +38,10 @@ public class ClanPlot {
 	public static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
 	
 	public static final int PAYMENT_DURATION_DAYS = 7;
-	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000;
+	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000L;
+	
+	public static final long CHIEF_PAYMENT_DURATION_MILLIS = 28 * 24 * 3600 * 1000L;
+	
 	private static final DateFormat paymentDateFormat = new SimpleDateFormat("dd/MM");
 
 	private final int id;
@@ -50,6 +53,7 @@ public class ClanPlot {
 
 	private ClanZTA clan;
 	private long nextPayment = -1;
+	private long lastChiefPayment = 0;
 	private BukkitTask paymentExpiration;
 
 	private final ClanPlotsManager manager;
@@ -138,6 +142,16 @@ public class ClanPlot {
 		
 		if (updateDB) manager.columnNextPayment.updateAsync(this, nextPayment, null, null);
 	}
+	
+	public void setLastChiefPayment(long time, boolean updateDB) {
+		this.lastChiefPayment = time;
+		
+		if (updateDB) manager.columnLastChiefPayment.updateAsync(this, time, null, null);
+	}
+	
+	public boolean canAnybodyPay() {
+		return System.currentTimeMillis() - lastChiefPayment <= CHIEF_PAYMENT_DURATION_MILLIS;
+	}
 
 	public String getExpirationDate() {
 		return paymentDateFormat.format(new Date(nextPayment));
@@ -170,12 +184,13 @@ public class ClanPlot {
 		ClanZTA targetClan = player.getClan();
 		if (clan != null) {
 			if (clan == targetClan) {
-				if (clan.getChief() != player.getInformation()) {
-					Prefix.DEFAULT_BAD.sendMessage(p, "Seul le chef du clan peut verser le montant de la location.");
-					return;
-				}
 				if (nextPayment - System.currentTimeMillis() > PAYMENT_DURATION_MILLIS) {
 					Prefix.DEFAULT_BAD.sendMessage(p, "La parcelle a déjà été payée cette semaine.");
+					return;
+				}
+				boolean isChief = clan.getChief() == player.getInformation();
+				if (!canAnybodyPay() && !isChief) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Le chef du clan n'a pas payé la parcelle depuis 1 mois. Il est nécessaire qu'il actualise la location.");
 					return;
 				}
 				if (!clan.getMoney().withdraw(price)) {
@@ -183,6 +198,7 @@ public class ClanPlot {
 					return;
 				}
 				setNextPayment(nextPayment + PAYMENT_DURATION_MILLIS, true, false);
+				if (isChief) setLastChiefPayment(System.currentTimeMillis(), true);
 				updateSign();
 				clan.broadcast("La parcelle a été payée pour une nouvelle semaine !");
 				return;
@@ -213,6 +229,7 @@ public class ClanPlot {
 			calendar.set(Calendar.MILLISECOND, 0);
 			calendar.add(Calendar.DATE, PAYMENT_DURATION_DAYS);
 			setNextPayment(calendar.getTimeInMillis(), true, false);
+			setLastChiefPayment(calendar.getTimeInMillis(), true);
 			updateSign();
 			targetClan.broadcast("Le clan fait l'acquisition d'une parcelle.");
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Il n'y a pas assez d'argent dans la cagnotte du clan pour louer cette parcelle.");

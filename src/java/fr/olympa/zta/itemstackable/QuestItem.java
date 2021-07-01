@@ -29,9 +29,6 @@ public enum QuestItem implements ItemStackable {
 	BOITIER_PROG(Material.PRISMARINE_SHARD, "Boîtier de programme", 2),
 	GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé", 2),
 	GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2),
-	
-	PARACHUTE(Material.DIAMOND_CHESTPLATE, "Parachute", -1, "Si vous le portez, vous serez en mesure de planer dès le saut depuis un endroit élevé.", "Item rarissime, prenez-en soin."),
-	BOOTS(Material.DIAMOND_BOOTS, "Bottes à ressort", -1, "Produites par Aperture Science, Inc., il s'agit de bottes empêchant tout dégât de chute et permettant de sauter haut.", "Item de très grande valeur."),
 	;
 	
 	private final String name;
@@ -47,10 +44,8 @@ public enum QuestItem implements ItemStackable {
 		
 		List<String> loreList = new ArrayList<>();
 		for (String loreLine : lore) loreList.addAll(SpigotUtils.wrapAndAlign(loreLine, 35));
-		if (cat != -1) {
-			loreList.add("");
-			loreList.add("§8> §7Ressource de catégorie §l" + cat);
-		}
+		loreList.add("");
+		loreList.add("§8> §7Ressource de catégorie §l" + cat);
 		ItemStack item = new ItemStack(type);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);

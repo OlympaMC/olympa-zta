@@ -83,6 +83,7 @@ import fr.olympa.zta.glass.GlassSmashManager;
 import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
+import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.itemstackable.ParachuteModule;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -141,10 +142,8 @@ import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitInfo;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
@@ -246,19 +245,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			e.printStackTrace();
 		}
 
-		for (GunType gun : GunType.values())
-			ItemStackableManager.register(gun);
-		for (Knife knife : Knife.values())
-			ItemStackableManager.register(knife);
-		for (Accessory accessory : Accessory.values())
-			ItemStackableManager.register(accessory);
-		for (Grenade grenade : Grenade.values())
-			ItemStackableManager.register(grenade);
-		for (QuestItem item : QuestItem.values())
-			ItemStackableManager.register(item);
+		GunType.values();
+		Knife.values();
+		Accessory.values();
+		Grenade.values();
+		QuestItem.values();
+		Artifacts.values();
 		ItemStackableManager.register(Bandage.BANDAGE);
+		sendMessage("§6%d §etypes d'items enregistrés !", ItemStackableManager.stackables.size());
 
-		AmmoType.CARTRIDGE.getName();
+		AmmoType.values();
 
 		OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
 
@@ -474,7 +470,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						CyclingLine.olympaAnimation());
 
 		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2).setNightRunnable(() -> {
-			Bukkit.getOnlinePlayers().forEach(x -> x.sendActionBar(Component.text("La nuit tombe...", NamedTextColor.GRAY).append(Component.text(" prenez garde !", Style.style(NamedTextColor.GRAY, TextDecoration.ITALIC)))));
+			Bukkit.getOnlinePlayers().forEach(x -> x.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§7La nuit tombe... §oprenez garde !")));
 		});
 
 		checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));

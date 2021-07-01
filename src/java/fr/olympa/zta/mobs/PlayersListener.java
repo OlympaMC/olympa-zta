@@ -50,6 +50,10 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.Artifacts;
+import fr.olympa.zta.itemstackable.ItemDropBehavior;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
@@ -95,11 +99,27 @@ public class PlayersListener implements Listener {
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
 			if (itemStack != null) {
-				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
+				ItemDropBehavior behavior;
+				ItemStackable stackable = ItemStackableManager.getStackable(itemStack);
+				if (stackable != null) {
+					behavior = stackable.loot(p, itemStack);
+				}else if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
+					behavior = ItemDropBehavior.KEEP;
+				}else if (itemStack.getType().name().startsWith("LEATHER_") || itemStack.getType() == Material.DRIED_KELP) {
+					behavior = ItemDropBehavior.DISAPPEAR; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+				}else behavior = ItemDropBehavior.DROP;
+				
+				switch (behavior) {
+				case DISAPPEAR:
 					kept.add(itemStack);
 					contents[i] = null;
-				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.BATTE.isItem(itemStack) || itemStack.getType() == Material.DRIED_KELP) {
-					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+					break;
+				case KEEP:
+					contents[i] = null;
+					break;
+				case DROP:
+				default:
+					break;
 				}
 			}
 		}
@@ -202,7 +222,6 @@ public class PlayersListener implements Listener {
 		Player p = e.getPlayer();
 		Location oldPosition = packPositions.remove(p);
 		if (oldPosition != null) p.teleport(oldPosition);
-		//for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p); pas besoin de les enlever vu que le joueur quitte
 		OlympaPlayerZTA oplayer = AccountProviderAPI.getter().get(p.getUniqueId());
 		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
@@ -268,11 +287,15 @@ public class PlayersListener implements Listener {
 		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + (e.getHand() == null ? "null hand" : e.getHand().name()) + " " + (e.getClickedBlock() == null ? "no block" : "block"));
 	}*/
 	
+	protected boolean isSpeedBoots(ItemStack item) {
+		return item != null && item.getType() == Material.DIAMOND_BOOTS && (ItemStackableManager.getStackable(item) == Artifacts.BOOTS);
+	}
+	
 	@EventHandler
 	public void onArmor(PlayerArmorChangeEvent e) {
 		if (e.getSlotType() != SlotType.FEET) return;
-		boolean bootsOld = e.getOldItem() != null && e.getOldItem().getType() == Material.DIAMOND_BOOTS;
-		boolean bootsNew = e.getNewItem() != null && e.getNewItem().getType() == Material.DIAMOND_BOOTS;
+		boolean bootsOld = isSpeedBoots(e.getOldItem());
+		boolean bootsNew = isSpeedBoots(e.getNewItem());
 		if (bootsOld == bootsNew) return;
 		if (bootsOld) {
 			e.getPlayer().removePotionEffect(PotionEffectType.JUMP);

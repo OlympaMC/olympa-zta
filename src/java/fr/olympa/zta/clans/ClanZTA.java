@@ -1,12 +1,11 @@
 package fr.olympa.zta.clans;
 
-import fr.olympa.api.spigot.clans.Clan;
-import fr.olympa.api.spigot.clans.ClanPlayerInterface;
-import fr.olympa.api.spigot.clans.ClansManager;
-
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.spigot.clans.Clan;
+import fr.olympa.api.spigot.clans.ClanPlayerInterface;
+import fr.olympa.api.spigot.clans.ClansManager;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;

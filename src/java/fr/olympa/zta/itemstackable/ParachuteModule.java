@@ -87,7 +87,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 	
 	public boolean hasParachute(Player p) {
 		ItemStack chestplate = p.getInventory().getChestplate();
-		return chestplate != null && (chestplate.getType() == Material.DIAMOND_CHESTPLATE);
+		return chestplate != null && (chestplate.getType() == Material.DIAMOND_CHESTPLATE) && (ItemStackableManager.getStackable(chestplate) == Artifacts.PARACHUTE);
 	}
 	
 	public boolean isInAir(Location location) {
@@ -179,7 +179,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 			Location location = p.getLocation();
 			chicken = p.getWorld().spawn(location, Chicken.class, x -> {
 				x.setAware(false);
-				x.setLeashHolder(p);
+				//x.setLeashHolder(p);
 				x.setPersistent(false);
 				x.setSilent(true);
 			});

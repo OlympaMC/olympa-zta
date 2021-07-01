@@ -84,7 +84,7 @@ public class CustomEntityZombie extends EntityZombie {
 			break;
 		case SPEED:
 			if (first) {
-				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(5.3);
+				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(4);
 				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3);
 				setSlot(EnumItemSlot.FEET, speedBoots);
 				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
@@ -96,7 +96,9 @@ public class CustomEntityZombie extends EntityZombie {
 			if (first) {
 				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.215);
 				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7);
-				getAttributeInstance(GenericAttributes.ARMOR).setValue(4);
+				getAttributeInstance(GenericAttributes.ARMOR).setValue(3);
+				getAttributeInstance(GenericAttributes.MAX_HEALTH).setValue(30);
+				setHealth(30);
 				setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
 				setSlot(EnumItemSlot.LEGS, new ItemStack(Items.NETHERITE_LEGGINGS));
 				setSlot(EnumItemSlot.FEET, new ItemStack(Items.NETHERITE_BOOTS));
