@@ -337,7 +337,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots joueurs.");
 		}
 
-		try {
+		/*try {
 			int i = 0;
 			tab = new TabManager(this)
 					.addText(3, "§6§l    Olympa").addText(5, "§e  Serveur multi-jeux").addText(i = 11, "§7 ➤ Aide").addText(++i, "§7  Utilise /help").addText(++i, "§7  pour une liste").addText(++i, "§7  des commandes.")
@@ -347,7 +347,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 					.build();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
+		}*/
 
 		try {
 			taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, "zta_tax", 0);

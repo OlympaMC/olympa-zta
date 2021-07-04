@@ -23,7 +23,7 @@ public class LootPackGUI extends OlympaGUI {
 		for (PackType pack : PackType.values()) {
 			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§ePack " + pack.getName(), pack.getLootsDescription()));
 		}
-		inv.setItem(49, ItemUtils.item(Material.BRICK, 1, "§eMa banque", "§7➤ §6" + player.getGameMoney().getFormatted()));
+		inv.setItem(49, ItemUtils.item(Material.PHANTOM_MEMBRANE, 1, "§eMa banque", "§7➤ §6" + player.getGameMoney().getFormatted()));
 	}
 	
 	@Override

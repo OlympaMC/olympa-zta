@@ -111,10 +111,10 @@ public class PlayersListener implements Listener {
 				
 				switch (behavior) {
 				case DISAPPEAR:
-					kept.add(itemStack);
 					contents[i] = null;
 					break;
 				case KEEP:
+					kept.add(itemStack);
 					contents[i] = null;
 					break;
 				case DROP:

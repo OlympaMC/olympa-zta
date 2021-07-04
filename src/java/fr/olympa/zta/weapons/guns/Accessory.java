@@ -86,7 +86,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	SCOPE_LIGHT(AccessoryType.SCOPE, Material.BRICK, "Mire V2", "dispose d'un zoom faible", "donne la vision nocturne"){
-		private final AttributeModifier zoomModifier = new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -1);
+		private final AttributeModifier zoomModifier = new AttributeModifier(Gun.ZOOM_UUID, "zoom", Operation.ADD_MULTIPLICATOR, -1);
 		private final PotionEffect effect = new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 0);
 		
 		@Override
@@ -107,7 +107,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	SCOPE_STRONG(AccessoryType.SCOPE, Material.NETHER_BRICK, "Lunette x3", "dispose d'un zoom puissant"){
-		private final AttributeModifier zoomModifier = new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -3);
+		private final AttributeModifier zoomModifier = new AttributeModifier(Gun.ZOOM_UUID, "zoom", Operation.ADD_MULTIPLICATOR, -3);
 		
 		@Override
 		public void apply(Gun gun) {

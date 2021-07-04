@@ -66,7 +66,7 @@ public class ClanPlotsManager implements Listener {
 		this.bookLocation = bookLocation;
 		
 		table = new SQLTable<>("zta_clan_plots",
-				Arrays.asList(columnID, columnRegion, columnClan, columnSign, columnSpawn, columnPrice, columnNextPayment),
+				Arrays.asList(columnID, columnRegion, columnClan, columnSign, columnSpawn, columnPrice, columnNextPayment, columnLastChiefPayment),
 				resultSet -> {
 					try {
 						ClanPlot plot = new ClanPlot(this, resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -40,6 +42,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Gun implements Weapon {
 
+	public static final UUID ZOOM_UUID = UUID.fromString("8a1c6742-3f54-44c2-ac6f-90fa7491ebef");
+	
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
 	protected final int id;
@@ -286,6 +290,7 @@ public class Gun implements Weapon {
 							}
 						}
 
+						@Override
 						public synchronized void cancel() throws IllegalStateException {
 							super.cancel();
 							task = null;
@@ -441,10 +446,15 @@ public class Gun implements Weapon {
 	}
 
 	private void toggleZoom(Player p, ItemStack item) {
+		AttributeInstance attribute = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
+			attribute.removeModifier(getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
+			try {
+				attribute.addModifier(getZoomModifier().getBukkitModifier());
+			}catch (IllegalArgumentException ex) {
+				OlympaZTA.getInstance().sendMessage("§cZoom déjà appliqué sur un gun.");
+			}
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -478,11 +488,11 @@ public class Gun implements Weapon {
 		return i;
 	}
 	
-	public void setAccessory(Accessory accessory) {
-		setAccessory(accessory.getType(), accessory);
+	public boolean setAccessory(Accessory accessory) {
+		return setAccessory(accessory.getType(), accessory);
 	}
 
-	public void setAccessory(AccessoryType type, Accessory accessory) {
+	public boolean setAccessory(AccessoryType type, Accessory accessory) {
 		Accessory old = null;
 		switch (type) {
 		case SCOPE:
@@ -500,6 +510,7 @@ public class Gun implements Weapon {
 		}
 		if (old != null) old.remove(this);
 		if (accessory != null) accessory.apply(this);
+		return old != null;
 	}
 
 	/**

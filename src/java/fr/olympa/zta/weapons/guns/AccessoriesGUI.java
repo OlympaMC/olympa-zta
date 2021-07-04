@@ -1,5 +1,6 @@
 package fr.olympa.zta.weapons.guns;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -7,10 +8,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 
@@ -75,25 +76,26 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (accessory == null) return true; // si l'objet en main n'est pas un accessoire : cancel
 		if (accessoryType != accessory.getType()) return true; // si le type d'accessoire en main n'est pas approprié avec le slot : cancel
 		
+		if (cursor.isSimilar(current)) return true;
+		
+		boolean already = gun.setAccessory(accessory);
+		
 		ItemStack item = null;
 		if (cursor.getAmount() > 1) {
 			item = new ItemStack(cursor);
 			item.setAmount(cursor.getAmount() - 1);
+			if (already) {
+				SpigotUtils.giveItems(p, item);
+			}else cursor.setAmount(1);
 		}
 		final ItemStack newItem = item;
-		cursor.setAmount(1);
 		
-		if (current.getType() == Material.LIME_STAINED_GLASS_PANE) {
-			new BukkitRunnable(){
-				public void run(){
-					p.setItemOnCursor(newItem); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
-					if (newItem != null) inv.getItem(slot).setAmount(1);
-				}
-			}.runTask(OlympaZTA.getInstance());
+		if (!already) {
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+				p.setItemOnCursor(newItem); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
+				if (newItem != null) p.updateInventory();
+			});
 		}
-		
-		gun.setAccessory(accessory);
-		accessory.apply(gun); // mettre les caractéristiques de l'accessoire sur l'arme
 		
 		return false; // laisse le joueur swapper les items
 	}

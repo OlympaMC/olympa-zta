@@ -6,14 +6,14 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Chicken;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -91,8 +91,30 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 	}
 	
 	public boolean isInAir(Location location) {
-		Block block = location.getBlock();
-		return block.isEmpty() && block.getRelative(BlockFace.DOWN).isEmpty();
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		if (!location.getWorld().getBlockAt(x, y, z).isEmpty()) return false;
+		if (!location.getWorld().getBlockAt(x, --y, z).isEmpty()) return false;
+		double deltaX = location.getX() - x;
+		int newX = x;
+		if (deltaX < 0.3) {
+			newX--;
+			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
+		}else if (deltaX > 0.7) {
+			newX++;
+			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
+		}
+		double deltaZ = location.getZ() - z;
+		int newZ = z;
+		if (deltaZ < 0.3) {
+			newZ--;
+			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
+		}else if (deltaZ > 0.7) {
+			newZ++;
+			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
+		}
+		return location.getWorld().getBlockAt(newX, y, newZ).isEmpty();
 	}
 	
 	public void removeParachute(@NotNull Player player) {
@@ -103,6 +125,19 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		removeParachute(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent e) {
+		if (e.getEntityType() != EntityType.CHICKEN) return;
+		for (Parachuting para : players.values()) {
+			if (para.chicken.getEntityId() == e.getEntity().getEntityId()) {
+				para.forceDisable = true;
+				para.disable();
+				para.p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cTon parachute s'est fait toucher !"));
+				break;
+			}
+		}
 	}
 	
 	@EventHandler
@@ -153,7 +188,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 			players.remove(p).disable();
 		}else {
 			if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) return;
-			if (p.getFallDistance() >= 4 && isInAir(e.getTo()) && hasParachute(p)) {
+			if (p.getFallDistance() >= 4 && hasParachute(p) && isInAir(e.getTo())) {
 				players.put(p, new Parachuting(p).enable());
 			}
 		}
@@ -162,6 +197,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 	class Parachuting {
 		Chicken chicken;
 		boolean enabled;
+		boolean forceDisable = false;
 		
 		Player p;
 		
@@ -175,11 +211,11 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 		
 		Parachuting enable() {
 			if (enabled) return this;
+			if (forceDisable) return this;
 			enabled = true;
 			Location location = p.getLocation();
 			chicken = p.getWorld().spawn(location, Chicken.class, x -> {
 				x.setAware(false);
-				//x.setLeashHolder(p);
 				x.setPersistent(false);
 				x.setSilent(true);
 			});

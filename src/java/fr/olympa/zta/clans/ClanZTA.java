@@ -53,7 +53,7 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	public void setResetExpirationTime() {
-		this.plotExpirationReset = System.currentTimeMillis() + 7 * 24 * 3600 * 1000; // 1 semaine d'avertissement pour expiration
+		this.plotExpirationReset = System.currentTimeMillis() + 30 * 24 * 3600 * 1000; // 1 mois d'avertissement pour expiration
 		updateResetExpiration();
 	}
 	

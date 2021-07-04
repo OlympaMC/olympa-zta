@@ -173,8 +173,10 @@ public class MobSpawning implements Runnable {
 											//System.out.println("fail distance");
 											continue y; // trop près d'autre entité
 										}
-									for (int j = 0; j < spawn.spawning.spawnAmount(); j++)
-										spawnQueue.add(new AbstractMap.SimpleEntry<>(location, spawn.spawning.zombiePicker().pickOne(random, new MobSpawningContext())));
+									for (int j = 0; j < spawn.spawning.spawnAmount(); j++) {
+										Zombies zombie = spawn.spawning.zombiePicker().pickOne(random, new MobSpawningContext());
+										if (zombie != null) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, zombie));
+									}
 									continue mobs;
 								}
 							}
@@ -226,6 +228,7 @@ public class MobSpawning implements Runnable {
 					for (Iterator<Entry<Location, Zombies>> iterator = spawnQueue.iterator(); iterator.hasNext();) {
 						try {
 							Entry<Location, Zombies> loc = iterator.next();
+							if (loc.getValue() == null) continue;
 							if (loc.getKey().isChunkLoaded()) {
 								Mobs.spawnCommonZombie(loc.getValue(), loc.getKey());
 								lastSpawnedMobs++;
@@ -386,7 +389,7 @@ public class MobSpawning implements Runnable {
 				new DynmapZoneConfig(Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.1, LootChestType.MILITARY).build()),
 		SAFE(
-				new MobSpawningConfig(21, 24, 1, 1, DEFAULT_ZOMBIE_PICKER.clone().add(0.008, Zombies.TNT).build()),
+				new MobSpawningConfig(23, 24, 1, 1, DEFAULT_ZOMBIE_PICKER.clone().add(0.008, Zombies.TNT).build(0.2)),
 				false,
 				"§a§lzone sécurisée",
 				"§7§orestez vigilant",

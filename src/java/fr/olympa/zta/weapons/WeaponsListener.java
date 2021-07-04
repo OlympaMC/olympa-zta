@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -99,6 +100,16 @@ public class WeaponsListener implements Listener {
 			gun.itemClick((Player) e.getWhoClicked(), item);
 			e.setCancelled(true);
 		});
+	}
+	
+	@EventHandler
+	public void onSwap(PlayerSwapHandItemsEvent e) {
+		Player p = e.getPlayer();
+		
+		Weapon previous = getWeapon(e.getOffHandItem());
+		if (previous != null) previous.itemNoLongerHeld(p, e.getOffHandItem());
+		Weapon next = getWeapon(e.getMainHandItem());
+		if (next != null) next.itemHeld(p, e.getMainHandItem(), previous);
 	}
 
 	@EventHandler
