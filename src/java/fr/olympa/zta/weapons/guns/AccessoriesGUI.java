@@ -84,13 +84,13 @@ public class AccessoriesGUI extends OlympaGUI{
 		if (cursor.getAmount() > 1) {
 			item = new ItemStack(cursor);
 			item.setAmount(cursor.getAmount() - 1);
-			if (already) {
-				SpigotUtils.giveItems(p, item);
-			}else cursor.setAmount(1);
+			if (already) SpigotUtils.giveItems(p, item);
+			cursor.setAmount(1);
 		}
+		if (already) item = current;
 		final ItemStack newItem = item;
 		
-		if (!already) {
+		if (!already || cursor.getAmount() > 1) {
 			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 				p.setItemOnCursor(newItem); // enlever l'item "slot disponible" de la main du joueur (il l'aura chopé automatiquement lors du swap d'items)
 				if (newItem != null) p.updateInventory();
