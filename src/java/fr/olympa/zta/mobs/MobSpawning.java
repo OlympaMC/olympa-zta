@@ -11,8 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -481,6 +483,12 @@ public class MobSpawning implements Runnable {
 						event.getPlayer().sendTitle(type.title, type.subtitle, 7, 43, 10);
 				}
 				return super.enters(event);
+			}
+			
+			@Override
+			public void appendDescription(StringJoiner joiner) {
+				super.appendDescription(joiner);
+				joiner.add("Spawn type: " + Objects.toString(type));
 			}
 		}
 	}

@@ -138,6 +138,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 				break;
 			}
 		}
+		e.getDrops().clear();
 	}
 	
 	@EventHandler

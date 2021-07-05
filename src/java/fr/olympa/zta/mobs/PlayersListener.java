@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,7 @@ public class PlayersListener implements Listener {
 		if (CitizensAPI.getNPCRegistry().isNPC(p)) return;
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
+		
 		List<ItemStack> kept = new ArrayList<>();
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
@@ -125,10 +127,9 @@ public class PlayersListener implements Listener {
 		}
 		keptItems.put(p, kept);
 		Location loc = p.getLocation();
-		ItemStack[] armor = p.getInventory().getArmorContents();
-		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Mobs.spawnMomifiedZombie(loc, armor, contents, p);
-		});
+		ItemStack[] armor = Arrays.copyOfRange(contents, 36, 40);
+		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> Mobs.spawnMomifiedZombie(loc, armor, contents, p));
+		
 		EntityDamageEvent cause = p.getLastDamageCause();
 		String reason = "est mort.";
 		if (cause instanceof EntityDamageByEntityEvent) {

@@ -72,6 +72,10 @@ public class LootChestCommand extends ComplexCommand {
 
 	@Cmd
 	public void clearAllChests(CommandContext cmd) {
+		if (cmd.getArgumentsLength() == 0 || !cmd.<String>getArgument(0).equals("confirm")) {
+			sendError("ATTENTION - cette commande est irréversible - vous devez exécuter /lootchest clearAllChests confirm.");
+			return;
+		}
 		int removed = 0;
 		int errors = 0;
 		for (Integer chest : new ArrayList<>(OlympaZTA.getInstance().lootChestsManager.chests.keySet())) {
@@ -113,39 +117,42 @@ public class LootChestCommand extends ComplexCommand {
 		}
 	}
 
-	@Cmd (args = "HARD|MEDIUM|EASY|SAFE")
+	@Cmd (player = true)
 	public void randomize(CommandContext cmd) {
-		if (cmd.getArgumentsLength() == 0) {
-			if (player == null) {
-				sendIncorrectSyntax();
-				return;
-			}
-			LootChest chest = getTargetLootChest(getPlayer());
-			if (chest == null) return;
-			LootChestType type = manager.pickRandomChestType(chest.getLocation());
-			chest.setLootType(type, true);
-			sendSuccess("Le coffre est devenu un coffre %s.", type.getName());
-		}else {
-			for (LootChest lootChest : manager.chests.values()) {
-				lootChest.setLootType(manager.pickRandomChestType(lootChest.getLocation()), true);
-			}
-			sendSuccess("Les %d coffres de loot ont été randomisé.", manager.chests.size());
+		LootChest chest = getTargetLootChest(getPlayer());
+		if (chest == null) return;
+		LootChestType type = manager.pickRandomChestType(chest.getLocation());
+		chest.setLootType(type, true);
+		sendSuccess("Le coffre est devenu un coffre %s.", type.getName());
+	}
+	
+	@Cmd
+	public void randomizeAll(CommandContext cmd) {
+		for (LootChest lootChest : manager.chests.values()) {
+			lootChest.setLootType(manager.pickRandomChestType(lootChest.getLocation()), true);
 		}
+		sendSuccess("Les %d coffres de loot ont été randomisé.", manager.chests.size());
 	}
 
 	@Cmd
 	public void validateAll(CommandContext cmd) {
 		sendInfo("Début de l'opération...");
 		int missing = 0;
+		int emptied = 0;
 		int removed = 0;
 		for (LootChest lootChest : new ArrayList<>(manager.chests.values())) {
 			Block block = lootChest.getLocation().getBlock();
 			if (block.getType() == Material.CHEST) {
 				Chest chest = (Chest) block.getState();
+				boolean update = !chest.getInventory().isEmpty();
+				if (update) {
+					chest.getInventory().clear();
+					emptied++;
+				}
 				if (manager.getLootChest(chest) == null) {
 					lootChest.register(chest);
 					missing++;
-				}
+				}else if (update) chest.update();
 			}else {
 				try {
 					manager.removeLootChest(lootChest.getID());
@@ -155,7 +162,7 @@ public class LootChestCommand extends ComplexCommand {
 				}
 			}
 		}
-		sendSuccess("%d coffres corrigés, %d coffres supprimés.", missing, removed);
+		sendSuccess("%d coffres corrigés, %d coffres vidés, %d coffres supprimés.", missing, emptied, removed);
 	}
 
 	private Chest getTargetChest(Player p) {
