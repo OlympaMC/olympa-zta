@@ -219,6 +219,8 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 				x.setAware(false);
 				x.setPersistent(false);
 				x.setSilent(true);
+				x.setCustomName("§7Parachute de " + p.getName());
+				x.setMaxHealth(6);
 			});
 			p.addPassenger(chicken);
 			oldWalkSpeed = abilities.walkSpeed;

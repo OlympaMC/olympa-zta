@@ -469,7 +469,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 						FixedLine.EMPTY_LINE,
 						CyclingLine.olympaAnimation());
 
-		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 2).setNightRunnable(() -> {
+		customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 3).setNightRunnable(() -> {
 			Bukkit.getOnlinePlayers().forEach(x -> x.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§7La nuit tombe... §oprenez garde !")));
 		});
 

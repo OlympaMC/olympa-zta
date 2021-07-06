@@ -68,7 +68,7 @@ public class MobSpawning implements Runnable {
 
 	public static final IConditionalBuilder<Zombies, MobSpawningContext> DEFAULT_ZOMBIE_PICKER = RandomizedPickerBase.<Zombies>newBuilder()
 			.add(1, Zombies.COMMON)
-			.add(0.14, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
+			.add(0.12, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
 			.add(0.09, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";
@@ -488,7 +488,7 @@ public class MobSpawning implements Runnable {
 			@Override
 			public void appendDescription(StringJoiner joiner) {
 				super.appendDescription(joiner);
-				joiner.add("Spawn type: " + Objects.toString(type));
+				joiner.add("Spawn type: §a" + Objects.toString(type));
 			}
 		}
 	}

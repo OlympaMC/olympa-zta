@@ -59,10 +59,14 @@ public abstract class RandomizedInventory extends OlympaGUI {
 			if (p.getInventory().firstEmpty() == -1) {
 				boolean valid = false;
 				if (loot.isStackable() && current.getMaxStackSize() > 1) {
+					int amount = current.getAmount();
 					for (ItemStack item : p.getInventory().getStorageContents()) {
-						if (item.getAmount() < item.getMaxStackSize() && item.isSimilar(current)) {
-							valid = true;
-							break;
+						if (item.isSimilar(current)) {
+							amount -= item.getMaxStackSize() - item.getAmount(); // remove available amount in this slot
+							if (amount <= 0) {
+								valid = true;
+								break;
+							}
 						}
 					}
 				}
@@ -74,7 +78,7 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		}
 		ItemStack realItem = loot.getRealItem();
 		if (realItem != null) inv.setItem(slot, realItem);
-		if (click != ClickType.RIGHT || realItem.getAmount() > 1) currentLoots.remove(slot);
+		if (click != ClickType.RIGHT || current.getAmount() > 1) currentLoots.remove(slot);
 		return false;
 	}
 	

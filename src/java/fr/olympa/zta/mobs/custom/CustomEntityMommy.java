@@ -35,7 +35,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	}
 	
 	public static AttributeProvider.Builder getAttributeBuilder() {
-		return CustomEntityZombie.getAttributeBuilder().a(GenericAttributes.MOVEMENT_SPEED, 0.32).a(GenericAttributes.ATTACK_DAMAGE, 9).a(GenericAttributes.ARMOR, 4);
+		return CustomEntityZombie.getAttributeBuilder().a(GenericAttributes.MAX_HEALTH, 40).a(GenericAttributes.MOVEMENT_SPEED, 0.32).a(GenericAttributes.ATTACK_DAMAGE, 9).a(GenericAttributes.ARMOR, 2.4);
 	}
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
