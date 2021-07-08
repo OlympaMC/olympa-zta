@@ -178,15 +178,13 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 		Player p = e.getPlayer();
 		
 		if (players.containsKey(p)) {
-			if (isInAir(e.getTo())) {
-				if (players.get(p).enabled) {
+			if (players.get(p).enabled) {
+				if (isInAir(e.getTo())) {
 					Vector direction = /*e.getFrom()*/p.getLocation().getDirection();
 					p.setVelocity(new Vector(direction.getX() * speed, p.getVelocity().getY() * fallspeed, direction.getZ() * speed));
 					p.setFallDistance(0.0F);
-				}
-				return;
+				}else players.remove(p).disable();
 			}
-			players.remove(p).disable();
 		}else {
 			if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) return;
 			if (p.getFallDistance() >= 4 && hasParachute(p) && isInAir(e.getTo())) {

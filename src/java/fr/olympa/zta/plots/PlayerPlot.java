@@ -22,8 +22,8 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProviderAPI;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.spigot.utils.Schematic;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
@@ -31,10 +31,10 @@ import fr.olympa.zta.clans.plots.ClanPlot;
 public class PlayerPlot {
 
 	//public static int[] questsRequiredPerLevel = { 3, 10, 25, 60, 140, 300, 750, 1500 };
-	public static int[] moneyRequiredPerLevel = { 3000, 5000, 7500, 10000, 14000, 30000, 75000, 150000 };
-	private static int[] sizePerLevel = { 10, 14, 18, 22, 26, 31, 36, 42 };
-	private static int[] heightPerLevel = { PlotChunkGenerator.WORLD_LEVEL + 4, 40, 76, 112, 148, 184, 220, 256 };
-	private static int[] chestsPerLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
+	public static final int[] moneyRequiredPerLevel = { 3000, 5000, 7500, 10000, 14000, 30000, 75000, 150000 };
+	public static final int[] sizePerLevel = { 10, 14, 18, 22, 26, 31, 36, 42 };
+	public static final int[] heightPerLevel = { PlotChunkGenerator.WORLD_LEVEL + 4, 40, 76, 112, 148, 184, 220, 256 };
+	public static final int[] chestsPerLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
 	private final int id;
 	private final PlayerPlotLocation loc;
@@ -77,6 +77,19 @@ public class PlayerPlot {
 
 	public int getLevel() {
 		return level;
+	}
+
+	public int getChests() {
+		return chests;
+	}
+
+	public void setChests(int chests) {
+		this.chests = chests;
+		try {
+			OlympaZTA.getInstance().plotsManager.updateChests(this, getChests());
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public Location getSpawnLocation() {
@@ -194,7 +207,7 @@ public class PlayerPlot {
 		boolean chest = false;
 		if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
 			chest = true;
-			if (e instanceof BlockPlaceEvent && chests >= chestsPerLevel[level - 1]) {
+			if (e instanceof BlockPlaceEvent && getChests() >= chestsPerLevel[level - 1]) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite des %d coffres pour une parcelle de niveau %d.", chestsPerLevel[level - 1], level);
 				return true;
 			}
@@ -216,16 +229,12 @@ public class PlayerPlot {
 
 		if (chest) {
 			if (e instanceof BlockPlaceEvent) {
-				chests++;
+				setChests(getChests() + 1);
 			}else {
 				if (block.getType() == Material.CHEST && owner != oplayer.getId()) {
 					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas détruire le coffre du propriétaire.");
-				}else chests--;
-			}
-			try {
-				OlympaZTA.getInstance().plotsManager.updateChests(this, chests);
-			}catch (SQLException ex) {
-				ex.printStackTrace();
+					return true;
+				}else setChests(getChests() - 1);
 			}
 		}else if (e instanceof BlockBreakEvent) {
 			// pourquoi j'ai commencé ça ? à voir

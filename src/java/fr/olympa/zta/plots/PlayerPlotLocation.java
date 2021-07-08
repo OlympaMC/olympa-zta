@@ -56,6 +56,11 @@ public class PlayerPlotLocation {
 		return false;
 	}
 	
+	@Override
+	public String toString() {
+		return "x: %d, z: %d".formatted(x, z);
+	}
+	
 	public Location toLocation() {
 		return new Location(OlympaZTA.getInstance().plotsManager.getWorld(), worldX, PlotChunkGenerator.WORLD_LEVEL, worldZ);
 	}

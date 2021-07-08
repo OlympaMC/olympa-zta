@@ -33,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
@@ -66,15 +67,21 @@ public class WeaponsListener implements Listener {
 			}else e.setDamage(e.getDamage() + ThreadLocalRandom.current().nextDouble() - 0.5);
 		}else if (NOT_WEAPON.contains(item.getType())) {
 			e.setCancelled(true);
+			Prefix.DEFAULT_BAD.sendMessage(damager, "Vous ne pouvez pas utiliser un outil comme arme.");
 		}
 	}
 
 	@EventHandler
 	public void onProjectileHit(ProjectileHitEvent e) {
 		if (!e.getEntity().hasMetadata("bullet")) return;
+		Bullet bullet;
 		try {
-			((Bullet) e.getEntity().getMetadata("bullet").get(0).value()).hit(e);
-		}catch (ClassCastException | NullPointerException ex) {} // ça arrive quand des balles étaient présentes dans des chunks qui ont été unloadé pendant le runtime
+			bullet = (Bullet) e.getEntity().getMetadata("bullet").get(0).value();
+		}catch (ClassCastException | NullPointerException ex) {
+			bullet = null;
+			OlympaZTA.getInstance().sendMessage("§cImpossible de trouver une instance Bullet.");
+		} // ça arrive quand des balles étaient présentes dans des chunks qui ont été unloadé pendant le runtime
+		if (bullet != null) bullet.hit(e);
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)
