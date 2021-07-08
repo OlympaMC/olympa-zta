@@ -331,7 +331,7 @@ public class PlayersListener implements Listener {
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(damager);
 		if (player != null && player.parameterHealthBar.get()) {
 			if (player.healthBar == null) player.healthBar = new PlayerHealthBar(damager);
-			player.healthBar.show(en, e.getDamage());
+			player.healthBar.show(en, e.getFinalDamage());
 		}
 	}
 	

@@ -95,12 +95,12 @@ public enum Knife implements Weapon, ItemStackable {
 			e.setDamage(playerDamage);
 		}else e.setDamage(entityDamage);
 		
-		if (e.getDamager() instanceof LivingEntity) {
-			Location damagerLoc = ((LivingEntity) e.getDamager()).getEyeLocation();
+		if (e.getDamager()instanceof LivingEntity damager) {
+			Location damagerLoc = damager.getEyeLocation();
 			RayTraceResult rayTrace = e.getEntity().getBoundingBox().expand(0.4).rayTrace(damagerLoc.toVector(), damagerLoc.getDirection(), 5);
 			if (rayTrace != null) {
 				spawnBlood(rayTrace.getHitPosition().toLocation(damagerLoc.getWorld()), 6);
-			}else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());
+			}//else OlympaZTA.getInstance().sendMessage("§c%s a tapé en-dehors d'une boîte de collision.", e.getDamager().getName());
 		}
 	}
 	

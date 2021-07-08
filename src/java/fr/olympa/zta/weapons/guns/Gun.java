@@ -178,19 +178,20 @@ public class Gun implements Weapon {
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 		int readyTime = -1;
 		float thisPotential = fireRate.getValue();
-		if (thisPotential <= 0) thisPotential = chargeTime.getValue();
-		if (previous instanceof Gun) {
-			Gun prev = (Gun) previous;
-			if (!prev.ready) {
-				float prevPotential = prev.fireRate.getValue();
-				if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
-				readyTime = (int) Math.min(prevPotential, thisPotential);
-			}
+		if (thisPotential <= 0) {
+			if (ammos == 0) return;
+			thisPotential = chargeTime.getValue();
+		}
+		if (previous instanceof Gun prev && !prev.ready) {
+			float prevPotential = prev.fireRate.getValue();
+			if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
+			readyTime = (int) Math.min(prevPotential, thisPotential);
 		}
 		if (readyTime == -1 && !ready) readyTime = (int) thisPotential;
 		if (readyTime != -1) {
 			ready = false;
 			updateItemName(item);
+			setCooldown(p, readyTime);
 			task = new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -204,6 +205,10 @@ public class Gun implements Weapon {
 				}
 			}.runTaskLater(OlympaZTA.getInstance(), readyTime);
 		}
+	}
+
+	private void setCooldown(Player p, int readyTime) {
+		if (readyTime > 5) p.setCooldown(type.getMaterial(), readyTime);
 	}
 
 	@Override
@@ -246,6 +251,7 @@ public class Gun implements Weapon {
 			}else if (ready && isFireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
 					ready = false;
+					int rate = (int) (fireRate.getValue() / 2);
 					task = new BukkitRunnable() {
 						byte left = 3;
 						@Override
@@ -256,6 +262,7 @@ public class Gun implements Weapon {
 								if (ammos == 0) {
 									cancel();
 								}
+								if (left == 0) p.setCooldown(type.getMaterial(), rate * 3);
 							}else if (left == -4) {
 								setReady(p, item);
 								cancel();
@@ -266,13 +273,14 @@ public class Gun implements Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 2L));
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}else if (fireRate.getValue() == -1) {
 					ready = false;
 					fire(p);
 					updateItemName(item);
 				}else {
 					ready = false;
+					int rate = (int) fireRate.getValue();
 					task = new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -283,6 +291,7 @@ public class Gun implements Weapon {
 							}
 							if (System.currentTimeMillis() - lastClick < 210) {
 								fire(p);
+								setCooldown(p, rate);
 								updateItemName(item);
 							}else {
 								setReady(p, item);
@@ -295,7 +304,7 @@ public class Gun implements Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}
 			}
 		}else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir

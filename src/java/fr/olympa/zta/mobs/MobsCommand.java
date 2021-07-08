@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Zombie;
 
+import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.spigot.command.ComplexCommand;
 import fr.olympa.api.spigot.lines.DynamicLine;
 import fr.olympa.api.spigot.lines.TimerLine;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -33,17 +35,16 @@ public class MobsCommand extends ComplexCommand {
 	@Cmd
 	public void info(CommandContext cmd) {
 		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
-		sendInfo("Le spawn de mob est §l%s", spawning.isEnabled() ? "§aactif" : "§cinactif");
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT_GOOD.formatMessage("Le spawn de mob est %s", spawning.isEnabled() ? "§a§lactif" : "§c§linactif"));
+		builder.extraSpliter("\n§8➤ §7");
 		if (spawning.isEnabled()) {
-			sendInfo("§7- Nombre de mobs moyen dans la §equeue de spawn : §l%s", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
-			sendInfo("§7- Durée de §ecalcul des spawn de la dernière minute (en ms) : §l%s", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
-			sendInfo("§7- Dernière durée de §ecalcul des chunks actifs (%d) : §l%d ms", spawning.lastActiveChunks, spawning.timeActiveChunks);
-			sendInfo("§7- Nombre de §ezombies spawnés à la dernière task : §l%d", spawning.lastSpawnedMobs);
+			builder.extra(new TxtComponentBuilder("§7- Queue de spawn.").onHoverText("§7Nombre de zombies moyen dans la queue de spawn: §a%s\n§7Nombre de zombies spawné lors de la dernière task: §a%d", Utils.formatDouble(spawning.getAverageQueueSize(), 2), spawning.lastSpawnedMobs));
+			builder.extra(new TxtComponentBuilder("§7- Durées de calculs.").onHoverText("§7Calcul des spawn (sur 1min, en ms): §a%s\n§7Dernier calcul des chunks actifs: §a%d chunks§7, §a%d ms", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")), spawning.lastActiveChunks, spawning.timeActiveChunks));
 		}
-		sendInfo("§7Nombre d'§eentités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
-		sendInfo("§7Quantité maximale d'§eentités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
-		sendInfo("§7Ticks entre deux spawn de mobs/secondes entre deux calculs : §l%d/%d", spawning.spawnTicks, spawning.calculationMillis / 1000);
-		if (player != null) sendInfo("§7Vous êtes actuellement dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+		builder.extra(new TxtComponentBuilder("§eConfiguration actuelle.").onHoverText("§eEntités:\n§7Quantité maximale sur le monde: §a%d\n§7Quantité maximale dans un chunk: §a%d\n\n§eDurées:\n§7Secondes entre les calculs: §a%d\n§7Ticks entre deux spawn de mobs: §a%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk, spawning.calculationMillis / 1000, spawning.spawnTicks));
+		builder.extra(new TxtComponentBuilder("§eNombre d'entités.").onHoverText("§e%s", spawning.getEntityCount()));
+		if (player != null) builder.extra("§7Vous êtes dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+		sendComponents(builder.build());
 	}
 	
 	@Cmd (player = true)

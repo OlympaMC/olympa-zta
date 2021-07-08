@@ -96,7 +96,7 @@ public class CustomEntityZombie extends EntityZombie {
 			if (first) {
 				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.215);
 				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(7);
-				getAttributeInstance(GenericAttributes.ARMOR).setValue(3);
+				getAttributeInstance(GenericAttributes.ARMOR).setValue(2.6);
 				getAttributeInstance(GenericAttributes.MAX_HEALTH).setValue(30);
 				setHealth(30);
 				setSlot(EnumItemSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));

@@ -86,8 +86,8 @@ public class MobSpawning implements Runnable {
 	private Lock queueLock = new ReentrantLock();
 	private LinkedList<Entry<Location, Zombies>> spawnQueue = new LinkedList<>();
 
-	private EvictingQueue<Integer> queueSize = EvictingQueue.create(24);
-	private EvictingQueue<Long> computeTimes = EvictingQueue.create(12);
+	private EvictingQueue<Integer> queueSize = EvictingQueue.create(20);
+	private EvictingQueue<Long> computeTimes = EvictingQueue.create(10);
 
 	private Set<Region> safeRegions = new HashSet<>();
 
@@ -297,10 +297,10 @@ public class MobSpawning implements Runnable {
 				for (int az = 0; az <= chunkRadiusDoubled; az++) {
 					if (!world.isChunkLoaded(x + ax, z + az)) continue;
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
-					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
 					point = new Point2D(chunk);
 					if (!points.add(point))
 						continue;
+					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
 					SpawnType type;
 					if (snapshot.getBlockType(0, seaLevel, 0) == Material.WATER)
 						type = SpawnType.NONE;
