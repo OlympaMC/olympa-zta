@@ -122,7 +122,7 @@ public class MobSpawning implements Runnable {
 			long time = System.currentTimeMillis();
 			queueLock.lock();
 			try {
-				List<EntityLocation> entities = world.getLivingEntities().stream().map(x -> new EntityLocation(x.getLocation(), x instanceof Player)).collect(Collectors.toList());
+				List<EntityLocation> entities = world.getLivingEntities().stream().map(x -> new EntityLocation(x.getLocation(), x instanceof Player)).collect(Collectors.toCollection(LinkedList::new));
 				if (entities.size() > maxEntities)
 					return;
 				long time2 = System.currentTimeMillis();
@@ -274,17 +274,19 @@ public class MobSpawning implements Runnable {
 	}
 
 	private Map<ChunkSnapshot, SpawnType> getActiveChunks() {
-		List<Player> players = Bukkit.getOnlinePlayers().stream().filter(x -> x.getGameMode() != GameMode.SPECTATOR).collect(Collectors.toList());
-		Set<Chunk> processedChunks = new HashSet<>(players.size() + 1, 1);
-		List<Point2D> points = new ArrayList<>(players.size() * 8);
+		List<Player> players = world.getPlayers().stream().filter(x -> x.getGameMode() != GameMode.SPECTATOR).collect(Collectors.toCollection(LinkedList::new));
+		Set<Point2D> processedChunks = new HashSet<>(players.size() + 1, 1);
+		Set<Point2D> points = new HashSet<>(players.size() * 8);
 		Map<ChunkSnapshot, SpawnType> chunks = new HashMap<>(players.size() * 8, 1);
 		for (Player p : players) {
 			Location lc = p.getLocation();
 			Chunk centralChunk = lc.getChunk();
-			if (!processedChunks.add(centralChunk))
+			Point2D point = new Point2D(centralChunk);
+			
+			if (!processedChunks.add(point))
 				continue; // chunk déjà calculé
 
-			if (centralChunk.getBlock(0, seaLevel, 0).getType() != Material.WATER && SpawnType.getSpawnType(centralChunk) == null)
+			if (centralChunk.getBlock(0, seaLevel, 0).getType() != Material.WATER && SpawnType.getSpawnType(world, point) == null)
 				continue;
 
 			if (entityCount(centralChunk) > criticalEntitiesPerChunk)
@@ -296,21 +298,20 @@ public class MobSpawning implements Runnable {
 					if (!world.isChunkLoaded(x + ax, z + az)) continue;
 					Chunk chunk = world.getChunkAt(x + ax, z + az);
 					ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
-					Point2D point = new Point2D(chunk);
-					if (points.contains(point))
+					point = new Point2D(chunk);
+					if (!points.add(point))
 						continue;
 					SpawnType type;
 					if (snapshot.getBlockType(0, seaLevel, 0) == Material.WATER)
 						type = SpawnType.NONE;
 					else
-						type = SpawnType.getSpawnType(chunk);
+						type = SpawnType.getSpawnType(world, point);
 					if (type != null) {
 						if (entityCount(chunk) > type.spawning.maxEntitiesPerChunk())
 							continue;
 						if (isInSafeZone(chunk))
 							continue;
 						chunks.put(snapshot, type);
-						points.add(point);
 					}
 				}
 		}
@@ -370,21 +371,21 @@ public class MobSpawning implements Runnable {
 				null,
 				null),
 		HARD(
-				new MobSpawningConfig(11, 16, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.1, Zombies.TNT).add(0.01, Zombies.SPEED).add(0.002, Zombies.TANK).build()),
+				new MobSpawningConfig(12, 16, 2, 6, DEFAULT_ZOMBIE_PICKER.clone().add(0.1, Zombies.TNT).add(0.01, Zombies.SPEED).add(0.002, Zombies.TANK).build(0.12)),
 				true,
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
 		MEDIUM(
-				new MobSpawningConfig(13, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build()),
+				new MobSpawningConfig(14, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build(0.15)),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",
 				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
 		EASY(
-				new MobSpawningConfig(15, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build()),
+				new MobSpawningConfig(15, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build(0.18)),
 				true,
 				"§d§lzone modérée",
 				"§7§ogardez vos distances",
@@ -398,7 +399,7 @@ public class MobSpawning implements Runnable {
 				new DynmapZoneConfig(Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté."),
 				RandomizedPickerBase.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.2, LootChestType.CONTRABAND).build());
 
-		private static Map<Chunk, SpawnType> chunks = new HashMap<>();
+		private static Map<Point2D, SpawnType> chunks = new HashMap<>();
 
 		public final MobSpawningConfig spawning;
 		public final int minDistanceSquared;
@@ -457,12 +458,8 @@ public class MobSpawning implements Runnable {
 			return null;
 		}
 
-		public static SpawnType getSpawnType(Chunk chunk) {
-			if (chunks.containsKey(chunk))
-				return chunks.get(chunk);
-			SpawnType type = getSpawnType(chunk.getWorld(), chunk.getX() * 16, chunk.getZ() * 16);
-			chunks.put(chunk, type);
-			return type;
+		public static SpawnType getSpawnType(World world, Point2D point) {
+			return chunks.computeIfAbsent(point, x -> getSpawnType(world, point.getX() * 16, point.getZ() * 16));
 		}
 
 		public static class SpawningFlag extends GlassSmashFlag {

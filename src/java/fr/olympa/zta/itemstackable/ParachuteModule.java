@@ -90,33 +90,6 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 		return chestplate != null && (chestplate.getType() == Material.DIAMOND_CHESTPLATE) && (ItemStackableManager.getStackable(chestplate) == Artifacts.PARACHUTE);
 	}
 	
-	public boolean isInAir(Location location) {
-		int x = location.getBlockX();
-		int y = location.getBlockY();
-		int z = location.getBlockZ();
-		if (!location.getWorld().getBlockAt(x, y, z).isEmpty()) return false;
-		if (!location.getWorld().getBlockAt(x, --y, z).isEmpty()) return false;
-		double deltaX = location.getX() - x;
-		int newX = x;
-		if (deltaX < 0.3) {
-			newX--;
-			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
-		}else if (deltaX > 0.7) {
-			newX++;
-			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
-		}
-		double deltaZ = location.getZ() - z;
-		int newZ = z;
-		if (deltaZ < 0.3) {
-			newZ--;
-			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
-		}else if (deltaZ > 0.7) {
-			newZ++;
-			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
-		}
-		return location.getWorld().getBlockAt(newX, y, newZ).isEmpty();
-	}
-	
 	public void removeParachute(@NotNull Player player) {
 		Parachuting parachuting = players.remove(player);
 		if (parachuting != null) parachuting.disable();
@@ -179,7 +152,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 		
 		if (players.containsKey(p)) {
 			if (players.get(p).enabled) {
-				if (isInAir(e.getTo())) {
+				if (SpigotUtils.isInAir(e.getTo())) {
 					Vector direction = /*e.getFrom()*/p.getLocation().getDirection();
 					p.setVelocity(new Vector(direction.getX() * speed, p.getVelocity().getY() * fallspeed, direction.getZ() * speed));
 					p.setFallDistance(0.0F);
@@ -187,7 +160,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 			}
 		}else {
 			if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) return;
-			if (p.getFallDistance() >= 4 && hasParachute(p) && isInAir(e.getTo())) {
+			if (p.getFallDistance() >= 4 && hasParachute(p) && SpigotUtils.isInAir(e.getTo())) {
 				players.put(p, new Parachuting(p).enable());
 			}
 		}
