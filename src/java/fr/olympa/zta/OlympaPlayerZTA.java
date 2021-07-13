@@ -130,14 +130,28 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			}
 		});
 		
-		joinTime = System.currentTimeMillis();
+		enablePlayTime();
 	}
 
 	@Override
 	public void unloaded() {
 		super.unloaded();
-		if (joinTime != 0)
+		disablePlayTime();
+	}
+	
+	public void disablePlayTime() {
+		if (joinTime != 0) {
 			playTime.add(System.currentTimeMillis() - joinTime);
+			joinTime = 0;
+		}
+	}
+	
+	public void enablePlayTime() {
+		joinTime = System.currentTimeMillis();
+	}
+	
+	public long getPlayTime() {
+		return playTime.get() + (joinTime == 0 ? 0 : (System.currentTimeMillis() - joinTime));
 	}
 
 	@Override

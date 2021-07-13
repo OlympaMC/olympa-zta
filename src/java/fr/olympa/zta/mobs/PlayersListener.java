@@ -43,6 +43,7 @@ import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.customevents.AsyncPlayerAfkEvent;
 import fr.olympa.api.spigot.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.holograms.Hologram;
@@ -333,6 +334,16 @@ public class PlayersListener implements Listener {
 			if (player.healthBar == null) player.healthBar = new PlayerHealthBar(damager);
 			player.healthBar.show(en, e.getFinalDamage());
 		}
+	}
+	
+	@EventHandler
+	public void onAFK(AsyncPlayerAfkEvent e) {
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(e.getPlayer());
+		if (player == null) return;
+		if (e.isAfk())
+			player.disablePlayTime();
+		else
+			player.enablePlayTime();
 	}
 	
 	private void giveStartItems(Player p) {

@@ -21,7 +21,7 @@ public enum Artifacts implements ItemStackable {
 			"Item rarissime, prenez-en soin."),
 	BOOTS(
 			Material.DIAMOND_BOOTS,
-			"Bottes à ressort",
+			"Bottes à ressorts",
 			"Produites par Aperture Science, Inc., il s'agit de bottes empêchant tout dégât de chute et permettant de sauter haut.",
 			"Item de très grande valeur."),
 			;

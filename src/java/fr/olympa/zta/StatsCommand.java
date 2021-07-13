@@ -53,7 +53,7 @@ public class StatsCommand extends OlympaCommand {
 		double other = olympaPlayer.otherShots.get();
 		joiner.add("Headshots: " + (head == 0 && other == 0 ? "§cx" : "§e" + percentageFormat.format(head / (other + head) * 100) + "%"));
 		joiner.add("Coffres ouverts: §e" + olympaPlayer.openedChests.get());
-		joiner.add("Temps de jeu: §e" + Utils.durationToString(timeFormat, olympaPlayer.playTime.get() + (System.currentTimeMillis() - olympaPlayer.joinTime)));
+		joiner.add("Temps de jeu: §e" + Utils.durationToString(timeFormat, olympaPlayer.getPlayTime()));
 		sender.sendMessage(joiner.toString());
 		return false;
 	}

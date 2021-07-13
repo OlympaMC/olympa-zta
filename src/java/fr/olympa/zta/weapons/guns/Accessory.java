@@ -43,8 +43,12 @@ public enum Accessory implements ItemStackable {
 			gun.damageAdded -= 1;
 		}
 	},
-	CANNON_POWER(AccessoryType.CANNON, Material.GUNPOWDER, "Canon lourd", "augmente la vitesse des balles"){
-		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
+	CANNON_POWER(
+			AccessoryType.CANNON,
+			Material.GUNPOWDER,
+			"Canon lourd",
+			"augmente la portée des balles"){
+		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.35f);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -57,7 +61,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	CANNON_SILENT(AccessoryType.CANNON, Material.REDSTONE, "Silencieux", "réduit le volume de la détonation"){
-		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.25f);
+		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.22f);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -133,7 +137,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	STOCK_STRONG(AccessoryType.STOCK, Material.BIRCH_FENCE_GATE, "Crosse lourde", "réduit la dispersion des balles"){
-		private final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
+		private final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.65f);
 		
 		@Override
 		public void apply(Gun gun) {
