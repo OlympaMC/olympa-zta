@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.bank.PhysicalMoney;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
 public class MoneyCreator implements LootCreator {
 
@@ -20,7 +21,7 @@ public class MoneyCreator implements LootCreator {
 	}
 
 	@Override
-	public Loot create(Random random) {
+	public Loot create(Random random, LootContext context) {
 		return new Loot(PhysicalMoney.getBanknote(banknote, Utils.getRandomAmount(random, min, max)));
 	}
 	

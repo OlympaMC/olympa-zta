@@ -1,10 +1,13 @@
 package fr.olympa.zta.loot.creators;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.Conditioned;
 import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.weapons.guns.GunType;
 
 public class ItemStackableCreator implements LootCreator {
@@ -15,13 +18,18 @@ public class ItemStackableCreator implements LootCreator {
 		this.stackable = stackable;
 	}
 
-	public Loot create(Random random) {
+	@Override
+	public Loot create(Random random, LootContext context) {
 		return new StackableLoot();
 	}
 	
 	@Override
 	public String getTitle() {
 		return stackable.getName();
+	}
+	
+	public ItemStackable getStackable() {
+		return stackable;
 	}
 
 	class StackableLoot extends Loot {
@@ -40,6 +48,36 @@ public class ItemStackableCreator implements LootCreator {
 			return !(stackable instanceof GunType);
 		}
 
+	}
+	
+	public static class GunConditionned implements Conditioned<LootCreator, LootContext> {
+		
+		private ItemStackableCreator creator;
+		private double scalar;
+		private double min;
+		
+		public GunConditionned(ItemStackableCreator creator, double scalar, double min) {
+			this.creator = creator;
+			this.scalar = scalar;
+			this.min = min;
+		}
+		
+		@Override
+		public LootCreator getObject() {
+			return creator;
+		}
+		
+		@Override
+		public boolean isValid(LootContext context) {
+			double odds = Math.max(min, 1D - scalar * context.getCarriedGuns().size());
+			return ThreadLocalRandom.current().nextDouble() <= odds;
+		}
+		
+		@Override
+		public boolean isValidWithNoContext() {
+			return true;
+		}
+		
 	}
 
 }

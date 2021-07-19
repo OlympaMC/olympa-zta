@@ -12,13 +12,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.api.spigot.holograms.Hologram;
 import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.lines.BlinkingLine;
 import fr.olympa.api.spigot.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.RandomizedInventory;
@@ -86,7 +86,7 @@ public class Crate extends RandomizedInventory {
 				}, 5 * 60 * 20);
 				location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.5f, 0.1f);
 				location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-				super.fillInventory();
+				super.fillInventory(null);
 			}
 			timerLine.updateGlobal();
 			/*if (diff < 20) {
@@ -127,7 +127,7 @@ public class Crate extends RandomizedInventory {
 	}
 	
 	@Override
-	protected RandomizedMultiPicker<LootCreator> getLootPicker() {
+	protected ConditionalMultiPicker<LootCreator, LootContext> getLootPicker() {
 		return type.getPicker();
 	}
 	

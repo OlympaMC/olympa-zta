@@ -3,10 +3,13 @@ package fr.olympa.zta.loot.creators;
 import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
 public interface LootCreator {
 
-	public abstract Loot create(Random random);
+	public abstract Loot create(Random random, @Nullable LootContext context);
 	
 	public abstract String getTitle();
 	

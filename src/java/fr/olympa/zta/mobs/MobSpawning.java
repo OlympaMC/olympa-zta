@@ -39,6 +39,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.collect.EvictingQueue;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalContext;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.Conditioned;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBuilder;
 import fr.olympa.api.spigot.region.Point2D;
 import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.region.tracking.ActionResult;
@@ -46,11 +50,6 @@ import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.RegionEventReason;
 import fr.olympa.api.spigot.region.tracking.flags.Flag;
 import fr.olympa.api.spigot.utils.CustomDayDuration;
-import fr.olympa.api.utils.RandomizedPickerBase;
-import fr.olympa.api.utils.RandomizedPickerBase.ConditionalContext;
-import fr.olympa.api.utils.RandomizedPickerBase.Conditioned;
-import fr.olympa.api.utils.RandomizedPickerBase.IConditionalBuilder;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedPicker;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -66,7 +65,7 @@ import net.minecraft.server.v1_16_R3.Entity;
 
 public class MobSpawning implements Runnable {
 
-	public static final IConditionalBuilder<Zombies, MobSpawningContext> DEFAULT_ZOMBIE_PICKER = RandomizedPickerBase.<Zombies>newBuilder()
+	public static final RandomizedPickerBuilder.IConditionalBuilder<Zombies, MobSpawningContext> DEFAULT_ZOMBIE_PICKER = RandomizedPickerBuilder.<Zombies>newBuilder()
 			.add(1, Zombies.COMMON)
 			.add(0.12, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
 			.add(0.09, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
@@ -376,28 +375,28 @@ public class MobSpawning implements Runnable {
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
-				RandomizedPickerBase.<LootChestType>newBuilder().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
 		MEDIUM(
 				new MobSpawningConfig(14, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build(0.15)),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",
 				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
-				RandomizedPickerBase.<LootChestType>newBuilder().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
 		EASY(
 				new MobSpawningConfig(15, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build(0.18)),
 				true,
 				"§d§lzone modérée",
 				"§7§ogardez vos distances",
 				new DynmapZoneConfig(Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
-				RandomizedPickerBase.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.1, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.1, LootChestType.MILITARY).build()),
 		SAFE(
 				new MobSpawningConfig(23, 24, 1, 1, DEFAULT_ZOMBIE_PICKER.clone().add(0.008, Zombies.TNT).build(0.2)),
 				false,
 				"§a§lzone sécurisée",
 				"§7§orestez vigilant",
 				new DynmapZoneConfig(Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté."),
-				RandomizedPickerBase.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.2, LootChestType.CONTRABAND).build());
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.2, LootChestType.CONTRABAND).build());
 
 		private static Map<Point2D, SpawnType> chunks = new HashMap<>();
 
@@ -537,7 +536,7 @@ public class MobSpawning implements Runnable {
 
 	}
 	
-	public static class MobSpawningContext extends ConditionalContext {
+	public static class MobSpawningContext extends ConditionalContext<Zombies> {
 		
 	}
 	

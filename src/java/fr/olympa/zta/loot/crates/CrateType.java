@@ -1,9 +1,10 @@
 package fr.olympa.zta.loot.crates;
 
-import fr.olympa.api.utils.RandomizedPickerBase;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.Artifacts;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
@@ -21,7 +22,7 @@ public enum CrateType {
 
 	BASIC(
 			"basique", 
-			RandomizedPickerBase.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 3, 9))
 			.add(20, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 1, 2))
 			.add(15, new AmmoCreator(5, 15))
@@ -45,7 +46,7 @@ public enum CrateType {
 			),
 	RARE(
 			"rare",
-			RandomizedPickerBase.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.addAlways(new MoneyCreator(PhysicalMoney.BANKNOTE_10, 4, 10))
 			.add(25, new MoneyCreator(PhysicalMoney.BANKNOTE_100, 2, 3))
 			.add(15, new AmmoCreator(5, 15))
@@ -72,9 +73,9 @@ public enum CrateType {
 	;
 
 	private String name;
-	private RandomizedMultiPicker<LootCreator> picker;
+	private ConditionalMultiPicker<LootCreator, LootContext> picker;
 
-	private CrateType(String name, RandomizedMultiPicker<LootCreator> picker) {
+	private CrateType(String name, ConditionalMultiPicker<LootCreator, LootContext> picker) {
 		this.name = name;
 		this.picker = picker;
 	}
@@ -83,7 +84,7 @@ public enum CrateType {
 		return name;
 	}
 	
-	public RandomizedMultiPicker<LootCreator> getPicker() {
+	public ConditionalMultiPicker<LootCreator, LootContext> getPicker() {
 		return picker;
 	}
 }

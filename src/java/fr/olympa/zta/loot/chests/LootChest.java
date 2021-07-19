@@ -14,8 +14,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -55,7 +55,7 @@ public class LootChest extends RandomizedInventory {
 		if (time > nextOpen) {
 			OlympaPlayerZTA.get(p).openedChests.increment();
 			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
-			fillInventory();
+			fillInventory(p);
 		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
 		
 		super.create(p);
@@ -124,7 +124,7 @@ public class LootChest extends RandomizedInventory {
 	}
 	
 	@Override
-	protected RandomizedMultiPicker<LootCreator> getLootPicker() {
+	protected ConditionalMultiPicker<LootCreator, LootContext> getLootPicker() {
 		return type.getPicker();
 	}
 

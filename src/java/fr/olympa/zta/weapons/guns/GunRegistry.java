@@ -147,9 +147,7 @@ public class GunRegistry {
 		if (!im.hasLore()) return null;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		if (id != -1) return registry.get(id);
-		
-		return null;
+		return id != 1 ? registry.get(id) : null;
 	}
 	
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {

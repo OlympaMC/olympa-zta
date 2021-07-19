@@ -1,6 +1,6 @@
 package fr.olympa.zta.mobs;
 
-import fr.olympa.api.utils.RandomizedPickerBase.ConditionalPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalPicker;
 import fr.olympa.zta.mobs.MobSpawning.MobSpawningContext;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 

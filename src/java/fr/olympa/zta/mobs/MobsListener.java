@@ -14,12 +14,13 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
-import fr.olympa.api.utils.RandomizedPickerBase;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.QuestItem;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
@@ -32,7 +33,7 @@ import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private RandomizedMultiPicker<LootCreator> zombieLoots = RandomizedPickerBase.<LootCreator>newBuilder()
+	private ConditionalMultiPicker<LootCreator, LootContext> zombieLoots = RandomizedInventory.newBuilder()
 			.add(22, new AmmoCreator(3, 4))
 			.add(40, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
 			.add(15, new FoodCreator(Food.BAKED_POTATO, 2, 4))
@@ -56,8 +57,9 @@ public class MobsListener implements Listener {
 				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
 				if (zombie.isLooting()) {
 					killer.killedZombies.increment();
-					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current())) {
-						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
+					LootContext context = new LootContext(entity.getKiller());
+					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current(), context)) {
+						e.getDrops().add(creator.create(ThreadLocalRandom.current(), context).getItem());
 					}
 					return;
 				}

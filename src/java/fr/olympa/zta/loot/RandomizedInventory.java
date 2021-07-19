@@ -1,22 +1,35 @@
 package fr.olympa.zta.loot;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalContext;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBuilder;
+import fr.olympa.api.common.randomized.RandomizedPickerBuilder.IConditionalBuilder;
 import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.LootCreator.Loot;
+import fr.olympa.zta.weapons.guns.Gun;
+import fr.olympa.zta.weapons.guns.GunType;
 
 public abstract class RandomizedInventory extends OlympaGUI {
-	
+
 	private Map<Integer, Loot> currentLoots = new HashMap<>();
 	private Random random = new Random();
 	
@@ -28,15 +41,16 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		super(name, rows);
 	}
 	
-	protected void fillInventory() {
+	protected void fillInventory(@Nullable Player player) {
 		clearInventory();
-		for (LootCreator creator : getLootPicker().pickMulti(random)) {
+		LootContext context = new LootContext(player);
+		for (LootCreator creator : getLootPicker().pickMulti(random, context)) {
 			int slot;
 			do {
 				slot = random.nextInt(inv.getSize());
 			}while (inv.getItem(slot) != null);
 
-			Loot loot = creator.create(random);
+			Loot loot = creator.create(random, context);
 			currentLoots.put(slot, loot);
 			inv.setItem(slot, loot.getItem());
 		}
@@ -48,13 +62,13 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		inv.clear();
 	}
 	
-	protected abstract RandomizedMultiPicker<LootCreator> getLootPicker();
+	protected abstract ConditionalMultiPicker<LootCreator, LootContext> getLootPicker();
 	
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) return true;
 		Loot loot = currentLoots.get(slot);
-		if (loot == null) throw new RuntimeException("No loot in slot " + slot);
+		if (loot == null) throw new IllegalStateException("No loot in slot " + slot);
 		if (click.isShiftClick()) {
 			if (p.getInventory().firstEmpty() == -1) {
 				boolean valid = false;
@@ -78,8 +92,50 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		}
 		ItemStack realItem = loot.getRealItem();
 		if (realItem != null) inv.setItem(slot, realItem);
-		if (click != ClickType.RIGHT || current.getAmount() > 1) currentLoots.remove(slot);
+		if (click != ClickType.RIGHT || current.getAmount() == 1) currentLoots.remove(slot);
 		return false;
+	}
+	
+	public static class LootContext extends ConditionalContext<LootCreator> {
+		
+		private final @Nullable Player player;
+		
+		private List<GunType> carriedGuns;
+		
+		public LootContext(@Nullable Player player) {
+			this.player = player;
+		}
+		
+		public @Nullable Player getPlayer() {
+			return player;
+		}
+		
+		public List<GunType> getCarriedGuns() {
+			if (carriedGuns == null) {
+				if (player == null) {
+					carriedGuns = Collections.emptyList();
+				}else {
+					carriedGuns = Arrays.stream(player.getInventory().getStorageContents()).map(item -> OlympaZTA.getInstance().gunRegistry.getGun(item)).filter(Objects::nonNull).map(Gun::getType).collect(Collectors.toList());
+				}
+			}
+			return carriedGuns;
+		}
+		
+		@Override
+		public void addPicked(LootCreator picked) {
+			super.addPicked(picked);
+			if (player == null) return;
+			if (picked instanceof ItemStackableCreator creator) {
+				if (creator.getStackable()instanceof GunType gun) {
+					getCarriedGuns().add(gun);
+				}
+			}
+		}
+		
+	}
+	
+	public static IConditionalBuilder<LootCreator, LootContext> newBuilder() {
+		return RandomizedPickerBuilder.newConditionalBuilder();
 	}
 	
 }

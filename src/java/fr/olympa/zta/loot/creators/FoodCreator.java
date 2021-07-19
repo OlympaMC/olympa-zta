@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.spigot.item.ImmutableItemStack;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
 public class FoodCreator implements LootCreator {
 
@@ -25,7 +26,8 @@ public class FoodCreator implements LootCreator {
 		this.max = max;
 	}
 
-	public Loot create(Random random) {
+	@Override
+	public Loot create(Random random, LootContext context) {
 		return new Loot(type.get(Utils.getRandomAmount(random, min, max)));
 	}
 	

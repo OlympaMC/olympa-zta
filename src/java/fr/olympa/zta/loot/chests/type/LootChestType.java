@@ -1,10 +1,11 @@
 package fr.olympa.zta.loot.chests.type;
 
-import fr.olympa.api.utils.RandomizedPickerBase;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.itemstackable.QuestItem;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
@@ -21,9 +22,44 @@ import fr.olympa.zta.weapons.guns.GunType;
 
 public enum LootChestType {
 
+	BASIC(
+			"basique",
+			RandomizedInventory.newBuilder()
+					.add(30, new AmmoCreator.BestCreator(3, 5, 7, 0.4, 1D, 0.5D))
+					.add(6, new QuestItemCreator(QuestItem.AMAS, 1, 3))
+					.add(10, new QuestItemCreator(QuestItem.DECHET, 1, 2))
+					.add(0.16, new QuestItemCreator(QuestItem.BATTERIE, 1, 1))
+					.add(14, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 6))
+					.add(4, new MoneyCreator(PhysicalMoney.BANKNOTE_10, 1, 1))
+					.add(16, new FoodCreator(Food.BAKED_POTATO, 1, 2))
+					.add(0.006, new ItemStackableCreator(Artifacts.BOOTS))
+					.add(0.006, new ItemStackableCreator(Artifacts.PARACHUTE))
+					.build(1, 3)),
+	SAFE(
+			"de zone sécurisée",
+			RandomizedInventory.newBuilder()
+					.add(15, new ItemStackableCreator.GunConditionned(new ItemStackableCreator(GunType.M1911), 0.4, 0.15))
+					.add(5, new ItemStackableCreator.GunConditionned(new ItemStackableCreator(GunType.P22), 0.15, 0.7))
+					.add(25, new AmmoCreator.BestCreator(3, 6, 8, 0.5, 1, 0))
+					.add(25, new AmmoCreator(AmmoType.LIGHT, 3, 7, 0.5))
+					.add(20, new FoodCreator(Food.COOKIE, 2, 3))
+					.add(10, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 6))
+					.build(1, 3)),
+	EASY(
+			"de zone modérée",
+			RandomizedInventory.newBuilder()
+			.build(1, 3)),
+	MEDIUM(
+			"de zone à risques",
+			RandomizedInventory.newBuilder()
+			.build(1, 3)),
+	HARD(
+			"de zone rouge",
+			RandomizedInventory.newBuilder()
+			.build(1, 3)),
 	CIVIL(
 			"civil",
-			RandomizedPickerBase.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.add(3, new ItemStackableCreator(GunType.M1911))
 			.add(1.44, new ItemStackableCreator(GunType.COBRA))
 			.add(2.28, new ItemStackableCreator(GunType.REM_870))
@@ -54,7 +90,7 @@ public enum LootChestType {
 			.build(1, 3)),
 	MILITARY(
 			"militaire",
-			RandomizedPickerBase.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.add(2.0, new ItemStackableCreator(GunType.P22))
 			.add(1.0, new ItemStackableCreator(GunType.SDMR))
 			.add(1.2, new ItemStackableCreator(GunType.BARRETT))
@@ -85,7 +121,7 @@ public enum LootChestType {
 			.build(1, 3)),
 	CONTRABAND(
 			"de contrebandier",
-			RandomizedPickerBase.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.add(1.65, new ItemStackableCreator(GunType.G19))
 			.add(1.54, new ItemStackableCreator(GunType.SKORPION))
 			.add(1.43, new ItemStackableCreator(GunType.AK_20))
@@ -117,9 +153,9 @@ public enum LootChestType {
 					;
 	
 	private String name;
-	private RandomizedMultiPicker<LootCreator> picker;
+	private ConditionalMultiPicker<LootCreator, LootContext> picker;
 
-	private LootChestType(String name, RandomizedMultiPicker<LootCreator> picker) {
+	private LootChestType(String name, ConditionalMultiPicker<LootCreator, LootContext> picker) {
 		this.name = name;
 		this.picker = picker;
 	}
@@ -128,7 +164,7 @@ public enum LootChestType {
 		return name;
 	}
 	
-	public RandomizedMultiPicker<LootCreator> getPicker() {
+	public ConditionalMultiPicker<LootCreator, LootContext> getPicker() {
 		return picker;
 	}
 

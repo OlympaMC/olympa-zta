@@ -14,8 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.utils.RandomizedPickerBase.FixedMultiPicker;
-import fr.olympa.api.utils.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.FixedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 

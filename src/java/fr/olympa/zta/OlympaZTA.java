@@ -71,6 +71,7 @@ import fr.olympa.api.spigot.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.spigot.scoreboard.tab.TabManager;
 import fr.olympa.api.spigot.trades.TradesManager;
 import fr.olympa.api.spigot.utils.CustomDayDuration;
+import fr.olympa.api.spigot.utils.SitManager;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
@@ -116,7 +117,6 @@ import fr.olympa.zta.shops.GunShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
-import fr.olympa.zta.utils.SitManager;
 import fr.olympa.zta.utils.TeleportationManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
@@ -278,7 +278,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			}
 		}, this);
 		pluginManager.registerEvents(crates = new CratesManager(), this);
-		pluginManager.registerEvents(new SitManager(), this);
+		pluginManager.registerEvents(new SitManager(this), this);
 		if (beautyQuestsLink != null)
 			pluginManager.registerEvents(beautyQuestsLink, this);
 
