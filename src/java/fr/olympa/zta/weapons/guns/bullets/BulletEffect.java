@@ -1,5 +1,6 @@
 package fr.olympa.zta.weapons.guns.bullets;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 
@@ -14,8 +15,9 @@ public class BulletEffect extends BulletSimple{
 		this.effect = effect;
 	}
 	
-	public void damage(LivingEntity entity, LivingEntity damager, float damage){
-		super.damage(entity, damager, damage);
+	@Override
+	public void damage(LivingEntity entity, LivingEntity damager, Entity projectile, float damage) {
+		super.damage(entity, damager, projectile, damage);
 		entity.addPotionEffect(effect);
 	}
 	

@@ -172,7 +172,7 @@ public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-
 						}
 					}
 					chunkProcessed++;
-					markers.add(DynmapLink.showDebug(id, world, xChunk << 4, zChunk << 4, xChunk << 4 + 15, zChunk << 4 + 15, Color.AQUA.asRGB()));
+					markers.add(DynmapLink.showDebug(id, world, xChunk << 4, zChunk << 4, (xChunk << 4) + 15, (zChunk << 4) + 15, Color.AQUA.asRGB()));
 				}
 			}
 			threads.remove(id);

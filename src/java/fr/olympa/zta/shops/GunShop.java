@@ -15,11 +15,11 @@ public class GunShop extends AbstractSellingShop<GunType> {
 	
 	private static final List<AbstractArticle<GunType>> ARTICLES = Arrays.asList(
 			new Article<>(GunType.M1897, 100),
-			new Article<>(GunType.COBRA, 200),
-			new Article<>(GunType.BENELLI, 200),
-			new Article<>(GunType.KSG, 250),
-			new Article<>(GunType.UZI, 300),
-			new Article<>(GunType.M16, 600),
+			new Article<>(GunType.COBRA, 300),
+			new Article<>(GunType.KSG, 500),
+			new Article<>(GunType.BENELLI, 600),
+			new Article<>(GunType.SKORPION, 9000),
+			new Article<>(GunType.M16, 1700),
 			new Article<>(GunType.SDMR, 3000),
 			new Article<>(GunType.DRAGUNOV, 65000)
 			);

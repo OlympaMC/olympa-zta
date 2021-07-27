@@ -1,20 +1,7 @@
 package fr.olympa.zta.mobs;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -375,28 +362,28 @@ public class MobSpawning implements Runnable {
 				"§c§lzone rouge",
 				"§7§ogare au zombies!",
 				new DynmapZoneConfig(Color.RED, "621100", "Zone rouge", "Cette zone présente une forte présence en infectés."),
-				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.5, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.4, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.4, LootChestType.BASIC).add(0.6, LootChestType.HARD).build()),
 		MEDIUM(
 				new MobSpawningConfig(14, 20, 2, 5, DEFAULT_ZOMBIE_PICKER.clone().add(0.08, Zombies.TNT).add(0.005, Zombies.SPEED).build(0.15)),
 				true,
 				"§6§lzone à risques",
 				"§7§osoyez sur vos gardes",
 				new DynmapZoneConfig(Color.ORANGE, "984C00", "Zone à risques", "La contamination est plutôt importante dans cette zone."),
-				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.7, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.2, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.4, LootChestType.BASIC).add(0.6, LootChestType.MEDIUM).build()),
 		EASY(
 				new MobSpawningConfig(15, 24, 1, 4, DEFAULT_ZOMBIE_PICKER.clone().add(0.012, Zombies.TNT).build(0.18)),
 				true,
 				"§d§lzone modérée",
 				"§7§ogardez vos distances",
 				new DynmapZoneConfig(Color.YELLOW, "8B7700", "Zone modérée", "Humains et zombies cohabitent, restez sur vos gardes."),
-				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.1, LootChestType.CONTRABAND).add(0.1, LootChestType.MILITARY).build()),
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.45, LootChestType.BASIC).add(0.55, LootChestType.EASY).build()),
 		SAFE(
 				new MobSpawningConfig(23, 24, 1, 1, DEFAULT_ZOMBIE_PICKER.clone().add(0.008, Zombies.TNT).build(0.2)),
 				false,
 				"§a§lzone sécurisée",
 				"§7§orestez vigilant",
 				new DynmapZoneConfig(Color.LIME, "668B00", "Zone sécurisée", "C'est un lieu sûr, vous pourrez croiser occasionnellement un infecté."),
-				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.8, LootChestType.CIVIL).add(0.2, LootChestType.CONTRABAND).build());
+				RandomizedPickerBuilder.<LootChestType>newBuilder().add(0.5, LootChestType.BASIC).add(0.5, LootChestType.SAFE).build());
 
 		private static Map<Point2D, SpawnType> chunks = new HashMap<>();
 

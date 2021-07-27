@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.common.randomized.RandomValueProvider;
 import fr.olympa.api.common.randomized.RandomizedPickerBase.FixedMultiPicker;
 import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -24,7 +25,7 @@ public class SoundAmbiance implements Runnable {
 	private final double[] chances = { 0.06, 0.005 };
 
 	private BukkitTask task;
-	private RandomizedMultiPicker<Scenario> scenarioPicker = new FixedMultiPicker<Scenario>(Arrays.stream(Scenario.values()).collect(Collectors.toMap(x -> x, x -> x.getChance())), Collections.emptyList(), 1, 1, 0);
+	private RandomizedMultiPicker<Scenario> scenarioPicker = new FixedMultiPicker<>(Arrays.stream(Scenario.values()).collect(Collectors.toMap(x -> x, Scenario::getChance)), Collections.emptyList(), new RandomValueProvider.UniformProvider(1, 1), 0);
 	private List<AmbianceScenario> scenarios = new ArrayList<>();
 
 	@Override

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,11 +38,13 @@ import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class Gun implements Weapon {
 
+	public static final List<ChatColor> TIERS = Arrays.asList(ChatColor.GREEN, ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.YELLOW, ChatColor.GOLD);
 	public static final UUID ZOOM_UUID = UUID.fromString("8a1c6742-3f54-44c2-ac6f-90fa7491ebef");
 	
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");

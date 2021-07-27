@@ -108,7 +108,7 @@ public class LootChestCommand extends ComplexCommand {
 		sendSuccess("Le compte à rebours de ce coffre a été mis à 0.");
 	}
 
-	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %]")
+	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %%]")
 	public void globalScan(CommandContext cmd) {
 		try {
 			new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));

@@ -56,8 +56,8 @@ public class ItemStackableCreator implements LootCreator {
 		private double scalar;
 		private double min;
 		
-		public GunConditionned(ItemStackableCreator creator, double scalar, double min) {
-			this.creator = creator;
+		public GunConditionned(GunType gun, double scalar, double min) {
+			this.creator = new ItemStackableCreator(gun);
 			this.scalar = scalar;
 			this.min = min;
 		}
