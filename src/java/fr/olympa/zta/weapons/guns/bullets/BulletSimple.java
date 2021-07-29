@@ -84,6 +84,7 @@ public class BulletSimple extends Bullet{
 	public void damage(LivingEntity entity, LivingEntity damager, Entity projectile, float damage) {
 		damage = damage + random.nextFloat() - 0.5f;
 		((CraftLivingEntity) entity).getHandle().damageEntity(DamageSource.projectile(((CraftEntity) projectile).getHandle(), ((CraftEntity) damager).getHandle()), damage);
+		//((CraftLivingEntity) entity).getHandle().damageEntity(DamageSource.mobAttack(((CraftLivingEntity) damager).getHandle()).c(), damage);
 		//entity.damage(damage, damager);
 		entity.setNoDamageTicks(NO_DAMAGE_TICKS);
 	}

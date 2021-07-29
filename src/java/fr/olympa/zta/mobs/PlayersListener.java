@@ -310,7 +310,13 @@ public class PlayersListener implements Listener {
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (e.isCancelled() || e.getDamage() == 0) return;
 		if (!(e.getEntity() instanceof LivingEntity)) return;
-		if (!(e.getDamager()instanceof Player damager)) return;
+		Player damager;
+		if (!(e.getDamager() instanceof Player)) {
+			if (e.getDamager() instanceof Projectile projectile && projectile.getShooter() instanceof Player shooter)
+				damager = shooter;
+			else return;
+		}else damager = (Player) e.getDamager();
+		
 		LivingEntity en = (LivingEntity) e.getEntity();
 		Location lc = en.getEyeLocation().add(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5);
 		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false, true, new FixedLine<>("§4-§l" + DAMAGE_FORMAT.format(e.getFinalDamage()) + " §r§c❤"));
