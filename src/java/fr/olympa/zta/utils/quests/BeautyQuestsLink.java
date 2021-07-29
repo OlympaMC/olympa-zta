@@ -12,12 +12,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.customevents.ScoreboardCreateEvent;
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.TimerLine;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.lines.TimerLine;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.api.QuestsAPI;
@@ -38,16 +38,15 @@ public class BeautyQuestsLink implements Listener {
 	
 	private Map<Player, Integer> scoreboards = new HashMap<>();
 	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<Scoreboard<OlympaPlayerZTA>>(scoreboard -> {
-		Player player = scoreboard.getOlympaPlayer().getPlayer();
+		Player player = (Player) scoreboard.getOlympaPlayer().getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		List<Quest> started = QuestsAPI.getQuestsStarteds(acc, true);
 		int id = scoreboards.get(player).intValue();
 		if (id >= started.size()) id = 0;
 		Quest quest = started.get(id++);
-		quest.hasFinished(acc);
 		scoreboards.put(player, id);
 		String questName = quest.isRepeatable() ? "\n§7§lMission quotidienne:" : ("\n§7Mission: §6§l" + quest.getName());
-		return String.join("\n", SpigotUtils.wordWrap(questName + "\n§7" + quest.getBranchesManager().getPlayerBranch(acc).getDescriptionLine(acc, Source.SCOREBOARD), 35));
+		return String.join("\n", SpigotUtils.wordWrap(questName + "\n§7" + quest.getBranchesManager().getDescriptionLine(acc, Source.SCOREBOARD), 35));
 	}, OlympaZTA.getInstance(), 100);
 	
 	public BeautyQuestsLink() {
@@ -107,10 +106,12 @@ public class BeautyQuestsLink implements Listener {
 	private synchronized void checkScoreboard(Player p, boolean forceCreation) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return;
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
+		if (!player.parameterQuestsBoard.get()) return;
+		
 		if (!QuestsAPI.getQuestsStarteds(acc, true).isEmpty()) {
 			if (!forceCreation && scoreboards.containsKey(p)) return;
 			scoreboards.putIfAbsent(p, 0);
-			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
 			if (scoreboard == null) return;
 			
@@ -118,8 +119,20 @@ public class BeautyQuestsLink implements Listener {
 		}else {
 			if (!scoreboards.containsKey(p)) return;
 			scoreboards.remove(p);
-			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			if (OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player) != null) OlympaZTA.getInstance().scoreboards.create(player); // reset le scoreboard
+			OlympaZTA.getInstance().scoreboards.refresh(player); // reset le scoreboard
+		}
+	}
+	
+	public void updateBoardParameter(OlympaPlayerZTA player, boolean enabled) {
+		if (!enabled) {
+			if (scoreboards.containsKey(player.getPlayer())) {
+				scoreboards.remove(player.getPlayer());
+				OlympaZTA.getInstance().scoreboards.refresh(player);
+			}
+		}else {
+			if (!scoreboards.containsKey(player.getPlayer())) {
+				checkScoreboard((Player) player.getPlayer(), true);
+			}
 		}
 	}
 	

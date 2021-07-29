@@ -1,21 +1,24 @@
 package fr.olympa.zta.clans.plots;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.editor.RegionEditor;
-import fr.olympa.api.editor.TextEditor;
-import fr.olympa.api.editor.WaitBlockClick;
-import fr.olympa.api.editor.WaitClick;
-import fr.olympa.api.editor.parsers.NumberParser;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.editor.RegionEditor;
+import fr.olympa.api.spigot.editor.TextEditor;
+import fr.olympa.api.spigot.editor.WaitBlockClick;
+import fr.olympa.api.spigot.editor.WaitClick;
+import fr.olympa.api.spigot.editor.parsers.NumberParser;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
@@ -23,11 +26,15 @@ public class ClanPlotsCommand extends ComplexCommand {
 	
 	private ClanPlotsManager manager;
 	
+	private ClanPlotPaginator paginatorAll = new ClanPlotPaginator(10, "Parcelles de clans", "all", () -> new ArrayList<>(manager.getPlots().values()));
+	private ClanPlotPaginator paginatorRent = new ClanPlotPaginator(10, "Parcelles de clans louées", "rent", () -> manager.getPlots().values().stream().filter(x -> x.getClan() != null).collect(Collectors.toList()));
+	private ClanPlotPaginator paginatorFree = new ClanPlotPaginator(10, "Parcelles de clans vides", "free", () -> manager.getPlots().values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList()));
+	
 	public ClanPlotsCommand(ClanPlotsManager manager) {
 		super(OlympaZTA.getInstance(), "clanplots", "Permet de gérer les parcelles de clan.", ZTAPermissions.CLAN_PLOTS_MANAGE_COMMAND);
 		this.manager = manager;
 		
-		super.addArgumentParser("PLOT", sender -> manager.getPlots().keySet().stream().map(x -> x.toString()).collect(Collectors.toList()), x -> manager.getPlots().get(Integer.parseInt(x)), x -> String.format("Le plot %s n'existe pas.", x));
+		super.addArgumentParser("PLOT", (sender, arg) -> manager.getPlots().keySet().stream().map(x -> x.toString()).collect(Collectors.toList()), x -> manager.getPlots().get(Integer.parseInt(x)), x -> String.format("Le plot %s n'existe pas.", x));
 	}
 	
 	@Cmd (player = true)
@@ -82,11 +89,71 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("%d panneaux ont été mis à jour.", i);
 	}
 	
+	@Cmd (hide = true)
+	public void updateDBRegions(CommandContext cmd) {
+		int i = 0;
+		for (ClanPlot plot : manager.getPlots().values()) {
+			try {
+				plot.setRegion(plot.getTrackedRegion().getRegion());
+				i++;
+			}catch (SQLException | IOException e) {
+				e.printStackTrace();
+				sendError(e);
+			}
+			i++;
+		}
+		sendSuccess("%d régions ont été mises à jour.", i);
+	}
+	
 	@Cmd (player = true, args = "PLOT", min = 1, syntax = "<plot ID>")
 	public void teleport(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		player.teleport(plot.getSpawn());
 		sendSuccess("Tu as été téléporté au spawn du plot %d.", plot.getID());
+	}
+	
+	@Cmd (player = true, args = "PLOT", min = 1)
+	public void editRegion(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		Player p = getPlayer();
+		Prefix.INFO.sendMessage(p, "Sélectionne la région de la parcelle.");
+		new RegionEditor(p, (region) -> {
+			if (region == null) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "La région sélectionnée n'est pas correcte.");
+				return;
+			}
+			try {
+				plot.setRegion(region);
+				Prefix.DEFAULT_GOOD.sendMessage(p, "La région du plot %d a été modifiée.", plot.getID());
+			}catch (SQLException | IOException e) {
+				e.printStackTrace();
+				sendError(e);
+			}
+		}).enterOrLeave();
+	}
+	
+	@Cmd (args = { "all|rent|free", "INTEGER" })
+	public void list(CommandContext cmd) {
+		ClanPlotPaginator paginator;
+		switch (cmd.getArgument(0, "all")) {
+		case "all":
+			paginator = paginatorAll;
+			break;
+		case "rent":
+			paginator = paginatorRent;
+			break;
+		case "free":
+			paginator = paginatorFree;
+			break;
+		default:
+			paginator = null;
+			break;
+		}
+		if (paginator == null) {
+			sendIncorrectSyntax();
+			return;
+		}
+		sendComponents(paginator.getPage(cmd.getArgument(1, 1)));
 	}
 	
 }

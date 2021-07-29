@@ -59,7 +59,7 @@ public abstract class Bullet{
 						if (projectile.getTicksLived() == previousTicksLived) return;
 						previousTicksLived = projectile.getTicksLived();
 						Vector velocity = projectile.getVelocity();
-						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
+						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), /*velocity.normalize().length()*/ 1, null, true);
 					}else cancel();
 				}
 			}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 0, 4);

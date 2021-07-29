@@ -5,10 +5,16 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Zombie;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.common.chat.TxtComponentBuilder;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.lines.DynamicLine;
+import fr.olympa.api.spigot.lines.TimerLine;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
@@ -17,24 +23,33 @@ import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 
 public class MobsCommand extends ComplexCommand {
 
+	private DynamicLine<Scoreboard<OlympaPlayerZTA>> mobTracker = new TimerLine<>(x -> {
+		return "\n§7Zombies: §e" + OlympaZTA.getInstance().mobSpawning.world.getEntitiesByClass(Zombie.class).size();
+	}, OlympaZTA.getInstance(), 20);
+	
 	public MobsCommand() {
-		super(OlympaZTA.getInstance(), "mobs", "Gestion des mobs", ZTAPermissions.MOBS_COMMAND);
+		super(OlympaZTA.getInstance(), "mobs", "Gère les mobs du ZTA.", ZTAPermissions.MOBS_COMMAND);
 		super.addArgumentParser("MOBTYPE", Zombies.class);
 	}
 
 	@Cmd
 	public void info(CommandContext cmd) {
 		MobSpawning spawning = OlympaZTA.getInstance().mobSpawning;
-		sendInfo("Le spawn de mob est §l%s", spawning.isEnabled() ? "§aactif" : "§cinactif");
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT_GOOD.formatMessage("Le spawn de mob est %s", spawning.isEnabled() ? "§a§lactif" : "§c§linactif"));
+		builder.extraSpliter("\n§8➤ §7");
 		if (spawning.isEnabled()) {
-			sendInfo("§7- Nombre de mobs moyen dans la §equeue de spawn : §l%s", Utils.formatDouble(spawning.getAverageQueueSize(), 2));
-			sendInfo("§7- Durée de §ecalcul des spawn de la dernière minute (en ms) : §l%s", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
-			sendInfo("§7- Dernière durée de §ecalcul des chunks actifs (%d) : §l%d ms", spawning.lastActiveChunks, spawning.timeActiveChunks);
-			sendInfo("§7- Nombre de §ezombies spawnés à la dernière task : §l%d", spawning.lastSpawnedMobs);
+			builder.extra(new TxtComponentBuilder("§7- Queue de spawn.").onHoverText("§7Nombre de zombies moyen dans la queue de spawn: §a%s\n§7Nombre de zombies spawné lors de la dernière task: §a%d", Utils.formatDouble(spawning.getAverageQueueSize(), 2), spawning.lastSpawnedMobs));
+			builder.extra(new TxtComponentBuilder("§7- Durées de calculs.").onHoverText("§7Calcul des spawn (sur 1min, en ms): §a%s\n§7Dernier calcul des chunks actifs: §a%d chunks§7, §a%d ms", spawning.getLastComputeTimes().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")), spawning.lastActiveChunks, spawning.timeActiveChunks));
 		}
-		sendInfo("§7Nombre d'§eentités vivantes sur le monde principal : §l%s", spawning.getEntityCount());
-		sendInfo("§7Quantité maximale d'§eentités sur le monde/le chunk : §l%d/%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk);
-		if (player != null) sendInfo("§7Vous êtes actuellement dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+		builder.extra(new TxtComponentBuilder("§eConfiguration actuelle.").onHoverText("§eEntités:\n§7Quantité maximale sur le monde: §a%d\n§7Quantité maximale dans un chunk: §a%d\n\n§eDurées:\n§7Secondes entre les calculs: §a%d\n§7Ticks entre deux spawn de mobs: §a%d", spawning.maxEntities, spawning.criticalEntitiesPerChunk, spawning.calculationMillis / 1000, spawning.spawnTicks));
+		builder.extra(new TxtComponentBuilder("§eNombre d'entités.").onHoverText("§e%s", spawning.getEntityCount()));
+		if (player != null) builder.extra("§7Vous êtes dans une §ezone de spawn : §l%s", SpawnType.getSpawnType(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockZ()));
+		sendComponents(builder.build());
+	}
+	
+	@Cmd (player = true)
+	public void addScoreboardTracker(CommandContext cmd) {
+		OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(getOlympaPlayer()).addLine(mobTracker);
 	}
 
 	@Cmd (player = true, args = { "MOBTYPE", "INTEGER" }, min = 0, syntax = "[type] [quantité]")
@@ -49,8 +64,8 @@ public class MobsCommand extends ComplexCommand {
 
 	@Cmd (args = { "kill|remove", "DOUBLE" }, min = 0, syntax = "[action] [rayon]")
 	public void killZombies(CommandContext cmd) {
-		boolean remove = cmd.getArgumentsLength() == 0 ? false : cmd.getArgument(0).equals("remove");
-		double radius = cmd.getArgument(1, 0);
+		boolean remove = cmd.getArgumentsLength() != 0 && cmd.getArgument(0).equals("remove");
+		double radius = cmd.getArgument(1, 0D);
 		if (radius < 0) {
 			sendIncorrectSyntax();
 			return;
@@ -101,6 +116,12 @@ public class MobsCommand extends ComplexCommand {
 	public void setMaximumChunkEntities(CommandContext cmd) {
 		OlympaZTA.getInstance().mobSpawning.criticalEntitiesPerChunk = cmd.getArgument(0);
 		sendSuccess("Vous avez modifié la quantité maximale d'entités par chunk.");
+	}
+	
+	@Cmd (min = 1, args = "INTEGER")
+	public void setSpawnTicks(CommandContext cmd) {
+		OlympaZTA.getInstance().mobSpawning.setSpawnTicks(cmd.getArgument(0));
+		sendSuccess("Vous avez modifié l'intervalle de spawn.");
 	}
 
 }

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.spigot.region.tracking.TrackedRegion;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;

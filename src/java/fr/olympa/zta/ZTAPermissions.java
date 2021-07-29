@@ -1,7 +1,7 @@
 package fr.olympa.zta;
 
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.permission.OlympaSpigotPermission;
 
 public class ZTAPermissions{
 	
@@ -12,6 +12,8 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission UTILS_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission PLAYER_SPREAD_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission GLASS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static final OlympaSpigotPermission PARACHUTE_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission MINIGUNS_COMMAND = new OlympaSpigotPermission(OlympaGroup.BUILDER);
 	public static final OlympaSpigotPermission PROBLEM_MONITORING = new OlympaSpigotPermission(OlympaGroup.DEV);
@@ -25,6 +27,9 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission ENDERCHEST_MORE_SPACE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.VIP });
 	
 	public static final OlympaSpigotPermission CLANS_PLAYERS_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission CLANS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
+	
+	public static final OlympaSpigotPermission ECONOMIES_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	
 	public static final OlympaSpigotPermission MONEY_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission MONEY_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);

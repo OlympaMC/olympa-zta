@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -30,17 +33,20 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
-import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.utils.Attribute;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class Gun implements Weapon {
 
+	public static final List<ChatColor> TIERS = Arrays.asList(ChatColor.GREEN, ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.YELLOW, ChatColor.GOLD);
+	public static final UUID ZOOM_UUID = UUID.fromString("8a1c6742-3f54-44c2-ac6f-90fa7491ebef");
+	
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
 	protected final int id;
@@ -115,24 +121,34 @@ public class Gun implements Weapon {
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
 		meta.getPersistentDataContainer().set(getKey(), PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(type.getKey(), PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		meta.setLore(getLore(accessories));
 		item.setItemMeta(meta);
 		updateItemName(item);
-		ItemStackableManager.processItem(item, type);
 		return item;
 	}
 
 	public void updateItemName(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public void updateItemCustomModel(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setCustomModelData(zoomed ? 2 : 1);
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setCustomModelData(zoomed ? 2 : 1);
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public List<String> getLore(boolean accessories) {
@@ -165,19 +181,20 @@ public class Gun implements Weapon {
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 		int readyTime = -1;
 		float thisPotential = fireRate.getValue();
-		if (thisPotential <= 0) thisPotential = chargeTime.getValue();
-		if (previous instanceof Gun) {
-			Gun prev = (Gun) previous;
-			if (!prev.ready) {
-				float prevPotential = prev.fireRate.getValue();
-				if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
-				readyTime = (int) Math.min(prevPotential, thisPotential);
-			}
+		if (thisPotential <= 0) {
+			if (ammos == 0) return;
+			thisPotential = chargeTime.getValue();
+		}
+		if (previous instanceof Gun prev && !prev.ready) {
+			float prevPotential = prev.fireRate.getValue();
+			if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
+			readyTime = (int) Math.min(prevPotential, thisPotential);
 		}
 		if (readyTime == -1 && !ready) readyTime = (int) thisPotential;
 		if (readyTime != -1) {
 			ready = false;
 			updateItemName(item);
+			setCooldown(p, readyTime);
 			task = new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -193,6 +210,10 @@ public class Gun implements Weapon {
 		}
 	}
 
+	private void setCooldown(Player p, int readyTime) {
+		if (readyTime > 5) p.setCooldown(type.getMaterial(), readyTime);
+	}
+
 	@Override
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		if (zoomed) toggleZoom(p, item);
@@ -204,10 +225,11 @@ public class Gun implements Weapon {
 		}
 	}
 
-	@Override
-	public boolean drop(Player p, ItemStack item) {
-		reload(p, item);
-		return true;
+	public void drop(Player p, ItemStack item) {
+		if (Bukkit.isPrimaryThread()) {
+			reload(p, item);
+		}else
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> reload(p, item));
 	}
 
 	private BukkitTask task;
@@ -232,6 +254,7 @@ public class Gun implements Weapon {
 			}else if (ready && isFireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
 					ready = false;
+					int rate = (int) (fireRate.getValue() / 2);
 					task = new BukkitRunnable() {
 						byte left = 3;
 						@Override
@@ -242,6 +265,7 @@ public class Gun implements Weapon {
 								if (ammos == 0) {
 									cancel();
 								}
+								if (left == 0) p.setCooldown(type.getMaterial(), rate * 3);
 							}else if (left == -4) {
 								setReady(p, item);
 								cancel();
@@ -252,13 +276,14 @@ public class Gun implements Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 2L));
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}else if (fireRate.getValue() == -1) {
 					ready = false;
 					fire(p);
 					updateItemName(item);
 				}else {
 					ready = false;
+					int rate = (int) fireRate.getValue();
 					task = new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -269,6 +294,7 @@ public class Gun implements Weapon {
 							}
 							if (System.currentTimeMillis() - lastClick < 210) {
 								fire(p);
+								setCooldown(p, rate);
 								updateItemName(item);
 							}else {
 								setReady(p, item);
@@ -276,11 +302,12 @@ public class Gun implements Weapon {
 							}
 						}
 
+						@Override
 						public synchronized void cancel() throws IllegalStateException {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}
 			}
 		}else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
@@ -431,10 +458,15 @@ public class Gun implements Weapon {
 	}
 
 	private void toggleZoom(Player p, ItemStack item) {
+		AttributeInstance attribute = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
+			attribute.removeModifier(getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
+			try {
+				attribute.addModifier(getZoomModifier().getBukkitModifier());
+			}catch (IllegalArgumentException ex) {
+				OlympaZTA.getInstance().sendMessage("§cZoom déjà appliqué sur un gun.");
+			}
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -468,11 +500,11 @@ public class Gun implements Weapon {
 		return i;
 	}
 	
-	public void setAccessory(Accessory accessory) {
-		setAccessory(accessory.getType(), accessory);
+	public boolean setAccessory(Accessory accessory) {
+		return setAccessory(accessory.getType(), accessory);
 	}
 
-	public void setAccessory(AccessoryType type, Accessory accessory) {
+	public boolean setAccessory(AccessoryType type, Accessory accessory) {
 		Accessory old = null;
 		switch (type) {
 		case SCOPE:
@@ -490,6 +522,7 @@ public class Gun implements Weapon {
 		}
 		if (old != null) old.remove(this);
 		if (accessory != null) accessory.apply(this);
+		return old != null;
 	}
 
 	/**

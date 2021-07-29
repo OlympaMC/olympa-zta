@@ -1,42 +1,122 @@
 package fr.olympa.zta.loot.creators;
 
+import java.util.EnumMap;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
+import org.apache.commons.lang.Validate;
+import org.jetbrains.annotations.Nullable;
+
+import fr.olympa.api.common.randomized.RandomizedPickerBase;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.Conditioned;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
 public class AmmoCreator implements LootCreator {
 
-	private double chance;
 	private AmmoType type;
 	private int min;
 	private int max;
-	private boolean filled;
-
-	public AmmoCreator(double chance, int min, int max) {
-		this(chance, null, min, max, false);
+	private double filledChance;
+	
+	public AmmoCreator(int min, int max) {
+		this(null, min, max, false);
+	}
+	
+	public AmmoCreator(AmmoType type, int min, int max, boolean filled) {
+		this(type, min, max, filled ? 1 : 0);
 	}
 
-	public AmmoCreator(double chance, AmmoType type, int min, int max, boolean filled) {
+	public AmmoCreator(AmmoType type, int min, int max, double filledChance) {
 		this.type = type;
-		this.chance = chance;
 		this.min = min;
 		this.max = max;
-		this.filled = filled;
+		this.filledChance = filledChance;
 	}
 
-	public double getChance() {
-		return chance;
-	}
-
-	public Loot create(Random random) {
+	@Override
+	public Loot create(Random random, LootContext context) {
 		int amount = Utils.getRandomAmount(random, min, max);
-		return new Loot(type == null ? AmmoType.getPowder(amount) : type.getAmmo(amount, filled));
+		return new Loot(type == null ? AmmoType.getPowder(amount) : type.getAmmo(amount, random.nextDouble() <= filledChance));
 	}
 	
 	@Override
 	public String getTitle() {
-		return type == null ? "Poudre à canon" : (type.getName() + (filled ? "" : " vides"));
+		if (type == null) return "Poudre à canon";
+		return type.getName() + (filledChance == 0 ? " vides" : "");
+	}
+	
+	public static class BestCreator implements LootCreator {
+		private int min;
+		private int max;
+		private int emptyMax;
+		private double filledChance;
+		private double powderChancePerGun;
+		private double absentChancePerGun;
+		
+		public BestCreator(int min, int max, int emptyMax, double filledChance, double powderChancePerGun, double absentChancePerGun) {
+			this.min = min;
+			this.max = max;
+			this.emptyMax = emptyMax;
+			this.filledChance = filledChance;
+			this.powderChancePerGun = powderChancePerGun;
+			this.absentChancePerGun = absentChancePerGun;
+		}
+		
+		@Override
+		public Loot create(Random random, @Nullable LootContext context) {
+			Validate.notNull(context);
+			EnumMap<AmmoType, Double> types = new EnumMap<>(AmmoType.class);
+			context.getCarriedGuns().forEach(gun -> types.merge(gun.getAmmoType(), 1D, (oldValue, value) -> oldValue + value));
+			double empty = context.getCarriedGuns().size() * powderChancePerGun;
+			if (absentChancePerGun > 0) {
+				double absent = context.getCarriedGuns().size() * absentChancePerGun;
+				for (AmmoType newType : AmmoType.values()) types.putIfAbsent(newType, absent);
+			}
+			AmmoType type = RandomizedPickerBase.pickWithEmpty(random, types, empty);
+			int max = this.max;
+			boolean filled = false;
+			if (type != null) {
+				filled = random.nextDouble() <= filledChance;
+				if (!filled) max = emptyMax;
+			}
+			int amount = Utils.getRandomAmount(random, min, max);
+			return new Loot(type == null ? AmmoType.getPowder(amount) : type.getAmmo(amount, filled));
+		}
+		
+		@Override
+		public String getTitle() {
+			return "Munition aléatoire";
+		}
+	}
+	
+	public static class AmmoConditionned implements Conditioned<LootCreator, LootContext> {
+
+		private AmmoCreator ammo;
+		private double threshold;
+		
+		public AmmoConditionned(AmmoCreator ammo, double threshold) {
+			this.ammo = ammo;
+			this.threshold = threshold;
+		}
+		
+		@Override
+		public LootCreator getObject() {
+			return ammo;
+		}
+
+		@Override
+		public boolean isValid(LootContext context) {
+			if (threshold > 0 && ThreadLocalRandom.current().nextDouble() <= threshold) return true;
+			return context.getCarriedGuns().stream().anyMatch(x -> x.getAmmoType() == ammo.type);
+		}
+
+		@Override
+		public boolean isValidWithNoContext() {
+			return true;
+		}
+		
 	}
 
 }

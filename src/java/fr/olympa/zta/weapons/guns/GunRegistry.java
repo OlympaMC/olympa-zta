@@ -21,9 +21,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.bank.PhysicalMoney;
 
 public class GunRegistry {
 	
@@ -105,6 +106,22 @@ public class GunRegistry {
 		return false;
 	}
 	
+	public boolean removeObject(int id) {
+		Gun gun = registry.get(id);
+		if (gun != null) {
+			removeObject(gun);
+			return true;
+		}
+		try (PreparedStatement statement = removeStatement.createStatement()) {
+			statement.setInt(1, id);
+			removeStatement.executeUpdate(statement);
+			OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	/**
 	 * Chercher dans le registre l'objet correspondant à l'ID
 	 * @param id ID de l'objet
@@ -130,9 +147,7 @@ public class GunRegistry {
 		if (!im.hasLore()) return null;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		if (id != -1) return registry.get(id);
-		
-		return null;
+		return id != 1 ? registry.get(id) : null;
 	}
 	
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {
@@ -147,20 +162,7 @@ public class GunRegistry {
 		if (!im.hasLore()) return;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		if (id != -1) {
-			Gun gun = registry.get(id);
-			if (gun != null) {
-				removeObject(gun);
-			}else {
-				try (PreparedStatement statement = removeStatement.createStatement()) {
-					statement.setInt(1, id);
-					removeStatement.executeUpdate(statement);
-					OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
-				}catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		if (id != -1) removeObject(id);
 	}
 	
 	public Gun createGun(GunType type) throws SQLException {
@@ -178,15 +180,16 @@ public class GunRegistry {
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
-		if (items == null) return 0;
+		if (items == null || items.length == 0) return 0;
 		synchronized (toEvict) {
 			Set<Integer> ids = new HashSet<>();
 			for (ItemStack item : items) {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
+				if (im.getPersistentDataContainer().isEmpty()) continue;
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
-				if (id == 0 && im.hasLore()) {
+				/*if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
 						int index = s.indexOf("[I");
 						if (index != -1) {
@@ -197,12 +200,23 @@ public class GunRegistry {
 							break;
 						}
 					}
-				}
+				}*/
 				if (id != 0) {
 					if (registry.containsKey(id)) {
 						toEvict.remove((Object) id);
 					}else {
 						if (!ids.add(id)) OlympaZTA.getInstance().sendMessage("§cL'objet du registre %d était contenu en double dans un inventaire.", id);
+					}
+				}else { // TODO remove after migration
+					if (!im.hasCustomModelData() && im.getPersistentDataContainer().has(PhysicalMoney.BANKNOTE_KEY, PersistentDataType.INTEGER)) {
+						im.setCustomModelData(1);
+						int money = im.getPersistentDataContainer().get(PhysicalMoney.BANKNOTE_KEY, PersistentDataType.INTEGER);
+						if (money == 1) {
+							item.setType(PhysicalMoney.BANKNOTE_1.getType());
+						}else if (money == 10) {
+							item.setType(PhysicalMoney.BANKNOTE_10.getType());
+						}
+						item.setItemMeta(im);
 					}
 				}
 			}

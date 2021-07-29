@@ -7,30 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.clans.ClanPlayerInterface;
-import fr.olympa.api.clans.ClansManager;
-import fr.olympa.api.clans.gui.ClanManagementGUI;
-import fr.olympa.api.customevents.ScoreboardCreateEvent;
-import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.lines.TimerLine;
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.clans.ClanPlayerInterface;
+import fr.olympa.api.spigot.clans.ClansManager;
+import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
+import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
+import fr.olympa.api.spigot.lines.FixedLine;
+import fr.olympa.api.spigot.lines.TimerLine;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
+import fr.olympa.zta.settings.ClanBoardSetting;
 
 public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 
 	private static FixedLine<Scoreboard<OlympaPlayerZTA>> header = new FixedLine<>("§7Mon clan:");
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getOlympaPlayer().getClan();
-		Player p = x.getOlympaPlayer().getPlayer();
+		Player p = (Player) x.getOlympaPlayer().getPlayer();
 		List<String> players = new ArrayList<>(5);
 		int first = 0;
 		int offline = 0;
@@ -38,15 +41,18 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 		for (ClanPlayerDataZTA member : clan.getMembers()) {
 			String memberName = member.getPlayerInformations().getName();
 			if (!member.isConnected()) {
-				if (players.size() <= 5) players.add(offline, "§c○ " + memberName);
+				if (players.size() < 5 && x.getOlympaPlayer().parameterClanBoard.get() == ClanBoardSetting.ONLINE_FIVE) players.add(offline, "§c○ " + memberName);
 			}else if (member.getConnectedPlayer() == x.getOlympaPlayer()) {
+				if (players.size() >= 5 && offline < players.size()) players.remove(players.size() - 1);
 				players.add(0, "§6● §l" + memberName);
 				first = 1;
 				offline++;
 			}else {
-				Location loc = member.getConnectedPlayer().getPlayer().getLocation();
-				if (players.size() > 5 && offline < players.size()) players.remove(players.size() - 1);
-				players.add(first, "§e● " + memberName + " §l" + (inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc)));
+				Location loc = ((Entity) member.getConnectedPlayer().getPlayer()).getLocation();
+				if (players.size() >= 5 && offline < players.size()) players.remove(players.size() - 1);
+				char dir = inHub != OlympaZTA.getInstance().hub.isInHub(loc) ? 'x' : SpigotUtils.getDirectionToLocation(p, loc);
+				String health = String.valueOf((int) ((Damageable) member.getConnectedPlayer().getPlayer()).getHealth()) + "❤";
+				players.add(first, "§e● " + memberName + " §l" + dir + " §c(" + health + ")");
 				offline++;
 			}
 		}
@@ -58,7 +64,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
 		super(OlympaZTA.getInstance(), "zta_clans");
 
-		new ClansCommandZTA(this, "Permet de gérer les clans.", ZTAPermissions.CLANS_PLAYERS_COMMAND, "clans").register();
+		new ClansCommandZTA(this).register();
 	}
 
 	@Override
@@ -105,13 +111,17 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	
 	@EventHandler
 	public void onScoreboardCreate(ScoreboardCreateEvent<OlympaPlayerZTA> e) {
-		if (e.getOlympaPlayer().getClan() != null) addLines(e.getScoreboard());
+		if (e.getOlympaPlayer().getClan() != null && e.getOlympaPlayer().parameterClanBoard.get() != ClanBoardSetting.NEVER) addLines(e.getScoreboard());
 	}
 	
 	public void addLines(Scoreboard<OlympaPlayerZTA> scoreboard) {
 		scoreboard.addLine(FixedLine.EMPTY_LINE);
 		scoreboard.addLine(header);
 		scoreboard.addLine(players);
+	}
+	
+	public void updateBoardParameter(OlympaPlayerZTA player, ClanBoardSetting setting) {
+		if (setting == ClanBoardSetting.NEVER || setting == ClanBoardSetting.ONLINE_FIVE) OlympaZTA.getInstance().scoreboards.refresh(player);
 	}
 	
 }

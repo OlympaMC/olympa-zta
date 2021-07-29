@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -17,21 +18,23 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.clans.plots.ClanPlot;
 
 public class PlayerPlot {
 
 	//public static int[] questsRequiredPerLevel = { 3, 10, 25, 60, 140, 300, 750, 1500 };
-	public static int[] moneyRequiredPerLevel = { 3000, 1000, 2500, 6000, 14000, 30000, 75000, 150000 };
-	private static int[] sizePerLevel = { 10, 14, 18, 22, 26, 31, 36, 42 };
-	private static int[] heightPerLevel = { PlotChunkGenerator.WORLD_LEVEL + 4, 40, 76, 112, 148, 184, 220, 256 };
-	private static int[] chestsPerLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
+	public static final int[] moneyRequiredPerLevel = { 3000, 5000, 7500, 10000, 14000, 30000, 75000, 150000 };
+	public static final int[] sizePerLevel = { 10, 14, 18, 22, 26, 31, 36, 42 };
+	public static final int[] heightPerLevel = { PlotChunkGenerator.WORLD_LEVEL + 4, 40, 76, 112, 148, 184, 220, 256 };
+	public static final int[] chestsPerLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
 	private final int id;
 	private final PlayerPlotLocation loc;
@@ -76,6 +79,19 @@ public class PlayerPlot {
 		return level;
 	}
 
+	public int getChests() {
+		return chests;
+	}
+
+	public void setChests(int chests) {
+		this.chests = chests;
+		try {
+			OlympaZTA.getInstance().plotsManager.updateChests(this, getChests());
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public Location getSpawnLocation() {
 		return loc.toLocation().add(17, 2, level == 1 ? 10 : 20 - sizePerLevel[level - 1] / 2);
 	}
@@ -88,7 +104,7 @@ public class PlayerPlot {
 
 	public void kick(OlympaPlayerInformations player) {
 		if (!players.remove(player.getId())) return;
-		OlympaPlayerZTA oplayer = AccountProvider.get(player.getUUID());
+		OlympaPlayerZTA oplayer = AccountProviderAPI.getter().get(player.getUUID());
 		if (oplayer == null) {
 			try {
 				OlympaZTA.getInstance().plotsManager.removePlayerPlot(player);
@@ -161,7 +177,7 @@ public class PlayerPlot {
 
 				Sign signState = (Sign) sign.getState();
 				signState.setLine(1, "Parcelle de");
-				signState.setLine(2, AccountProvider.getPlayerInformations(owner).getName());
+				signState.setLine(2, AccountProviderAPI.getter().getPlayerInformations(owner).getName());
 				signState.update();
 			}else {
 				try {
@@ -189,9 +205,9 @@ public class PlayerPlot {
 		}
 		
 		boolean chest = false;
-		if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST) {
+		if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
 			chest = true;
-			if (e instanceof BlockPlaceEvent && chests >= chestsPerLevel[level - 1]) {
+			if (e instanceof BlockPlaceEvent && getChests() >= chestsPerLevel[level - 1]) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite des %d coffres pour une parcelle de niveau %d.", chestsPerLevel[level - 1], level);
 				return true;
 			}
@@ -213,12 +229,12 @@ public class PlayerPlot {
 
 		if (chest) {
 			if (e instanceof BlockPlaceEvent) {
-				chests++;
-			}else chests--;
-			try {
-				OlympaZTA.getInstance().plotsManager.updateChests(this, chests);
-			}catch (SQLException ex) {
-				ex.printStackTrace();
+				setChests(getChests() + 1);
+			}else {
+				if (block.getType() == Material.CHEST && owner != oplayer.getId()) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas détruire le coffre du propriétaire.");
+					return true;
+				}else setChests(getChests() - 1);
 			}
 		}else if (e instanceof BlockBreakEvent) {
 			// pourquoi j'ai commencé ça ? à voir
@@ -232,7 +248,19 @@ public class PlayerPlot {
 		
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.CHEST) {
-				return owner != oplayer.getId();
+				if (owner != oplayer.getId()) {
+					Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Tu ne peux pas ouvrir le coffre du propriétaire. Utilise les coffres piégés pour les invités.");
+					return true;
+				}
+				ItemStack[] inventory = ((Chest) e.getClickedBlock().getState()).getInventory().getContents();
+				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
+					try {
+						int items = OlympaZTA.getInstance().gunRegistry.loadFromItems(inventory);
+						if (items != 0) OlympaZTA.getInstance().sendMessage("%d items chargés depuis un coffre du plot %d de %s.", items, id, oplayer.getName());
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				});
 			}
 		}
 		return false;

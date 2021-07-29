@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.gui.OlympaGUI;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.gui.Inventories;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 
 public class LootPackGUI extends OlympaGUI {
@@ -21,9 +21,9 @@ public class LootPackGUI extends OlympaGUI {
 		this.packBlock = packBlock;
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 		for (PackType pack : PackType.values()) {
-			inv.setItem(pack.getSlot(), ItemUtils.item(Material.CHEST, "§ePack " + pack.getName(), pack.getLootsDescription()));
+			inv.setItem(pack.getSlot(), pack.getItem());
 		}
-		inv.setItem(49, ItemUtils.item(Material.BRICK, "§eMa banque", "§7➤ §6" + player.getGameMoney().getFormatted()));
+		inv.setItem(49, ItemUtils.item(Material.PHANTOM_MEMBRANE, 1, "§eMa banque", "§7➤ §6" + player.getGameMoney().getFormatted()));
 	}
 	
 	@Override

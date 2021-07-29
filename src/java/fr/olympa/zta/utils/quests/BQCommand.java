@@ -5,8 +5,8 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.spigot.command.OlympaCommand;
+import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.zta.OlympaZTA;
 import fr.skytasul.quests.gui.quests.PlayerListGUI;
 import fr.skytasul.quests.players.PlayerAccount;
@@ -15,7 +15,7 @@ import fr.skytasul.quests.players.PlayersManager;
 public class BQCommand extends OlympaCommand {
 	
 	public BQCommand() {
-		super(OlympaZTA.getInstance(), "missions", "Permet de voir ses missions", (OlympaSpigotPermission) null, "mission");
+		super(OlympaZTA.getInstance(), "missions", "Ouvre l'inventaire des missions.", (OlympaSpigotPermission) null, "mission");
 		setAllowConsole(false);
 	}
 	

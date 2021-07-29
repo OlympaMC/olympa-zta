@@ -1,6 +1,7 @@
 package fr.olympa.zta.weapons;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -12,10 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.gui.templates.PagedGUI;
+import fr.olympa.api.common.command.complex.ArgumentParser;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.gui.templates.PagedGUI;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.utils.Attribute;
@@ -31,12 +33,11 @@ public class WeaponsCommand extends ComplexCommand {
 	private DateFormat evictionFormat = new SimpleDateFormat("HH:mm:ss");
 
 	public WeaponsCommand() {
-		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
-		addArgumentParser(
-				"GUN",
-				sender -> Collections.EMPTY_LIST,
+		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes.", ZTAPermissions.WEAPONS_COMMAND, "armes");
+		addArgumentParser("GUN", new ArgumentParser<>(
+				(sender, arg) -> Collections.emptyList(),
 				x -> OlympaZTA.getInstance().gunRegistry.getGun(Integer.parseInt(x)),
-				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre.");
+				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre."));
 	}
 
 	@Override
@@ -177,4 +178,28 @@ public class WeaponsCommand extends ComplexCommand {
 		}else sendError("Il y a eu un problème lors de la suppression de l'objet.");
 	}
 
+	@Cmd (args = "PLAYERS")
+	public void gunsLoad(CommandContext cmd) {
+		Player target;
+		if (cmd.getArgumentsLength() == 0) {
+			target = getPlayer();
+			if (target == null) {
+				sendIncorrectSyntax();
+				return;
+			}
+		}else target = cmd.getArgument(0);
+		
+		try {
+			sendSuccess("§2%d §aguns chargés depuis l'inventaire de §2%s§a.", OlympaZTA.getInstance().gunRegistry.loadFromItems(target.getInventory().getContents()), target.getName());
+		}catch (SQLException e) {
+			e.printStackTrace();
+			sendError(e);
+		}
+	}
+	
+	@Cmd (player = true)
+	public void removeItems(CommandContext cmd) {
+		new ItemRemoveGUI().create(player);
+	}
+	
 }

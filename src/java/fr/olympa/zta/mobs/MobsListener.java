@@ -14,10 +14,13 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
-import fr.olympa.api.utils.RandomizedPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.QuestItem;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
@@ -25,22 +28,21 @@ import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
 import fr.olympa.zta.loot.creators.QuestItemCreator;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import fr.olympa.zta.utils.PhysicalMoney;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private RandomizedPicker<LootCreator> zombieLoots = new RandomizedPicker.FixedPicker<>(0, 2, 20,
-			new AmmoCreator(22, 3, 4),
-			new MoneyCreator(45, PhysicalMoney.BANKNOTE_1, 3, 9),
-			new FoodCreator(15, Food.BAKED_POTATO, 3, 5),
-			new AmmoCreator(12, AmmoType.LIGHT, 2, 3, false),
-			new AmmoCreator(12, AmmoType.HEAVY, 2, 3, false),
-			new AmmoCreator(12, AmmoType.HANDWORKED, 2, 3, false),
-			new AmmoCreator(5, AmmoType.CARTRIDGE, 1, 2, false),
-			new QuestItemCreator(7, QuestItem.AMAS)
-			);
+	private ConditionalMultiPicker<LootCreator, LootContext> zombieLoots = RandomizedInventory.newBuilder()
+			.add(22, new AmmoCreator(3, 4))
+			.add(40, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
+			.add(15, new FoodCreator(Food.BAKED_POTATO, 2, 4))
+			.add(12, new AmmoCreator(AmmoType.LIGHT, 2, 3, false))
+			.add(12, new AmmoCreator(AmmoType.HEAVY, 2, 3, false))
+			.add(12, new AmmoCreator(AmmoType.HANDWORKED, 2, 3, false))
+			.add(8, new AmmoCreator(AmmoType.CARTRIDGE, 1, 2, false))
+			.add(7, new QuestItemCreator(QuestItem.AMAS))
+			.build(0, 2, 20.0);
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
@@ -53,14 +55,19 @@ public class MobsListener implements Listener {
 			}else {
 				if (!entity.hasMetadata("ztaZombieType")) return;
 				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
-				if (zombie == Zombies.COMMON || zombie == Zombies.DROWNED) {
+				if (zombie.isLooting()) {
 					killer.killedZombies.increment();
-					for (LootCreator creator : zombieLoots.pick(ThreadLocalRandom.current())) {
-						e.getDrops().add(creator.create(ThreadLocalRandom.current()).getItem());
+					LootContext context = new LootContext(entity.getKiller());
+					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current(), context)) {
+						e.getDrops().add(creator.create(ThreadLocalRandom.current(), context).getItem());
 					}
+					return;
 				}
 			}
 		}
+		if (entity.hasMetadata("player")) return;
+		
+		e.getDrops().clear();
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)

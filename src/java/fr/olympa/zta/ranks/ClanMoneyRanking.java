@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.ranking.AbstractRank;
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.ranking.AbstractRank;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
 
 public class ClanMoneyRanking extends AbstractRank {
 	

@@ -19,30 +19,30 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
-import fr.olympa.api.utils.Point2D;
-import fr.olympa.api.utils.observable.Observable.Observer;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.common.observable.Observable.Observer;
+import fr.olympa.api.spigot.region.Point2D;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class MinigunsManager implements Listener {
-	
+
 	private final Map<Integer, Minigun> miniguns = new HashMap<>();
 	private int lastID = 0;
-	
+
 	private File minigunsFile;
 	private YamlConfiguration minigunsYaml;
-	
+
 	protected Map<Player, Minigun> inUse = new HashMap<>();
-	
+
 	public MinigunsManager(File minigunsFile) throws IOException {
 		this.minigunsFile = minigunsFile;
-		
+
 		minigunsFile.getParentFile().mkdirs();
 		minigunsFile.createNewFile();
-		
+
 		Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> {
 			minigunsYaml = YamlConfiguration.loadConfiguration(minigunsFile);
-			
+
 			for (String key : minigunsYaml.getKeys(false)) {
 				int id = Integer.parseInt(key);
 				lastID = Math.max(id + 1, lastID);
@@ -52,15 +52,15 @@ public class MinigunsManager implements Listener {
 		});
 		new MinigunsCommand(this).register();
 	}
-	
+
 	public Map<Integer, Minigun> getMiniguns() {
 		return miniguns;
 	}
-	
+
 	public Minigun getMinigun(int id) {
 		return miniguns.get(id);
 	}
-	
+
 	public int addMinigun(Minigun minigun) {
 		int id = ++lastID;
 		addMinigun(minigun, id);
@@ -75,37 +75,37 @@ public class MinigunsManager implements Listener {
 		minigun.updateChunks();
 		try {
 			updater.changed();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private Observer updateMinigun(int id, Minigun minigun) {
 		return () -> {
 			try {
 				minigunsYaml.set(Integer.toString(id), minigun == null ? null : minigun.serialize());
 				minigunsYaml.save(minigunsFile);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		};
 	}
-	
+
 	public void removeMinigun(Minigun minigun) {
 		minigun.destroy();
-		
+
 		miniguns.remove(minigun.getID());
 		try {
 			minigunsYaml.set(Integer.toString(minigun.getID()), null);
 			minigunsYaml.save(minigunsFile);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void unload() {
 		HandlerList.unregisterAll(this);
-		
+
 		miniguns.values().forEach(Minigun::destroy);
 	}
 
@@ -119,7 +119,7 @@ public class MinigunsManager implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractAtEntityEvent e) {
 		Minigun minigun = inUse.get(e.getPlayer());
@@ -128,47 +128,47 @@ public class MinigunsManager implements Listener {
 			e.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
-		if (!SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) {
+		if (!SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
 			for (Minigun minigun : miniguns.values()) {
-				if (minigun.isInUse()) continue;
-				if (/*minigun.playerPosition.distanceSquared(e.getTo()) < 0.25*/ SpigotUtils.isSameLocation(minigun.playerPosition, e.getTo())) {
+				if (minigun.isInUse())
+					continue;
+				if (/*minigun.playerPosition.distanceSquared(e.getTo()) < 0.25*/ SpigotUtils.isSameLocation(minigun.playerPosition, e.getTo()))
 					minigun.approach(e.getPlayer());
-				}
 			}
-		}
 	}
-	
+
 	@EventHandler
 	public void onLeavePassenger(EntityDismountEvent e) {
 		Minigun minigun = inUse.remove(e.getEntity());
-		if (minigun != null) minigun.leave(false);
+		if (minigun != null)
+			minigun.leave(false);
 	}
-	
+
 	@EventHandler
 	public void onChunkUnload(ChunkUnloadEvent e) {
-		if (miniguns.isEmpty()) return;
+		if (miniguns.isEmpty())
+			return;
 		Point2D chunk = new Point2D(e.getChunk());
-		for (Minigun minigun : miniguns.values()) {
+		for (Minigun minigun : miniguns.values())
 			if (minigun.chunks.containsKey(chunk)) {
 				minigun.chunks.put(chunk, null);
 				minigun.updateChunks();
 			}
-		}
 	}
-	
+
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent e) {
-		if (miniguns.isEmpty()) return;
+		if (miniguns.isEmpty())
+			return;
 		Point2D chunk = new Point2D(e.getChunk());
-		for (Minigun minigun : miniguns.values()) {
+		for (Minigun minigun : miniguns.values())
 			if (minigun.chunks.containsKey(chunk)) {
 				minigun.chunks.put(chunk, e.getChunk());
 				minigun.updateChunks();
 			}
-		}
 	}
-	
+
 }

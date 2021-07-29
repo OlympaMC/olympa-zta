@@ -5,11 +5,11 @@ import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -27,7 +27,7 @@ public class MinigunsCommand extends ComplexCommand {
 	public MinigunsCommand(MinigunsManager miniguns) {
 		super(OlympaZTA.getInstance(), "miniguns", "Permet de gérer les miniguns.", ZTAPermissions.MINIGUNS_COMMAND);
 		this.miniguns = miniguns;
-		super.addArgumentParser("MINIGUN", sender -> miniguns.getMiniguns().keySet().stream().map(String::valueOf).collect(Collectors.toList()), arg -> {
+		super.addArgumentParser("MINIGUN", (sender, arg) -> miniguns.getMiniguns().keySet().stream().map(String::valueOf).collect(Collectors.toList()), arg -> {
 			try {
 				Minigun minigun = miniguns.getMinigun(Integer.parseInt(arg));
 				if (minigun != null) return minigun;

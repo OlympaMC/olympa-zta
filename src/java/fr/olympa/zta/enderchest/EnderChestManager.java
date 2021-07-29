@@ -21,16 +21,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import fr.olympa.api.enderchest.EnderChestCommand;
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.lines.CyclingLine;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.sql.statement.OlympaStatement;
-import fr.olympa.api.sql.statement.StatementType;
+import fr.olympa.api.spigot.enderchest.EnderChestCommand;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.lines.CyclingLine;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
+import fr.olympa.api.common.sql.statement.StatementType;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 
 public class EnderChestManager implements Listener {
 	
@@ -102,7 +102,7 @@ public class EnderChestManager implements Listener {
 		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 			Player p = e.getPlayer();
 			e.setCancelled(true);
-			command.getEnderChestGUI(AccountProvider.get(p.getUniqueId())).create(p);
+			command.getEnderChestGUI(AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}

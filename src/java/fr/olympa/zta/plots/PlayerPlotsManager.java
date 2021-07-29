@@ -28,19 +28,19 @@ import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.region.tracking.flags.DamageFlag;
-import fr.olympa.api.region.tracking.flags.FishFlag;
-import fr.olympa.api.region.tracking.flags.GameModeFlag;
-import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
-import fr.olympa.api.region.tracking.flags.PhysicsFlag;
-import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
-import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.common.observable.ObservableList;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
+import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
+import fr.olympa.api.spigot.region.tracking.flags.FishFlag;
+import fr.olympa.api.spigot.region.tracking.flags.GameModeFlag;
+import fr.olympa.api.spigot.region.tracking.flags.ItemDurabilityFlag;
+import fr.olympa.api.spigot.region.tracking.flags.PhysicsFlag;
+import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
+import fr.olympa.api.spigot.region.tracking.flags.PlayerBlocksFlag;
+import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.observable.ObservableList;
-import fr.olympa.api.utils.spigot.Schematic;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -53,7 +53,7 @@ public class PlayerPlotsManager {
 	private final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`x`, `z`, `owner`) VALUES (?, ?, ?)", true);
 	private final OlympaStatement setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?");
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
-	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProvider.getPluginPlayerTable().getName() + " WHERE `plot` = ?");
+	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " WHERE `plot` = ?");
 	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 
@@ -80,7 +80,7 @@ public class PlayerPlotsManager {
 
 		worldCrea = Bukkit.createWorld(new WorldCreator("plots").generator(new PlotChunkGenerator()).generateStructures(false).environment(Environment.NORMAL));
 		worldCrea.setSpawnLocation(0, worldCrea.getHighestBlockYAt(0, 0), 0);
-		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 5);
+		worldCrea.setGameRule(GameRule.RANDOM_TICK_SPEED, 4);
 		worldCrea.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 		worldCrea.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
 		worldCrea.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -154,7 +154,7 @@ public class PlayerPlotsManager {
 	public PlayerPlot getPlot(int id, boolean load) throws SQLException {
 		if (id == -1) return null;
 		InternalPlotDatas plotDatas = plotsByID.get(id);
-		if (plotDatas == null) throw new NullPointerException("Les données primaires avec l'ID " + id + " n'ont pas été chargées.");
+		if (plotDatas == null) throw new NullPointerException("Les données primaires de plot avec l'ID " + id + " n'ont pas été trouvées.");
 
 		if (load && plotDatas.loadedPlot == null) {
 			try (PreparedStatement statement = loadPlot.createStatement()) {
@@ -276,7 +276,7 @@ public class PlayerPlotsManager {
 		}.runTaskAsynchronously(OlympaZTA.getInstance());
 	}
 
-	private PlayerPlot getPlot(Location loc) {
+	protected PlayerPlot getPlot(Location loc) {
 		if (loc.getWorld() != worldCrea) return null;
 
 		PlayerPlotLocation location = PlayerPlotLocation.get(loc);
@@ -315,6 +315,10 @@ public class PlayerPlotsManager {
 			this.id = plot.getID();
 			this.loc = plot.getLocation();
 			loadedPlot = plot;
+		}
+		
+		boolean isLoaded() {
+			return loadedPlot != null;
 		}
 	}
 

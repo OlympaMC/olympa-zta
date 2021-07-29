@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import fr.olympa.api.auctions.Auction;
-import fr.olympa.api.auctions.AuctionsManager;
-import fr.olympa.api.economy.tax.TaxManager;
+import fr.olympa.api.spigot.auctions.Auction;
+import fr.olympa.api.spigot.auctions.AuctionsManager;
+import fr.olympa.api.spigot.economy.tax.TaxManager;
 import fr.olympa.zta.OlympaZTA;
 
 public class AuctionsManagerZTA extends AuctionsManager {

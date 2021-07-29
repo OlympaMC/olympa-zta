@@ -16,15 +16,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.lines.BlinkingLine;
+import fr.olympa.api.spigot.lines.FixedLine;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.LootCreator.Loot;
 
@@ -76,9 +78,10 @@ public class PackBlock {
 						if (player.getGameMoney().withdraw(type.getPrice())) {
 							location.getWorld().spawnParticle(Particle.FLAME, location.getX(), location.getY() + (y / 10D), location.getZ(), 15, 0D, 0D, 0D, 0.08);
 							location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-							List<LootCreator> picked = type.pick(random);
+							LootContext context = new RandomizedInventory.LootContext(p);
+							List<LootCreator> picked = type.getPicker().pickMulti(random);
 							ItemStack[] items = picked.stream().map(x -> {
-								Loot loot = x.create(random);
+								Loot loot = x.create(random, context);
 								ItemStack realItem = loot.getRealItem();
 								return realItem == null ? loot.getItem() : realItem;
 							}).toArray(ItemStack[]::new);
@@ -90,7 +93,7 @@ public class PackBlock {
 						}
 					}else {
 						location.getWorld().spawnParticle(Particle.CRIT, location.getX(), location.getY() + (y / 10D), location.getZ(), 4, 0D, 0D, 0D, 0);
-						location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_CHIME, 0.25f, 0.6f + ((float) y) * ((1.8f - 0.6f) / 25f));
+						location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_CHIME, 0.25f, 0.6f + (y) * ((1.8f - 0.6f) / 25f));
 					}
 				}
 			}, 1, 3);

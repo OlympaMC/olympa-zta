@@ -10,13 +10,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.Utils;
 
 public class StatsCommand extends OlympaCommand {
 	
 	private final DecimalFormat percentageFormat = new DecimalFormat("00.##");
 	private final DecimalFormat ratioFormat = new DecimalFormat("0.##");
+	private final DecimalFormat timeFormat = new DecimalFormat("0");
 	
 	public StatsCommand(Plugin plugin) {
 		super(plugin, "stats");
@@ -51,6 +53,7 @@ public class StatsCommand extends OlympaCommand {
 		double other = olympaPlayer.otherShots.get();
 		joiner.add("Headshots: " + (head == 0 && other == 0 ? "§cx" : "§e" + percentageFormat.format(head / (other + head) * 100) + "%"));
 		joiner.add("Coffres ouverts: §e" + olympaPlayer.openedChests.get());
+		joiner.add("Temps de jeu: §e" + Utils.durationToString(timeFormat, olympaPlayer.getPlayTime()));
 		sender.sendMessage(joiner.toString());
 		return false;
 	}

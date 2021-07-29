@@ -1,7 +1,5 @@
 package fr.olympa.zta.loot.crates;
 
-import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,11 +12,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.DynamicLine;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.lines.BlinkingLine;
+import fr.olympa.api.spigot.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -87,7 +86,7 @@ public class Crate extends RandomizedInventory {
 				}, 5 * 60 * 20);
 				location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.5f, 0.1f);
 				location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-				super.fillInventory();
+				super.fillInventory(null);
 			}
 			timerLine.updateGlobal();
 			/*if (diff < 20) {
@@ -128,23 +127,8 @@ public class Crate extends RandomizedInventory {
 	}
 	
 	@Override
-	public int getMinItems() {
-		return 6;
-	}
-	
-	@Override
-	public int getMaxItems() {
-		return 8;
-	}
-	
-	@Override
-	public List<LootCreator> getObjectList() {
-		return type.getCreatorsSimple();
-	}
-	
-	@Override
-	public List<LootCreator> getAlwaysObjectList() {
-		return type.getCreatorsAlways();
+	protected ConditionalMultiPicker<LootCreator, LootContext> getLootPicker() {
+		return type.getPicker();
 	}
 	
 }

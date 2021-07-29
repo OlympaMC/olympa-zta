@@ -10,8 +10,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.skytasul.quests.api.objects.QuestObject;
@@ -24,7 +24,7 @@ import fr.skytasul.quests.gui.templates.PagedGUI;
 public class GunReward extends AbstractReward {
 	
 	private ItemStackable type;
-	private int amount;
+	private int amount = 1;
 	
 	public GunReward() {
 		super("ztaGun");
@@ -44,7 +44,7 @@ public class GunReward extends AbstractReward {
 			if (item == null) return Arrays.asList("Error");
 			SpigotUtils.giveItems(p, item);
 		}
-		return Arrays.asList(ItemUtils.getName(item) + (amount == 1 ? "" : " §ex" + amount));
+		return Arrays.asList("§a" + type.getName() + (amount == 1 ? "§e" : " §ex" + amount));
 	}
 	
 	@Override

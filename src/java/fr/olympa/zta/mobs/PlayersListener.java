@@ -2,6 +2,7 @@ package fr.olympa.zta.mobs;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,48 +24,49 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType;
 
-import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
-import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.customevents.AsyncPlayerAfkEvent;
+import fr.olympa.api.spigot.customevents.AsyncPlayerMoveRegionsEvent;
+import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.itemstackable.Artifacts;
+import fr.olympa.zta.itemstackable.ItemDropBehavior;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import net.citizensnpcs.api.CitizensAPI;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayersListener implements Listener {
 	
-	private static final PotionEffect PARACHUTE_EFFECT = new PotionEffect(PotionEffectType.SLOW_FALLING, 30, 7, false, false, true);
 	private static final PotionEffect BOOTS_EFFECT = new PotionEffect(PotionEffectType.JUMP, 99999999, 1, false, false);
 
 	private static final DecimalFormat DAMAGE_FORMAT = new DecimalFormat("0.00");
@@ -73,15 +75,19 @@ public class PlayersListener implements Listener {
 	
 	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
+	private List<String> playersWithPacks = new ArrayList<>();
 	private Map<Player, Location> packPositions = new HashMap<>();
 	private Location packWaitingRoom;
-	
-	private List<Player> parachuting = new ArrayList<>();
 	
 	private Random random = new Random();
 	
 	public PlayersListener(Location packWaitingRoom) {
 		this.packWaitingRoom = packWaitingRoom;
+		
+		OlympaCore.getInstance().registerPackListener((player, server, set) -> {
+			if (set && server.equals(OlympaCore.getInstance().getServerName())) return;
+			playersWithPacks.remove(player);
+		});
 	}
 	
 	@EventHandler
@@ -90,26 +96,41 @@ public class PlayersListener implements Listener {
 		if (CitizensAPI.getNPCRegistry().isNPC(p)) return;
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
+		
 		List<ItemStack> kept = new ArrayList<>();
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
 			if (itemStack != null) {
-				if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
+				ItemDropBehavior behavior;
+				ItemStackable stackable = ItemStackableManager.getStackable(itemStack);
+				if (stackable != null) {
+					behavior = stackable.loot(p, itemStack);
+				}else if (OlympaZTA.getInstance().beautyQuestsLink != null && OlympaZTA.getInstance().beautyQuestsLink.isQuestItem(itemStack)) {
+					behavior = ItemDropBehavior.KEEP;
+				}else if (itemStack.getType().name().startsWith("LEATHER_") || itemStack.getType() == Material.DRIED_KELP) {
+					behavior = ItemDropBehavior.DISAPPEAR; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+				}else behavior = ItemDropBehavior.DROP;
+				
+				switch (behavior) {
+				case DISAPPEAR:
+					contents[i] = null;
+					break;
+				case KEEP:
 					kept.add(itemStack);
 					contents[i] = null;
-				}else if (itemStack.getType().name().startsWith("LEATHER_") || Knife.BATTE.isItem(itemStack)) {
-					contents[i] = null; // désactive la sauvegarde du stuff de base (armure civile en cuir)
+					break;
+				case DROP:
+				default:
+					break;
 				}
 			}
 		}
 		keptItems.put(p, kept);
 		Location loc = p.getLocation();
-		ItemStack[] armor = p.getInventory().getArmorContents();
-		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-			Zombie momifiedZombie = Mobs.spawnMomifiedZombie(loc, armor, contents, "§7§l" + p.getName() + "§7 momifié");
-			momifiedZombie.setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), p.getName()));
-		});
+		ItemStack[] armor = Arrays.copyOfRange(contents, 36, 40);
+		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> Mobs.spawnMomifiedZombie(loc, armor, contents, p));
+		
 		EntityDamageEvent cause = p.getLastDamageCause();
 		String reason = "est mort.";
 		if (cause instanceof EntityDamageByEntityEvent) {
@@ -125,13 +146,13 @@ public class PlayersListener implements Listener {
 					reason = "s'est fait tuer par le cadavre zombifié de §6" + damager.getMetadata("player").get(0).asString() + "§e.";
 				}else reason = "s'est fait tuer par un §cinfecté§e.";
 			}else if (damager instanceof Player) {
-				OlympaPlayer oplayer = AccountProvider.get(damager.getUniqueId());
+				OlympaPlayer oplayer = AccountProviderAPI.getter().get(damager.getUniqueId());
 				if (oplayer != null) reason = "s'est fait tuer par " + oplayer.getGroup().getColor() + damager.getName() + "§e.";
 			}
 		}else if (cause != null && cause.getCause() == DamageCause.DROWNING) {
 			reason = "s'est noyé.";
 		}
-		Prefix.DEFAULT.sendMessage(p, "§oVotre cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		Prefix.DEFAULT.sendMessage(p, "§oTon cadavre a repris vie en %d %d %d...", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 		e.setDeathMessage(op.getGroup().getColor() + p.getName() + "§e " + reason);
 		e.getDrops().clear();
 	}
@@ -179,7 +200,11 @@ public class PlayersListener implements Listener {
 			giveStartItems(p);
 		}
 		
-		OlympaZTA.getInstance().tab.join(p);
+		if (!playersWithPacks.contains(p.getName())) {
+			OlympaZTA.getInstance().getTask().runTask(() -> {
+				p.setResourcePack("https://drive.google.com/uc?export=download&id=1meIjucmWnLxC9hzjNAd8cN7LK2k-M6t7", "BF241BBD1F48F7FD068F32350DC3F4F285F676C1");
+			});
+		}else OlympaZTA.getInstance().sendMessage("Le joueur %s a déjà son pack de resources pour le ZTA.", p.getName());
 	}
 	
 	@EventHandler
@@ -199,8 +224,7 @@ public class PlayersListener implements Listener {
 		Player p = e.getPlayer();
 		Location oldPosition = packPositions.remove(p);
 		if (oldPosition != null) p.teleport(oldPosition);
-		for (PacketHandlers handler : PacketHandlers.values()) handler.removePlayer(p);
-		OlympaPlayerZTA oplayer = AccountProvider.get(p.getUniqueId());
+		OlympaPlayerZTA oplayer = AccountProviderAPI.getter().get(p.getUniqueId());
 		if (oplayer == null) return;
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			OlympaZTA.getInstance().gunRegistry.launchEvictItems(e.getPlayer().getInventory().getContents());
@@ -223,9 +247,14 @@ public class PlayersListener implements Listener {
 		case DECLINED:
 			Prefix.BAD.sendMessage(p, "Tu as désactivé l'utilisation du pack de resources. Pour plus de fun et une meilleure expérience de jeu, accepte-le depuis ton menu Multijoueur !");
 			break;
-		case FAILED_DOWNLOAD:
-		case SUCCESSFULLY_LOADED:
-			Prefix.DEFAULT_GOOD.sendMessage(p, e.getStatus() == Status.FAILED_DOWNLOAD ? "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !" : "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+		case FAILED_DOWNLOAD, SUCCESSFULLY_LOADED:
+			if (e.getStatus() == Status.FAILED_DOWNLOAD) {
+				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors du téléchargement du pack de resources. Reconnectez-vous pour réessayer !");
+				playersWithPacks.remove(p.getName());
+			}else {
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Le pack de resources §6§lOlympa ZTA§a est désormais chargé ! Bon jeu !");
+				playersWithPacks.add(p.getName());
+			}
 			Location lastLoc = packPositions.remove(p);
 			if (lastLoc != null) {
 				Prefix.DEFAULT.sendMessage(p, "Vous allez être envoyé à votre dernière position....");
@@ -245,31 +274,30 @@ public class PlayersListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerMoveRegions(AsyncPlayerMoveRegionsEvent e) {
-		OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
+		if (e.getDifference().stream().anyMatch(region -> region.getFlag(SpawningFlag.class) != null)) {
+			OlympaZTA.getInstance().lineRadar.updateHolder(OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(OlympaPlayerZTA.get(e.getPlayer())));
+		}
 	}
 	
-	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		//System.out.println("PlayersListener.onMove() " + p.getFallDistance() + " " + p.isOnGround());
-		if (p.getFallDistance() >= 3) {
-			if (p.getInventory().getChestplate() != null && (p.getInventory().getChestplate().getType() == Material.DIAMOND_CHESTPLATE)) {
-				//p.addPotionEffect(PARACHUTE_EFFECT);
-				Vector velocity = p.getVelocity();
-				if (velocity.getY() > -0.1) return;
-				velocity.setY(velocity.getY() * 0.8);
-				p.setVelocity(velocity);
-				p.setFallDistance(2.8f);
-				p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§b▶ ▷ §e§lParachute déployé§b ◁ ◀"));
-			}
-		}
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onHunger(FoodLevelChangeEvent e) {
+		if (e.isCancelled() && !OlympaZTA.getInstance().hub.isInHub(e.getEntity().getLocation())) System.out.println("PlayersListener.onHunger() cancelled " + e.isCancelled() + " to " + e.getFoodLevel() + " for " + e.getEntity().getName());
+	}
+	
+	/*@EventHandler (priority = EventPriority.MONITOR)
+	public void onInteract(PlayerInteractEvent e) {
+		if (!e.isCancelled()) System.out.println("PlayersListener.onInteract() cancelled " + e.isCancelled() + " " + e.getAction().name() + " " + (e.getHand() == null ? "null hand" : e.getHand().name()) + " " + (e.getClickedBlock() == null ? "no block" : "block"));
+	}*/
+	
+	protected boolean isSpeedBoots(ItemStack item) {
+		return item != null && item.getType() == Material.DIAMOND_BOOTS && (ItemStackableManager.getStackable(item) == Artifacts.BOOTS);
 	}
 	
 	@EventHandler
 	public void onArmor(PlayerArmorChangeEvent e) {
 		if (e.getSlotType() != SlotType.FEET) return;
-		boolean bootsOld = e.getOldItem() != null && e.getOldItem().getType() == Material.DIAMOND_BOOTS;
-		boolean bootsNew = e.getNewItem() != null && e.getNewItem().getType() == Material.DIAMOND_BOOTS;
+		boolean bootsOld = isSpeedBoots(e.getOldItem());
+		boolean bootsNew = isSpeedBoots(e.getNewItem());
 		if (bootsOld == bootsNew) return;
 		if (bootsOld) {
 			e.getPlayer().removePotionEffect(PotionEffectType.JUMP);
@@ -282,7 +310,13 @@ public class PlayersListener implements Listener {
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (e.isCancelled() || e.getDamage() == 0) return;
 		if (!(e.getEntity() instanceof LivingEntity)) return;
-		if (!(e.getDamager() instanceof Player)) return;
+		Player damager;
+		if (!(e.getDamager() instanceof Player)) {
+			if (e.getDamager() instanceof Projectile projectile && projectile.getShooter() instanceof Player shooter)
+				damager = shooter;
+			else return;
+		}else damager = (Player) e.getDamager();
+		
 		LivingEntity en = (LivingEntity) e.getEntity();
 		Location lc = en.getEyeLocation().add(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5);
 		Hologram hologram = OlympaCore.getInstance().getHologramsManager().createHologram(lc, false, true, new FixedLine<>("§4-§l" + DAMAGE_FORMAT.format(e.getFinalDamage()) + " §r§c❤"));
@@ -300,11 +334,27 @@ public class PlayersListener implements Listener {
 				}
 			}
 		}.runTaskTimer(OlympaZTA.getInstance(), 20, 1);
+		
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(damager);
+		if (player != null && player.parameterHealthBar.get()) {
+			if (player.healthBar == null) player.healthBar = new PlayerHealthBar(damager);
+			player.healthBar.show(en, e.getFinalDamage());
+		}
+	}
+	
+	@EventHandler
+	public void onAFK(AsyncPlayerAfkEvent e) {
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(e.getPlayer());
+		if (player == null) return;
+		if (e.isAfk())
+			player.disablePlayTime();
+		else
+			player.enablePlayTime();
 	}
 	
 	private void giveStartItems(Player p) {
 		ArmorType.CIVIL.setFull(p);
-		p.getInventory().addItem(Food.BAKED_POTATO.get(10), Knife.BATTE.createItem(), AmmoType.LIGHT.getAmmo(5, true));
+		p.getInventory().addItem(Food.DRIED_KELP.get(25), Knife.BATTE.createItem(), AmmoType.LIGHT.getAmmo(5, true));
 	}
 	
 }

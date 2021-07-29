@@ -30,9 +30,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.sql.SQLTable;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.common.sql.SQLTable;
+import fr.olympa.api.spigot.region.tracking.TrackedRegion;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -63,7 +63,7 @@ public class LootChestsManager implements Listener {
 
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				chests.putAll(table.selectAll().stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
+				chests.putAll(table.selectAll(null).stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
 				OlympaZTA.getInstance().sendMessage("§e%d§7 coffres de loot chargés !", chests.size());
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -130,14 +130,14 @@ public class LootChestsManager implements Listener {
 		LootChest chest = chests.remove(id);
 		if (chest == null) throw new IllegalArgumentException("No lootchest with id " + id);
 		table.delete(chest);
-		chest.unregister((Chest) chest.getLocation().getBlock().getState());
+		if (chest.getLocation().getBlock().getState() instanceof Chest state) chest.unregister(state);
 	}
 
 	public LootChestType pickRandomChestType(Location location) {
 		for (TrackedRegion region : OlympaCore.getInstance().getRegionManager().getApplicableRegions(location)) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);
 			if (flag == null) continue;
-			return flag.type.getLootChests().pick(random).get(0).getType();
+			return flag.type.getLootChests().pickOne(random);
 		}
 		return null;
 	}
@@ -154,7 +154,7 @@ public class LootChestsManager implements Listener {
 			if (chest == null) return;
 
 			e.setCancelled(true);
-			chest.click(player);
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> chest.click(player));
 		}
 	}
 	

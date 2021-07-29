@@ -3,15 +3,16 @@ package fr.olympa.zta.loot.creators;
 import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import fr.olympa.api.utils.RandomizedPicker.Chanced;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
-public interface LootCreator extends Chanced {
+public interface LootCreator {
 
-	public abstract Loot create(Random random);
+	public abstract Loot create(Random random, @Nullable LootContext context);
 	
 	public abstract String getTitle();
-
+	
 	public class Loot {
 
 		private final ItemStack item;
@@ -28,6 +29,10 @@ public interface LootCreator extends Chanced {
 			return null;
 		}
 
+		public boolean isStackable() {
+			return true;
+		}
+		
 		public void onRemove() {}
 
 	}

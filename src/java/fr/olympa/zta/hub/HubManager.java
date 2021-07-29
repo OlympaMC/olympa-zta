@@ -16,16 +16,16 @@ import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.region.Region;
-import fr.olympa.api.region.tracking.flags.DamageFlag;
-import fr.olympa.api.region.tracking.flags.FoodFlag;
+import fr.olympa.api.spigot.region.Region;
+import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
+import fr.olympa.api.spigot.region.tracking.flags.FoodFlag;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.weapons.guns.GunFlag;
 import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.ChatMessageType;
@@ -50,7 +50,11 @@ public class HubManager implements Listener {
 		this.spawnpoint = spawnpoint;
 		this.spawnRegions = new HashSet<>(spawnRegions);
 
-		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL, new DynmapLink.DynmapHideFlag(), new FoodFlag(true, false), new GunFlag(true, false), new DamageFlag(true).setMessages("§e§lBienvenue au Hub !", null, ChatMessageType.ACTION_BAR));
+		OlympaCore.getInstance().getRegionManager().registerRegion(region, "hub", EventPriority.NORMAL,
+				new DynmapLink.DynmapHideFlag(),
+				new FoodFlag(true, true, false),
+				new GunFlag(true, false),
+				new DamageFlag(true).setMessages("§e§lBienvenue au Spawn !", null, ChatMessageType.ACTION_BAR));
 	}
 
 	public void addSpawnRegion(SpawnType region) {
@@ -76,7 +80,7 @@ public class HubManager implements Listener {
 	}
 
 	public void teleport(Player p) {
-		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au hub."), () -> DynmapLink.setPlayerVisiblity(p, false));
+		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au spawn."), () -> DynmapLink.setPlayerVisiblity(p, false));
 	}
 
 	public void startRandomTeleport(Player p) {

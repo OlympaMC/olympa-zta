@@ -3,6 +3,7 @@ package fr.olympa.zta.weapons;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -12,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.ItemStackable;
@@ -25,20 +26,21 @@ public enum Grenade implements Weapon, ItemStackable {
 	;
 	
 	private final String name;
-	
+	private final NamespacedKey key;
 	private final ItemStack item;
 	
 	private Grenade(Material material, String name, String description) {
 		this.name = name;
 		
+		key = ItemStackableManager.register(this);
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§c" + name);
 		meta.setLore(SpigotUtils.wrapAndAlign(description, 35));
 		meta.getPersistentDataContainer().set(WeaponsListener.GRENADE_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
-		ItemStackableManager.processItem(item, this);
 	}
 	
 	@Override
@@ -49,6 +51,11 @@ public enum Grenade implements Weapon, ItemStackable {
 	@Override
 	public String getId() {
 		return name();
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
 	}
 	
 	@Override
@@ -75,7 +82,7 @@ public enum Grenade implements Weapon, ItemStackable {
 			Bukkit.getScheduler().runTaskLater(OlympaZTA.getInstance(), () -> {
 				itemEntity.remove();
 				p.getWorld().createExplosion(itemEntity.getLocation(), 4.5f, false, false, p);
-			}, 75);
+			}, 65);
 		}
 	}
 
