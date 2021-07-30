@@ -21,12 +21,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import fr.olympa.api.spigot.enderchest.EnderChestCommand;
-import fr.olympa.api.spigot.holograms.Hologram;
-import fr.olympa.api.spigot.lines.CyclingLine;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.common.sql.statement.StatementType;
+import fr.olympa.api.spigot.enderchest.EnderChestCommand;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.lines.CyclingLine;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
@@ -34,7 +34,7 @@ import fr.olympa.zta.utils.map.DynmapLink;
 
 public class EnderChestManager implements Listener {
 	
-	private static final String TABLE_NAME = "`zta_enderchests`";
+	private static final String TABLE_NAME = OlympaZTA.getInstance().getServerNameID() + "_enderchests";
 	
 	private Map<Location, Hologram> enderchests = new HashMap<>();
 	private EnderChestCommand command;

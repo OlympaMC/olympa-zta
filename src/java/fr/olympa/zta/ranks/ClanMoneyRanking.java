@@ -6,9 +6,10 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
+import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.ranking.AbstractRank;
-import fr.olympa.api.common.sql.statement.OlympaStatement;
+import fr.olympa.zta.OlympaZTA;
 
 public class ClanMoneyRanking extends AbstractRank {
 	
@@ -30,7 +31,7 @@ public class ClanMoneyRanking extends AbstractRank {
 	protected void fillUpScores(ScoreEntry[] scores) throws SQLException {
 		OlympaStatement topStatement =
 				new OlympaStatement("SELECT name, money"
-						+ " FROM zta_clans"
+						+ " FROM " + OlympaZTA.getInstance().getServerNameID() + "_clans"
 						+ " ORDER BY money DESC LIMIT " + getMaxSlots());
 		try (PreparedStatement statement = topStatement.createStatement()) {
 			ResultSet resultSet = topStatement.executeQuery(statement);

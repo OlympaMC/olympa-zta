@@ -48,7 +48,7 @@ import fr.olympa.zta.loot.creators.FoodCreator.Food;
 
 public class PlayerPlotsManager {
 	
-	private static final String tableName = "`zta_player_plots`";
+	private static final String tableName = OlympaZTA.getInstance().getServerNameID() + "_player_plots";
 
 	private final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`x`, `z`, `owner`) VALUES (?, ?, ?)", true);
 	private final OlympaStatement setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?");

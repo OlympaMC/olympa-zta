@@ -30,7 +30,7 @@ public class GunRegistry {
 	
 	public static final NamespacedKey GUN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "gunRegistry");
 	
-	public final String TABLE_NAME = "`zta_guns`";
+	public final String TABLE_NAME = OlympaZTA.getInstance().getServerNameID() + "_guns";
 
 	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`type`) VALUES (?)", true);
 	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");

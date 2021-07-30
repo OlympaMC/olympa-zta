@@ -1,3 +1,5 @@
+serverIndex: -1
+
 mobRegions:
   HARD:
   - ==: fr.olympa.api.spigot.region.shapes.Polygon

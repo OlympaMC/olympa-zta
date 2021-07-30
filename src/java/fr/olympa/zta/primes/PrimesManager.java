@@ -16,13 +16,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.common.sql.SQLTable;
+import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
@@ -43,7 +43,7 @@ public class PrimesManager implements Listener {
 	private ObservableList<Prime> primes;
 	
 	public PrimesManager() throws SQLException {
-		table = new SQLTable<>("zta_primes", Arrays.asList(columnID, columnBuyer, columnTarget, columnBounty, columnExpiration), resultSet -> {
+		table = new SQLTable<>(OlympaZTA.getInstance().getServerNameID() + "_primes", Arrays.asList(columnID, columnBuyer, columnTarget, columnBounty, columnExpiration), resultSet -> {
 			int id = resultSet.getInt("id");
 			OlympaPlayerInformations buyer = AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("buyer"));
 			OlympaPlayerInformations target = AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("target"));

@@ -12,15 +12,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.spigot.clans.ClanPlayerInterface;
 import fr.olympa.api.spigot.clans.ClansManager;
 import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.api.spigot.lines.TimerLine;
-import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
-import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -62,7 +62,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	protected SQLColumn<ClanZTA> plotExpirationResetColumn;
 	
 	public ClansManagerZTA() throws SQLException, ReflectiveOperationException {
-		super(OlympaZTA.getInstance(), "zta_clans");
+		super(OlympaZTA.getInstance(), OlympaZTA.getInstance().getServerNameID() + "_clans");
 
 		new ClansCommandZTA(this).register();
 	}

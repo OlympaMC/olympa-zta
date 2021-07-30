@@ -56,7 +56,7 @@ public class LootChestsManager implements Listener {
 	private Random random = new Random();
 
 	public LootChestsManager() throws SQLException {
-		table = new SQLTable<>("zta_lootchests",
+		table = new SQLTable<>(OlympaZTA.getInstance().getServerNameID() + "_lootchests",
 				Arrays.asList(columnID, columnWorld, columnX, columnY, columnZ, columnLootType),
 				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type").toUpperCase())));
 		table.createOrAlter();

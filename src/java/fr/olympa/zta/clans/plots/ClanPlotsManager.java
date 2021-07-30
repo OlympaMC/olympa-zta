@@ -40,11 +40,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 public class ClanPlotsManager implements Listener {
 
 	public static final NamespacedKey SIGN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "plotID");
-	/*private static final String tableName = "`zta_clan_plots`";
-	
-	private static final OlympaStatement createPlot = new OlympaStatement("INSERT INTO " + tableName + " (`region`, `price`, `sign`, `spawn`) VALUES (?, ?, ?, ?)", true);
-	public static final OlympaStatement updatePlotClan = new OlympaStatement("UPDATE " + tableName + " SET `clan` = ? WHERE (`id` = ?)");
-	public static final OlympaStatement updatePlotNextPayment = new OlympaStatement("UPDATE " + tableName + " SET `next_payment` = ? WHERE (`id` = ?)");*/
 	
 	private SQLTable<ClanPlot> table;
 	
@@ -65,7 +60,7 @@ public class ClanPlotsManager implements Listener {
 	public ClanPlotsManager(ClansManagerZTA clans, Location bookLocation) throws SQLException {
 		this.bookLocation = bookLocation;
 		
-		table = new SQLTable<>("zta_clan_plots",
+		table = new SQLTable<>(OlympaZTA.getInstance().getServerNameID() + "_clan_plots",
 				Arrays.asList(columnID, columnRegion, columnClan, columnSign, columnSpawn, columnPrice, columnNextPayment, columnLastChiefPayment),
 				resultSet -> {
 					try {
