@@ -22,6 +22,7 @@ import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.spigot.region.tracking.flags.Flag;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
 import fr.olympa.zta.loot.chests.LootChest;
@@ -29,6 +30,8 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 
 public class DynmapLink {
 
+	public static boolean CHESTS_ENABLED = false;
+	
 	private static DynmapAPI api;
 	private static MarkerSet areasMarkers;
 	private static MarkerSet chestsMarkers;
@@ -44,9 +47,11 @@ public class DynmapLink {
 			if (api != null) {
 				areasMarkers = api.getMarkerAPI().getMarkerSet("regions");
 				if (areasMarkers == null) areasMarkers = api.getMarkerAPI().createMarkerSet("regions", "Radar", null, false);
-				chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
-				if (chestsMarkers == null) chestsMarkers = api.getMarkerAPI().createMarkerSet("chests", "Coffres", null, false);
-				chestsMarkers.setHideByDefault(true);
+				if (CHESTS_ENABLED) {
+					chestsMarkers = api.getMarkerAPI().getMarkerSet("chests");
+					if (chestsMarkers == null) chestsMarkers = api.getMarkerAPI().createMarkerSet("chests", "Coffres", null, false);
+					chestsMarkers.setHideByDefault(true);
+				}
 				chestIcon = api.getMarkerAPI().getMarkerIcon("chest");
 				enderChestsMarkers = api.getMarkerAPI().getMarkerSet("enderchests");
 				if (enderChestsMarkers == null) enderChestsMarkers = api.getMarkerAPI().createMarkerSet("enderchests", "Coffres de l'End", null, false);
@@ -54,7 +59,7 @@ public class DynmapLink {
 				plotsMarkers = api.getMarkerAPI().getMarkerSet("plots");
 				if (plotsMarkers == null) plotsMarkers = api.getMarkerAPI().createMarkerSet("plots", "Parcelles de Clans", null, false);
 				plotIcon = api.getMarkerAPI().getMarkerIcon("house");
-				new DynmapCommand().register();
+				new DynmapCommand().registerPreProcess().register();
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -65,7 +70,8 @@ public class DynmapLink {
 
 	public static void setPlayerVisiblity(Player p, boolean visibility) {
 		if (api == null) return;
-		api.setPlayerVisiblity(p, visibility);
+		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
+		api.setPlayerVisiblity(p, !player.isHidden() && visibility);
 	}
 
 	public static void showMobArea(Region region, SpawnType spawn) {
@@ -97,7 +103,7 @@ public class DynmapLink {
 	}
 	
 	public static void showChest(LootChest chest) {
-		if (api == null) return;
+		if (api == null || !CHESTS_ENABLED) return;
 		
 		String id = "chest" + chest.getID();
 		Marker existingMarker = chestsMarkers.findMarker(id);
@@ -108,7 +114,7 @@ public class DynmapLink {
 	}
 
 	public static void hideChest(LootChest chest) {
-		if (api == null) return;
+		if (api == null || !CHESTS_ENABLED) return;
 		
 		chestsMarkers.findMarker("chest" + chest.getID()).deleteMarker();
 	}

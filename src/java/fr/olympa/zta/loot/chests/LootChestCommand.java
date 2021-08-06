@@ -110,11 +110,7 @@ public class LootChestCommand extends ComplexCommand {
 
 	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %%]")
 	public void globalScan(CommandContext cmd) {
-		try {
-			new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
-		}catch (IllegalArgumentException ex) {
-			sendError("Il n'y a pas de zone avec le nom %s.", cmd.getArgument(0));
-		}
+		new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
 	}
 
 	@Cmd (player = true)

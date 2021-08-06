@@ -1,7 +1,5 @@
 package fr.olympa.zta.packetslistener;
 
-import java.util.NoSuchElementException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -45,9 +43,9 @@ public enum PacketHandlers {
 	
 	public static Player retrievePlayerFromChannel(Channel channel) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (((CraftPlayer) p).getHandle().playerConnection.networkManager.channel == channel) return p;
+			if (channel.equals(((CraftPlayer) p).getHandle().playerConnection.networkManager.channel)) return p;
 		}
-		throw new NoSuchElementException("No player found for specified channel.");
+		return null;
 	}
 	
 }

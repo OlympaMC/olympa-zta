@@ -36,6 +36,7 @@ import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.Bandage;
+import fr.olympa.zta.itemstackable.Brouilleur;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
@@ -182,6 +183,8 @@ public class WeaponsListener implements Listener {
 			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
 		}else if (meta.getPersistentDataContainer().has(Bandage.BANDAGE.getKey(), PersistentDataType.BYTE)) {
 			return Bandage.BANDAGE;
+		}else if (meta.getPersistentDataContainer().has(Brouilleur.BROUILLEUR.getKey(), PersistentDataType.BYTE)) {
+			return Brouilleur.BROUILLEUR;
 		}
 		return null;
 	}

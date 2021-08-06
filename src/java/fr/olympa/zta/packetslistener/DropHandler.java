@@ -24,18 +24,23 @@ public class DropHandler extends ChannelDuplexHandler{
 	
 	DropHandler(){}
 	
+	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception{
 		if (msg instanceof PacketPlayInBlockDig) {
 			PacketPlayInBlockDig packet = (PacketPlayInBlockDig) msg;
 			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
 				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
-				ItemStack item = p.getInventory().getItemInMainHand();
-				Gun gun = OlympaZTA.getInstance().gunRegistry.getGun(item);
-				if (gun != null) {
-					gun.drop(p, item);
-					p.updateInventory();
-					toCancel.put(ctx.channel(), MinecraftServer.currentTick);
-					return; // super.channelRead pas appelé si l'action est annulée
+				if (p == null) {
+					OlympaZTA.getInstance().sendMessage("§cImpossible de trouver un joueur par son channel.");
+				}else {
+					ItemStack item = p.getInventory().getItemInMainHand();
+					Gun gun = OlympaZTA.getInstance().gunRegistry.getGun(item);
+					if (gun != null) {
+						gun.drop(p, item);
+						p.updateInventory();
+						toCancel.put(ctx.channel(), MinecraftServer.currentTick);
+						return; // super.channelRead pas appelé si l'action est annulée
+					}
 				}
 			}
 		}

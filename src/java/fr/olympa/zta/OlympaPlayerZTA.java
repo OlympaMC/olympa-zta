@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -47,8 +49,9 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HEADSHOTS = new SQLColumn<OlympaPlayerZTA>("headshots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OTHER_SHOTS = new SQLColumn<OlympaPlayerZTA>("other_shots", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_OPENED_CHESTS = new SQLColumn<OlympaPlayerZTA>("opened_chests", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLAY_TIME = new SQLColumn<OlympaPlayerZTA>("play_time", "BIGINT NOT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	/* Times */
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLAY_TIME = new SQLColumn<OlympaPlayerZTA>("play_time", "BIGINT NOT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_HIDE_MAP_TIME = new SQLColumn<OlympaPlayerZTA>("hide_map_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KIT_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("kit_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_BACK_VIP_TIME = new SQLColumn<OlympaPlayerZTA>("back_vip_time", "BIGINT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 	/* Parameters */
@@ -62,7 +65,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(
 			COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_TRADE_BAG,
 			COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_PLAY_TIME,
-			COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME,
+			COLUMN_HIDE_MAP_TIME, COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME,
 			COLUMN_PARAMETER_AMBIENT, COLUMN_PARAMETER_BLOOD, COLUMN_PARAMETER_ZONE_TITLE, COLUMN_PARAMETER_HEALTH_BAR, COLUMN_PARAMETER_QUESTS_BOARD, COLUMN_PARAMETER_CLAN_BOARD);
 
 	private ClanZTA clan = null;
@@ -73,7 +76,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	/* Données */
 	private ItemStack[] enderChestContents = new ItemStack[0];
 	private OlympaMoney money = new OlympaMoney(100);
-	private ObservableValue<PlayerPlot> plot = new ObservableValue<PlayerPlot>(null);
+	private ObservableValue<PlayerPlot> plot = new ObservableValue<>(null);
 	private TradeBag<OlympaPlayerZTA> tradeBag = new TradeBag<>(this);
 	
 	public ObservableInt killedZombies = new ObservableInt(0);
@@ -83,6 +86,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
 	public ObservableLong playTime = new ObservableLong(0);
+	public ObservableLong hideMapTime = new ObservableLong(0);
 	public ObservableLong kitVIPTime = new ObservableLong(0);
 	public ObservableLong backVIPTime = new ObservableLong(0);
 
@@ -91,7 +95,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableBoolean parameterZoneTitle = new ObservableBoolean(true);
 	public ObservableBoolean parameterHealthBar = new ObservableBoolean(true);
 	public ObservableBoolean parameterQuestsBoard = new ObservableBoolean(true);
-	public ObservableValue<ClanBoardSetting> parameterClanBoard = new ObservableValue<ClanBoardSetting>(ClanBoardSetting.ONLINE_FIVE);
+	public ObservableValue<ClanBoardSetting> parameterClanBoard = new ObservableValue<>(ClanBoardSetting.ONLINE_FIVE);
 
 	public OlympaPlayerZTA(UUID uuid, String name, String ip) {
 		super(uuid, name, ip);
@@ -106,7 +110,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
 		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
-		tradeBag.observe("datas", () -> COLUMN_TRADE_BAG.updateAsync(this, ItemUtils.serializeItemsArray(tradeBag.getItems().toArray(new ItemStack[tradeBag.getItems().size()])), null, null));
+		tradeBag.observe("datas", () -> COLUMN_TRADE_BAG.updateAsync(this, new SerialBlob(ItemUtils.serializeItemsArray(tradeBag.getItems().toArray(new ItemStack[tradeBag.getItems().size()]))), null, null));
 		
 		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateAsync(this, killedZombies.get(), null, null));
 		killedPlayers.observe("datas", () -> COLUMN_KILLED_PLAYERS.updateAsync(this, killedPlayers.get(), null, null));
@@ -115,6 +119,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		otherShots.observe("datas", () -> COLUMN_OTHER_SHOTS.updateAsync(this, otherShots.get(), null, null));
 		openedChests.observe("datas", () -> COLUMN_OPENED_CHESTS.updateAsync(this, openedChests.get(), null, null));
 		playTime.observe("datas", () -> COLUMN_PLAY_TIME.updateAsync(this, playTime.get(), null, null));
+		hideMapTime.observe("datas", () -> COLUMN_HIDE_MAP_TIME.updateAsync(this, hideMapTime.get(), null, null));
 		kitVIPTime.observe("datas", () -> COLUMN_KIT_VIP_TIME.updateAsync(this, kitVIPTime.get(), null, null));
 		backVIPTime.observe("datas", () -> COLUMN_BACK_VIP_TIME.updateAsync(this, backVIPTime.get(), null, null));
 		parameterAmbient.observe("datas", () -> COLUMN_PARAMETER_AMBIENT.updateAsync(this, parameterAmbient.get(), null, null));
@@ -158,6 +163,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public long getPlayTime() {
 		return playTime.get() + (joinTime == 0 ? 0 : (System.currentTimeMillis() - joinTime));
 	}
+	
+	public boolean isHidden() {
+		return hideMapTime.get() > System.currentTimeMillis();
+	}
 
 	@Override
 	public ItemStack[] getEnderChestContents() {
@@ -168,8 +177,8 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public void setEnderChestContents(ItemStack[] contents) {
 		enderChestContents = contents;
 		try {
-			COLUMN_ENDER_CHEST.updateAsync(this, ItemUtils.serializeItemsArray(enderChestContents), null, null);
-		} catch (IOException e) {
+			COLUMN_ENDER_CHEST.updateAsync(this, new SerialBlob(ItemUtils.serializeItemsArray(enderChestContents)), null, null);
+		}catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -217,6 +226,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			otherShots.set(resultSet.getInt("other_shots"));
 			openedChests.set(resultSet.getInt("opened_chests"));
 			playTime.set(resultSet.getLong("play_time"));
+			hideMapTime.set(resultSet.getLong("hide_map_time"));
 			kitVIPTime.set(resultSet.getLong("kit_vip_time"));
 			backVIPTime.set(resultSet.getLong("back_vip_time"));
 			parameterAmbient.set(resultSet.getBoolean("param_ambient"));

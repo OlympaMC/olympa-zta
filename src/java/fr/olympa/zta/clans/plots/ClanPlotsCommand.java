@@ -3,10 +3,14 @@ package fr.olympa.zta.clans.plots;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
@@ -21,6 +25,7 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
+import fr.olympa.zta.clans.ClanZTA;
 
 public class ClanPlotsCommand extends ComplexCommand {
 	
@@ -87,6 +92,47 @@ public class ClanPlotsCommand extends ComplexCommand {
 			i++;
 		}
 		sendSuccess("%d panneaux ont été mis à jour.", i);
+	}
+	
+	@Cmd (min = 1, args = "PLOT")
+	public void eject(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		ClanZTA clan = plot.getClan();
+		if (clan == null) {
+			sendError("La parcelle #%d n'est louée par aucun clan...", plot.getID());
+			return;
+		}
+		if (cmd.getArgumentsLength() == 1 || !"confirm".equals(cmd.getArgument(1))) {
+			sendSuccess("§eÊtes-vous sûr de vouloir éjecter le clan %s de la parcelle #%d ? Utilisez /clanplots eject %d confirm.", clan.getName(), plot.getID(), plot.getID());
+		}else {
+			plot.setClan(null, true);
+			clan.broadcast("Un opérateur vous a retiré votre parcelle.");
+			sendSuccess("La parcelle #%d a été retirée au clan %s.", plot.getID(), clan.getName());
+		}
+	}
+	
+	@Cmd (min = 1, args = "PLOT")
+	public void emptyChests(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		if (cmd.getArgumentsLength() == 1 || !"confirm".equals(cmd.getArgument(1))) {
+			sendSuccess("§eÊtes-vous sûr de vouloir vider les coffres de la parcelle #%d ? Utilisez /clanplots emptyChests %d confirm.", plot.getID(), plot.getID());
+		}else {
+			int clear = 0;
+			Iterator<Block> blockList = plot.getTrackedRegion().getRegion().blockList();
+			for (; blockList.hasNext();) {
+				Block block = blockList.next();
+				if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
+					Container container = (Container) block.getState();
+					Inventory inventory = container.getInventory();
+					if (!inventory.isEmpty()) {
+						inventory.clear();
+						clear++;
+					}
+					container.update();
+				}
+			}
+			sendSuccess("La parcelle #%d a été vidée de %d inventaires.", plot.getID(), clear);
+		}
 	}
 	
 	@Cmd (hide = true)

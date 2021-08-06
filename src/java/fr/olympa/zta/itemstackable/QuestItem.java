@@ -28,6 +28,8 @@ public enum QuestItem implements ItemStackable {
 			Material.RABBIT_HIDE,
 			"Pile magnétique",
 			"Pièce de ferraille rare, pouvant être combinées à plusieurs matériaux pour créer des objets.",
+			"Les zombies tank en possèdent parfois.",
+			"",
 			"À combiner avec une carte mère et un boîtier de programme pour crafter un §oBrouilleur C.V.M."),
 	ANTIDOTE(
 			Material.LEATHER,
@@ -43,6 +45,8 @@ public enum QuestItem implements ItemStackable {
 			Material.GOLD_INGOT,
 			"Carte mère",
 			"Utilisé dans un boîtier programmable, elle permet de créer des circuits.",
+			"Certains zombies rapides peuvent en avoir sur eux.",
+			"",
 			"À combiner avec un boîtier et une pile magnétique pour crafter un §oBrouilleur C.V.M."),
 	INDICE(
 			Material.FIREWORK_STAR,
@@ -54,6 +58,7 @@ public enum QuestItem implements ItemStackable {
 			Material.PRISMARINE_SHARD,
 			"Boîtier de programme",
 			"Peut recevoir des composants électroniques pour créer des circuits.",
+			"",
 			"À combiner avec une carte mère et une pile magnétique pour crafter un §oBrouilleur C.V.M."),
 	GENERATEUR_ENCOD(
 			Material.SHULKER_SHELL,

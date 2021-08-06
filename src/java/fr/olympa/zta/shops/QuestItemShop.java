@@ -14,8 +14,11 @@ import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	
 	private static final List<AbstractArticle<QuestItem>> ARTICLES = Arrays.asList(
-			new Article<>(QuestItem.DECHET, 9),
-			new Article<>(QuestItem.AMAS, 11));
+			new Article<>(QuestItem.DECHET, 7),
+			new Article<>(QuestItem.AMAS, 10),
+			new Article<>(QuestItem.PILE, 40),
+			new Article<>(QuestItem.CARTE_MERE, 45)
+			);
 	
 	public QuestItemShop() {
 		super("questitemshop", "Rachat de pièeces", "Pièces détachées", DyeColor.MAGENTA, ARTICLES);

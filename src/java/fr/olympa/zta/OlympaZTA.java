@@ -84,6 +84,7 @@ import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.itemstackable.Bandage;
+import fr.olympa.zta.itemstackable.Brouilleur;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.itemstackable.ParachuteModule;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -257,10 +258,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			QuestItem.values();
 			Artifacts.values();
 			ItemStackableManager.register(Bandage.BANDAGE);
+			ItemStackableManager.register(Brouilleur.BROUILLEUR);
 			sendMessage("§6%d §etypes d'items enregistrés !", ItemStackableManager.stackables.size());
 			
 			AmmoType.values();
 			
+			OlympaGroup.PLAYER.setRuntimePermission("dynmap.*", false);
 			OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
 			OlympaGroup.GAMEMASTER.setRuntimePermission("beautyquests.*");
 			

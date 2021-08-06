@@ -62,6 +62,11 @@ public class MobsCommand extends ComplexCommand {
 		sendSuccess("Vous avez fait spawn %d zombie de type %s.", amount, zombieType.name());
 	}
 
+	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %%]")
+	public void mobsScan(CommandContext cmd) {
+		new MapScan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
+	}
+	
 	@Cmd (args = { "kill|remove", "DOUBLE" }, min = 0, syntax = "[action] [rayon]")
 	public void killZombies(CommandContext cmd) {
 		boolean remove = cmd.getArgumentsLength() != 0 && cmd.getArgument(0).equals("remove");

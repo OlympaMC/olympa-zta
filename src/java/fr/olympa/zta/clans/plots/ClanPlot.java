@@ -35,7 +35,7 @@ import fr.olympa.zta.glass.GlassSmashFlag;
 
 public class ClanPlot {
 
-	public static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
+	public static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.FURNACE, Material.BLAST_FURNACE, Material.SMOKER, Material.HOPPER, Material.DROPPER, Material.DISPENSER);
 	
 	public static final int PAYMENT_DURATION_DAYS = 7;
 	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000L;
@@ -74,11 +74,16 @@ public class ClanPlot {
 	}
 
 	public void setClan(ClanZTA clan, boolean updateDB) {
-		if (this.clan != null) {
-			this.clan.setCachedPlot(null);
-		}else setNextPayment(-1, updateDB, false);
-
+		ClanZTA old = this.clan;
 		this.clan = clan;
+		
+		if (old != null) {
+			old.setCachedPlot(null);
+		}else {
+			setNextPayment(-1, updateDB, false);
+			setLastChiefPayment(-1, updateDB);
+		}
+
 		if (clan != null) clan.setCachedPlot(this);
 
 		if (updateDB) manager.columnClan.updateAsync(this, clan == null ? -1 : clan.getID(), null, null);
@@ -122,10 +127,10 @@ public class ClanPlot {
 		if (nextPayment != -1) {
 			long timeBeforeExpiration = getSecondsBeforeExpiration();
 			if (timeBeforeExpiration < 0) {
-				if (clan != null) clan.setResetExpirationTime();
+				if (clan != null && updateReset) clan.setResetExpirationTime();
 				setClan(null, true);
 				updateSign();
-				if (updateReset) updateDB = true;
+				return;
 			}else {
 				if (paymentExpiration != null) paymentExpiration.cancel();
 				paymentExpiration = new BukkitRunnable() {

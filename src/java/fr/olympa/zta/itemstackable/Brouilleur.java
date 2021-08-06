@@ -2,6 +2,7 @@ package fr.olympa.zta.itemstackable;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -10,19 +11,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.item.ImmutableItemStack;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.api.utils.Prefix;
+import fr.olympa.zta.OlympaPlayerZTA;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.Weapon;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Magnétique
 	
 	private static final Material MATERIAL = Material.SCUTE;
-	private static final int COOLDOWN = 15 * 20;
+	private static final int HIDDEN_SECONDS = 600;
 
 	public static final Brouilleur BROUILLEUR = new Brouilleur();
 	
@@ -36,12 +40,17 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 		meta.setDisplayName("§bBrouilleur C.V.M.");
 		List<String> lore = SpigotUtils.wrapAndAlign("Une fois activé, vous n'êtes plus visible sur la carte pendant quelques minutes.", 35);
 		lore.add("");
-		lore.add("§lObjet consommable!");
+		lore.add("§7> §l§cObjet consommable!");
 		meta.setLore(lore);
 		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
 		this.item = new ImmutableItemStack(item);
+		
+		Bukkit.addRecipe(new ShapelessRecipe(new NamespacedKey(OlympaZTA.getInstance(), "brouilleur"), item)
+				.addIngredient(new RecipeChoice.ExactChoice(QuestItem.BOITIER_PROG.getDemoItem()))
+				.addIngredient(new RecipeChoice.ExactChoice(QuestItem.CARTE_MERE.getDemoItem()))
+				.addIngredient(new RecipeChoice.ExactChoice(QuestItem.PILE.getDemoItem())));
 	}
 	
 	@Override
@@ -80,11 +89,20 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 		if (!player.hasCooldown(MATERIAL)) {
 			if (!e.getItem().equals(player.getInventory().getItemInMainHand())) return;
 			
-			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
-			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§c§lTu as été heal !"));
-			player.setCooldown(MATERIAL, COOLDOWN);
+			OlympaPlayerZTA playerZTA = OlympaPlayerZTA.get(player);
+			if (playerZTA.isHidden()) {
+				Prefix.ERROR.sendMessage(player, "Tu es déjà caché de la carte virtuelle !");
+				return;
+			}
 			
+			playerZTA.hideMapTime.set(System.currentTimeMillis() + HIDDEN_SECONDS * 1000);
+			
+			player.getWorld().spawnParticle(Particle.CLOUD, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
+			player.setCooldown(MATERIAL, HIDDEN_SECONDS * 20);
+			
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Tu es caché de la carte virtuelle pendant 10 minutes !");
+
 			int amount = e.getItem().getAmount();
 			if (amount == 1) {
 				player.getInventory().setItemInMainHand(null);
