@@ -14,38 +14,71 @@ import fr.olympa.api.spigot.item.ImmutableItemStack;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 
 public enum QuestItem implements ItemStackable {
-	DECHET(Material.IRON_NUGGET, "Déchet métallique", 1),
-	FERRAILLE(Material.IRON_INGOT, "Ferraille", 1),
-	KEROSENE(Material.CLAY_BALL, "Kérosène", 1),
-	PILE(Material.RABBIT_HIDE, "Pile magnétique", 1),
-	ANTIDOTE(Material.LEATHER, "Antidote", 1),
-	IEM_BROUILLEUR(Material.SCUTE, "Brouilleur I.E.M.", 1),
-	BATTERIE(Material.QUARTZ, "Batterie", 1),
-
-	AMAS(Material.GOLD_NUGGET, "Amas technologique", 2),
-	CARTE_MERE(Material.GOLD_INGOT, "Carte mère", 2),
-	INDICE(Material.FIREWORK_STAR, "Indice", 2),
-	BOITIER_ELEC(Material.PRISMARINE_CRYSTALS, "Boîtier éléctronique", 2),
-	BOITIER_PROG(Material.PRISMARINE_SHARD, "Boîtier de programme", 2),
-	GENERATEUR_ENCOD(Material.SHULKER_SHELL, "Générateur encodé", 2),
-	GENERATEUR_CRED(Material.POPPED_CHORUS_FRUIT, "Générateur de crédit", 2),
+	DECHET(
+			Material.IRON_NUGGET,
+			"Déchet métallique",
+			"N'a aucune utilité tout seul, mais vous pouvez le revendre à un ferrailleur."),
+	FERRAILLE(
+			Material.IRON_INGOT,
+			"Ferraille"),
+	KEROSENE(
+			Material.CLAY_BALL,
+			"Kérosène"),
+	PILE(
+			Material.RABBIT_HIDE,
+			"Pile magnétique",
+			"Pièce de ferraille rare, pouvant être combinées à plusieurs matériaux pour créer des objets.",
+			"À combiner avec une carte mère et un boîtier de programme pour crafter un §oBrouilleur C.V.M."),
+	ANTIDOTE(
+			Material.LEATHER,
+			"Antidote"),
+	BATTERIE(
+			Material.QUARTZ,
+			"Batterie"),
+	AMAS(
+			Material.GOLD_NUGGET,
+			"Amas technologique",
+			"Renferme des composants utiles. Certains ferrailleurs peuvent en racheter."),
+	CARTE_MERE(
+			Material.GOLD_INGOT,
+			"Carte mère",
+			"Utilisé dans un boîtier programmable, elle permet de créer des circuits.",
+			"À combiner avec un boîtier et une pile magnétique pour crafter un §oBrouilleur C.V.M."),
+	INDICE(
+			Material.FIREWORK_STAR,
+			"Indice"),
+	BOITIER_ELEC(
+			Material.PRISMARINE_CRYSTALS,
+			"Boîtier éléctronique"),
+	BOITIER_PROG(
+			Material.PRISMARINE_SHARD,
+			"Boîtier de programme",
+			"Peut recevoir des composants électroniques pour créer des circuits.",
+			"À combiner avec une carte mère et une pile magnétique pour crafter un §oBrouilleur C.V.M."),
+	GENERATEUR_ENCOD(
+			Material.SHULKER_SHELL,
+			"Générateur encodé"),
+	GENERATEUR_CRED(
+			Material.POPPED_CHORUS_FRUIT,
+			"Générateur de crédit"),
 	;
 	
 	private final String name;
-	private final int segment;
 	private final NamespacedKey key;
 	private final ImmutableItemStack item;
 
-	private QuestItem(Material type, String name, int cat, String... lore) {
+	private QuestItem(Material type, String name, String... lore) {
 		this.name = name;
-		this.segment = cat;
 		
 		key = ItemStackableManager.register(this);
 		
 		List<String> loreList = new ArrayList<>();
-		for (String loreLine : lore) loreList.addAll(SpigotUtils.wrapAndAlign(loreLine, 35));
-		loreList.add("");
-		loreList.add("§8> §7Ressource de catégorie §l" + cat);
+		for (String loreLine : lore) {
+			if (loreLine == null || loreLine.isEmpty())
+				loreList.add("");
+			else
+				loreList.addAll(SpigotUtils.wrapAndAlign(loreLine, 35));
+		}
 		ItemStack item = new ItemStack(type);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
@@ -83,10 +116,6 @@ public enum QuestItem implements ItemStackable {
 	@Override
 	public ImmutableItemStack getDemoItem() {
 		return item;
-	}
-
-	public int getSegment() {
-		return segment;
 	}
 	
 	public int getItemAmount(Inventory inv) {

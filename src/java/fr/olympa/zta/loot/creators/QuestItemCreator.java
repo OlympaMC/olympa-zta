@@ -1,4 +1,5 @@
 package fr.olympa.zta.loot.creators;
+
 import java.util.Random;
 
 import fr.olympa.api.utils.Utils;

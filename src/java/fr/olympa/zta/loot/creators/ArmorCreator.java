@@ -1,8 +1,10 @@
 package fr.olympa.zta.loot.creators;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.bukkit.inventory.PlayerInventory;
 
@@ -29,9 +31,10 @@ public class ArmorCreator implements LootCreator {
 		ArmorSlot slot = null;
 		if (context != null && bestThreshold > 0 && ThreadLocalRandom.current().nextDouble() <= bestThreshold) {
 			PlayerInventory inventory = context.getPlayer().getInventory();
-			slot = Arrays.stream(ArmorSlot.values())
+			List<ArmorSlot> slots = Arrays.stream(ArmorSlot.values())
 					.filter(tempSlot -> inventory.getItem(tempSlot.getSlot()).getType() != type.getImmutable(tempSlot).getType())
-					.findFirst().orElse(null);
+					.collect(Collectors.toList());
+			if (!slots.isEmpty()) slot = slots.get(random.nextInt(slots.size()));
 		}
 		if (slot == null) slot = ArmorSlot.values()[random.nextInt(4)]; // pièce d'armure aléatoire
 		return new Loot(type.get(slot));

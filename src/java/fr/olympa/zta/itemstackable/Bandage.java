@@ -1,4 +1,4 @@
-package fr.olympa.zta.weapons;
+package fr.olympa.zta.itemstackable;
 
 import java.util.Arrays;
 
@@ -14,8 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.item.ImmutableItemStack;
-import fr.olympa.zta.itemstackable.ItemStackable;
-import fr.olympa.zta.itemstackable.ItemStackableManager;
+import fr.olympa.zta.weapons.Weapon;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 

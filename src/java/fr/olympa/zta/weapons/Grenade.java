@@ -63,6 +63,12 @@ public enum Grenade implements Weapon, ItemStackable {
 		return item.clone();
 	}
 
+	public ItemStack get(int amount) {
+		ItemStack item = this.item.clone();
+		item.setAmount(amount);
+		return item;
+	}
+	
 	@Override
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {

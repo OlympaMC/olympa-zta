@@ -58,7 +58,7 @@ public class EnderChestManager implements Listener {
 		resultSet.close();
 		statement.close();
 		
-		command = new EnderChestCommand(OlympaZTA.getInstance(), ZTAPermissions.ENDERCHEST_COMMAND, ZTAPermissions.ENDERCHEST_COMMAND_OTHER);
+		command = new EnderChestCommand(OlympaZTA.getInstance(), ZTAPermissions.GROUP_SAUVEUR, ZTAPermissions.ENDERCHEST_COMMAND_OTHER);
 		command.register();
 		
 		OlympaZTA.getInstance().sendMessage("§6%d §eEnderChests chargés", enderchests.size());

@@ -46,6 +46,7 @@ public class FoodCreator implements LootCreator {
 		MUSHROOM_STEW("Soupe"),
 		GOLDEN_CARROT("Carotte dorée"),
 		GOLDEN_APPLE("Pomme d'or"),
+		APPLE("Pomme"),
 		COOKIE("Cookie"),
 		COOKED_PORKCHOP("Viande de porc cuite"),
 		COOKED_SALMON("Saumon cuit"),

@@ -28,7 +28,7 @@ public enum LootChestType {
 			.add(32, new AmmoCreator.BestCreator(3, 5, 7, 0.4, 1D, 0.5D))
 			.add(7, new QuestItemCreator(QuestItem.AMAS, 1, 3))
 			.add(10, new QuestItemCreator(QuestItem.DECHET, 1, 2))
-			.add(0.16, new QuestItemCreator(QuestItem.BATTERIE, 1, 1))
+			.add(0.2, new QuestItemCreator(QuestItem.BOITIER_PROG, 1, 1))
 			.add(14, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
 			.add(1, new MoneyCreator(PhysicalMoney.BANKNOTE_10, 1, 1))
 			.add(16, new FoodCreator(Food.BAKED_POTATO, 1, 2))
@@ -55,8 +55,8 @@ public enum LootChestType {
 			.add(20, new AmmoCreator(AmmoType.CARTRIDGE, 3, 7, 0.5))
 			.add(15, new FoodCreator(Food.COOKED_SALMON, 1, 3))
 			.add(8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
-			.add(5, new ArmorCreator(ArmorType.GANGSTER, 0.2))
-			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.3, 1).add(0.4, 2).add(0.3, 3).build())),
+			.add(2.6, new ArmorCreator(ArmorType.GANGSTER, 0.2))
+			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.3, 1).add(0.4, 2).add(0.3, 3).build(), 6)),
 	MEDIUM(
 			"de zone à risques",
 			RandomizedInventory.newBuilder()
@@ -68,8 +68,8 @@ public enum LootChestType {
 			.add(20, new AmmoCreator(AmmoType.CARTRIDGE, 3, 7, 0.5))
 			.add(15, new FoodCreator(Food.COOKED_SALMON, 2, 3))
 			.add(8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 5))
-			.add(3, new ArmorCreator(ArmorType.ANTIRIOT, 0.5))
-			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.25, 1).add(0.4, 2).add(0.35, 3).build())),
+			.add(1.9, new ArmorCreator(ArmorType.ANTIRIOT, 0.3))
+			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.25, 1).add(0.4, 2).add(0.35, 3).build(), 6)),
 	HARD(
 			"de zone rouge",
 			RandomizedInventory.newBuilder()
@@ -81,8 +81,8 @@ public enum LootChestType {
 			.add(20, new AmmoCreator(AmmoType.HANDWORKED, 3, 7, 0.5))
 			.add(15.2, new FoodCreator(Food.COOKED_BEEF, 2, 3))
 			.add(8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 5))
-			.add(0.8, new ArmorCreator(ArmorType.MILITARY, 0.8))
-			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.28, 1).add(0.4, 2).add(0.32, 3).build())),
+			.add(0.5, new ArmorCreator(ArmorType.MILITARY, 0.5))
+			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.28, 1).add(0.4, 2).add(0.32, 3).build(), 5.2)),
 	;
 	
 	private String name;

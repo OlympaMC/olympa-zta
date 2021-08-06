@@ -99,7 +99,12 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	
 	@Override
 	public int getMaxSize(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p) {
-		return ZTAPermissions.CLAN_MORE_SPACE_PERMISSION.hasPermission(p) ? 10 : 5;
+		if (ZTAPermissions.GROUP_LEGENDE.hasPermission(p)) return 10;
+		if (ZTAPermissions.GROUP_HEROS.hasPermission(p)) return 9;
+		if (ZTAPermissions.GROUP_SAUVEUR.hasPermission(p)) return 8;
+		if (ZTAPermissions.GROUP_RODEUR.hasPermission(p)) return 7;
+		if (ZTAPermissions.GROUP_SURVIVANT.hasPermission(p)) return 6;
+		return 5;
 	}
 	
 	@Override

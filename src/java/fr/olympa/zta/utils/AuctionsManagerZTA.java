@@ -8,8 +8,10 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.spigot.auctions.Auction;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
+import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
 import fr.olympa.api.spigot.economy.tax.TaxManager;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.ZTAPermissions;
 
 public class AuctionsManagerZTA extends AuctionsManager {
 	
@@ -21,6 +23,14 @@ public class AuctionsManagerZTA extends AuctionsManager {
 	public synchronized void boughtAuction(Auction auction) throws SQLException {
 		super.boughtAuction(auction);
 		OlympaZTA.getInstance().gunRegistry.loadFromItems(new ItemStack[] { auction.item });
+	}
+	
+	@Override
+	public int getMaxAuctions(MoneyPlayerInterface player) {
+		if (ZTAPermissions.GROUP_LEGENDE.hasPermission(player)) return 10;
+		if (ZTAPermissions.GROUP_SAUVEUR.hasPermission(player)) return 8;
+		if (ZTAPermissions.GROUP_SURVIVANT.hasPermission(player)) return 6;
+		return 5;
 	}
 	
 }

@@ -1,0 +1,96 @@
+package fr.olympa.zta.itemstackable;
+
+import java.util.List;
+
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+
+import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.zta.weapons.Weapon;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
+public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Magnétique
+	
+	private static final Material MATERIAL = Material.SCUTE;
+	private static final int COOLDOWN = 15 * 20;
+
+	public static final Brouilleur BROUILLEUR = new Brouilleur();
+	
+	private final ImmutableItemStack item;
+	private final NamespacedKey key;
+	
+	private Brouilleur() {
+		key = ItemStackableManager.register(this);
+		ItemStack item = new ItemStack(MATERIAL);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§bBrouilleur C.V.M.");
+		List<String> lore = SpigotUtils.wrapAndAlign("Une fois activé, vous n'êtes plus visible sur la carte pendant quelques minutes.", 35);
+		lore.add("");
+		lore.add("§lObjet consommable!");
+		meta.setLore(lore);
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
+		meta.setCustomModelData(1);
+		item.setItemMeta(meta);
+		this.item = new ImmutableItemStack(item);
+	}
+	
+	@Override
+	public String getName() {
+		return "Brouilleur C.V.M.";
+	}
+	
+	@Override
+	public String getId() {
+		return "brouilleur";
+	}
+	
+	public ItemStack getItem(int amount) {
+		return item.toMutableStack(amount);
+	}
+	
+	@Override
+	public ItemStack createItem() {
+		return item.toMutableStack();
+	}
+	
+	@Override
+	public ImmutableItemStack getDemoItem() {
+		return item;
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
+	}
+	
+	@Override
+	public void onInteract(PlayerInteractEvent e) {
+		if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		Player player = e.getPlayer();
+		if (!player.hasCooldown(MATERIAL)) {
+			if (!e.getItem().equals(player.getInventory().getItemInMainHand())) return;
+			
+			player.getWorld().spawnParticle(Particle.HEART, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§c§lTu as été heal !"));
+			player.setCooldown(MATERIAL, COOLDOWN);
+			
+			int amount = e.getItem().getAmount();
+			if (amount == 1) {
+				player.getInventory().setItemInMainHand(null);
+			}else e.getItem().setAmount(amount - 1);
+			e.setCancelled(true);
+		}
+	}
+	
+}

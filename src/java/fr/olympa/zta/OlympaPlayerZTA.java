@@ -36,10 +36,10 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public static final int MAX_SLOTS = 27;
 
 	/* Datas */
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<OlympaPlayerZTA>("ender_chest", "VARBINARY(60000) NULL", Types.VARBINARY).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_ENDER_CHEST = new SQLColumn<OlympaPlayerZTA>("ender_chest", "BLOB NULL", Types.BLOB).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<OlympaPlayerZTA>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<OlympaPlayerZTA>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_TRADE_BAG = new SQLColumn<OlympaPlayerZTA>("trade_bag", "VARBINARY(8000) NULL", Types.VARBINARY).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_TRADE_BAG = new SQLColumn<OlympaPlayerZTA>("trade_bag", "BLOB NULL", Types.BLOB).setUpdatable();
 	/* Stats */
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<OlympaPlayerZTA>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_PLAYERS = new SQLColumn<OlympaPlayerZTA>("killed_players", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
@@ -176,7 +176,9 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 
 	@Override
 	public int getEnderChestRows() {
-		return ZTAPermissions.ENDERCHEST_MORE_SPACE.hasPermission(this) ? 3 : 2;
+		if (ZTAPermissions.GROUP_HEROS.hasPermission(this)) return 4;
+		if (ZTAPermissions.GROUP_RODEUR.hasPermission(this)) return 3;
+		return 2;
 	}
 
 	@Override

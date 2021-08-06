@@ -45,8 +45,6 @@ import fr.olympa.api.spigot.auctions.AuctionsManager;
 import fr.olympa.api.spigot.command.essentials.BackCommand;
 import fr.olympa.api.spigot.command.essentials.FeedCommand;
 import fr.olympa.api.spigot.command.essentials.HealCommand;
-import fr.olympa.api.spigot.command.essentials.KitCommand;
-import fr.olympa.api.spigot.command.essentials.KitCommand.SimpleKit;
 import fr.olympa.api.spigot.command.essentials.tp.TpaHandler;
 import fr.olympa.api.spigot.economy.MoneyCommand;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
@@ -85,6 +83,7 @@ import fr.olympa.zta.hub.HubCommand;
 import fr.olympa.zta.hub.HubManager;
 import fr.olympa.zta.hub.SpreadManageCommand;
 import fr.olympa.zta.itemstackable.Artifacts;
+import fr.olympa.zta.itemstackable.Bandage;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.itemstackable.ParachuteModule;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -122,9 +121,6 @@ import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
 import fr.olympa.zta.utils.npcs.SentinelZTA;
 import fr.olympa.zta.utils.quests.BeautyQuestsLink;
-import fr.olympa.zta.weapons.ArmorType;
-import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
-import fr.olympa.zta.weapons.Bandage;
 import fr.olympa.zta.weapons.Grenade;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.TrainingManager;
@@ -221,6 +217,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			
 			OlympaPermission.registerPermissions(ZTAPermissions.class);
 			AccountProviderAPI.getter().setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, getServerNameID(), OlympaPlayerZTA.COLUMNS);
+			if (AccountProviderAPI.getter().getPluginPlayerTable() == null) throw new RuntimeException();
 			
 			loadIntegration("dynmap", DynmapLink::initialize);
 			loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());
@@ -403,7 +400,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			new MoneyCommand<OlympaPlayerZTA>(this, "money", "Gérer son porte-monnaie.", ZTAPermissions.MONEY_COMMAND, ZTAPermissions.MONEY_COMMAND_OTHER, ZTAPermissions.MONEY_COMMAND_MANAGE, "monnaie").register();
 			new HealCommand(this, ZTAPermissions.MOD_COMMANDS).register();
 			new FeedCommand(this, ZTAPermissions.MOD_COMMANDS).register();
-			new BackCommand(this, ZTAPermissions.BACK_COMMAND) {
+			new BackCommand(this, ZTAPermissions.GROUP_HEROS) {
 				final long timeBetween = TimeUnit.DAYS.toMillis(1);
 				final NumberFormat numberFormat = new DecimalFormat("00");
 				
@@ -426,16 +423,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 					return super.onCommand(sender, command, label, args);
 				}
 			}.register();
-			new KitCommand<OlympaPlayerZTA>(this, new SimpleKit<>("VIP", ZTAPermissions.KIT_VIP_PERMISSION, TimeUnit.DAYS.toMillis(1), x -> x.kitVIPTime.get(), (x, time) -> x.kitVIPTime.set(time), (op, p) -> new ItemStack[] {
-					GunType.M16.createItem(),
-					Food.COOKED_BEEF.get(15),
-					ArmorType.ANTIRIOT.get(ArmorSlot.BOOTS),
-					ArmorType.ANTIRIOT.get(ArmorSlot.LEGGINGS),
-					ArmorType.ANTIRIOT.get(ArmorSlot.CHESTPLATE),
-					ArmorType.ANTIRIOT.get(ArmorSlot.HELMET),
-					AmmoType.HANDWORKED.getAmmo(10, true),
-					AmmoType.LIGHT.getAmmo(10, true),
-					AmmoType.HEAVY.getAmmo(10, true) })).register();
+			new KitZTACommand(this).register();
 			new StatsCommand(this).register();
 			
 			Mobs.Zombies.COMMON.getName(); // initalise les mobs custom
