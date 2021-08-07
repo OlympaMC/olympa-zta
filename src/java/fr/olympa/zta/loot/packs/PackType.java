@@ -72,13 +72,14 @@ public enum PackType {
 			.build(2, 2)),
 	RARE(
 			30,
-			10000,
+			20000,
 			0,
 			"arme rare",
 			RandomizedPickerBuilder.<LootCreator>newBuilder()
 			.add(20, new FoodCreator(Food.GOLDEN_APPLE, 10, 10))
 			.add(15, new ItemStackableCreator(GunType.DRAGUNOV))
 			.add(20, new ItemStackableCreator(GunType.SDMR))
+					.add(10, new ItemStackableCreator(Artifacts.PARACHUTE))
 			.build(1, 1)),
 	EPIQUE(
 			32,

@@ -26,7 +26,7 @@ import fr.olympa.zta.weapons.Weapon;
 public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Magnétique
 	
 	private static final Material MATERIAL = Material.SCUTE;
-	private static final int HIDDEN_SECONDS = 600;
+	private static final int HIDDEN_SECONDS = 24 * 3600;
 
 	public static final Brouilleur BROUILLEUR = new Brouilleur();
 	
@@ -38,7 +38,7 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 		ItemStack item = new ItemStack(MATERIAL);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§bBrouilleur C.V.M.");
-		List<String> lore = SpigotUtils.wrapAndAlign("Une fois activé, vous n'êtes plus visible sur la carte pendant quelques minutes.", 35);
+		List<String> lore = SpigotUtils.wrapAndAlign("Une fois activé, vous n'êtes plus visible sur la carte pendant une journée.", 35);
 		lore.add("");
 		lore.add("§7> §c§lObjet consommable!");
 		meta.setLore(lore);
@@ -101,7 +101,7 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
 			player.setCooldown(MATERIAL, HIDDEN_SECONDS * 20);
 			
-			Prefix.DEFAULT_GOOD.sendMessage(player, "Tu es caché de la carte virtuelle pendant 10 minutes !");
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Tu es caché de la carte virtuelle pendant une journée !");
 
 			int amount = e.getItem().getAmount();
 			if (amount == 1) {

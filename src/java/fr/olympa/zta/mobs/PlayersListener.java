@@ -204,7 +204,7 @@ public class PlayersListener implements Listener {
 		
 		if (!playersWithPacks.contains(p.getName())) {
 			OlympaZTA.getInstance().getTask().runTask(() -> {
-				p.setResourcePack("https://olympa.fr/zta/pack.zip", "92CE7774F987DF4CBAE646AED824E9A858F24976");
+				p.setResourcePack("https://drive.google.com/uc?export=download&id=1QAnichVOlb0jqKkPqq9OfpKfSsBlHwTO", "21F4629845690343530BAE166402E1B68857B843");
 			});
 		}else OlympaZTA.getInstance().sendMessage("Le joueur %s a déjà son pack de resources pour le ZTA.", p.getName());
 	}

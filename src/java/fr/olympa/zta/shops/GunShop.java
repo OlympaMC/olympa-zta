@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.itemstackable.Bandage;
+import fr.olympa.zta.itemstackable.Brouilleur;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractSellingShop;
 import fr.olympa.zta.weapons.guns.GunType;
@@ -24,7 +25,8 @@ public class GunShop extends AbstractSellingShop<ItemStackable> {
 			new Article<>(GunType.M16, 1700),
 			new Article<>(GunType.SDMR, 3000),
 			new Article<>(GunType.DRAGUNOV, 65000),
-			new Article<>(Bandage.BANDAGE, 75)
+			new Article<>(Bandage.BANDAGE, 75),
+			new Article<>(Brouilleur.BROUILLEUR, 4500)
 			);
 	
 	public GunShop() {

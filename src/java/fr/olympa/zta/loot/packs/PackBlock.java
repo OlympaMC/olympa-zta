@@ -59,6 +59,10 @@ public class PackBlock {
 			return;
 		}
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
+		if (type.getPriceReal() != 0) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Les packs achetables avec de l'argent réel sont en cours de mise en place.");
+			return;
+		}
 		if (player.getGameMoney().has(type.getPrice())) {
 			Prefix.DEFAULT.sendMessage(p, "Tu vas ouvrir un §lpack %s§7...", type.getName());
 			Item item = location.getWorld().dropItem(location.clone().add(0, 2.5, 0), FLOATING_ITEM);

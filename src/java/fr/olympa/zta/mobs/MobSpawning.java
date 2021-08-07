@@ -104,98 +104,100 @@ public class MobSpawning implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
-			long time = System.currentTimeMillis();
-			queueLock.lock();
-			try {
-				List<EntityLocation> entities = world.getLivingEntities().stream().map(x -> new EntityLocation(x.getLocation(), x instanceof Player)).collect(Collectors.toCollection(LinkedList::new));
-				if (entities.size() > maxEntities)
-					return;
-				long time2 = System.currentTimeMillis();
-				Map<ChunkSnapshot, SpawnType> activeChunks = getActiveChunks();
-				timeActiveChunks = System.currentTimeMillis() - time2;
-				lastActiveChunks = activeChunks.size();
-				for (Entry<ChunkSnapshot, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
-					ChunkSnapshot chunk = entry.getKey();
-					SpawnType spawn = entry.getValue();
-					int attempts = 0;
-					int mobs = spawn.spawning.spawnAmount();
-					/*if (mobs > 1) */mobs = random.nextInt(mobs + 1);
-					if (world.getTime() > CustomDayDuration.NIGHT_TIME) mobs++;
-					mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
-						if (++attempts == 5)
-							break;
-						int x = random.nextInt(16);
-						int z = random.nextInt(16); // random position dans le chunk
-						if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
-							Material block = chunk.getBlockType(x, seaLevel, z);
-							if (block == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
-								Location location = new Location(world, chunk.getX() << 4 | x, seaLevel, chunk.getZ() << 4 | z);
-								for (EntityLocation entityLocation : entities)
-									if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared))
-										continue mobs; // trop proche d'entité = abandon
-								spawnQueue.add(new AbstractMap.SimpleEntry<>(location, Zombies.DROWNED));
-							}
-						} else {
-							int highestY = chunk.getHighestBlockYAt(x, z);
-							int y = random.nextInt(Math.min(highestY - 1, 40)) + 1; // à partir de quelle hauteur ça va tenter de faire spawn
-							Material prev = chunk.getBlockType(x, y - 1, z);
-							y: for (; y < highestY + 1; y++) { // loop depuis la hauteur random jusqu'à la hauteur max
-								boolean possible = !UNSPAWNABLE_ON.contains(prev);
-								prev = chunk.getBlockType(x, y, z);
-								if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
-									if (chunk.getBlockSkyLight(x, y, z) <= 5 || chunk.getBlockEmittedLight(x, y, z) > 10) {
-										if (random.nextBoolean())
-											continue; // au fond d'un immeuble pas éclairé : pas intéressant
-										mobs++;
-										continue mobs;
+		try {
+			while (true) {
+				long time = System.currentTimeMillis();
+				queueLock.lock();
+				try {
+					List<EntityLocation> entities = world.getLivingEntities().stream().map(x -> new EntityLocation(x.getLocation(), x instanceof Player)).collect(Collectors.toCollection(LinkedList::new));
+					if (entities.size() < maxEntities) {
+						long time2 = System.currentTimeMillis();
+						Map<ChunkSnapshot, SpawnType> activeChunks = getActiveChunks();
+						timeActiveChunks = System.currentTimeMillis() - time2;
+						lastActiveChunks = activeChunks.size();
+						for (Entry<ChunkSnapshot, SpawnType> entry : activeChunks.entrySet()) { // itère dans tous les chunks actifs
+							ChunkSnapshot chunk = entry.getKey();
+							SpawnType spawn = entry.getValue();
+							int attempts = 0;
+							int mobs = spawn.spawning.spawnAmount();
+							/*if (mobs > 1) */mobs = random.nextInt(mobs + 1);
+							if (world.getTime() > CustomDayDuration.NIGHT_TIME) mobs++;
+							mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
+								if (++attempts == 5)
+									break;
+								int x = random.nextInt(16);
+								int z = random.nextInt(16); // random position dans le chunk
+								if (spawn == SpawnType.NONE) { // none = chunk océan, tenter de faire spawn un noyé
+									Material block = chunk.getBlockType(x, seaLevel, z);
+									if (block == Material.WATER) { // si le bloc au niveau de l'océan est de l'eau, spawner
+										Location location = new Location(world, chunk.getX() << 4 | x, seaLevel, chunk.getZ() << 4 | z);
+										for (EntityLocation entityLocation : entities) if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared))
+											continue mobs; // trop proche d'entité = abandon
+										spawnQueue.add(new AbstractMap.SimpleEntry<>(location, Zombies.DROWNED));
 									}
-									Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
-									SpawningFlag flag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(location, SpawningFlag.class);
-									if (flag == null || flag.type == null)
-										continue;
-									if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null)
-										continue; // si on est dans une parcelle de clan pas de spawn
-									for (EntityLocation entityLocation : entities)
-										if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared)) {
-											//System.out.println("fail distance");
-											continue y; // trop près d'autre entité
+								}else {
+									int highestY = chunk.getHighestBlockYAt(x, z);
+									int y = random.nextInt(Math.min(highestY - 1, 40)) + 1; // à partir de quelle hauteur ça va tenter de faire spawn
+									Material prev = chunk.getBlockType(x, y - 1, z);
+									y: for (; y < highestY + 1; y++) { // loop depuis la hauteur random jusqu'à la hauteur max
+										boolean possible = !UNSPAWNABLE_ON.contains(prev);
+										prev = chunk.getBlockType(x, y, z);
+										if (possible && prev == Material.AIR && chunk.getBlockType(x, y + 1, z) == Material.AIR) { // si bloc possible en dessous ET air au bloc ET air au-dessus = good
+											if (chunk.getBlockSkyLight(x, y, z) <= 5 || chunk.getBlockEmittedLight(x, y, z) > 10) {
+												if (random.nextBoolean())
+													continue; // au fond d'un immeuble pas éclairé : pas intéressant
+												mobs++;
+												continue mobs;
+											}
+											Location location = new Location(world, chunk.getX() << 4 | x, y, chunk.getZ() << 4 | z);
+											SpawningFlag flag = OlympaCore.getInstance().getRegionManager().getMostImportantFlag(location, SpawningFlag.class);
+											if (flag == null || flag.type == null)
+												continue;
+											if (OlympaZTA.getInstance().clanPlotsManager.getPlot(location) != null)
+												continue; // si on est dans une parcelle de clan pas de spawn
+											for (EntityLocation entityLocation : entities) if (entityLocation.closeEnough(location, spawn.minDistanceSquared, spawn.minPlayerDistanceSquared)) {
+												//System.out.println("fail distance");
+												continue y; // trop près d'autre entité
+											}
+											for (int j = 0; j < spawn.spawning.spawnAmount(); j++) {
+												Zombies zombie = spawn.spawning.zombiePicker().pickOne(random, new MobSpawningContext());
+												if (zombie != null) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, zombie));
+											}
+											continue mobs;
 										}
-									for (int j = 0; j < spawn.spawning.spawnAmount(); j++) {
-										Zombies zombie = spawn.spawning.zombiePicker().pickOne(random, new MobSpawningContext());
-										if (zombie != null) spawnQueue.add(new AbstractMap.SimpleEntry<>(location, zombie));
 									}
-									continue mobs;
 								}
 							}
 						}
 					}
-				}
-			}catch (Exception ex) {
-				OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du spawn de mobs.");
-				ex.printStackTrace();
-				end();
-			} finally {
-				queueLock.unlock();
-				if (!enabled)
-					break;
-				long elapsed = System.currentTimeMillis() - time;
-				computeTimes.add(elapsed);
-				try {
-					if (elapsed < calculationMillis)
-						Thread.sleep(calculationMillis - elapsed);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					break;
+				}catch (Exception ex) {
+					OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du spawn de mobs.");
+					ex.printStackTrace();
+					end();
+				}finally {
+					queueLock.unlock();
+					if (!enabled)
+						break;
+					long elapsed = System.currentTimeMillis() - time;
+					computeTimes.add(elapsed);
+					try {
+						if (elapsed < calculationMillis)
+							Thread.sleep(calculationMillis - elapsed);
+					}catch (InterruptedException e) {
+						e.printStackTrace();
+						break;
+					}
 				}
 			}
+		}finally {
+			calculationThread = null;
 		}
-		calculationThread = null;
 	}
 
 	public boolean start() {
 		if (calculationThread != null) {
 			calculationThread.interrupt();
+			calculationThread = null;
 			return false;
 		}
 		enabled = true;

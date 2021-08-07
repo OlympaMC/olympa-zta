@@ -46,8 +46,8 @@ public class DropHandler extends ChannelDuplexHandler{
 		}
 		if (msg instanceof PacketPlayInArmAnimation) {
 			if (!toCancel.isEmpty()) {
-				int tick = toCancel.remove(ctx.channel());
-				if (MinecraftServer.currentTick - tick < 2) return;
+				Integer tick = toCancel.remove(ctx.channel());
+				if (tick != null && MinecraftServer.currentTick - tick.intValue() < 2) return;
 			}
 		}
 		super.channelRead(ctx, msg);
