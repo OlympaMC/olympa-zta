@@ -88,7 +88,8 @@ public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-
 				Chest chestBlock = (Chest) location.getBlock().getState();
 				//chestBlock.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
 				chestBlock.getInventory().clear();
-				chestBlock.update();
+				chestBlock = (Chest) location.getBlock().getState();
+				//chestBlock.update();
 				LootChest lootChest = manager.getLootChest(chestBlock);
 				if (lootChest != null) {
 					if (!lootChest.getLocation().equals(location)) lootChest = null; // misplaced chest
@@ -111,7 +112,7 @@ public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-
 				Container container = (Container) location.getBlock().getState();
 				if (container.getInventory() != null) {
 					container.getInventory().clear();
-					container.update();
+					//container.update();
 					containersEmptied++;
 				}
 			});

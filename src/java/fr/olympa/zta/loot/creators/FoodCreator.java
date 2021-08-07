@@ -50,16 +50,24 @@ public class FoodCreator implements LootCreator {
 		COOKIE("Cookie"),
 		COOKED_PORKCHOP("Viande de porc cuite"),
 		COOKED_SALMON("Saumon cuit"),
-		DRIED_KELP("Biscuit militaire"),
+		DRIED_KELP(
+				"Biscuit militaire",
+				1),
 		;
 		
 		private Material type;
 		private String name;
+		private int customModelData;
 		
 		private final ImmutableItemStack item;
 
 		private Food(String name) {
+			this(name, 0);
+		}
+		
+		private Food(String name, int customModelData) {
 			this.name = name;
+			this.customModelData = customModelData;
 			this.type = Material.valueOf(name());
 			
 			item = new ImmutableItemStack(get(1));
@@ -70,7 +78,7 @@ public class FoodCreator implements LootCreator {
 		}
 
 		public ItemStack get(int amount) {
-			ItemStack item = ItemUtils.item(type, "§a" + name);
+			ItemStack item = ItemUtils.item(type, customModelData == 0 ? null : customModelData, "§a" + name);
 			item.setAmount(amount);
 			return item;
 		}

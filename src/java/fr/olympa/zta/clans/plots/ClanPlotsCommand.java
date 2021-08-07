@@ -117,22 +117,31 @@ public class ClanPlotsCommand extends ComplexCommand {
 		if (cmd.getArgumentsLength() == 1 || !"confirm".equals(cmd.getArgument(1))) {
 			sendSuccess("§eÊtes-vous sûr de vouloir vider les coffres de la parcelle #%d ? Utilisez /clanplots emptyChests %d confirm.", plot.getID(), plot.getID());
 		}else {
-			int clear = 0;
-			Iterator<Block> blockList = plot.getTrackedRegion().getRegion().blockList();
-			for (; blockList.hasNext();) {
-				Block block = blockList.next();
-				if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
-					Container container = (Container) block.getState();
-					Inventory inventory = container.getInventory();
-					if (!inventory.isEmpty()) {
-						inventory.clear();
-						clear++;
-					}
-					container.update();
-				}
-			}
-			sendSuccess("La parcelle #%d a été vidée de %d inventaires.", plot.getID(), clear);
+			emptyChests(plot);
 		}
+	}
+	
+	@Cmd
+	public void emptyAllChests(CommandContext cmd) {
+		manager.getPlots().values().forEach(this::emptyChests);
+	}
+	
+	private void emptyChests(ClanPlot plot) {
+		int clear = 0;
+		Iterator<Block> blockList = plot.getTrackedRegion().getRegion().blockList();
+		for (; blockList.hasNext();) {
+			Block block = blockList.next();
+			if (ClanPlot.CONTAINER_MATERIALS.contains(block.getType())) {
+				Container container = (Container) block.getState();
+				Inventory inventory = container.getInventory();
+				if (!inventory.isEmpty()) {
+					inventory.clear();
+					clear++;
+				}
+				//container.update();
+			}
+		}
+		sendSuccess("La parcelle #%d a été vidée de %d inventaires.", plot.getID(), clear);
 	}
 	
 	@Cmd (hide = true)

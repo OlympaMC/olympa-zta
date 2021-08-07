@@ -36,6 +36,7 @@ import fr.olympa.zta.glass.GlassSmashFlag;
 public class ClanPlot {
 
 	public static final List<Material> CONTAINER_MATERIALS = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.FURNACE, Material.BLAST_FURNACE, Material.SMOKER, Material.HOPPER, Material.DROPPER, Material.DISPENSER);
+	public static final List<Material> CONTAINER_MATERIALS_ALLOWED = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
 	
 	public static final int PAYMENT_DURATION_DAYS = 7;
 	public static final long PAYMENT_DURATION_MILLIS = PAYMENT_DURATION_DAYS * 24 * 3600 * 1000L;
@@ -175,7 +176,7 @@ public class ClanPlot {
 		sign.setLine(1, "");
 		if (clan == null) {
 			sign.setLine(2, "§eParcelle à");
-			sign.setLine(3, "§evendre");
+			sign.setLine(3, "§elouer");
 		}else {
 			sign.setLine(2, "§6" + clan.getName());
 			sign.setLine(3, "§eExpire le §n" + getExpirationDate());
@@ -254,11 +255,11 @@ public class ClanPlot {
 		
 		@Override
 		protected void handleInventoryBlock(PlayerInteractEvent event) {
-			if (OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan) {
+			if (clan == null || (OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan)) {
 				handleCancellable(event, null, true);
 				return;
 			}
-			if (CONTAINER_MATERIALS.contains(event.getClickedBlock().getType())) {
+			if (CONTAINER_MATERIALS_ALLOWED.contains(event.getClickedBlock().getType())) {
 				ItemStack[] inventory = ((Container) event.getClickedBlock().getState()).getInventory().getContents();
 				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
 					try {
