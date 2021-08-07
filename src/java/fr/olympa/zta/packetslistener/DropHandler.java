@@ -29,7 +29,7 @@ public class DropHandler extends ChannelDuplexHandler{
 		if (msg instanceof PacketPlayInBlockDig) {
 			PacketPlayInBlockDig packet = (PacketPlayInBlockDig) msg;
 			if (packet.d() == EnumPlayerDigType.DROP_ITEM) {
-				Player p = PacketHandlers.retrievePlayerFromChannel(ctx.channel());
+				Player p = ctx.channel().attr(PacketHandlers.PLAYER_KEY).get();
 				if (p == null) {
 					OlympaZTA.getInstance().sendMessage("§cImpossible de trouver un joueur par son channel.");
 				}else {

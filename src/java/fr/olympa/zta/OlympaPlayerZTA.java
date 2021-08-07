@@ -86,7 +86,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public ObservableInt otherShots = new ObservableInt(0);
 	public ObservableInt openedChests = new ObservableInt(0);
 	public ObservableLong playTime = new ObservableLong(0);
-	public ObservableLong hideMapTime = new ObservableLong(0);
+	private ObservableLong hideMapTime = new ObservableLong(0);
 	public ObservableLong kitVIPTime = new ObservableLong(0);
 	public ObservableLong backVIPTime = new ObservableLong(0);
 
@@ -166,6 +166,11 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	
 	public boolean isHidden() {
 		return hideMapTime.get() > System.currentTimeMillis();
+	}
+	
+	public void setHidden(long until) {
+		hideMapTime.set(until);
+		// TODO task show again
 	}
 
 	@Override

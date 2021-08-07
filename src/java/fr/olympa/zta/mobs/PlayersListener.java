@@ -60,6 +60,8 @@ import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.packetslistener.PacketHandlers;
+import fr.olympa.zta.utils.map.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink.DynmapHideFlag;
 import fr.olympa.zta.weapons.ArmorType;
 import fr.olympa.zta.weapons.Knife;
 import fr.olympa.zta.weapons.guns.AmmoType;
@@ -213,6 +215,8 @@ public class PlayersListener implements Listener {
 		try {
 			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChestContents());
 			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer().getName());
+			
+			DynmapLink.setPlayerVisiblity(e.getPlayer(), OlympaCore.getInstance().getRegionManager().getMostImportantFlag(e.getPlayer().getLocation(), DynmapHideFlag.class) != null);
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'enderchest de %s.", e.getPlayer().getName());
 			ex.printStackTrace();

@@ -40,7 +40,7 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 		meta.setDisplayName("§bBrouilleur C.V.M.");
 		List<String> lore = SpigotUtils.wrapAndAlign("Une fois activé, vous n'êtes plus visible sur la carte pendant quelques minutes.", 35);
 		lore.add("");
-		lore.add("§7> §l§cObjet consommable!");
+		lore.add("§7> §c§lObjet consommable!");
 		meta.setLore(lore);
 		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
@@ -95,7 +95,7 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 				return;
 			}
 			
-			playerZTA.hideMapTime.set(System.currentTimeMillis() + HIDDEN_SECONDS * 1000);
+			playerZTA.setHidden(System.currentTimeMillis() + HIDDEN_SECONDS * 1000);
 			
 			player.getWorld().spawnParticle(Particle.CLOUD, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
