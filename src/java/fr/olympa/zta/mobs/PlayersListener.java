@@ -48,6 +48,7 @@ import fr.olympa.api.spigot.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.holograms.Hologram;
 import fr.olympa.api.spigot.lines.FixedLine;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -96,6 +97,9 @@ public class PlayersListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
 		if (CitizensAPI.getNPCRegistry().isNPC(p)) return;
+		
+		OlympaZTA.getInstance().sendMessage("§7%s est mort en %s", p.getName(), SpigotUtils.convertLocationToHumanString(p.getLocation()));
+		
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
 		

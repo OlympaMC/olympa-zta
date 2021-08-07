@@ -21,6 +21,7 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.weapons.Weapon;
 
 public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Magnétique
@@ -96,8 +97,10 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 			}
 			
 			playerZTA.setHidden(System.currentTimeMillis() + HIDDEN_SECONDS * 1000);
+			DynmapLink.setPlayerVisiblity(player, false);
 			
-			player.getWorld().spawnParticle(Particle.CLOUD, e.getPlayer().getLocation().add(0, 1, 0), 13, 1, 0.5, 1, 1, null, true);
+			player.getWorld().spawnParticle(Particle.CLOUD, e.getPlayer().getLocation().add(0, 1, 0), 50, 0.2, 0.8, 0.2, 0.01, null, true);
+			player.getWorld().spawnParticle(Particle.SPELL_WITCH, e.getPlayer().getLocation().add(0, 1, 0), 50, 0.2, 0.8, 0.2, 0.01, null, true);
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.9f, 0.9f);
 			player.setCooldown(MATERIAL, HIDDEN_SECONDS * 20);
 			
