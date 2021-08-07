@@ -34,7 +34,7 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	private static TimerLine<Scoreboard<OlympaPlayerZTA>> players = new TimerLine<>((x) -> {
 		ClanZTA clan = x.getOlympaPlayer().getClan();
 		Player p = (Player) x.getOlympaPlayer().getPlayer();
-		List<String> players = new ArrayList<>(5);
+		List<String> players = new ArrayList<>(clan.getMembers().size());
 		int first = 0;
 		int offline = 0;
 		boolean inHub = OlympaZTA.getInstance().hub.isInHub(p.getLocation());
@@ -99,12 +99,16 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	
 	@Override
 	public int getMaxSize(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> p) {
-		if (ZTAPermissions.GROUP_LEGENDE.hasPermission(p)) return 10;
-		if (ZTAPermissions.GROUP_HEROS.hasPermission(p)) return 9;
-		if (ZTAPermissions.GROUP_SAUVEUR.hasPermission(p)) return 8;
-		if (ZTAPermissions.GROUP_RODEUR.hasPermission(p)) return 7;
-		if (ZTAPermissions.GROUP_SURVIVANT.hasPermission(p)) return 6;
-		return 5;
+		if (ZTAPermissions.GROUP_LEGENDE.hasPermission(p)) return 14;
+		if (ZTAPermissions.GROUP_HEROS.hasPermission(p)) return 12;
+		if (ZTAPermissions.GROUP_SAUVEUR.hasPermission(p)) return 11;
+		if (ZTAPermissions.GROUP_RODEUR.hasPermission(p)) return 10;
+		if (ZTAPermissions.GROUP_SURVIVANT.hasPermission(p)) return 8;
+		return 7;
+	}
+	
+	public int getMaxSize() {
+		return 14;
 	}
 	
 	@Override

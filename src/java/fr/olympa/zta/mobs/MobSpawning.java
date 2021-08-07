@@ -82,7 +82,7 @@ public class MobSpawning implements Runnable {
 	private final int chunkRadius = 2;
 	private final int chunkRadiusDoubled = chunkRadius * 2;
 	public int criticalEntitiesPerChunk = 13;
-	public int maxEntities = 3000;
+	public int maxEntities = 4500;
 
 	public long timeActiveChunks;
 	public int lastActiveChunks;

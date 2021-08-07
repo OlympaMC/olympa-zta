@@ -184,7 +184,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 				e.printStackTrace();
 				sendError(e);
 			}
-		}).enterOrLeave();
+		}).edit(plot.getTrackedRegion().getRegion()).enterOrLeave();
 	}
 	
 	@Cmd (args = { "all|rent|free", "INTEGER" })

@@ -16,30 +16,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
-import net.minecraft.server.v1_16_R3.AttributeProvider;
-import net.minecraft.server.v1_16_R3.DamageSource;
-import net.minecraft.server.v1_16_R3.DifficultyDamageScaler;
-import net.minecraft.server.v1_16_R3.Entity;
-import net.minecraft.server.v1_16_R3.EntityLiving;
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.EntityZombie;
-import net.minecraft.server.v1_16_R3.EnumItemSlot;
-import net.minecraft.server.v1_16_R3.EnumMobSpawn;
+import net.minecraft.server.v1_16_R3.*;
 import net.minecraft.server.v1_16_R3.Explosion.Effect;
-import net.minecraft.server.v1_16_R3.GenericAttributes;
-import net.minecraft.server.v1_16_R3.GroupDataEntity;
-import net.minecraft.server.v1_16_R3.ItemStack;
-import net.minecraft.server.v1_16_R3.Items;
-import net.minecraft.server.v1_16_R3.MobEffect;
-import net.minecraft.server.v1_16_R3.MobEffects;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
-import net.minecraft.server.v1_16_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_16_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_16_R3.PathfinderGoalRandomStrollLand;
-import net.minecraft.server.v1_16_R3.SoundCategory;
-import net.minecraft.server.v1_16_R3.SoundEffects;
-import net.minecraft.server.v1_16_R3.World;
-import net.minecraft.server.v1_16_R3.WorldAccess;
 
 public class CustomEntityZombie extends EntityZombie {
 
@@ -86,6 +64,8 @@ public class CustomEntityZombie extends EntityZombie {
 			if (first) {
 				getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(4);
 				getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3);
+				getAttributeInstance(GenericAttributes.MAX_HEALTH).setValue(15);
+				setHealth(15);
 				setSlot(EnumItemSlot.FEET, speedBoots);
 				addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 9999999, 1, false, true), Cause.PLUGIN);
 			}
