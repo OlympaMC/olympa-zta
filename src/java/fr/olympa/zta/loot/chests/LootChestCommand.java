@@ -25,6 +25,21 @@ public class LootChestCommand extends ComplexCommand {
 		super.addArgumentParser("CHESTTYPE", LootChestType.class);
 	}
 	
+	@Cmd (player = true)
+	public void allowTemp(CommandContext cmd) {
+		Chest chestBlock = getTargetChest(getPlayer());
+		if (chestBlock == null) return;
+		
+		manager.tmpAllowed.add(chestBlock.getLocation());
+		sendSuccess("Le coffre est accessible jusqu'au prochain redémarrage.");
+		
+		LootChest chest = manager.getLootChest(chestBlock);
+		if (chest != null) {
+			manager.chests.remove(chest.getID());
+			sendInfo("Ce coffre était un coffre de loot, il est temporairement désactivé.");
+		}
+	}
+	
 	@Cmd (player = true, args = "CHESTTYPE", syntax = "[type de coffre]")
 	public void create(CommandContext cmd) {
 		Chest chestBlock = getTargetChest(getPlayer());

@@ -29,10 +29,12 @@ import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
+import fr.olympa.zta.loot.creators.ItemStackableCreator;
 import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
 import fr.olympa.zta.loot.creators.QuestItemCreator;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
+import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import net.citizensnpcs.api.CitizensAPI;
 
@@ -45,10 +47,13 @@ public class MobsListener implements Listener {
 			.add(12, new AmmoCreator(AmmoType.LIGHT, 2, 3, false))
 			.add(12, new AmmoCreator(AmmoType.HEAVY, 2, 3, false))
 			.add(12, new AmmoCreator(AmmoType.HANDWORKED, 2, 3, false))
-			.add(8, new AmmoCreator(AmmoType.CARTRIDGE, 1, 2, false))
+			.add(8.6, new AmmoCreator(AmmoType.CARTRIDGE, 1, 2, false))
 			.add(7, new QuestItemCreator(QuestItem.AMAS))
+			.add(0.4, new ItemStackableCreator(Accessory.CANNON_DAMAGE))
 			.add(3, new ZombieTypeConditioned(new QuestItemCreator(QuestItem.PILE), Zombies.TANK))
 			.add(2, new ZombieTypeConditioned(new QuestItemCreator(QuestItem.CARTE_MERE), Zombies.SPEED))
+			.add(1, new ZombieTypeConditioned(new ItemStackableCreator(Accessory.CANNON_SILENT), Zombies.TANK))
+			.add(1, new ZombieTypeConditioned(new ItemStackableCreator(Accessory.SCOPE_LIGHT), Zombies.SPEED))
 			.build(0, 2, 20.0);
 
 	public static boolean removeEntities = false;

@@ -17,6 +17,7 @@ import fr.olympa.zta.loot.creators.LootCreator;
 import fr.olympa.zta.loot.creators.MoneyCreator;
 import fr.olympa.zta.loot.creators.QuestItemCreator;
 import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.GunType;
 
@@ -25,22 +26,24 @@ public enum LootChestType {
 	BASIC(
 			"basique",
 			RandomizedInventory.newBuilder()
+			.add(0.4, new ItemStackableCreator(Accessory.STOCK_LIGHT))
 			.add(32, new AmmoCreator.BestCreator(3, 5, 7, 0.4, 1D, 0.5D))
 			.add(7, new QuestItemCreator(QuestItem.AMAS, 1, 3))
 			.add(10, new QuestItemCreator(QuestItem.DECHET, 1, 2))
 			.add(0.2, new QuestItemCreator(QuestItem.BOITIER_PROG, 1, 1))
 			.add(14, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
 			.add(1, new MoneyCreator(PhysicalMoney.BANKNOTE_10, 1, 1))
-			.add(16, new FoodCreator(Food.BAKED_POTATO, 2, 4))
+			.add(16.6, new FoodCreator(Food.BAKED_POTATO, 2, 4))
 			.add(0.004, new ItemStackableCreator(Artifacts.BOOTS))
 			.add(0.004, new ItemStackableCreator(Artifacts.PARACHUTE))
 			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.3, 1).add(0.4, 2).add(0.3, 3).build())),
 	SAFE(
 			"de zone sécurisée",
 			RandomizedInventory.newBuilder()
+			.add(0.4, new ItemStackableCreator(Accessory.CANNON_STABILIZER))
 			.add(15, new GunConditionned(GunType.M1911, 0.4, 0.15))
 			.add(4, new GunConditionned(GunType.P22, 0.15, 0.7))
-			.add(25, new AmmoCreator.BestCreator(3, 4, 7, 0.5, 1, 0))
+			.add(25.6, new AmmoCreator.BestCreator(3, 4, 7, 0.5, 1, 0))
 			.add(25, new AmmoCreator(AmmoType.LIGHT, 3, 7, 0.5))
 			.add(21, new FoodCreator(Food.COOKIE, 3, 5))
 			.add(8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
@@ -48,8 +51,9 @@ public enum LootChestType {
 	EASY(
 			"de zone modérée",
 			RandomizedInventory.newBuilder()
+			.add(0.4, new ItemStackableCreator(Accessory.STOCK_STRONG))
 			.add(2, new GunConditionned(GunType.UZI, 0.15, 0.7))
-			.add(3, new GunConditionned(GunType.LUPARA, 0.15, 0.7))
+			.add(2.6, new GunConditionned(GunType.LUPARA, 0.15, 0.7))
 			.add(25, new AmmoCreator.BestCreator(2, 4, 7, 0.4, 1, 0))
 			.add(20, new AmmoCreator.AmmoConditionned(new AmmoCreator(AmmoType.LIGHT, 3, 7, 0.4), 0.7))
 			.add(20, new AmmoCreator(AmmoType.CARTRIDGE, 3, 7, 0.5))
@@ -61,8 +65,10 @@ public enum LootChestType {
 			"de zone à risques",
 			RandomizedInventory.newBuilder()
 			.add(0.005, new ItemStackableCreator(GunType.DRAGUNOV))
+			.add(0.1, new ItemStackableCreator(Accessory.CANNON_SILENT))
+			.add(0.4, new ItemStackableCreator(Accessory.CANNON_POWER))
 			.add(2, new GunConditionned(GunType.AK_20, 0.15, 0.6))
-			.add(3, new GunConditionned(GunType.BENELLI, 0.15, 0.7))
+			.add(2.5, new GunConditionned(GunType.BENELLI, 0.15, 0.7))
 			.add(25, new AmmoCreator.BestCreator(2, 4, 6, 0.4, 1, 0))
 			.add(22, new AmmoCreator.AmmoConditionned(new AmmoCreator(AmmoType.HANDWORKED, 3, 7, 0.4), 0.7))
 			.add(20, new AmmoCreator(AmmoType.CARTRIDGE, 3, 7, 0.5))
@@ -74,12 +80,13 @@ public enum LootChestType {
 			"de zone rouge",
 			RandomizedInventory.newBuilder()
 			.add(0.005, new ItemStackableCreator(GunType.DRAGUNOV))
-			.add(2, new GunConditionned(GunType.M16, 0.15, 0.5))
-			.add(3, new GunConditionned(GunType.G19, 0.15, 0.7))
+			.add(0.1, new ItemStackableCreator(Accessory.CANNON_CAC))
+			.add(1, new GunConditionned(GunType.M16, 0.15, 0.5))
+			.add(2.9, new GunConditionned(GunType.G19, 0.15, 0.7))
 			.add(25, new AmmoCreator.BestCreator(2, 4, 6, 0.4, 1, 0))
 			.add(24, new AmmoCreator.AmmoConditionned(new AmmoCreator(AmmoType.HEAVY, 3, 7, 0.4), 0.7))
 			.add(20, new AmmoCreator(AmmoType.HANDWORKED, 3, 7, 0.5))
-			.add(15.2, new FoodCreator(Food.COOKED_BEEF, 3, 4))
+			.add(16.2, new FoodCreator(Food.COOKED_BEEF, 3, 4))
 			.add(8, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 2, 5))
 			.add(0.5, new ArmorCreator(ArmorType.MILITARY, 0.5))
 			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.28, 1).add(0.4, 2).add(0.32, 3).build(), 5.2)),

@@ -88,7 +88,12 @@ public class PlotsCommand extends ComplexCommand {
 	
 	@Cmd (args = { "PLOT", "INTEGER" }, min = 2)
 	public void setChests(CommandContext cmd) {
-		PlayerPlot plot = cmd.getArgument(0);
+		InternalPlotDatas plotDatas = cmd.getArgument(0);
+		if (!plotDatas.isLoaded()) {
+			sendError("Plot non chargé.");
+			return;
+		}
+		PlayerPlot plot = plotDatas.loadedPlot;
 		int chests = cmd.getArgument(1);
 		if (chests < 0) {
 			sendError("Le nombre de coffres doit être positif.");

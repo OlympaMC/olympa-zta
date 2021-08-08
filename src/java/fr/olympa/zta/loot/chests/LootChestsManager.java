@@ -3,8 +3,10 @@ package fr.olympa.zta.loot.chests;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -54,6 +56,8 @@ public class LootChestsManager implements Listener {
 
 	public final Map<Integer, LootChest> chests = new HashMap<>();
 	private Random random = new Random();
+	
+	public List<Location> tmpAllowed = new ArrayList<>();
 
 	public LootChestsManager() throws SQLException {
 		table = new SQLTable<>(OlympaZTA.getInstance().getServerNameID() + "_lootchests",
@@ -155,6 +159,19 @@ public class LootChestsManager implements Listener {
 
 			e.setCancelled(true);
 			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> chest.click(player));
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onInteractHighest(PlayerInteractEvent e) {
+		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		if (e.getHand() != EquipmentSlot.HAND) return;
+		
+		Block block = e.getClickedBlock();
+		if (block.getType() == Material.CHEST) {
+			if (tmpAllowed.contains(block.getLocation())) {
+				e.setCancelled(false);
+			}
 		}
 	}
 	

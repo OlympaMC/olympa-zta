@@ -76,7 +76,7 @@ public class PlayersListener implements Listener {
 	
 	private static final double ZTA_MAX_HEALTH = 40;
 	
-	private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
+	//private Map<Player, List<ItemStack>> keptItems = new HashMap<>();
 	
 	private List<String> playersWithPacks = new ArrayList<>();
 	private Map<Player, Location> packPositions = new HashMap<>();
@@ -103,7 +103,7 @@ public class PlayersListener implements Listener {
 		OlympaPlayerZTA op = OlympaPlayerZTA.get(p);
 		op.deaths.increment();
 		
-		List<ItemStack> kept = new ArrayList<>();
+		//List<ItemStack> kept = new ArrayList<>();
 		ItemStack[] contents = p.getInventory().getContents();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack itemStack = contents[i];
@@ -123,7 +123,8 @@ public class PlayersListener implements Listener {
 					contents[i] = null;
 					break;
 				case KEEP:
-					kept.add(itemStack);
+					//kept.add(itemStack);
+					e.getItemsToKeep().add(itemStack);
 					contents[i] = null;
 					break;
 				case DROP:
@@ -132,7 +133,7 @@ public class PlayersListener implements Listener {
 				}
 			}
 		}
-		keptItems.put(p, kept);
+		//keptItems.put(p, kept);
 		Location loc = p.getLocation();
 		ItemStack[] armor = Arrays.copyOfRange(contents, 36, 40);
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> Mobs.spawnMomifiedZombie(loc, armor, contents, p));
@@ -166,8 +167,8 @@ public class PlayersListener implements Listener {
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
 		giveStartItems(e.getPlayer());
-		List<ItemStack> items = keptItems.remove(e.getPlayer());
-		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));
+		/*List<ItemStack> items = keptItems.remove(e.getPlayer());
+		if (items != null) e.getPlayer().getInventory().addItem(items.toArray(ItemStack[]::new));*/
 	}
 	
 	@EventHandler (priority = EventPriority.LOW)

@@ -1,6 +1,5 @@
 package fr.olympa.zta.utils;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -16,17 +15,17 @@ public class TeleportationManagerZTA extends TeleportationManager {
 	}
 	
 	@Override
-	public boolean canBypass(Player p, Location to) {
-		return p.getWorld().equals(OlympaZTA.getInstance().plotsManager.getWorld()) || super.canBypass(p, to);
+	public boolean canBypass(Player p) {
+		return p.getWorld().equals(OlympaZTA.getInstance().plotsManager.getWorld()) || super.canBypass(p);
 	}
 	
 	@Override
-	public boolean canTeleport(Player p, Location to) {
+	public boolean canTeleport(Player p) {
 		if (OlympaZTA.getInstance().combat.isInCombat(p)) {
 			Prefix.BAD.sendMessage(p, "Tu ne peux pas te téléporter quand tu es en combat.");
 			return false;
 		}
-		return super.canTeleport(p, to);
+		return super.canTeleport(p);
 	}
 	
 }

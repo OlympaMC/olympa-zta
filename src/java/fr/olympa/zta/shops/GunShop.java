@@ -25,8 +25,8 @@ public class GunShop extends AbstractSellingShop<ItemStackable> {
 			new Article<>(GunType.M16, 1700),
 			new Article<>(GunType.SDMR, 3000),
 			new Article<>(GunType.DRAGUNOV, 65000),
-			new Article<>(Bandage.BANDAGE, 75),
-			new Article<>(Brouilleur.BROUILLEUR, 4500)
+			new Article<>(Bandage.BANDAGE, 130),
+			new Article<>(Brouilleur.BROUILLEUR, 5500)
 			);
 	
 	public GunShop() {
