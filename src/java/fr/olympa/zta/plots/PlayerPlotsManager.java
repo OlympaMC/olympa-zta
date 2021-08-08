@@ -23,6 +23,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -36,6 +37,7 @@ import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
 import fr.olympa.api.spigot.region.tracking.flags.FishFlag;
 import fr.olympa.api.spigot.region.tracking.flags.GameModeFlag;
 import fr.olympa.api.spigot.region.tracking.flags.ItemDurabilityFlag;
+import fr.olympa.api.spigot.region.tracking.flags.ItemPickupFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlocksFlag;
@@ -111,6 +113,12 @@ public class PlayerPlotsManager {
 					item.setItemStack(food.getOriginalItem());
 				}
 				super.fishEvent(event);
+			}
+		}, new ItemPickupFlag(false) {
+			@Override
+			public void itemPickupEvent(EntityPickupItemEvent e) {
+				PlayerPlot plot = getPlot(e.getEntity().getLocation());
+				e.setCancelled(plot != null && plot.entityAction((Player) e.getEntity()));
 			}
 		});
 
@@ -298,7 +306,7 @@ public class PlayerPlotsManager {
 	private boolean entityAction(Player p, Entity entity) {
 		PlayerPlot plot = getPlot(entity.getLocation());
 		if (plot == null) return true;
-		return plot.entityAction(p, entity);
+		return plot.entityAction(p);
 	}
 
 	class InternalPlotDatas {

@@ -11,7 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -193,7 +192,7 @@ public class PlayerPlot {
 		new Location(OlympaZTA.getInstance().plotsManager.getWorld(), loc.getWorldX() + innerX, PlotChunkGenerator.WORLD_LEVEL, loc.getWorldZ() + innerZ).getBlock().setType(type);
 	}
 
-	public boolean entityAction(Player p, Entity entity) {
+	public boolean entityAction(Player p) {
 		return OlympaPlayerZTA.get(p).getPlot() != this;
 	}
 
