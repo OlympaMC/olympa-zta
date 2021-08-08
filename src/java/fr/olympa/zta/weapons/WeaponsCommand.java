@@ -27,6 +27,8 @@ import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
 import fr.olympa.zta.weapons.guns.PersistentGun;
+import fr.olympa.zta.weapons.skins.Skin;
+import fr.olympa.zta.weapons.skins.Skinable;
 
 public class WeaponsCommand extends ComplexCommand {
 
@@ -46,6 +48,14 @@ public class WeaponsCommand extends ComplexCommand {
 			new WeaponsGiveGUI().create(player);
 			return true;
 		}else return false;
+	}
+	
+	@Cmd (player = true, min = 1, args = "INTEGER")
+	public void skin(CommandContext cmd) {
+		ItemStack item = getPlayer().getInventory().getItemInMainHand();
+		if (WeaponsListener.getWeapon(item) instanceof Skinable skinable) {
+			skinable.setSkin(Skin.getFromId(cmd.getArgument(0)), item);
+		}else sendError("Tu ne tiens pas d'arme skinable dans ta main.");
 	}
 	
 	@Cmd (player = true)

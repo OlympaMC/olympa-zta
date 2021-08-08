@@ -54,8 +54,8 @@ public class MobSpawning implements Runnable {
 
 	public static final RandomizedPickerBuilder.IConditionalBuilder<Zombies, MobSpawningContext> DEFAULT_ZOMBIE_PICKER = RandomizedPickerBuilder.<Zombies>newBuilder()
 			.add(1, Zombies.COMMON)
-			.add(0.12, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
-			.add(0.09, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
+			.add(0.09, new TimeConditioned(Zombies.SPEED, CustomDayDuration.NIGHT_TIME))
+			.add(0.07, new TimeConditioned(Zombies.TANK, CustomDayDuration.NIGHT_TIME));
 	public static final List<Material> UNSPAWNABLE_ON = Arrays.asList(Material.AIR, Material.WATER, Material.LAVA, Material.CACTUS, Material.COBWEB, Material.BARRIER);
 	private static final String RADAR = "§8§k§lgdn§r§7";
 
@@ -121,7 +121,7 @@ public class MobSpawning implements Runnable {
 							int attempts = 0;
 							int mobs = spawn.spawning.spawnAmount();
 							/*if (mobs > 1) */mobs = random.nextInt(mobs + 1);
-							if (world.getTime() > CustomDayDuration.NIGHT_TIME) mobs++;
+							if (world.getTime() > CustomDayDuration.NIGHT_TIME && random.nextBoolean()) mobs++;
 							mobs: for (int i = 0; i < mobs; i++) { // boucle pour faire spawner un nombre de mobs aléatoires
 								if (++attempts == 5)
 									break;

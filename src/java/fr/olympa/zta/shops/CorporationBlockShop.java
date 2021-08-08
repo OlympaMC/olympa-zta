@@ -30,7 +30,7 @@ public class CorporationBlockShop extends BlockShop {
 			prepare(Material.END_ROD, 50),
 			prepare(Material.LANTERN, 50),
 			prepare(Material.FLETCHING_TABLE, 100),
-			prepare(Material.BARREL, 100),
+			prepare(Material.BARREL, 800),
 			prepare(Material.LOOM, 100),
 			prepare(Material.CARTOGRAPHY_TABLE, 100),
 			prepare(Material.SMITHING_TABLE, 100),

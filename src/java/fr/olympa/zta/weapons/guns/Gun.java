@@ -38,11 +38,13 @@ import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import fr.olympa.zta.weapons.skins.Skin;
+import fr.olympa.zta.weapons.skins.Skinable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Gun implements Weapon {
+public class Gun implements Weapon, Skinable {
 
 	public static final List<ChatColor> TIERS = Arrays.asList(ChatColor.GREEN, ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.YELLOW, ChatColor.GOLD);
 	public static final UUID ZOOM_UUID = UUID.fromString("8a1c6742-3f54-44c2-ac6f-90fa7491ebef");
@@ -51,6 +53,8 @@ public class Gun implements Weapon {
 
 	protected final int id;
 	protected final GunType type;
+	
+	protected Skin skin = Skin.NORMAL;
 	
 	protected int beforeTrainingAmmos = -1;
 	
@@ -143,7 +147,7 @@ public class Gun implements Weapon {
 	public void updateItemCustomModel(ItemStack item) {
 		try {
 			ItemMeta im = item.getItemMeta();
-			im.setCustomModelData(zoomed ? 2 : 1);
+			im.setCustomModelData(skin.getId() * 2 + (zoomed ? 2 : 1));
 			item.setItemMeta(im);
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
@@ -161,6 +165,21 @@ public class Gun implements Weapon {
 
 	public NamespacedKey getKey() {
 		return GunRegistry.GUN_KEY;
+	}
+	
+	@Override
+	public ItemStack getSkinItem(Skin skin) {
+		Skin oldSkin = this.skin;
+		this.skin = skin;
+		ItemStack item = createItemStack(false);
+		this.skin = oldSkin;
+		return item;
+	}
+	
+	@Override
+	public void setSkin(Skin skin, ItemStack item) {
+		this.skin = skin;
+		updateItemCustomModel(item);
 	}
 	
 	@Override
@@ -575,6 +594,7 @@ public class Gun implements Weapon {
 		statement.setInt(i++, cannon == null ? -1 : cannon.ordinal());
 		statement.setInt(i++, stock == null ? -1 : stock.ordinal());
 		statement.setInt(i++, getID());
+		statement.setInt(i++, skin.getId());
 	}
 	
 	public void loadDatas(ResultSet set) throws Exception {
@@ -588,6 +608,7 @@ public class Gun implements Weapon {
 		if (scopeType != -1) setAccessory(Accessory.values()[scopeType]);
 		if (cannonType != -1) setAccessory(Accessory.values()[cannonType]);
 		if (stockType != -1) setAccessory(Accessory.values()[stockType]);
+		skin = Skin.getFromId(set.getInt("skin"));
 	}
 	
 	public enum GunAction {

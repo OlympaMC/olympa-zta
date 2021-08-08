@@ -69,6 +69,7 @@ import fr.olympa.api.spigot.scoreboard.sign.ScoreboardManager;
 import fr.olympa.api.spigot.scoreboard.tab.TabManager;
 import fr.olympa.api.spigot.trades.TradesManager;
 import fr.olympa.api.spigot.utils.CustomDayDuration;
+import fr.olympa.api.spigot.utils.KillManager;
 import fr.olympa.api.spigot.utils.SitManager;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
@@ -117,6 +118,7 @@ import fr.olympa.zta.shops.GunShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
+import fr.olympa.zta.utils.PackCommand;
 import fr.olympa.zta.utils.TeleportationManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
@@ -172,10 +174,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public SoundAmbiance soundAmbiance;
 	public MinigunsManager miniguns;
 	public TabManager tab;
+	public KillManager kills;
 	public PrimesManager primes;
 	public GlassSmashManager glass;
 	public CustomDayDuration customDay;
 	public FluctuatingEconomiesManager economies;
+	
+	public PackCommand packCommand;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -279,7 +284,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			pluginManager.registerEvents(teleportationManager, this);
 			pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS), this);
 			pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
-			pluginManager.registerEvents(combat = new CombatManager(this, 10) {
+			pluginManager.registerEvents(combat = new CombatManager(this, 15) {
 				@Override
 				public boolean canEnterCombat(Player damager, Player damaged) {
 					return !CitizensAPI.getNPCRegistry().isNPC(damaged) && !CitizensAPI.getNPCRegistry().isNPC(damager);
@@ -392,8 +397,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				getLogger().severe("Une erreur est survenue lors du chargement des parachutes.");
 			}
 			
+			try {
+				new KillManager(this);
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				getLogger().severe("Une erreur est survenue lors du chargement du module de tracking des kills.");
+			}
+			
 			soundAmbiance = new SoundAmbiance();
 			soundAmbiance.start();
+			
+			packCommand = new PackCommand(this, getConfig().getConfigurationSection("resourcePack"));
+			packCommand.register();
 			
 			new WeaponsCommand().register();
 			new MobsCommand().register();

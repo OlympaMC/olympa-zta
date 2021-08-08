@@ -10,9 +10,12 @@ import fr.olympa.api.spigot.clans.ClansManager;
 import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
+import fr.olympa.zta.primes.PrimesGUI;
 
 public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerDataZTA> {
 
@@ -50,7 +53,16 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 1) {
-			if (plot != null) OlympaZTA.getInstance().teleportationManager.teleport(p, plot.getSpawn(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté dans la parcelle de ton clan !"));
+			if (plot != null) {
+				OlympaPlayerZTA oplayer = (OlympaPlayerZTA) player;
+				long time = oplayer.clanPlotSend + (120 * 1000) - System.currentTimeMillis();
+				if (time > 0) {
+					Prefix.BAD.sendMessage(p, "Tu dois encore attendre %s avant de te téléporter à ta parcelle de clan.", Utils.durationToString(PrimesGUI.numberFormat, time));
+				}else {
+					OlympaZTA.getInstance().teleportationManager.teleport(p, plot.getSpawn(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté dans la parcelle de ton clan !"));
+					oplayer.clanPlotSend = System.currentTimeMillis();
+				}
+			}
 			return true;
 		}
 		return super.onClick(p, current, slot, click);

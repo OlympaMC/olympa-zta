@@ -85,5 +85,17 @@ public class PlotsCommand extends ComplexCommand {
 		sendInfo("Niveau: %d/%d.", plot.getLevel(), PlayerPlot.moneyRequiredPerLevel.length);
 		sendInfo("Coffres à ce niveau: %d/%d.", plot.getChests(), PlayerPlot.chestsPerLevel[plot.getLevel() - 1]);
 	}
+	
+	@Cmd (args = { "PLOT", "INTEGER" }, min = 2)
+	public void setChests(CommandContext cmd) {
+		PlayerPlot plot = cmd.getArgument(0);
+		int chests = cmd.getArgument(1);
+		if (chests < 0) {
+			sendError("Le nombre de coffres doit être positif.");
+			return;
+		}
+		plot.setChests(chests);
+		sendSuccess("Le nombre de coffres de la parcelle #%d a été modifié.", plot.getID());
+	}
 
 }

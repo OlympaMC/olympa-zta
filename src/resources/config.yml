@@ -1,5 +1,9 @@
 serverIndex: -1
 
+resourcePack:
+  url: https://drive.google.com/uc?export=download&id=14iEWROIPNm0nEFnmzQC71OnQLHcy-uLm
+  hash: FDEE47ADBB6AA23A7A7A8F6E9F92D38162729CDB
+
 mobRegions:
   HARD:
   - ==: fr.olympa.api.spigot.region.shapes.Polygon

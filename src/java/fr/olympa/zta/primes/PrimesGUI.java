@@ -20,15 +20,15 @@ import fr.olympa.api.spigot.editor.parsers.PlayerParser;
 import fr.olympa.api.spigot.gui.Inventories;
 import fr.olympa.api.spigot.gui.templates.PagedGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
-import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
 public class PrimesGUI extends PagedGUI<Prime> {
 	
-	private static final NumberFormat numberFormat = new DecimalFormat("0");
+	public static final NumberFormat numberFormat = new DecimalFormat("0");
 	private static final ItemStack primeItem, primeUnavailableItem;
 	
 	static {

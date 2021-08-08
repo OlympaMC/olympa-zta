@@ -42,7 +42,8 @@ public class GunRegistry {
 			+ "`secondary_mode` = ?, "
 			+ "`scope_id` = ?, "
 			+ "`cannon_id` = ?, "
-			+ "`stock_id` = ? "
+			+ "`stock_id` = ?, "
+			+ "`skin` = ? "
 			+ "WHERE (`id` = ?)");
 	
 	public final Map<Integer, Gun> registry = new ConcurrentHashMap<>(200);
@@ -51,7 +52,7 @@ public class GunRegistry {
 	private final BukkitTask evictingTask;
 	public long nextEviction = 0;
 	
-	public GunRegistry(Class<? extends Gun>... classes) throws Exception {
+	public GunRegistry() throws Exception {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 				"  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT," +
@@ -63,6 +64,7 @@ public class GunRegistry {
 				"  `scope_id` INT(10) DEFAULT -1," +
 				"  `cannon_id` INT(10) DEFAULT -1," +
 				"  `stock_id` INT(10) DEFAULT -1," +
+				"  `skin` INT UNSIGNED DEFAULT 0," +
 				"  PRIMARY KEY (`id`))");
 		statement.close();
 		
@@ -165,7 +167,7 @@ public class GunRegistry {
 		if (id != -1) removeObject(id);
 	}
 	
-	public Gun createGun(GunType type) throws SQLException {
+	public synchronized Gun createGun(GunType type) throws SQLException {
 		try (PreparedStatement statement = createStatement.createStatement()) {
 			statement.setString(1, type.name());
 			createStatement.executeUpdate(statement);

@@ -231,6 +231,7 @@ public class PlayerPlot {
 			if (e instanceof BlockPlaceEvent) {
 				setChests(getChests() + 1);
 			}else {
+				OlympaZTA.getInstance().sendMessage("Chest event non-place: %s", e.getEventName());
 				if (block.getType() == Material.CHEST && owner != oplayer.getId()) {
 					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas détruire le coffre du propriétaire.");
 					return true;

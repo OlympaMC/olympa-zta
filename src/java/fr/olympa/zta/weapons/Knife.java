@@ -25,9 +25,11 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.ItemDropBehavior;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
+import fr.olympa.zta.weapons.skins.Skin;
+import fr.olympa.zta.weapons.skins.Skinable;
 import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
 
-public enum Knife implements Weapon, ItemStackable {
+public enum Knife implements Weapon, ItemStackable, Skinable {
 	
 	BATTE(Material.BLAZE_ROD, "Batte de base-ball", "Arme contondante, peu puissante contre les joueurs, utile pour se défendre contre les infectés.", 2, 3),
 	BICHE(Material.ARROW, "Pied-de-biche", "Objet polyvalent contre les joueurs comme contre les infectés.", 3, 3),
@@ -87,6 +89,20 @@ public enum Knife implements Weapon, ItemStackable {
 	
 	public boolean isItem(ItemStack item) {
 		return this == WeaponsListener.getWeapon(item);
+	}
+	
+	@Override
+	public ItemStack getSkinItem(Skin skin) {
+		ItemStack item = createItem();
+		setSkin(skin, item);
+		return item;
+	}
+	
+	@Override
+	public void setSkin(Skin skin, ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+		meta.setCustomModelData(skin.getId() + 1);
+		item.setItemMeta(meta);
 	}
 	
 	@Override

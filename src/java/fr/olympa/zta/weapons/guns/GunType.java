@@ -480,8 +480,8 @@ public enum GunType implements ItemStackable {
 	private final float bulletSpeed;
 	private final GunAccuracy accuracy;
 	private final AttributeModifier zoomModifier;
-	private final int playerDamage;
-	private final int entityDamage;
+	private final float playerDamage;
+	private final float entityDamage;
 	private final BulletCreator bulletCreator;
 	private final int firedBullets;
 	private final GunMode primaryMode;
@@ -630,14 +630,14 @@ public enum GunType implements ItemStackable {
 	/**
 	 * @return Dommages donnés aux joueurs par la balle tirée
 	 */
-	public int getPlayerDamage() {
+	public float getPlayerDamage() {
 		return playerDamage;
 	}
 	
 	/**
 	 * @return Dommages donnés aux entités par la balle tirée
 	 */
-	public int getEntityDamage() {
+	public float getEntityDamage() {
 		return entityDamage;
 	}
 	

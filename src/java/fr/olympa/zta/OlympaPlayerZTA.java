@@ -72,6 +72,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	public BukkitTask plotFind = null; // pas persistant
 	public long joinTime;
 	public PlayerHealthBar healthBar;
+	public long clanPlotSend = 0;
 	
 	/* Données */
 	private ItemStack[] enderChestContents = new ItemStack[0];

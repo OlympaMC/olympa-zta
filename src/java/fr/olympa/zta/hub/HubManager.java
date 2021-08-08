@@ -42,8 +42,8 @@ public class HubManager implements Listener {
 
 	private Set<Player> inRandomTP = new HashSet<>();
 
-	public int minDistance = 40;
-	public int maxHeight = 45;
+	public int minDistance = 50;
+	public int maxHeight = 50;
 
 	public HubManager(Region region, Location spawnpoint, List<SpawnType> spawnRegions) {
 		this.region = region;
@@ -104,8 +104,8 @@ public class HubManager implements Listener {
 					lc.setY(y);
 					for (Player otherPlayer : region.getWorld().getPlayers()) {
 						if (p == otherPlayer) continue;
-						int distance = (int) otherPlayer.getLocation().distance(lc);
-						if (distance < minDistance) {
+						int distance = (int) otherPlayer.getLocation().distanceSquared(lc);
+						if (distance < minDistance * minDistance) {
 							if (distance < minFoundDistance) minFoundDistance = distance;
 							continue attempt;
 						}

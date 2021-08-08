@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ import fr.olympa.api.spigot.region.tracking.ActionResult;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.spigot.region.tracking.flags.Flag;
+import fr.olympa.api.spigot.utils.CustomDayDuration;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
@@ -71,7 +73,7 @@ public class DynmapLink {
 	public static void setPlayerVisiblity(Player p, boolean visibility) {
 		if (api == null) return;
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-		api.setPlayerVisiblity(p, !player.isHidden() && visibility);
+		api.setPlayerVisiblity(p, visibility && !player.isHidden() && p.getWorld().getTime() < CustomDayDuration.NIGHT_TIME && p.getGameMode() != GameMode.SPECTATOR);
 	}
 
 	public static void showMobArea(Region region, SpawnType spawn) {

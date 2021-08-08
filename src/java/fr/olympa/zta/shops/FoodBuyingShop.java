@@ -24,25 +24,27 @@ public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 	private static final FluctuatingEconomy BREAD_ECO = new FixedFluctuatingEconomy("bread_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
 	private static final FluctuatingEconomy CARROT_ECO = new FixedFluctuatingEconomy("carrot_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
 	private static final FluctuatingEconomy POTATO_ECO = new FixedFluctuatingEconomy("potato_sell", 5, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
+	private static final FluctuatingEconomy COD_ECO = new FixedFluctuatingEconomy("cod_sell", 4, 1, 30, TimeUnit.MINUTES, 0.06, 0.2);
+	private static final FluctuatingEconomy SALMON_ECO = new FixedFluctuatingEconomy("cod_sell", 4.5, 1, 30, TimeUnit.MINUTES, 0.06, 0.2);
 	private static final List<AbstractArticle<Food>> ARTICLES =
 			Arrays.asList(
 					new FluctuatingArticle<>(Food.BREAD, BREAD_ECO),
 					new FluctuatingArticle<>(Food.CARROT, CARROT_ECO),
 					new FluctuatingArticle<>(Food.BAKED_POTATO, POTATO_ECO),
+					new FluctuatingArticle<>(Food.COOKED_COD, COD_ECO),
+					new FluctuatingArticle<>(Food.COOKED_SALMON, SALMON_ECO),
 					new Article<>(Food.GOLDEN_CARROT, 10),
 					new Article<>(Food.COOKIE, 5),
 					new Article<>(Food.COOKED_BEEF, 8),
 					new Article<>(Food.COOKED_PORKCHOP, 8),
 					new Article<>(Food.COOKED_RABBIT, 8),
-					new Article<>(Food.MUSHROOM_STEW, 7),
-					new Article<>(Food.COOKED_COD, 8),
-					new Article<>(Food.COOKED_SALMON, 8));
+					new Article<>(Food.MUSHROOM_STEW, 7));
 	
 	public FoodBuyingShop() {
 		super("foodshop", "Rachat de nourriture", "Nourriture", DyeColor.CYAN, ARTICLES);
 		if (!registered) {
 			try {
-				OlympaZTA.getInstance().economies.register(BREAD_ECO, POTATO_ECO, CARROT_ECO);
+				OlympaZTA.getInstance().economies.register(BREAD_ECO, POTATO_ECO, CARROT_ECO, COD_ECO, SALMON_ECO);
 			}catch (SQLException e) {
 				OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du démarrage d'une économie de nourriture.");
 				e.printStackTrace();
