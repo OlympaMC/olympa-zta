@@ -11,12 +11,12 @@ import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.utils.Prefix;
 
-public class PackCommand extends OlympaCommand {
+public class ResourcePackCommand extends OlympaCommand {
 	
 	public String url;
 	public String hash;
 	
-	public PackCommand(Plugin plugin, ConfigurationSection packConfig) {
+	public ResourcePackCommand(Plugin plugin, ConfigurationSection packConfig) {
 		super(plugin, "resourcepack", "Donne un lien pour télécharger le resource pack.", (OlympaSpigotPermission) null, "texturepack");
 		set(packConfig);
 	}

@@ -394,7 +394,7 @@ public enum GunType implements ItemStackable {
 			AccessoryType.values()),
 	SKORPION(
 			"Skorpion VZ64",
-			"Pistolet mitrailleur extrêmement rapide, à courte portée. Très efficace dans des lieux étroits contre des infectés.",
+			"Pistolet-mitrailleur compact à cadence de tir élevée. Extrêmement perforant chez les infectés.",
 			3,
 			Material.MAGMA_CREAM,
 			AmmoType.HANDWORKED,
@@ -406,7 +406,7 @@ public enum GunType implements ItemStackable {
 			CommonGunConstants.BULLET_SPEED_LOW,
 			GunAccuracy.MEDIUM,
 			null,
-			3,
+			4,
 			7,
 			BulletSimple::new,
 			1,
@@ -442,7 +442,7 @@ public enum GunType implements ItemStackable {
 			AccessoryType.STOCK),
 	UZI(
 			"UZI",
-			"Pistolet-mitrailleur compact à cadence de tir élevée. Extrêmement perforante chez les infectés.",
+			"Pistolet-mitrailleur extrêmement rapide, à courte portée. Très efficace dans des lieux étroits contre des infectés.",
 			2,
 			Material.SLIME_BALL,
 			AmmoType.LIGHT,
@@ -455,7 +455,7 @@ public enum GunType implements ItemStackable {
 			GunAccuracy.MEDIUM,
 			null,
 			2,
-			7,
+			6,
 			BulletSimple::new,
 			1,
 			GunMode.AUTOMATIC,
@@ -469,7 +469,6 @@ public enum GunType implements ItemStackable {
 	
 	private final String name;
 	private final String description;
-	private final String tier;
 	private final Material material;
 	private final AmmoType ammoType;
 	private final int maxAmmos;
@@ -498,7 +497,6 @@ public enum GunType implements ItemStackable {
 	private GunType(String name, String description, int tier, Material material, AmmoType ammoType, int maxAmmos, int fireRate, int chargeTime, boolean oneByOneCharge, float knockback, float bulletSpeed, GunAccuracy accuracy, AttributeModifier zoomModifier, int playerDamage, int entityDamage, BulletCreator bulletCreator, int firedBullets, GunMode primaryMode, GunMode secondaryMode, float fireVolume, ZTASound fireSound, PotionEffect heldEffect, AccessoryType... allowedAccessories) {
 		this.name = name;
 		this.description = description;
-		this.tier = RomanNumber.toRoman(tier);
 		this.material = material;
 		this.ammoType = ammoType;
 		this.maxAmmos = maxAmmos;

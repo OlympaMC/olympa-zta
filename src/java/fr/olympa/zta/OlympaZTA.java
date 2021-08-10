@@ -118,7 +118,7 @@ import fr.olympa.zta.shops.GunShop;
 import fr.olympa.zta.shops.QuestItemShop;
 import fr.olympa.zta.tyrolienne.Tyrolienne;
 import fr.olympa.zta.utils.AuctionsManagerZTA;
-import fr.olympa.zta.utils.PackCommand;
+import fr.olympa.zta.utils.ResourcePackCommand;
 import fr.olympa.zta.utils.TeleportationManagerZTA;
 import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.npcs.AuctionsTrait;
@@ -180,7 +180,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public CustomDayDuration customDay;
 	public FluctuatingEconomiesManager economies;
 	
-	public PackCommand packCommand;
+	public ResourcePackCommand resourcePackCommand;
 	
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
@@ -412,8 +412,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			soundAmbiance = new SoundAmbiance();
 			soundAmbiance.start();
 			
-			packCommand = new PackCommand(this, getConfig().getConfigurationSection("resourcePack"));
-			packCommand.register();
+			resourcePackCommand = new ResourcePackCommand(this, getConfig().getConfigurationSection("resourcePack"));
+			resourcePackCommand.register();
 			
 			new WeaponsCommand().register();
 			new MobsCommand().register();
@@ -446,6 +446,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 					return super.onCommand(sender, command, label, args);
 				}
 			}.register();
+			
 			new KitZTACommand(this).register();
 			new StatsCommand(this).register();
 			

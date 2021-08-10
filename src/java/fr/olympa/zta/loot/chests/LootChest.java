@@ -32,7 +32,7 @@ public class LootChest extends RandomizedInventory {
 
 	private Location location;
 	private LootChestType type;
-	private int waitMin = 6 * 60000, waitMax = 8 * 60000; // 60'000ticks = 1min
+	private int waitMin = 6 * 60000, waitMax = 10 * 60000; // 60'000ticks = 1min
 	private long nextOpen = 0;
 
 	private Random random = new Random();

@@ -209,7 +209,7 @@ public class PlayersListener implements Listener {
 		
 		if (!playersWithPacks.contains(p.getName())) {
 			OlympaZTA.getInstance().getTask().runTask(() -> {
-				p.setResourcePack(OlympaZTA.getInstance().packCommand.url, OlympaZTA.getInstance().packCommand.hash);
+				p.setResourcePack(OlympaZTA.getInstance().resourcePackCommand.url, OlympaZTA.getInstance().resourcePackCommand.hash);
 			});
 		}else OlympaZTA.getInstance().sendMessage("Le joueur %s a déjà son pack de resources pour le ZTA.", p.getName());
 	}
