@@ -93,6 +93,7 @@ import fr.olympa.zta.loot.chests.LootChestsManager;
 import fr.olympa.zta.loot.crates.CratesManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.packs.PackBlock;
+import fr.olympa.zta.loot.packs.PackCommand;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -446,7 +447,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 					return super.onCommand(sender, command, label, args);
 				}
 			}.register();
-			
+			new PackCommand(this).register();
 			new KitZTACommand(this).register();
 			new StatsCommand(this).register();
 			

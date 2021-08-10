@@ -26,6 +26,7 @@ public class ZTAPermissions{
 	public static final OlympaSpigotPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	public static final OlympaSpigotPermission MOD_COMMANDS = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission CRATES_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_ANIMATION);
+	public static final OlympaSpigotPermission PACKS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	
 	public static final OlympaSpigotPermission TPA_COMMANDS = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission ENDERCHEST_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);

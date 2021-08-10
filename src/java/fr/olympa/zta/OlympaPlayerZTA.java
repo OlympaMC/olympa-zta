@@ -43,7 +43,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<OlympaPlayerZTA>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<OlympaPlayerZTA>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_TRADE_BAG = new SQLColumn<OlympaPlayerZTA>("trade_bag", "BLOB NULL", Types.BLOB).setUpdatable();
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_CRATES = new SQLColumn<OlympaPlayerZTA>("crates", "VARCHAR(8000) NULL", Types.VARCHAR).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PACKS = new SQLColumn<OlympaPlayerZTA>("packs", "VARCHAR(8000) NULL", Types.VARCHAR).setUpdatable();
 	/* Stats */
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<OlympaPlayerZTA>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_PLAYERS = new SQLColumn<OlympaPlayerZTA>("killed_players", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
@@ -65,7 +65,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PARAMETER_CLAN_BOARD = new SQLColumn<OlympaPlayerZTA>("param_clan_board", "TINYINT(3) NOT NULL DEFAULT 0", Types.TINYINT).setUpdatable();
 
 	static final List<SQLColumn<OlympaPlayerZTA>> COLUMNS = Arrays.asList(
-			COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_TRADE_BAG, COLUMN_CRATES,
+			COLUMN_ENDER_CHEST, COLUMN_MONEY, COLUMN_PLOT, COLUMN_TRADE_BAG, COLUMN_PACKS,
 			COLUMN_KILLED_ZOMBIES, COLUMN_KILLED_PLAYERS, COLUMN_DEATH, COLUMN_HEADSHOTS, COLUMN_OTHER_SHOTS, COLUMN_OPENED_CHESTS, COLUMN_PLAY_TIME,
 			COLUMN_HIDE_MAP_TIME, COLUMN_KIT_VIP_TIME, COLUMN_BACK_VIP_TIME,
 			COLUMN_PARAMETER_AMBIENT, COLUMN_PARAMETER_BLOOD, COLUMN_PARAMETER_ZONE_TITLE, COLUMN_PARAMETER_HEALTH_BAR, COLUMN_PARAMETER_QUESTS_BOARD, COLUMN_PARAMETER_CLAN_BOARD);
@@ -81,7 +81,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private OlympaMoney money = new OlympaMoney(100);
 	private ObservableValue<PlayerPlot> plot = new ObservableValue<>(null);
 	private TradeBag<OlympaPlayerZTA> tradeBag = new TradeBag<>(this);
-	public ObservableString crates = new ObservableString(null);
+	public ObservableString packs = new ObservableString(null);
 	
 	public ObservableInt killedZombies = new ObservableInt(0);
 	public ObservableInt killedPlayers = new ObservableInt(0);
@@ -115,7 +115,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
 		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
 		tradeBag.observe("datas", () -> COLUMN_TRADE_BAG.updateAsync(this, new SerialBlob(ItemUtils.serializeItemsArray(tradeBag.getItems().toArray(new ItemStack[tradeBag.getItems().size()]))), null, null));
-		crates.observe("datas", () -> COLUMN_CRATES.updateAsync(this, crates.get(), null, null));
+		packs.observe("datas", () -> COLUMN_PACKS.updateAsync(this, packs.get(), null, null));
 		
 		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateAsync(this, killedZombies.get(), null, null));
 		killedPlayers.observe("datas", () -> COLUMN_KILLED_PLAYERS.updateAsync(this, killedPlayers.get(), null, null));
@@ -229,6 +229,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			enderChestContents = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
 			tradeBag.setItems(ItemUtils.deserializeItemsArray(resultSet.getBytes("trade_bag")));
+			packs.set(resultSet.getString("packs"));
 			killedZombies.set(resultSet.getInt("killed_zombies"));
 			killedPlayers.set(resultSet.getInt("killed_players"));
 			deaths.set(resultSet.getInt("deaths"));
