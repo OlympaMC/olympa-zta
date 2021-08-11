@@ -47,10 +47,10 @@ public class ClanPlot {
 
 	private final int id;
 	private final TrackedRegion region;
-	private final int price;
-	private final String priceFormatted;
 	private final Location sign;
 	private final Location spawn;
+	private int price;
+	private String priceFormatted;
 
 	private ClanZTA clan;
 	private long nextPayment = -1;
@@ -62,10 +62,9 @@ public class ClanPlot {
 	public ClanPlot(ClanPlotsManager manager, int id, Region region, int price, Location sign, Location spawn) {
 		this.manager = manager;
 		this.id = id;
-		this.price = price;
-		this.priceFormatted = OlympaMoney.format(price);
 		this.sign = sign;
 		this.spawn = spawn;
+		setPrice(price, false);
 		
 		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag(), new GlassSmashFlag(true));
 	}
@@ -111,6 +110,15 @@ public class ClanPlot {
 		return priceFormatted;
 	}
 
+	public void setPrice(int price, boolean update) {
+		this.price = price;
+		this.priceFormatted = OlympaMoney.format(price);
+		if (update) {
+			updateSign();
+			manager.columnPrice.updateAsync(this, price, null, null);
+		}
+	}
+	
 	public Location getSign() {
 		return sign;
 	}

@@ -187,6 +187,13 @@ public class ClanPlotsCommand extends ComplexCommand {
 		}).edit(plot.getTrackedRegion().getRegion()).enterOrLeave();
 	}
 	
+	@Cmd (args = { "PLOT", "INTEGER" }, min = 2, syntax = "<plot> <prix>")
+	public void setPrice(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		plot.setPrice(cmd.getArgument(1), true);
+		sendSuccess("Modification du prix de la parcelle %d effectuée.", plot.getID());
+	}
+	
 	@Cmd (args = { "all|rent|free", "INTEGER" })
 	public void list(CommandContext cmd) {
 		ClanPlotPaginator paginator;

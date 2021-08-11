@@ -48,7 +48,7 @@ public class ClanPlotsManager implements Listener {
 	public SQLColumn<ClanPlot> columnClan = new SQLColumn<ClanPlot>("clan", "INT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
 	public SQLColumn<ClanPlot> columnSign = new SQLColumn<ClanPlot>("sign", "VARCHAR(100) NOT NULL", Types.VARCHAR);
 	public SQLColumn<ClanPlot> columnSpawn = new SQLColumn<ClanPlot>("spawn", "VARCHAR(100) NOT NULL", Types.VARCHAR);
-	public SQLColumn<ClanPlot> columnPrice = new SQLColumn<ClanPlot>("price", "INT NOT NULL", Types.INTEGER);
+	public SQLColumn<ClanPlot> columnPrice = new SQLColumn<ClanPlot>("price", "INT NOT NULL", Types.INTEGER).setUpdatable();
 	public SQLColumn<ClanPlot> columnNextPayment = new SQLColumn<ClanPlot>("next_payment", "BIGINT NOT NULL DEFAULT -1", Types.BIGINT).setUpdatable();
 	public SQLColumn<ClanPlot> columnLastChiefPayment = new SQLColumn<ClanPlot>("last_chief_payment", "BIGINT NOT NULL DEFAULT 0", Types.BIGINT).setUpdatable();
 

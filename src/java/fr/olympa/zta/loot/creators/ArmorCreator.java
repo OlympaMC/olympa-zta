@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import fr.olympa.zta.loot.RandomizedInventory.LootContext;
@@ -32,7 +33,10 @@ public class ArmorCreator implements LootCreator {
 		if (context != null && bestThreshold > 0 && ThreadLocalRandom.current().nextDouble() <= bestThreshold) {
 			PlayerInventory inventory = context.getPlayer().getInventory();
 			List<ArmorSlot> slots = Arrays.stream(ArmorSlot.values())
-					.filter(tempSlot -> inventory.getItem(tempSlot.getSlot()).getType() != type.getImmutable(tempSlot).getType())
+					.filter(tempSlot -> {
+						ItemStack item = inventory.getItem(tempSlot.getSlot());
+						return item == null || item.getType() != type.getImmutable(tempSlot).getType();
+					})
 					.collect(Collectors.toList());
 			if (!slots.isEmpty()) slot = slots.get(random.nextInt(slots.size()));
 		}
