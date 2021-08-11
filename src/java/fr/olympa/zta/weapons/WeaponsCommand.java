@@ -187,6 +187,12 @@ public class WeaponsCommand extends ComplexCommand {
 			sendSuccess("L'objet a été correctement supprimé du registre.");
 		}else sendError("Il y a eu un problème lors de la suppression de l'objet.");
 	}
+	
+	@Cmd (min = 1, syntax = "<id>", args = "GUN")
+	public void gunInfo(CommandContext cmd) {
+		Gun gun = cmd.getArgument(0);
+		sendInfo("Arme %d de type %s, avec %f dommages ajoutés et %f dégâts de CaC. Zoom modifier: %b. Scope/cannon/stock: ", gun.getID(), gun.getType().getName(), gun.damageAdded, gun.damageCaC, gun.zoomModifier == null, gun.scope, gun.cannon, gun.stock);
+	}
 
 	@Cmd (args = "PLAYERS")
 	public void gunsLoad(CommandContext cmd) {

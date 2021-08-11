@@ -52,7 +52,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	public abstract boolean click(AbstractArticle<T> article, Player p, ClickType click);
 
-	public abstract String[] getLore();
+	public abstract String[] getLore(AbstractArticle<T> article);
 	
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent e) {
@@ -72,8 +72,8 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
 			lore.add("");
-			for (String loreLine : AbstractShop.this.getLore()) lore.add(loreLine);
-			lore.add(lore.size() - AbstractShop.this.getLore().length, SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.getPrice())));
+			for (String loreLine : AbstractShop.this.getLore(object)) lore.add(loreLine);
+			lore.add(/*lore.size() - AbstractShop.this.getLore(object).length, */SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.getPrice())));
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			return item;
@@ -101,19 +101,32 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		
 		public abstract double getPrice();
 		
+		public abstract boolean isStackable();
+		
 	}
 	
 	public static class Article<T> extends AbstractArticle<T> {
 		public final double price;
+		public final boolean stackable;
 
 		public Article(T object, double price) {
+			this(object, price, true);
+		}
+		
+		public Article(T object, double price, boolean stackable) {
 			super(object);
 			this.price = price;
+			this.stackable = stackable;
 		}
 		
 		@Override
 		public double getPrice() {
 			return price;
+		}
+		
+		@Override
+		public boolean isStackable() {
+			return stackable;
 		}
 		
 	}
@@ -138,6 +151,11 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
+		public boolean isStackable() {
+			return true;
+		}
+		
+		@Override
 		public void take(int amount) {
 			economy.use(amount * getPrice());
 		}
@@ -153,8 +171,21 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		@Override
 		public boolean click(AbstractArticle<T> article, Player p, ClickType click) {
 			OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-			if (player.getGameMoney().withdraw(article.getPrice())) {
-				give(article.object, p);
+			int amount = article.isStackable() && click.isShiftClick() ? 64 : 1;
+			
+			if (!player.getGameMoney().withdraw(article.getPrice() * amount)) {
+				if (amount == 1) {
+					amount = 0;
+				}else {
+					amount = (int) Math.floor(player.getGameMoney().get() / article.getPrice());
+					if (!player.getGameMoney().withdraw(article.getPrice() * amount)) throw new IllegalStateException();
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu n'avais d'argent que pour acheter %dx ton item.", amount);
+					p.closeInventory();
+				}
+			}
+			
+			if (amount > 0) {
+				give(article.object, p, amount);
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 			}else {
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
@@ -164,11 +195,11 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
-		public String[] getLore() {
-			return new String[] { "", "§6➤ §eClic : acheter x1" };
+		public String[] getLore(AbstractArticle<T> article) {
+			return article.isStackable() ? new String[] { "", "§6➤ §eClic : acheter x1", "§6➤ §eShift+clic : acheter x64" } : new String[] { "", "§6➤ §eClic : acheter x1" };
 		}
 		
-		protected abstract void give(T object, Player p);
+		protected abstract void give(T object, Player p, int amount);
 		
 	}
 	
@@ -195,7 +226,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 		}
 		
 		@Override
-		public String[] getLore() {
+		public String[] getLore(AbstractArticle<T> article) {
 			return new String[] { "", "§6➤ §eClic : vendre x1", "§6➤ §eShift+clic : vendre x64" };
 		}
 		

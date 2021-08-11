@@ -56,7 +56,7 @@ public class PlayerPlotsManager {
 	private final OlympaStatement setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?");
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
 	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " WHERE `plot` = ?");
-	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + tableName + " SET `plot` = NULL WHERE `player_id` = ?");
+	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " SET `plot` = NULL WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 
 	protected Map<OlympaPlayerZTA, ObservableList<PlayerPlot>> invitations = new HashMap<>();

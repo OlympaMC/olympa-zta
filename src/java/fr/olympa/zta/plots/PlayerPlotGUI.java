@@ -124,9 +124,13 @@ public class PlayerPlotGUI extends OlympaGUI {
 					if (target == player)
 						Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas t'inviter toi-même...");
 					else {
-						manager.invite(target, plot);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
-						Prefix.DEFAULT_GOOD.sendMessage((Player) target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
+						if (target.getPlot() != null) {
+							Prefix.DEFAULT_BAD.sendMessage(p, "%s est déjà dans un plot...", target.getName());
+						}else {
+							manager.invite(target, plot);
+							Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
+							Prefix.DEFAULT_GOOD.sendMessage((Player) target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle ! Va voir Tom Hook à la Banque (/spawn) pour accepter l'invitation.");
+						}
 					}
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();

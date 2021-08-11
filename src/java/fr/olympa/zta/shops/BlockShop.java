@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractSellingShop;
 
@@ -22,8 +23,8 @@ public class BlockShop extends AbstractSellingShop<ItemStack> {
 	}
 
 	@Override
-	public void give(ItemStack object, Player p) {
-		SpigotUtils.giveItems(p, object);
+	public void give(ItemStack object, Player p, int amount) {
+		SpigotUtils.giveItems(p, ItemUtils.clone(object, amount));
 	}
 	
 	protected static AbstractArticle<ItemStack> prepare(Material material, double price) {

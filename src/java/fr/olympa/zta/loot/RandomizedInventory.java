@@ -68,7 +68,11 @@ public abstract class RandomizedInventory extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) return true;
 		Loot loot = currentLoots.get(slot);
-		if (loot == null) throw new IllegalStateException("No loot in slot " + slot);
+		if (loot == null) {
+			OlympaZTA.getInstance().sendMessage("Pas de loot au slot %d, item %s, pour %s.", slot, current.getType().name(), p.getName());
+			Prefix.ERROR.sendMessage(p, "Une erreur est survenue avec ce loot.");
+			inv.setItem(slot, null);
+		}
 		if (click.isShiftClick()) {
 			if (p.getInventory().firstEmpty() == -1) {
 				boolean valid = false;

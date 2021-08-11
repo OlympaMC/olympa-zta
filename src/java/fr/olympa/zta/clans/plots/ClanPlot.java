@@ -15,6 +15,7 @@ import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,6 +25,7 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.region.tracking.TrackedRegion;
+import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
@@ -66,7 +68,7 @@ public class ClanPlot {
 		this.spawn = spawn;
 		setPrice(price, false);
 		
-		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag(), new GlassSmashFlag(true));
+		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag(), new GlassSmashFlag(true), new DamageFlag(true, DamageCause.ENTITY_ATTACK, DamageCause.PROJECTILE));
 	}
 
 	public ClanZTA getClan() {

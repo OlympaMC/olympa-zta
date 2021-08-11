@@ -102,6 +102,7 @@ public class PrimesManager implements Listener {
 		Player p = e.getEntity();
 		Player killer = p.getKiller();
 		if (killer == null) return;
+		if (CitizensAPI.getNPCRegistry().isNPC(killer)) return;
 		OlympaPlayerZTA deadP = OlympaPlayerZTA.get(p);
 		
 		for (Prime prime : primes) {
