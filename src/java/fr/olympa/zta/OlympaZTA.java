@@ -37,6 +37,7 @@ import org.mcmonkey.sentinel.SentinelPlugin;
 
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.permission.OlympaPermission;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.OlympaServer;
@@ -146,17 +147,17 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class OlympaZTA extends OlympaAPIPlugin implements Listener {
-	
+
 	private static OlympaZTA instance;
-	
+
 	public static OlympaZTA getInstance() {
 		return instance;
 	}
-	
+
 	private int serverID = -1;
-	
+
 	public BeautyQuestsLink beautyQuestsLink;
-	
+
 	public TeleportationManagerZTA teleportationManager;
 	public PlayerPlotsManager plotsManager;
 	public ClanPlotsManager clanPlotsManager;
@@ -180,15 +181,15 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public GlassSmashManager glass;
 	public CustomDayDuration customDay;
 	public FluctuatingEconomiesManager economies;
-	
+
 	public ResourcePackCommand resourcePackCommand;
-	
+
 	public KillPlayerRanking rankingKillPlayer;
 	public KillZombieRanking rankingKillZombie;
 	public LootChestRanking rankingLootChest;
 	public MoneyRanking rankingMoney;
 	public ClanMoneyRanking rankingMoneyClan;
-	
+
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineRadar = new DynamicLine<>(x -> {
 		Set<TrackedRegion> regions = OlympaCore.getInstance().getRegionManager().getCachedPlayerRegions((Player) x.getOlympaPlayer().getPlayer());
 		String title = "§c§kdddddddd";
@@ -203,29 +204,29 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	});
 	public DynamicLine<Scoreboard<OlympaPlayerZTA>> lineMoney = new DynamicLine<>(x -> "§7Monnaie: §6" + x.getOlympaPlayer().getGameMoney().getFormatted());
 	public PlayerObservableLine<Scoreboard<OlympaPlayerZTA>> lineDeaths = new PlayerObservableLine<>(x -> "§7Morts: §6" + x.getOlympaPlayer().deaths.get(), (x) -> x.getOlympaPlayer().deaths);
-	
+
 	private Map<Integer, Class<? extends Trait>> traitsToAdd = new HashMap<>();
-	
+
 	private Tyrolienne tyrolienne;
-	
+
 	@Override
 	public void onEnable() {
 		try {
 			instance = this;
 			super.onEnable();
 			OlympaCore.getInstance().setOlympaServer(OlympaServer.ZTA);
-			
+
 			serverID = getConfig().getInt("serverIndex", -1);
 			if (serverID == -1) throw new IllegalArgumentException("Server ID not found");
 			sendMessage("Server ID : §6%s", getServerNameID());
-			
+
 			Bukkit.clearRecipes();
 			sendMessage("Recettes par défaut supprimées.");
-			
+
 			OlympaPermission.registerPermissions(ZTAPermissions.class);
 			AccountProviderAPI.getter().setPlayerProvider(OlympaPlayerZTA.class, OlympaPlayerZTA::new, getServerNameID(), OlympaPlayerZTA.COLUMNS);
 			if (AccountProviderAPI.getter().getPluginPlayerTable() == null) throw new RuntimeException();
-			
+
 			loadIntegration("dynmap", DynmapLink::initialize);
 			loadIntegration("BeautyQuests", () -> beautyQuestsLink = new BeautyQuestsLink());
 			loadIntegration("Sentinel", () -> {
@@ -233,21 +234,21 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				JavaPlugin.getPlugin(SentinelPlugin.class).registerIntegration(sentinelZTA);
 				getServer().getPluginManager().registerEvents(sentinelZTA, this);
 			});
-			
+
 			try {
 				gunRegistry = new GunRegistry();
 			}catch (Exception ex) {
 				throw new RuntimeException("Registry failed to load", ex);
 			}
-			
+
 			try {
 				Location first = getConfig().getLocation("scoreHolograms.first");
 				Location second = getConfig().getLocation("scoreHolograms.second");
-				
+
 				rankingKillPlayer = new KillPlayerRanking(first);
 				rankingKillZombie = new KillZombieRanking(first);
 				new HologramCycler(this, Arrays.asList(rankingKillPlayer.getHologram(), rankingKillZombie.getHologram()), 200).start();
-				
+
 				rankingLootChest = new LootChestRanking(second);
 				rankingMoney = new MoneyRanking(second);
 				rankingMoneyClan = new ClanMoneyRanking(second);
@@ -256,7 +257,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				e.printStackTrace();
 				sendMessage("§cUne erreur est survenue lors du chargment des tableaux de scores.");
 			}
-			
+
 			GunType.values();
 			Knife.values();
 			Accessory.values();
@@ -266,16 +267,16 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			ItemStackableManager.register(Bandage.BANDAGE);
 			ItemStackableManager.register(Brouilleur.BROUILLEUR);
 			sendMessage("§6%d §etypes d'items enregistrés !", ItemStackableManager.stackables.size());
-			
+
 			AmmoType.values();
-			
+
 			OlympaGroup.PLAYER.setRuntimePermission("dynmap.*", false);
 			OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
 			OlympaGroup.GAMEMASTER.setRuntimePermission("beautyquests.*");
-			
+
 			hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 			teleportationManager = new TeleportationManagerZTA(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
-			
+
 			PluginManager pluginManager = getServer().getPluginManager();
 			pluginManager.registerEvents(this, this);
 			pluginManager.registerEvents(new WeaponsListener(), this);
@@ -296,11 +297,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				@Override
 				public boolean canSit(Player p) {
 					return super.canSit(p) && !combat.isInCombat(p);
-				};
+				}
 			}, this);
 			if (beautyQuestsLink != null)
 				pluginManager.registerEvents(beautyQuestsLink, this);
-			
+
 			try {
 				pluginManager.registerEvents(clansManager = new ClansManagerZTA(), this);
 				pluginManager.registerEvents(clanPlotsManager = new ClanPlotsManager(clansManager, getConfig().getLocation("clanPlotsBook")), this);
@@ -308,43 +309,43 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors de l'initialisation du système de clans et parcelles de clans.");
 			}
-			
+
 			new TradesManager<>(this, 10);
-			
+
 			try {
 				pluginManager.registerEvents(miniguns = new MinigunsManager(new File(getDataFolder(), "miniguns.yml")), this);
 			}catch (IOException ex) {
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				pluginManager.registerEvents(primes = new PrimesManager(), this);
 			}catch (Exception ex) {
 				sendMessage("§cLes primes n'ont pas chargé.");
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				pluginManager.registerEvents(glass = new GlassSmashManager(), this);
 			}catch (Exception ex) {
 				sendMessage("§cLe système de cassage des vitres n'a pas chargé.");
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				pluginManager.registerEvents(tyrolienne = new Tyrolienne(getConfig().getLocation("tyrolienne.from"), getConfig().getLocation("tyrolienne.to")), this);
 			}catch (Exception ex) {
 				sendMessage("§cLa tyrolienne pas chargé.");
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				economies = new FluctuatingEconomiesManager(this, getServerNameID(), ZTAPermissions.ECONOMIES_MANAGE_COMMAND);
 			}catch (Exception ex) {
 				sendMessage("§cLes économies n'ont pas chargé.");
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				String schemName = getConfig().getString("firstBuildSchem");
 				File file = new File(getDataFolder(), schemName);
@@ -356,7 +357,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors de l'initialisation du système de plots joueurs.");
 			}
-			
+
 			/*try {
 			int i = 0;
 			tab = new TabManager(this)
@@ -368,7 +369,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			} catch (Exception ex) {
 			ex.printStackTrace();
 			}*/
-			
+
 			try {
 				taxManager = new TaxManager(this, ZTAPermissions.TAX_MANAGE_COMMAND, OlympaZTA.getInstance().getServerNameID() + "_tax", 0);
 				auctionsManager = new AuctionsManagerZTA(this, OlympaZTA.getInstance().getServerNameID() + "_auctions", taxManager) {
@@ -381,41 +382,41 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement de la taxe et des ventes.");
 			}
-			
+
 			try {
 				pluginManager.registerEvents(lootChestsManager = new LootChestsManager(), this);
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement des coffres de loot.");
 			}
-			
+
 			try {
 				pluginManager.registerEvents(ecManager = new EnderChestManager(), this);
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement des coffres de l'end.");
 			}
-			
+
 			try {
 				new ParachuteModule(this);
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement des parachutes.");
 			}
-			
+
 			try {
 				new KillManager(this);
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement du module de tracking des kills.");
 			}
-			
+
 			soundAmbiance = new SoundAmbiance();
 			soundAmbiance.start();
-			
+
 			resourcePackCommand = new ResourcePackCommand(this, getConfig().getConfigurationSection("resourcePack"));
 			resourcePackCommand.register();
-			
+
 			new WeaponsCommand().register();
 			new MobsCommand().register();
 			new HubCommand().register();
@@ -427,13 +428,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			new BackCommand(this, ZTAPermissions.GROUP_HEROS) {
 				final long timeBetween = TimeUnit.DAYS.toMillis(1);
 				final NumberFormat numberFormat = new DecimalFormat("00");
-				
+
 				@Override
 				protected void teleport(Player p, Location location) {
 					super.teleport(p, location);
 					super.<OlympaPlayerZTA>getOlympaPlayer().backVIPTime.set(System.currentTimeMillis());
 				}
-				
+
 				@Override
 				public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 					OlympaPlayerZTA olympaPlayer = getOlympaPlayer();
@@ -450,14 +451,14 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			new PackCommand(this).register();
 			new KitZTACommand(this).register();
 			new StatsCommand(this).register();
-			
+
 			Mobs.Zombies.COMMON.getName(); // initalise les mobs custom
 			mobSpawning = new MobSpawning(getConfig().getInt("seaLevel"), getConfig().getConfigurationSection("mobRegions"), getConfig().getConfigurationSection("safeRegions"));
 			mobSpawning.start();
-			
+
 			Map<Location, PackBlock> packBlocks = getConfig().getStringList("packBlocks").stream().map(SpigotUtils::convertStringToLocation).collect(Collectors.toMap(x -> x, PackBlock::new));
 			sendMessage("§6%d §eblocs de packs d'équipement chargés.", packBlocks.size());
-			
+
 			OlympaCore.getInstance().getRegionManager().awaitWorldTracking("world", e -> e.getRegion().registerFlags(new GunFlag(false, false), new ItemDurabilityFlag(true), new PhysicsFlag(true), new PlayerBlocksFlag(true), new FishFlag(true), new FoodFlag(false), new GameModeFlag(GameMode.ADVENTURE), new GlassSmashFlag(true), new PlayerBlockInteractFlag(false, true, true) {
 				@Override
 				public void interactEvent(PlayerInteractEvent event) {
@@ -470,13 +471,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 					super.interactEvent(event);
 				}
 			}));
-			
+
 			scoreboards = new ScoreboardManager<OlympaPlayerZTA>(this, "§6Olympa §e§lZTA").addLines(FixedLine.EMPTY_LINE, lineMoney, lineDeaths, FixedLine.EMPTY_LINE, lineRadar).addFooters(FixedLine.EMPTY_LINE, CyclingLine.olympaAnimation());
-			
+
 			customDay = new CustomDayDuration(this, Bukkit.getWorld("world"), 15600, 12000, 3).setNightRunnable(() -> {
 				Bukkit.getOnlinePlayers().forEach(x -> x.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§7La nuit tombe... §oprenez garde !")));
 			});
-			
+
 			checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 			checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
 			checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
@@ -487,21 +488,28 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			checkForTrait(GunShop.class, "gunShop", getConfig().getIntegerList("gunShop"));
 			if (primes != null)
 				checkForTrait(BountyTrait.class, "bountyMan", getConfig().getIntegerList("bountyMan"));
-			
+
+			OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND.setMinGroup(OlympaGroup.MOD);
+			OlympaAPIPermissionsSpigot.TP_COMMAND.setMinGroup(OlympaGroup.MOD);
+			OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH.setMinGroup(OlympaGroup.ADMIN);
+			OlympaAPIPermissionsSpigot.FLY_COMMAND.setMinGroup(OlympaGroup.MODP);
+			OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_OTHER.setMinGroup(OlympaGroup.MOD);
+			OlympaAPIPermissionsSpigot.INVSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
+			OlympaAPIPermissionsSpigot.ECSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			sendMessage("§4Une erreur est survenue lors du chargement du plugin. Le serveur ne peut être lancé sans risque.");
 			Bukkit.shutdown();
 		}
 	}
-	
+
 	public void checkForTrait(Class<? extends Trait> trait, String name, Iterable<Integer> npcs) {
 		if (CitizensAPI.getTraitFactory().getTraitClass(name) == null)
 			CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(trait).withName(name));
 		if (npcs != null)
 			npcs.forEach(x -> traitsToAdd.put(x, trait));
 	}
-	
+
 	@EventHandler
 	public void onCitizensEnable(CitizensEnableEvent e) {
 		traitsToAdd.forEach((npcID, trait) -> {
@@ -513,7 +521,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		});
 		training.hashCode();
 	}
-	
+
 	@EventHandler
 	public void onBlockDrop(BlockDropItemEvent e) {
 		for (Item item : e.getItems()) {
@@ -535,13 +543,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				item.setItemStack(food.get(originalItem.getAmount()));
 		}
 	}
-	
+
 	@Override
 	public void onDisable() {
 		super.onDisable();
 		if (gunRegistry != null)
 			gunRegistry.unload();
-		
+
 		if (training != null)
 			training.unload();
 		if (tyrolienne != null)
@@ -549,7 +557,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		if (customDay != null)
 			customDay.unload();
 		HandlerList.unregisterAll((Plugin) this);
-		
+
 		if (mobSpawning != null)
 			mobSpawning.end();
 		if (scoreboards != null)
@@ -561,7 +569,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 		if (soundAmbiance != null)
 			soundAmbiance.stop();
 	}
-	
+
 	private void loadIntegration(String pluginName, Runnable runnable) {
 		try {
 			if (getServer().getPluginManager().isPluginEnabled(pluginName)) {
@@ -574,14 +582,14 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public int getServerID() {
 		if (serverID == -1) throw new IllegalArgumentException();
 		return serverID;
 	}
-	
+
 	public String getServerNameID() {
 		return "zta" + getServerID();
 	}
-	
+
 }
