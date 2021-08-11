@@ -41,14 +41,14 @@ import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
 
 public class WeaponsListener implements Listener {
-	
+
 	public static final NamespacedKey KNIFE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "knife");
 	public static final NamespacedKey GRENADE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "grenade");
 
 	public static boolean cancelDamageEvent = false; // dommage causé par le contact d'une balle
-	
+
 	private static final List<Material> NOT_WEAPON = Arrays.asList(Material.DIAMOND_AXE, Material.DIAMOND_HOE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE);
-	
+
 	@EventHandler
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (cancelDamageEvent) {
@@ -60,13 +60,13 @@ public class WeaponsListener implements Listener {
 		Player damager = (Player) e.getDamager();
 
 		ItemStack item = damager.getInventory().getItemInMainHand();
-		
+
 		Weapon weapon = getWeapon(item);
 		if (weapon != null) {
 			weapon.onEntityHit(e);
-			if (damager.getFallDistance() > 0 && !damager.isOnGround()) {
+			if (damager.getFallDistance() > 0 && !damager.isOnGround())
 				e.setDamage(e.getDamage() * 1.5F);
-			}else e.setDamage(e.getDamage() + ThreadLocalRandom.current().nextDouble() - 0.5);
+			else e.setDamage(e.getDamage() + ThreadLocalRandom.current().nextDouble() - 0.5);
 		}else if (NOT_WEAPON.contains(item.getType())) {
 			e.setCancelled(true);
 			Prefix.DEFAULT_BAD.sendMessage(damager, "Vous ne pouvez pas utiliser un outil comme arme.");
@@ -97,24 +97,30 @@ public class WeaponsListener implements Listener {
 
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
-		if (e.getClick() != ClickType.RIGHT) return;
 		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
-		
+		Player p = (Player) e.getWhoClicked();
 		ItemStack item = e.getCurrentItem();
-		ItemStack cursor = e.getCursor();
-		if (item == null) return;
-		if (cursor != null && cursor.getType() != Material.AIR) return;
+		if (item == null)
+			return;
+		if (e.getClick() == ClickType.RIGHT) {
+			ItemStack cursor = e.getCursor();
+			if (cursor != null && cursor.getType() != Material.AIR)
+				return;
+			OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
+				gun.itemClick((Player) e.getWhoClicked(), item);
+				e.setCancelled(true);
+			});
+		}
+		Weapon previous = getWeapon(item);
+		if (previous != null && !e.isCancelled())
+			previous.itemNoLongerHeld(p, item);
 
-		OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
-			gun.itemClick((Player) e.getWhoClicked(), item);
-			e.setCancelled(true);
-		});
 	}
-	
+
 	@EventHandler
 	public void onSwap(PlayerSwapHandItemsEvent e) {
 		Player p = e.getPlayer();
-		
+
 		Weapon previous = getWeapon(e.getOffHandItem());
 		if (previous != null) previous.itemNoLongerHeld(p, e.getOffHandItem());
 		Weapon next = getWeapon(e.getMainHandItem());
@@ -148,9 +154,8 @@ public class WeaponsListener implements Listener {
 				int prevAmount = p.getInventory().getItemInMainHand().getAmount();
 				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 					ItemStack mainHand = p.getInventory().getItemInMainHand();
-					if (mainHand.getAmount() != prevAmount && mainHand.isSimilar(item)) {
+					if (mainHand.getAmount() != prevAmount && mainHand.isSimilar(item))
 						checkHeld(p, item, true);
-					}
 				});
 			}
 		}
@@ -170,33 +175,31 @@ public class WeaponsListener implements Listener {
 	public void onPlayerLoad(OlympaPlayerLoadEvent e) {
 		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> checkHeld(e.getPlayer(), e.getPlayer().getInventory().getItemInMainHand(), true));
 	}
-	
+
 	public static Weapon getWeapon(ItemStack item) {
 		if (item == null) return null;
 		if (!item.hasItemMeta()) return null;
 		ItemMeta meta = item.getItemMeta();
-		if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER)) {
+		if (meta.getPersistentDataContainer().has(GunRegistry.GUN_KEY, PersistentDataType.INTEGER))
 			return OlympaZTA.getInstance().gunRegistry.getGun(meta.getPersistentDataContainer().get(GunRegistry.GUN_KEY, PersistentDataType.INTEGER));
-		}else if (meta.getPersistentDataContainer().has(GRENADE_KEY, PersistentDataType.INTEGER)) {
+		else if (meta.getPersistentDataContainer().has(GRENADE_KEY, PersistentDataType.INTEGER))
 			return Grenade.values()[meta.getPersistentDataContainer().get(GRENADE_KEY, PersistentDataType.INTEGER)];
-		}else if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER)) {
+		else if (meta.getPersistentDataContainer().has(KNIFE_KEY, PersistentDataType.INTEGER))
 			return Knife.values()[meta.getPersistentDataContainer().get(KNIFE_KEY, PersistentDataType.INTEGER)];
-		}else if (meta.getPersistentDataContainer().has(Bandage.BANDAGE.getKey(), PersistentDataType.BYTE)) {
+		else if (meta.getPersistentDataContainer().has(Bandage.BANDAGE.getKey(), PersistentDataType.BYTE))
 			return Bandage.BANDAGE;
-		}else if (meta.getPersistentDataContainer().has(Brouilleur.BROUILLEUR.getKey(), PersistentDataType.BYTE)) {
+		else if (meta.getPersistentDataContainer().has(Brouilleur.BROUILLEUR.getKey(), PersistentDataType.BYTE))
 			return Brouilleur.BROUILLEUR;
-		}
 		return null;
 	}
 
 	private Weapon checkHeld(Player p, ItemStack item, boolean held) {
 		Weapon weapon = getWeapon(item);
-		if (weapon != null) {
-			if (held) {
+		if (weapon != null)
+			if (held)
 				weapon.itemHeld(p, item, null);
-			}else weapon.itemNoLongerHeld(p, item);
-		}
+			else weapon.itemNoLongerHeld(p, item);
 		return weapon;
 	}
-	
+
 }
