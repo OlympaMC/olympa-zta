@@ -100,10 +100,8 @@ public class WeaponsListener implements Listener {
 		if (e.getClickedInventory() != e.getWhoClicked().getInventory()) return;
 		Player p = (Player) e.getWhoClicked();
 		ItemStack item = e.getCurrentItem();
-		if (item == null)
-			return;
-		if (e.getClick() == ClickType.RIGHT) {
-			ItemStack cursor = e.getCursor();
+		ItemStack cursor = e.getCursor();
+		if (e.getClick() == ClickType.RIGHT && item != null) {
 			if (cursor != null && cursor.getType() != Material.AIR)
 				return;
 			OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
@@ -111,10 +109,12 @@ public class WeaponsListener implements Listener {
 				e.setCancelled(true);
 			});
 		}
-		Weapon previous = getWeapon(item);
-		if (previous != null && !e.isCancelled())
-			previous.itemNoLongerHeld(p, item);
-
+		if (!e.isCancelled()) {
+			Weapon previous = getWeapon(item);
+			if (previous != null) previous.itemNoLongerHeld(p, item);
+			Weapon next = getWeapon(cursor);
+			if (next != null) next.itemHeld(p, cursor, previous);
+		}
 	}
 
 	@EventHandler
