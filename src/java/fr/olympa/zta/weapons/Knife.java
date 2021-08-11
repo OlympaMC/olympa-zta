@@ -32,7 +32,12 @@ import net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles;
 public enum Knife implements Weapon, ItemStackable, Skinable {
 	
 	BATTE(Material.BLAZE_ROD, "Batte de base-ball", "Arme contondante, peu puissante contre les joueurs, utile pour se défendre contre les infectés.", 2, 3),
-	BICHE(Material.ARROW, "Pied-de-biche", "Objet polyvalent contre les joueurs comme contre les infectés.", 3, 3),
+	BICHE(
+			Material.ARROW,
+			"Pied-de-biche",
+			"Objet polyvalent contre les joueurs comme contre les infectés.",
+			3,
+			4),
 	SURIN(Material.STICK, "Surin", "Couteau perforant, occasionnant plus de dégâts chez les joueurs que chez les infectés.", 4, 2),
 	;
 	

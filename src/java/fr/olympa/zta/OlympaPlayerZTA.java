@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.common.observable.ObservableBoolean;
 import fr.olympa.api.common.observable.ObservableInt;
 import fr.olympa.api.common.observable.ObservableLong;
-import fr.olympa.api.common.observable.ObservableString;
 import fr.olympa.api.common.observable.ObservableValue;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.provider.OlympaPlayerObject;
@@ -30,6 +29,7 @@ import fr.olympa.api.spigot.trades.TradeBag;
 import fr.olympa.api.spigot.trades.TradePlayerInterface;
 import fr.olympa.zta.clans.ClanZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
+import fr.olympa.zta.loot.packs.PlayerPacks;
 import fr.olympa.zta.mobs.PlayerHealthBar;
 import fr.olympa.zta.plots.PlayerPlot;
 import fr.olympa.zta.settings.ClanBoardSetting;
@@ -81,7 +81,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private OlympaMoney money = new OlympaMoney(100);
 	private ObservableValue<PlayerPlot> plot = new ObservableValue<>(null);
 	private TradeBag<OlympaPlayerZTA> tradeBag = new TradeBag<>(this);
-	public ObservableString packs = new ObservableString(null);
+	public PlayerPacks packs = new PlayerPacks();
 	
 	public ObservableInt killedZombies = new ObservableInt(0);
 	public ObservableInt killedPlayers = new ObservableInt(0);
@@ -115,7 +115,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 		money.observe("datas", () -> COLUMN_MONEY.updateAsync(this, money.get(), null, null));
 		plot.observe("datas", () -> COLUMN_PLOT.updateAsync(this, plot.mapOr(PlayerPlot::getID, -1), null, null));
 		tradeBag.observe("datas", () -> COLUMN_TRADE_BAG.updateAsync(this, new SerialBlob(ItemUtils.serializeItemsArray(tradeBag.getItems().toArray(new ItemStack[tradeBag.getItems().size()]))), null, null));
-		packs.observe("datas", () -> COLUMN_PACKS.updateAsync(this, packs.get(), null, null));
+		packs.observe("datas", () -> COLUMN_PACKS.updateAsync(this, packs.toString(), null, null));
 		
 		killedZombies.observe("datas", () -> COLUMN_KILLED_ZOMBIES.updateAsync(this, killedZombies.get(), null, null));
 		killedPlayers.observe("datas", () -> COLUMN_KILLED_PLAYERS.updateAsync(this, killedPlayers.get(), null, null));
@@ -229,7 +229,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 			enderChestContents = ItemUtils.deserializeItemsArray(resultSet.getBytes("ender_chest"));
 			money.set(resultSet.getDouble("money"));
 			tradeBag.setItems(ItemUtils.deserializeItemsArray(resultSet.getBytes("trade_bag")));
-			packs.set(resultSet.getString("packs"));
+			packs.loadFromString(resultSet.getString("packs"));
 			killedZombies.set(resultSet.getInt("killed_zombies"));
 			killedPlayers.set(resultSet.getInt("killed_players"));
 			deaths.set(resultSet.getInt("deaths"));

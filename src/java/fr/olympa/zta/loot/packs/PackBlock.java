@@ -59,51 +59,62 @@ public class PackBlock {
 			return;
 		}
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-		if (type.getPriceReal() != 0) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Les packs achetables avec de l'argent réel sont en cours de mise en place.");
-			return;
-		}
-		if (player.getGameMoney().has(type.getPrice())) {
-			Prefix.DEFAULT.sendMessage(p, "Tu vas ouvrir un §lpack %s§7...", type.getName());
-			Item item = location.getWorld().dropItem(location.clone().add(0, 2.5, 0), FLOATING_ITEM);
-			item.setGravity(false);
-			item.setPersistent(false);
-			item.setVelocity(new Vector());
-			item.setPickupDelay(Short.MAX_VALUE);
-			running = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), new Runnable() {
-				int y = 0;
-				@Override
-				public void run() {
-					if (y++ == 25) {
-						running.cancel();
-						running = null;
-						item.remove();
-						
-						if (player.getGameMoney().withdraw(type.getPrice())) {
-							location.getWorld().spawnParticle(Particle.FLAME, location.getX(), location.getY() + (y / 10D), location.getZ(), 15, 0D, 0D, 0D, 0.08);
-							location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-							LootContext context = new RandomizedInventory.LootContext(p);
-							List<LootCreator> picked = type.getPicker().pickMulti(random);
-							ItemStack[] items = picked.stream().map(x -> {
-								Loot loot = x.create(random, context);
-								ItemStack realItem = loot.getRealItem();
-								return realItem == null ? loot.getItem() : realItem;
-							}).toArray(ItemStack[]::new);
-							SpigotUtils.giveItems(p, items);
-							Prefix.DEFAULT_GOOD.sendMessage(Bukkit.getOnlinePlayers(), "§2§l%s §atrouve %s dans un §npack %s§a !", p.getName(), picked.stream().map(LootCreator::getTitle).collect(Collectors.joining("§a, §6", "§6", "§a")), type.getName());
-						}else {
-							Prefix.DEFAULT_BAD.sendMessage(p, "Tu as cru nous avoir ? Reviens avec assez d'argent pour acheter le pack.");
-							Prefix.DEFAULT_BAD.sendMessage(Bukkit.getOnlinePlayers(), "%s a cru gruger le game en ne payant pas son pack ! Jetez-lui des pierres !", p.getName());
-						}
-					}else {
-						location.getWorld().spawnParticle(Particle.CRIT, location.getX(), location.getY() + (y / 10D), location.getZ(), 4, 0D, 0D, 0D, 0);
-						location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_CHIME, 0.25f, 0.6f + (y) * ((1.8f - 0.6f) / 25f));
-					}
-				}
-			}, 1, 3);
+		boolean pack;
+		boolean withdraw;
+		if (player.packs.hasPack(type)) {
+			pack = true;
+			withdraw = false;
 		}else {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour ouvrir un pack %s ! Il faut %s.", type.getName(), OlympaMoney.format(type.getPrice()));
+			if (type.getPrice() == 0) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Le pack %s doit être acheté sur la boutique ! /shop", type.getName());
+				return;
+			}
+			if (player.getGameMoney().has(type.getPrice())) {
+				pack = false;
+				withdraw = true;
+			}else {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour ouvrir un pack %s ! Il faut %s.", type.getName(), OlympaMoney.format(type.getPrice()));
+				return;
+			}
 		}
+		Prefix.DEFAULT.sendMessage(p, "Tu vas ouvrir un §lpack %s§7...", type.getName());
+		Item item = location.getWorld().dropItem(location.clone().add(0, 2.5, 0), FLOATING_ITEM);
+		item.setGravity(false);
+		item.setPersistent(false);
+		item.setVelocity(new Vector());
+		item.setPickupDelay(Short.MAX_VALUE);
+		running = Bukkit.getScheduler().runTaskTimer(OlympaZTA.getInstance(), new Runnable() {
+			int y = 0;
+			
+			@Override
+			public void run() {
+				if (y++ == 25) {
+					running.cancel();
+					running = null;
+					item.remove();
+					
+					if ((withdraw && player.getGameMoney().withdraw(type.getPrice())) || (pack && player.packs.removePack(type))) {
+						location.getWorld().spawnParticle(Particle.FLAME, location.getX(), location.getY() + (y / 10D), location.getZ(), 15, 0D, 0D, 0D, 0.08);
+						location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+						LootContext context = new RandomizedInventory.LootContext(p);
+						List<LootCreator> picked = type.getPicker().pickMulti(random);
+						ItemStack[] items = picked.stream().map(x -> {
+							Loot loot = x.create(random, context);
+							ItemStack realItem = loot.getRealItem();
+							return realItem == null ? loot.getItem() : realItem;
+						}).toArray(ItemStack[]::new);
+						SpigotUtils.giveItems(p, items);
+						Prefix.DEFAULT_GOOD.sendMessage(Bukkit.getOnlinePlayers(), "§2§l%s §atrouve %s dans un §npack %s§a !", p.getName(), picked.stream().map(LootCreator::getTitle).collect(Collectors.joining("§a, §6", "§6", "§a")), type.getName());
+					}else {
+						Prefix.DEFAULT_BAD.sendMessage(p, "Tu as cru nous avoir ? Reviens avec assez d'argent pour acheter le pack.");
+						Prefix.DEFAULT_BAD.sendMessage(Bukkit.getOnlinePlayers(), "%s a cru gruger le game en ne payant pas son pack ! Jetez-lui des pierres !", p.getName());
+					}
+				}else {
+					location.getWorld().spawnParticle(Particle.CRIT, location.getX(), location.getY() + (y / 10D), location.getZ(), 4, 0D, 0D, 0D, 0);
+					location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_CHIME, 0.25f, 0.6f + (y) * ((1.8f - 0.6f) / 25f));
+				}
+			}
+		}, 1, 3);
 	}
 	
 }
