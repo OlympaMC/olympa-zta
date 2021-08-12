@@ -6,13 +6,17 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.ItemStackable;
 import fr.olympa.zta.itemstackable.ItemStackableManager;
 
 public class WeaponsGiveGUI extends PagedGUI<ItemStackable> {
 	
-	public WeaponsGiveGUI() {
+	private boolean give;
+	
+	public WeaponsGiveGUI(boolean give) {
 		super("Don d'arme", DyeColor.CYAN, ItemStackableManager.stackables, 5);
+		this.give = give;
 	}
 
 	@Override
@@ -22,7 +26,10 @@ public class WeaponsGiveGUI extends PagedGUI<ItemStackable> {
 
 	@Override
 	public void click(ItemStackable existing, Player p, ClickType click) {
-		p.getInventory().addItem(existing.createItem());
+		if (give) {
+			OlympaZTA.getInstance().sendMessage("Give de %s à %s.", existing.getId(), p.getName());
+			p.getInventory().addItem(existing.createItem());
+		}
 	}
 
 }

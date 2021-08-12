@@ -23,7 +23,7 @@ public class LootPackGUI extends OlympaGUI {
 		for (PackType pack : PackType.values()) {
 			ItemStack item = pack.getItem();
 			int amount = player.packs.getPackAmount(pack);
-			if (amount > 0) ItemUtils.loreAdd(item, "§a§oVous en possédez §l" + amount);
+			if (amount > 0) item = ItemUtils.loreAdd(item.clone(), "§a§oVous en possédez §l" + amount);
 			inv.setItem(pack.getSlot(), item);
 		}
 		inv.setItem(48, ItemUtils.item(Material.PAPER, "§ePacks de loot", "§7Vous obtenez quelques items", "§7parmi ceux proposés.", "§7Ceux en verts sont donnés", "§7100% du temps."));

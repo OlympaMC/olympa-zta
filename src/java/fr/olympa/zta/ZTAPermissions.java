@@ -14,14 +14,16 @@ public class ZTAPermissions{
 
 	public static final OlympaSpigotPermission TAX_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission LOOT_CHEST_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
-	public static final OlympaSpigotPermission WEAPONS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_BUILDER);
+	public static final OlympaSpigotPermission WEAPONS_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission WEAPONS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_BUILDER);
 	public static final OlympaSpigotPermission MOBS_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission UTILS_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission PLAYER_SPREAD_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	public static final OlympaSpigotPermission PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	public static final OlympaSpigotPermission GLASS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission PARACHUTE_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
-	public static final OlympaSpigotPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission CLAN_PLOTS_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission CLAN_PLOTS_MANAGE_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_BUILDER, new OlympaGroup[] { OlympaGroup.BUILDER });
 	public static final OlympaSpigotPermission MINIGUNS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission PROBLEM_MONITORING = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission BYPASS_TELEPORT_WAIT_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);

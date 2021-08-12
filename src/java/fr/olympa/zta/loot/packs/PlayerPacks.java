@@ -39,6 +39,7 @@ public class PlayerPacks extends AbstractObservable {
 	}
 	
 	public void loadFromString(String string) {
+		if (string == null) return;
 		this.packs = OlympaCore.getInstance().getGson().fromJson(string, Map.class);
 	}
 	

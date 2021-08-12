@@ -106,7 +106,7 @@ public class ClanPlotsManager implements Listener {
 		
 		int amount = 3;
 		for (int i = 0; i < rent.size(); i++) {
-			if (amount++ >= 3) {
+			if (amount++ > 3) {
 				builder.addPage(compo.build());
 				amount = 0;
 				compo = Component.text().content(" Parcelles louées :").color(NamedTextColor.DARK_GRAY);
@@ -123,7 +123,7 @@ public class ClanPlotsManager implements Listener {
 		
 		amount = 4;
 		for (int i = 0; i < free.size(); i++) {
-			if (amount++ >= 4) {
+			if (amount++ > 4) {
 				builder.addPage(compo.build());
 				amount = 0;
 				compo = Component.text().content(" Parcelles libres :").color(NamedTextColor.DARK_GRAY);

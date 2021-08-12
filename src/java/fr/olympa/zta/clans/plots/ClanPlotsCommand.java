@@ -36,13 +36,13 @@ public class ClanPlotsCommand extends ComplexCommand {
 	private ClanPlotPaginator paginatorFree = new ClanPlotPaginator(10, "Parcelles de clans vides", "free", () -> manager.getPlots().values().stream().filter(x -> x.getClan() == null).collect(Collectors.toList()));
 	
 	public ClanPlotsCommand(ClanPlotsManager manager) {
-		super(OlympaZTA.getInstance(), "clanplots", "Permet de gérer les parcelles de clan.", ZTAPermissions.CLAN_PLOTS_MANAGE_COMMAND);
+		super(OlympaZTA.getInstance(), "clanplots", "Permet de gérer les parcelles de clan.", ZTAPermissions.CLAN_PLOTS_COMMAND);
 		this.manager = manager;
 		
 		super.addArgumentParser("PLOT", (sender, arg) -> manager.getPlots().keySet().stream().map(x -> x.toString()).collect(Collectors.toList()), x -> manager.getPlots().get(Integer.parseInt(x)), x -> String.format("Le plot %s n'existe pas.", x));
 	}
 	
-	@Cmd (player = true)
+	@Cmd (player = true, permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void createPlot(CommandContext cmd) {
 		Player p = player;
 		Runnable cancel = /*() -> Prefix.DEFAULT_BAD.sendMessage(p, "Tu as annulé la création d'une parcelle de clan.")*/ null;
@@ -75,7 +75,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 	public void info(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		sendSuccess("Parcelle de clan %d:", plot.getID());
-		sendInfo("Point d'apparition: §6%s", SpigotUtils.convertLocationToHumanString(plot.getSpawn()));
+		sendHoverAndCommand(Prefix.INFO, "Point d'apparition: §6" + SpigotUtils.convertLocationToHumanString(plot.getSpawn()), "Clique pour te téléporter.", "/clanplots teleport " + plot.getID());
 		sendInfo("Pancarte informative: §6%s", SpigotUtils.convertBlockLocationToString(plot.getSign()));
 		sendInfo("Prix: §6%s", plot.getPriceFormatted());
 		if (plot.getClan() != null) {
@@ -84,7 +84,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		}else sendInfo("Actuellement §6non louée");
 	}
 	
-	@Cmd
+	@Cmd (permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void updateSigns(CommandContext cmd) {
 		int i = 0;
 		for (ClanPlot plot : manager.getPlots().values()) {
@@ -94,7 +94,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("%d panneaux ont été mis à jour.", i);
 	}
 	
-	@Cmd (min = 1, args = "PLOT")
+	@Cmd (min = 1, args = "PLOT", permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void eject(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		ClanZTA clan = plot.getClan();
@@ -111,7 +111,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		}
 	}
 	
-	@Cmd (min = 1, args = "PLOT")
+	@Cmd (min = 1, args = "PLOT", permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void emptyChests(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		if (cmd.getArgumentsLength() == 1 || !"confirm".equals(cmd.getArgument(1))) {
@@ -121,7 +121,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		}
 	}
 	
-	@Cmd
+	@Cmd (permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void emptyAllChests(CommandContext cmd) {
 		manager.getPlots().values().forEach(this::emptyChests);
 	}
@@ -144,7 +144,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("La parcelle #%d a été vidée de %d inventaires.", plot.getID(), clear);
 	}
 	
-	@Cmd (hide = true)
+	@Cmd (hide = true, permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void updateDBRegions(CommandContext cmd) {
 		int i = 0;
 		for (ClanPlot plot : manager.getPlots().values()) {
@@ -167,7 +167,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("Tu as été téléporté au spawn du plot %d.", plot.getID());
 	}
 	
-	@Cmd (player = true, args = "PLOT", min = 1)
+	@Cmd (player = true, args = "PLOT", min = 1, permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void editRegion(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		Player p = getPlayer();
@@ -187,7 +187,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 		}).edit(plot.getTrackedRegion().getRegion()).enterOrLeave();
 	}
 	
-	@Cmd (args = { "PLOT", "INTEGER" }, min = 2, syntax = "<plot> <prix>")
+	@Cmd (args = { "PLOT", "INTEGER" }, min = 2, syntax = "<plot> <prix>", permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void setPrice(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		plot.setPrice(cmd.getArgument(1), true);

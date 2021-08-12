@@ -43,7 +43,7 @@ public class OlympaPlayerZTA extends OlympaPlayerObject implements ClanPlayerInt
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_MONEY = new SQLColumn<OlympaPlayerZTA>("money", "DOUBLE NULL DEFAULT 100", Types.DOUBLE).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PLOT = new SQLColumn<OlympaPlayerZTA>("plot", "INT NOT NULL DEFAULT -1", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_TRADE_BAG = new SQLColumn<OlympaPlayerZTA>("trade_bag", "BLOB NULL", Types.BLOB).setUpdatable();
-	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PACKS = new SQLColumn<OlympaPlayerZTA>("packs", "VARCHAR(8000) NULL", Types.VARCHAR).setUpdatable();
+	private static final SQLColumn<OlympaPlayerZTA> COLUMN_PACKS = new SQLColumn<OlympaPlayerZTA>("packs", "VARCHAR(8000) NOT NULL DEFAULT '{}'", Types.VARCHAR).setUpdatable();
 	/* Stats */
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_ZOMBIES = new SQLColumn<OlympaPlayerZTA>("killed_zombies", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
 	private static final SQLColumn<OlympaPlayerZTA> COLUMN_KILLED_PLAYERS = new SQLColumn<OlympaPlayerZTA>("killed_players", "INT NOT NULL DEFAULT 0", Types.INTEGER).setUpdatable();
