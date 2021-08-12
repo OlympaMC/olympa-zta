@@ -197,13 +197,13 @@ public class GunRegistry {
 				ItemMeta im = item.getItemMeta();
 				if (im.getPersistentDataContainer().isEmpty()) {
 					Entry<ArmorType, ArmorSlot> armor = ArmorType.getArmor(item.getType());
-					if (armor != null) {
-						String armorName = armor.getKey().getImmutable(armor.getValue()).getItemMeta().getDisplayName();
-						if (!im.getDisplayName().equals(armorName)) {
-							im.setDisplayName(armorName);
-							item.setItemMeta(im);
-						}
-					}
+					if (armor != null) item.setItemMeta(armor.getKey().getImmutable(armor.getValue()).getItemMeta());
+					continue;
+				}
+				Entry<ArmorType, ArmorSlot> armor = ArmorType.getArmor(item.getType());
+				if (armor != null) {
+					int version = im.getPersistentDataContainer().getOrDefault(ArmorType.VERSION_KEY, PersistentDataType.INTEGER, 0);
+					if (version != ArmorType.VERSION) item.setItemMeta(armor.getKey().getImmutable(armor.getValue()).getItemMeta());
 					continue;
 				}
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);

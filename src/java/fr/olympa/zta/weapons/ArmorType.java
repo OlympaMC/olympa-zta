@@ -7,19 +7,29 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.spigot.item.ImmutableItemStack;
 import fr.olympa.api.utils.RomanNumber;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.GunType;
 
 public enum ArmorType {
-	CIVIL("Tenue civile", "LEATHER", "Bandeau", "Veste", "Jogging", "Baskets", true),
+	CIVIL(
+			"Tenue civile",
+			"LEATHER",
+			"Bandeau",
+			"Veste",
+			"Jogging",
+			"Baskets",
+			true),
 	GANGSTER("Tenue de rookie", "GOLDEN", "Cagoule en carbone", "Veste en carbone", "Pantalon en carbone", "Chaussures en carbone", true, Enchantment.PROTECTION_PROJECTILE, 1),
 	ANTIRIOT("Armure de soldat", "CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 1),
 	MILITARY("Armure militaire", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Pantalon en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
@@ -34,7 +44,9 @@ public enum ArmorType {
 	private ImmutableItemStack leggings;
 	private ImmutableItemStack boots;
 
-	private static Map<Material, Entry<ArmorType, ArmorSlot>> MATERIALS_MAP = new HashMap<>();
+	private static Map<Material, Entry<ArmorType, ArmorSlot>> MATERIALS_MAP;
+	public static NamespacedKey VERSION_KEY;
+	public static final int VERSION = 1;
 	
 	private ArmorType(String name, String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable) {
 		this(name, type, helmet, chestplate, leggings, boots, unbreakable, null, 0);
@@ -61,11 +73,16 @@ public enum ArmorType {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
 		meta.setUnbreakable(unbreakable);
+		if (MATERIALS_MAP == null) {
+			MATERIALS_MAP = new HashMap<>();
+			VERSION_KEY = new NamespacedKey(OlympaZTA.getInstance(), "armor_version");
+		}
+		MATERIALS_MAP.put(item.getType(), new AbstractMap.SimpleEntry<>(this, slot));
+		meta.getPersistentDataContainer().set(VERSION_KEY, PersistentDataType.INTEGER, VERSION);
 		int tier = ordinal() + 1;
 		meta.setLore(Arrays.asList("", "§8§lTier " + GunType.getTierColor(tier) + "§l" + RomanNumber.toRoman(tier)));
 		if (enchantment != null) meta.addEnchant(enchantment, level, true);
 		item.setItemMeta(meta);
-		MATERIALS_MAP.put(item.getType(), new AbstractMap.SimpleEntry<>(this, slot));
 		return new ImmutableItemStack(item);
 	}
 
