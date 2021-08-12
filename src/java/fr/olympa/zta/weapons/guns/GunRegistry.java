@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -24,6 +25,8 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 
 public class GunRegistry {
 	
@@ -192,7 +195,17 @@ public class GunRegistry {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
-				if (im.getPersistentDataContainer().isEmpty()) continue;
+				if (im.getPersistentDataContainer().isEmpty()) {
+					Entry<ArmorType, ArmorSlot> armor = ArmorType.getArmor(item.getType());
+					if (armor != null) {
+						String armorName = armor.getKey().getImmutable(armor.getValue()).getItemMeta().getDisplayName();
+						if (!im.getDisplayName().equals(armorName)) {
+							im.setDisplayName(armorName);
+							item.setItemMeta(im);
+						}
+					}
+					continue;
+				}
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
 				/*if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
@@ -244,10 +257,7 @@ public class GunRegistry {
 		if (items == null) return;
 		synchronized (toEvict) {
 			for (ItemStack item : items) {
-				ifGun(item, gun -> {
-					toEvict.add(gun.getID());
-					System.out.println("Will evict " + gun.getID());
-				});
+				ifGun(item, gun -> toEvict.add(gun.getID()));
 			}
 		}
 	}

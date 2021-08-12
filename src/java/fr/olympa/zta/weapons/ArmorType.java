@@ -1,5 +1,11 @@
 package fr.olympa.zta.weapons;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -9,12 +15,14 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.utils.RomanNumber;
+import fr.olympa.zta.weapons.guns.GunType;
 
 public enum ArmorType {
-	CIVIL("Tenue civile", "LEATHER", "Bandana", "Veste", "Jeans", "Baskets", true),
-	GANGSTER("Tenue de gangster", "GOLDEN", "Cagoule en Kevlar", "Veste en Kevlar", "Pantalon en Kevlar", "Chaussures en Kevlar", true, Enchantment.PROTECTION_PROJECTILE, 1),
-	ANTIRIOT("Armure anti-émeutes", "CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 1),
-	MILITARY("Armure en Kevlar renforcé", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Jambières en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
+	CIVIL("Tenue civile", "LEATHER", "Bandeau", "Veste", "Jogging", "Baskets", true),
+	GANGSTER("Tenue de rookie", "GOLDEN", "Cagoule en carbone", "Veste en carbone", "Pantalon en carbone", "Chaussures en carbone", true, Enchantment.PROTECTION_PROJECTILE, 1),
+	ANTIRIOT("Armure de soldat", "CHAINMAIL", "Casque anti-émeutes", "Plastron anti-émeutes", "Jambières anti-émeutes", "Bottes anti-émeutes", true, Enchantment.PROTECTION_ENVIRONMENTAL, 1),
+	MILITARY("Armure militaire", "IRON", "Casque en Kevlar renforcé", "Plastron en Kevlar renforcé", "Pantalon en Kevlar renforcé", "Bottes en Kevlar renforcé", false, Enchantment.PROTECTION_PROJECTILE, 1);
 
 	private String name;
 	private String type;
@@ -26,6 +34,8 @@ public enum ArmorType {
 	private ImmutableItemStack leggings;
 	private ImmutableItemStack boots;
 
+	private static Map<Material, Entry<ArmorType, ArmorSlot>> MATERIALS_MAP = new HashMap<>();
+	
 	private ArmorType(String name, String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable) {
 		this(name, type, helmet, chestplate, leggings, boots, unbreakable, null, 0);
 	}
@@ -51,8 +61,11 @@ public enum ArmorType {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§b" + name);
 		meta.setUnbreakable(unbreakable);
+		int tier = ordinal() + 1;
+		meta.setLore(Arrays.asList("", "§8§lTier " + GunType.getTierColor(tier) + "§l" + RomanNumber.toRoman(tier)));
 		if (enchantment != null) meta.addEnchant(enchantment, level, true);
 		item.setItemMeta(meta);
+		MATERIALS_MAP.put(item.getType(), new AbstractMap.SimpleEntry<>(this, slot));
 		return new ImmutableItemStack(item);
 	}
 
@@ -75,6 +88,10 @@ public enum ArmorType {
 		inv.setChestplate(getImmutable(ArmorSlot.CHESTPLATE));
 		inv.setLeggings(getImmutable(ArmorSlot.LEGGINGS));
 		inv.setBoots(getImmutable(ArmorSlot.BOOTS));
+	}
+	
+	public static Entry<ArmorType, ArmorSlot> getArmor(Material type) {
+		return MATERIALS_MAP.get(type);
 	}
 
 	public enum ArmorSlot {
