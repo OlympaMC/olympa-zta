@@ -31,23 +31,23 @@ mobRegions:
     points: ["-171|-284", "-165|-752", "-152|-752", "-152|-840", "-137|-840", "-134|-846", "-130|-847", "-126|-848", "-122|-849", "-118|-850", "-114|-851", "-110|-852", "-106|-853", "-102|-854", "-98|-855", "-94|-856", "-90|-857", "-86|-858", "-82|-859", "-78|-860", "-74|-861", "-70|-862", "-66|-863", "-62|-864", "-58|-865", "-54|-866", "-50|-867", "-46|-868", "-42|-869", "-38|-870", "-34|-871", "-30|-872", "-26|-873", "-22|-874", "-18|-875", "-14|-876", "-10|-877", "-8|-878", "-8|-955", "51|-955", "52|-954", "56|-954", "57|-955", "94|-955", "94|-944", "125|-944", "125|-955", "158|-955", "159|-755", "185|-756", "185|-890", "562|-890", "662|-1059", "714|-1457", "714|-1846", "687|-1841", "-203|-1841", "-203|-1606", "-458|-1606", "-650|-1414", "-1075|-1414", "-1075|-1064", "-891|-1064", "-891|-828", "-907|-828", "-912|-719", "-860|-717", "-661|-717", "-661|-578", "-635|-578", "-635|-717", "-203|-717", "-203|-284"]
 
 safeRegions:
-  fraternite1:
+  milice1:
     region:
       ==: fr.olympa.api.spigot.region.shapes.Polygon
       world: "world"
       minY: 0
       maxY: 256
       points: ["1778|-228", "1778|-319", "1470|-319", "1470|-174", "1534|-174", "1534|-187", "1537|-188", "1557|-179", "1557|-163", "1565|-163", "1570|-160", "1577|-160", "1582|-156", "1582|-74", "1716|-74", "1716|-115", "1726|-126", "1726|-198", "1732|-206", "1735|-207"]
-    title: "Zone de la Fraternité"
-  fraternite2:
+    title: "Zone de la Milice"
+  milice2:
     region:
       ==: fr.olympa.api.spigot.region.shapes.Polygon
       world: "world"
       minY: 0
       maxY: 256
       points: ["-486|-764", "-486|-758", "-635|-709", "-661|-709", "-908|-724", "-905|-818", "-890|-1086", "-497|-1034"]
-    title: "Zone de la Fraternité"
-  fraternite3:
+    title: "Zone de la Milice"
+  milice3:
     region:
       ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
@@ -55,8 +55,8 @@ safeRegions:
       zMin: 636
       xMax: 48
       zMax: 710
-    title: "Zone de la Fraternité"
-  corporation1:
+    title: "Zone de la Milice"
+  capitole1:
     region:
       ==: fr.olympa.api.spigot.region.shapes.Cylinder
       world: "world"
@@ -65,8 +65,8 @@ safeRegions:
       radius: 95
       minY: 0
       maxY: 256
-    title: "Zone de la Corporation"
-  corporation2:
+    title: "Zone du Capitole"
+  capitole2:
     region:
       ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
@@ -74,8 +74,8 @@ safeRegions:
       zMin: -274
       xMax: 279
       zMax: -229
-    title: "Zone de la Corporation"
-  corporation3:
+    title: "Zone du Capitole"
+  capitole3:
     region:
       ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
@@ -83,7 +83,7 @@ safeRegions:
       zMin: -68
       xMax: -443
       zMax: 33
-    title: "Zone de la Corporation"
+    title: "Zone du Capitole"
   neutral1:
     region:
       ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid

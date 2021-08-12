@@ -94,7 +94,7 @@ public enum PackType {
 			.add(10, new ItemStackableCreator(GunType.DRAGUNOV))
 			.add(8, new ItemStackableCreator(Artifacts.PARACHUTE))
 			.add(8, new ItemStackableCreator(Artifacts.BOOTS))
-			.build(1, 1)),
+			.build(4, 4)),
 	;
 
 	private int slot;

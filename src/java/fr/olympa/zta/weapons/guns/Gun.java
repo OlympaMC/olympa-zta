@@ -593,8 +593,8 @@ public class Gun implements Weapon, Skinable {
 		statement.setInt(i++, scope == null ? -1 : scope.ordinal());
 		statement.setInt(i++, cannon == null ? -1 : cannon.ordinal());
 		statement.setInt(i++, stock == null ? -1 : stock.ordinal());
-		statement.setInt(i++, getID());
 		statement.setInt(i++, skin.getId());
+		statement.setInt(i++, getID());
 	}
 	
 	public void loadDatas(ResultSet set) throws Exception {

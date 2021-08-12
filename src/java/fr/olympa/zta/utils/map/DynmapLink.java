@@ -13,7 +13,6 @@ import org.dynmap.DynmapAPI;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.Marker;
-import org.dynmap.markers.MarkerDescription;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
@@ -68,13 +67,11 @@ public class DynmapLink {
 	}
 
 	public void setPlayerVisiblity(Player p, boolean visibility) {
-		if (api == null) return;
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
 		api.setPlayerVisiblity(p, visibility && !player.isHidden() && p.getWorld().getTime() < CustomDayDuration.NIGHT_TIME && p.getGameMode() != GameMode.SPECTATOR);
 	}
 
 	public void showMobArea(Region region, SpawnType spawn) {
-		if (api == null) return;
 		List<Location> points = region.getLocations();
 		DynmapZoneConfig config = spawn.dynmap;
 		AreaMarker area = areasMarkers.createAreaMarker("A" + spawn.name() + region.hashCode() + "A", config.name(), true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
@@ -83,26 +80,23 @@ public class DynmapLink {
 	}
 	
 	public void showSafeArea(Region region, String id, String title) {
-		if (api == null) return;
-		
 		id = "Z" + id + "Z";
-		MarkerDescription sMarker;
+		String description = "<center><b><p>" + title + "</p></b><br>Les zombies ne spawnent pas ici, vous êtes en sécurité.</center>";
 		if (region instanceof Cylinder) {
 			Cylinder cylinder = (Cylinder) region;
 			CircleMarker marker = areasMarkers.createCircleMarker(id, title, true, region.getWorld().getName(), cylinder.getCenterX(), 0, cylinder.getCenterZ(), cylinder.getRadius(), cylinder.getRadius(), false);
 			marker.setFillStyle(0.45, Color.AQUA.asRGB());
-			sMarker = marker;
+			marker.setDescription(description);
 		}else {
 			List<Location> points = region.getLocations();
 			AreaMarker marker = areasMarkers.createAreaMarker(id, title, true, region.getWorld().getName(), points.stream().mapToDouble(Location::getBlockX).toArray(), points.stream().mapToDouble(Location::getBlockZ).toArray(), false);
 			marker.setFillStyle(0.45, Color.AQUA.asRGB());
-			sMarker = marker;
+			marker.setDescription(description);
 		}
-		sMarker.setDescription("<center><b><p>" + title + "</p></b><br>Les zombies ne spawnent pas ici, vous êtes en sécurité.</center>");
 	}
 	
 	public void showChest(LootChest chest) {
-		if (api == null || !CHESTS_ENABLED) return;
+		if (!CHESTS_ENABLED) return;
 		
 		String id = "chest" + chest.getID();
 		Marker existingMarker = chestsMarkers.findMarker(id);
@@ -113,29 +107,23 @@ public class DynmapLink {
 	}
 
 	public void hideChest(LootChest chest) {
-		if (api == null || !CHESTS_ENABLED) return;
+		if (!CHESTS_ENABLED) return;
 		
 		chestsMarkers.findMarker("chest" + chest.getID()).deleteMarker();
 	}
 
 	public void showEnderChest(Location location) {
-		if (api == null) return;
-		
 		String loc = SpigotUtils.convertLocationToString(location);
 		enderChestsMarkers.createMarker(loc, "Enderchest", location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), enderChestIcon, false);
 	}
 	
 	public void hideEnderChest(Location location) {
-		if (api == null) return;
-		
 		String loc = SpigotUtils.convertLocationToString(location);
 		Marker marker = enderChestsMarkers.findMarker(loc);
 		if (marker != null) marker.deleteMarker();
 	}
 	
 	public void showClanPlot(ClanPlot plot) {
-		if (api == null) return;
-		
 		plotsMarkers.createMarker(Integer.toString(plot.getID()), "Parcelle de clan", plot.getSign().getWorld().getName(), plot.getSign().getX(), plot.getSign().getY(), plot.getSign().getZ(), plotIcon, false);
 		
 		//List<Location> points = plot.getTrackedRegion().getRegion().getLocations();
@@ -145,8 +133,6 @@ public class DynmapLink {
 	private int i = 0;
 	
 	public AreaMarker showDebug(int threadID, World world, int xFrom, int zFrom, int xTo, int zTo, int color) {
-		if (api == null) return null;
-		
 		AreaMarker areaMarker = enderChestsMarkers.createAreaMarker(threadID + " " + i++, "Thread" + threadID, true, world.getName(), new double[] { xFrom, xTo }, new double[] { zFrom, zTo }, false);
 		areaMarker.setFillStyle(0.8, color);
 		return areaMarker;

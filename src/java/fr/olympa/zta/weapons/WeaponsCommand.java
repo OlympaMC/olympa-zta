@@ -173,6 +173,11 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
+	@Cmd
+	public void forceEviction(CommandContext cmd) {
+		OlympaZTA.getInstance().gunRegistry.startEviction();
+	}
+	
 	@Cmd (player = true, min = 1, syntax = "<id>", args = "GUN")
 	public void gunItem(CommandContext cmd) {
 		Gun gun = cmd.getArgument(0);
@@ -191,7 +196,7 @@ public class WeaponsCommand extends ComplexCommand {
 	@Cmd (min = 1, syntax = "<id>", args = "GUN")
 	public void gunInfo(CommandContext cmd) {
 		Gun gun = cmd.getArgument(0);
-		sendInfo("Arme %d de type %s, avec %f dommages ajoutés et %f dégâts de CaC. Zoom modifier: %b. Scope/cannon/stock: ", gun.getID(), gun.getType().getName(), gun.damageAdded, gun.damageCaC, gun.zoomModifier == null, gun.scope, gun.cannon, gun.stock);
+		sendInfo("Arme %d de type %s, avec %f dommages ajoutés et %f dégâts de CaC. Zoom modifier: %b. Scope/cannon/stock: %s/%s/%s", gun.getID(), gun.getType().getName(), gun.damageAdded, gun.damageCaC, gun.zoomModifier == null, gun.scope, gun.cannon, gun.stock);
 	}
 
 	@Cmd (args = "PLAYERS")

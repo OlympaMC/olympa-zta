@@ -28,11 +28,11 @@ public class BlockShop extends AbstractSellingShop<ItemStack> {
 	}
 	
 	protected static AbstractArticle<ItemStack> prepare(Material material, double price) {
-		return new Article<>(new ItemStack(material), price);
+		return prepare(new ItemStack(material), price);
 	}
 	
 	protected static AbstractArticle<ItemStack> prepare(ItemStack item, double price) {
-		return new Article<>(item, price);
+		return new Article<>(item, price, item.getMaxStackSize() == 64);
 	}
 	
 }

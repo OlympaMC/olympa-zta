@@ -115,7 +115,7 @@ public class CorporationBlockShop extends BlockShop {
 	
 
 	public CorporationBlockShop() {
-		super("blockshopcorporation", "Corporation", DyeColor.RED, materials);
+		super("blockshopcorporation", "Le Capitole", DyeColor.RED, materials);
 	}
 	
 }

@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.ZTAPermissions;
 
@@ -19,7 +20,7 @@ public class PackCommand extends OlympaCommand {
 		super(plugin, "packs", "Donne des packs au joueur.", ZTAPermissions.PACKS_COMMAND);
 		
 		minArg = 2;
-		usageString = "/packs <player> <pack name>";
+		addArgs(true, "JOUEUR", "PACK");
 	}
 	
 	@Override
@@ -37,6 +38,8 @@ public class PackCommand extends OlympaCommand {
 		try {
 			PackType type = PackType.valueOf(args[1]);
 			player.packs.givePack(type);
+			sendSuccess("Le pack %s a été donné à %s.", type.getName(), player.getName());
+			Prefix.DEFAULT_GOOD.sendMessage(bplayer, "Tu as reçu un §lpack %s§a !", type.getName());
 		}catch (IllegalArgumentException ex) {
 			sendError("Pack %s invalide", args[1]);
 		}

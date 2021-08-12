@@ -70,25 +70,29 @@ public class GunRegistry {
 		int period = 20 * 60 * 5;
 		evictingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
 			nextEviction = System.currentTimeMillis() + period * 50;
-			synchronized (toEvict) {
-				int evictedAmount = 0;
-				for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
-					Integer idToEvict = iterator.next();
-					Gun evicted = registry.remove(idToEvict);
-					if (evicted != null) {
-						try (PreparedStatement pstatement = updateStatement.createStatement()) {
-							evicted.updateDatas(pstatement);
-							updateStatement.executeUpdate(pstatement);
-						}catch (SQLException e) {
-							e.printStackTrace();
-						}
-					}
-					iterator.remove();
-					evictedAmount++;
-				}
-				if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
-			}
+			startEviction();
 		}, 0, period);
+	}
+	
+	public synchronized void startEviction() {
+		synchronized (toEvict) {
+			int evictedAmount = 0;
+			for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
+				Integer idToEvict = iterator.next();
+				Gun evicted = registry.remove(idToEvict);
+				if (evicted != null) {
+					try (PreparedStatement pstatement = updateStatement.createStatement()) {
+						evicted.updateDatas(pstatement);
+						updateStatement.executeUpdate(pstatement);
+					}catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				iterator.remove();
+				evictedAmount++;
+			}
+			if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
+		}
 	}
 	
 	public boolean removeObject(Gun object) {
@@ -148,7 +152,7 @@ public class GunRegistry {
 		if (!im.hasLore()) return null;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		return id != 1 ? registry.get(id) : null;
+		return id != -1 ? registry.get(id) : null;
 	}
 	
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {
@@ -240,7 +244,10 @@ public class GunRegistry {
 		if (items == null) return;
 		synchronized (toEvict) {
 			for (ItemStack item : items) {
-				ifGun(item, gun -> toEvict.add(gun.getID()));
+				ifGun(item, gun -> {
+					toEvict.add(gun.getID());
+					System.out.println("Will evict " + gun.getID());
+				});
 			}
 		}
 	}

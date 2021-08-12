@@ -14,6 +14,11 @@ public class PlayerPacks extends AbstractObservable {
 		return packs.containsKey(type);
 	}
 	
+	public int getPackAmount(PackType type) {
+		Integer amount = packs.get(type);
+		return amount == null ? 0 : amount.intValue();
+	}
+	
 	public boolean removePack(PackType type) {
 		Integer oldAmount = packs.remove(type);
 		if (oldAmount == null) return false;

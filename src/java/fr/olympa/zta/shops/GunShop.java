@@ -17,16 +17,16 @@ import fr.olympa.zta.weapons.guns.GunType;
 public class GunShop extends AbstractSellingShop<ItemStackable> {
 	
 	private static final List<AbstractArticle<ItemStackable>> ARTICLES = Arrays.asList(
-			new Article<>(GunType.M1897, 100, true),
-			new Article<>(GunType.COBRA, 300, true),
-			new Article<>(GunType.KSG, 500, true),
-			new Article<>(GunType.BENELLI, 600, true),
-			new Article<>(GunType.SKORPION, 9000, true),
-			new Article<>(GunType.M16, 1700, true),
-			new Article<>(GunType.SDMR, 3000, true),
-			new Article<>(GunType.DRAGUNOV, 65000, true),
-			new Article<>(Bandage.BANDAGE, 130, true),
-			new Article<>(Brouilleur.BROUILLEUR, 5500, true)
+			new Article<>(GunType.M1897, 100, false),
+			new Article<>(GunType.COBRA, 300, false),
+			new Article<>(GunType.KSG, 500, false),
+			new Article<>(GunType.BENELLI, 600, false),
+			new Article<>(GunType.SKORPION, 9000, false),
+			new Article<>(GunType.M16, 1700, false),
+			new Article<>(GunType.SDMR, 3000, false),
+			new Article<>(GunType.DRAGUNOV, 65000, false),
+			new Article<>(Bandage.BANDAGE, 130, false),
+			new Article<>(Brouilleur.BROUILLEUR, 5500, false)
 			);
 	
 	public GunShop() {

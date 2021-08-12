@@ -71,7 +71,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 			ItemMeta meta = item.getItemMeta();
 			List<String> lore = meta.getLore();
 			if (lore == null) lore = new ArrayList<>();
-			lore.add("");
+			//lore.add("");
 			for (String loreLine : AbstractShop.this.getLore(object)) lore.add(loreLine);
 			lore.add(/*lore.size() - AbstractShop.this.getLore(object).length, */SpigotUtils.getBarsWithLoreLength(ItemUtils.getName(item), lore, OlympaMoney.format(object.getPrice())));
 			meta.setLore(lore);
@@ -180,7 +180,7 @@ public abstract class AbstractShop<T> extends HologramTrait {
 					amount = (int) Math.floor(player.getGameMoney().get() / article.getPrice());
 					if (!player.getGameMoney().withdraw(article.getPrice() * amount)) throw new IllegalStateException();
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu n'avais d'argent que pour acheter %dx ton item.", amount);
-					p.closeInventory();
+					OlympaZTA.getInstance().getTask().runTask(p::closeInventory);
 				}
 			}
 			
