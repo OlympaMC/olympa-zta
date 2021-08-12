@@ -97,7 +97,7 @@ public class Brouilleur implements ItemStackable, Weapon { // Carte Virtuelle Ma
 			}
 			
 			playerZTA.setHidden(System.currentTimeMillis() + HIDDEN_SECONDS * 1000);
-			DynmapLink.setPlayerVisiblity(player, false);
+			DynmapLink.ifEnabled(link -> link.setPlayerVisiblity(player, false));
 			
 			player.getWorld().spawnParticle(Particle.CLOUD, e.getPlayer().getLocation().add(0, 1, 0), 50, 0.2, 0.8, 0.2, 0.01, null, true);
 			player.getWorld().spawnParticle(Particle.SPELL_WITCH, e.getPlayer().getLocation().add(0, 1, 0), 50, 0.2, 0.8, 0.2, 0.01, null, true);

@@ -86,7 +86,7 @@ public class LootChest extends RandomizedInventory {
 	public void unregister(Chest chest) {
 		chest.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
 		chest.update();
-		DynmapLink.hideChest(this);
+		DynmapLink.ifEnabled(link -> link.hideChest(this));
 	}
 
 	public void resetTimer() {
@@ -104,7 +104,7 @@ public class LootChest extends RandomizedInventory {
 
 	public void setLootType(LootChestType type, boolean update) {
 		this.type = type;
-		DynmapLink.showChest(this);
+		DynmapLink.ifEnabled(link -> link.showChest(this));
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
 		if (update) OlympaZTA.getInstance().lootChestsManager.columnLootType.updateAsync(this, type.getName(), null, null);

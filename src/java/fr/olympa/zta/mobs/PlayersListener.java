@@ -221,7 +221,7 @@ public class PlayersListener implements Listener {
 			loaded = OlympaZTA.getInstance().gunRegistry.loadFromItems(e.<OlympaPlayerZTA>getOlympaPlayer().getEnderChestContents());
 			if (loaded != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjet(s) chargé(s) depuis l'enderchest de §6%s§e.", loaded, e.getPlayer().getName());
 			
-			DynmapLink.setPlayerVisiblity(e.getPlayer(), OlympaCore.getInstance().getRegionManager().getMostImportantFlag(e.getPlayer().getLocation(), DynmapHideFlag.class) != null);
+			DynmapLink.ifEnabled(link -> link.setPlayerVisiblity(e.getPlayer(), OlympaCore.getInstance().getRegionManager().getMostImportantFlag(e.getPlayer().getLocation(), DynmapHideFlag.class) != null));
 		}catch (Exception ex) {
 			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement de l'enderchest de %s.", e.getPlayer().getName());
 			ex.printStackTrace();

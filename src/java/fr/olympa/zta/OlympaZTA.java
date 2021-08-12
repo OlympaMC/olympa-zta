@@ -241,23 +241,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				throw new RuntimeException("Registry failed to load", ex);
 			}
 
-			try {
-				Location first = getConfig().getLocation("scoreHolograms.first");
-				Location second = getConfig().getLocation("scoreHolograms.second");
-
-				rankingKillPlayer = new KillPlayerRanking(first);
-				rankingKillZombie = new KillZombieRanking(first);
-				new HologramCycler(this, Arrays.asList(rankingKillPlayer.getHologram(), rankingKillZombie.getHologram()), 200).start();
-
-				rankingLootChest = new LootChestRanking(second);
-				rankingMoney = new MoneyRanking(second);
-				rankingMoneyClan = new ClanMoneyRanking(second);
-				new HologramCycler(this, Arrays.asList(rankingLootChest.getHologram(), rankingMoney.getHologram(), rankingMoneyClan.getHologram()), 150).start();
-			}catch (Exception e) {
-				e.printStackTrace();
-				sendMessage("§cUne erreur est survenue lors du chargment des tableaux de scores.");
-			}
-
 			GunType.values();
 			Knife.values();
 			Accessory.values();
@@ -478,6 +461,23 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				Bukkit.getOnlinePlayers().forEach(x -> x.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§7La nuit tombe... §oprenez garde !")));
 			});
 
+			try {
+				Location first = getConfig().getLocation("scoreHolograms.first");
+				Location second = getConfig().getLocation("scoreHolograms.second");
+				
+				rankingKillPlayer = new KillPlayerRanking(first);
+				rankingKillZombie = new KillZombieRanking(first);
+				new HologramCycler(this, Arrays.asList(rankingKillPlayer.getHologram(), rankingKillZombie.getHologram()), 200).start();
+				
+				rankingLootChest = new LootChestRanking(second);
+				rankingMoney = new MoneyRanking(second);
+				rankingMoneyClan = new ClanMoneyRanking(second);
+				new HologramCycler(this, Arrays.asList(rankingLootChest.getHologram(), rankingMoney.getHologram(), rankingMoneyClan.getHologram()), 150).start();
+			}catch (Exception e) {
+				e.printStackTrace();
+				sendMessage("§cUne erreur est survenue lors du chargment des tableaux de scores.");
+			}
+			
 			checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 			checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
 			checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
@@ -496,7 +496,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_OTHER.setMinGroup(OlympaGroup.MOD);
 			OlympaAPIPermissionsSpigot.INVSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
 			OlympaAPIPermissionsSpigot.ECSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
-		}catch (Exception ex) {
+		}catch (Throwable ex) {
 			ex.printStackTrace();
 			sendMessage("§4Une erreur est survenue lors du chargement du plugin. Le serveur ne peut être lancé sans risque.");
 			Bukkit.shutdown();

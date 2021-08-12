@@ -173,13 +173,15 @@ public class Scan { // last working scan : https://gitlab.com/olympa/olympazta/-
 						}
 					}
 					chunkProcessed++;
-					markers.add(DynmapLink.showDebug(id, world, xChunk << 4, zChunk << 4, (xChunk << 4) + 15, (zChunk << 4) + 15, Color.AQUA.asRGB()));
+					if (DynmapLink.isEnabled()) {
+						markers.add(DynmapLink.getInstance().showDebug(id, world, xChunk << 4, zChunk << 4, (xChunk << 4) + 15, (zChunk << 4) + 15, Color.AQUA.asRGB()));
+					}
 				}
 			}
 			threads.remove(id);
 			Prefix.INFO.sendMessage(sender, "Thread #%d terminé (restants : %d).", id, threads.size());
 			markers.forEach(AreaMarker::deleteMarker);
-			DynmapLink.showDebug(id, world, minChunkX * 16, minChunkZ * 16, maxChunkX * 16, maxChunkZ * 16, Color.LIME.asRGB());
+			DynmapLink.ifEnabled(link -> link.showDebug(id, world, minChunkX * 16, minChunkZ * 16, maxChunkX * 16, maxChunkZ * 16, Color.LIME.asRGB()));
 		}, "Scan #" + id);
 		thread.start();
 		threads.put(id, thread);

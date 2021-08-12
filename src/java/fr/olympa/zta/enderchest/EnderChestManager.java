@@ -66,7 +66,7 @@ public class EnderChestManager implements Listener {
 	
 	public void addEnderChest(Location location, boolean database) {
 		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, true, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§b§l", "§3§l"), 2, 3 * 10)));
-		DynmapLink.showEnderChest(location);
+		DynmapLink.ifEnabled(link -> link.showEnderChest(location));
 		if (database) {
 			try (PreparedStatement statement = insertStatement.createStatement()) {
 				statement.setString(1, location.getWorld().getName());
@@ -84,7 +84,7 @@ public class EnderChestManager implements Listener {
 		Hologram hologram = enderchests.remove(location);
 		if (hologram == null) return;
 		hologram.remove();
-		DynmapLink.hideEnderChest(location);
+		DynmapLink.ifEnabled(link -> link.hideEnderChest(location));
 		try (PreparedStatement statement = deleteStatement.createStatement()) {
 			statement.setString(1, location.getWorld().getName());
 			statement.setInt(2, location.getBlockX());

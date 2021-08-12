@@ -65,7 +65,7 @@ public class ClanPlotsManager implements Listener {
 				resultSet -> {
 					try {
 						ClanPlot plot = new ClanPlot(this, resultSet.getInt("id"), SpigotUtils.deserialize(resultSet.getBytes("region")), resultSet.getInt("price"), SpigotUtils.convertStringToLocation(resultSet.getString("sign")), SpigotUtils.convertStringToLocation(resultSet.getString("spawn")));
-						DynmapLink.showClanPlot(plot);
+						DynmapLink.ifEnabled(link -> link.showClanPlot(plot));
 						int clanID = resultSet.getInt("clan");
 						if (clanID != -1) plot.setClan(clans.getClan(clanID), false);
 						plot.setNextPayment(resultSet.getLong("next_payment"), false, true);
@@ -146,7 +146,7 @@ public class ClanPlotsManager implements Listener {
 		resultSet.next();
 
 		ClanPlot plot = new ClanPlot(this, resultSet.getInt(1), region, price, signLocation, spawn);
-		DynmapLink.showClanPlot(plot);
+		DynmapLink.ifEnabled(link -> link.showClanPlot(plot));
 		plot.updateSign();
 		plots.put(plot.getID(), plot);
 		resultSet.close();
