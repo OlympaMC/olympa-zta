@@ -35,7 +35,7 @@ public class WeaponsCommand extends ComplexCommand {
 	private DateFormat evictionFormat = new SimpleDateFormat("HH:mm:ss");
 
 	public WeaponsCommand() {
-		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes.", ZTAPermissions.WEAPONS_COMMAND);
+		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes.", ZTAPermissions.WEAPONS_MANAGE_COMMAND);
 		addArgumentParser("GUN", new ArgumentParser<>(
 				(sender, arg) -> Collections.emptyList(),
 				x -> OlympaZTA.getInstance().gunRegistry.getGun(Integer.parseInt(x)),
