@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -38,11 +40,13 @@ import org.mcmonkey.sentinel.SentinelPlugin;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
+import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.spigot.CombatManager;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
+import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.command.essentials.BackCommand;
 import fr.olympa.api.spigot.command.essentials.FeedCommand;
 import fr.olympa.api.spigot.command.essentials.HealCommand;
@@ -73,6 +77,7 @@ import fr.olympa.api.spigot.utils.CustomDayDuration;
 import fr.olympa.api.spigot.utils.KillManager;
 import fr.olympa.api.spigot.utils.SitManager;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.bank.BankTrait;
@@ -268,6 +273,18 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			pluginManager.registerEvents(hub, this);
 			pluginManager.registerEvents(teleportationManager, this);
 			pluginManager.registerEvents(new TpaHandler(this, ZTAPermissions.TPA_COMMANDS, teleportationManager), this);
+			BiFunction<CommandSender, OlympaPlayer, Boolean> canExecuteTpaCmds = (sender, olympaPlayer) -> {
+				return !combat.isInCombat((Player) sender);
+			};
+			Consumer<CommandSender> cantMsg = sender -> {
+				Prefix.DEFAULT_BAD.sendMessage(sender, "Tu ne peux pas utiliser la téléportation.");
+			};
+			OlympaCommand tpCmd = OlympaCommand.getCmd("tpahere");
+			tpCmd.addCanExecute(canExecuteTpaCmds, cantMsg);
+			tpCmd = OlympaCommand.getCmd("tpa");
+			tpCmd.addCanExecute(canExecuteTpaCmds, cantMsg);
+			tpCmd = OlympaCommand.getCmd("tpayes");
+			tpCmd.addCanExecute(canExecuteTpaCmds, cantMsg);
 			pluginManager.registerEvents(training = new TrainingManager(getConfig().getConfigurationSection("training")), this);
 			pluginManager.registerEvents(combat = new CombatManager(this, 15) {
 				@Override
