@@ -276,12 +276,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				}
 			}, this);
 			pluginManager.registerEvents(crates = new CratesManager(), this);
-			pluginManager.registerEvents(new SitManager(this) {
+			/*pluginManager.registerEvents(new SitManager(this) {
 				@Override
 				public boolean canSit(Player p) {
 					return super.canSit(p) && !combat.isInCombat(p);
 				}
-			}, this);
+			}, this);*/ 
 			if (beautyQuestsLink != null)
 				pluginManager.registerEvents(beautyQuestsLink, this);
 
