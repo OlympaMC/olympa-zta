@@ -115,7 +115,7 @@ public class ClanPlotsCommand extends ComplexCommand {
 	public void emptyChests(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		if (cmd.getArgumentsLength() == 1 || !"confirm".equals(cmd.getArgument(1))) {
-			sendSuccess("§eÊtes-vous sûr de vouloir vider les coffres de la parcelle #%d ? Utilisez /clanplots emptyChests %d confirm.", plot.getID(), plot.getID());
+			sendSuccess("§eÊtes-vous sûr de vouloir vider les coffres de la parcelle #%d ? Utilisez /clanplots emptyChests %d confirm. CETTE ACTION EST IRREVERSIBLE.", plot.getID(), plot.getID());
 		}else {
 			emptyChests(plot);
 		}
@@ -123,7 +123,11 @@ public class ClanPlotsCommand extends ComplexCommand {
 	
 	@Cmd (permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
 	public void emptyAllChests(CommandContext cmd) {
-		manager.getPlots().values().forEach(this::emptyChests);
+		if (cmd.getArgumentsLength() == 0 || !"confirm".equals(cmd.getArgument(0))) {
+			sendSuccess("§eÊtes-vous sûr de vouloir vider les coffres de toutes les parcelles ? Utilisez /clanplots emptyAllChests confirm. CETTE ACTION EST IRREVERSIBLE.");
+		}else {
+			manager.getPlots().values().forEach(this::emptyChests);
+		}
 	}
 	
 	private void emptyChests(ClanPlot plot) {
@@ -191,6 +195,17 @@ public class ClanPlotsCommand extends ComplexCommand {
 	public void setPrice(CommandContext cmd) {
 		ClanPlot plot = cmd.getArgument(0);
 		plot.setPrice(cmd.getArgument(1), true);
+		sendSuccess("Modification du prix de la parcelle %d effectuée.", plot.getID());
+	}
+	
+	@Cmd (player = true, args = { "PLOT" }, min = 1, syntax = "<plot>", permissionName = "CLAN_PLOTS_MANAGE_COMMAND")
+	public void setSpawnpoint(CommandContext cmd) {
+		ClanPlot plot = cmd.getArgument(0);
+		Player p = player;
+		new WaitClick(p, ItemUtils.item(Material.DIAMOND, "§bValider le point de spawn"), () -> {
+			plot.setSpawn(p.getLocation(), true);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as modifié le spawn de la parcelle %d.", plot.getID());
+		}).enterOrLeave();
 		sendSuccess("Modification du prix de la parcelle %d effectuée.", plot.getID());
 	}
 	

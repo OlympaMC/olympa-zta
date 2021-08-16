@@ -1,6 +1,7 @@
 package fr.olympa.zta.utils;
 
 import org.bukkit.entity.Player;
+
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.spigot.utils.TeleportationManager;
@@ -21,7 +22,7 @@ public class TeleportationManagerZTA extends TeleportationManager {
 	@Override
 	public boolean canTeleport(Player p) {
 		if (OlympaZTA.getInstance().combat.isInCombat(p)) {
-			Prefix.BAD.sendMessage(p, "Tu ne peux pas te téléporter quand tu es en combat.");
+			Prefix.BAD.sendMessage(p, "La téléportation est impossible en combat.");
 			return false;
 		}
 		return super.canTeleport(p);

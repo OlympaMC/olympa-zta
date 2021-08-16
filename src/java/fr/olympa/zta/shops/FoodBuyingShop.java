@@ -21,9 +21,9 @@ import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 public class FoodBuyingShop extends AbstractBuyingShop<Food> {
 	
 	private static boolean registered = false;
-	private static final FluctuatingEconomy BREAD_ECO = new FixedFluctuatingEconomy("bread_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
-	private static final FluctuatingEconomy CARROT_ECO = new FixedFluctuatingEconomy("carrot_sell", 3.5, 1, 30, TimeUnit.MINUTES, 0.03, 0.2);
-	private static final FluctuatingEconomy POTATO_ECO = new FixedFluctuatingEconomy("potato_sell", 5, 1, 30, TimeUnit.MINUTES, 0.04, 0.2);
+	private static final FluctuatingEconomy BREAD_ECO = new FixedFluctuatingEconomy("bread_sell", 1.5, 0.1, 40, TimeUnit.MINUTES, 0.03, 0.1);
+	private static final FluctuatingEconomy CARROT_ECO = new FixedFluctuatingEconomy("carrot_sell", 1.5, 0.1, 40, TimeUnit.MINUTES, 0.03, 0.1);
+	private static final FluctuatingEconomy POTATO_ECO = new FixedFluctuatingEconomy("potato_sell", 1.5, 0.1, 40, TimeUnit.MINUTES, 0.03, 0.1);
 	private static final FluctuatingEconomy COD_ECO = new FixedFluctuatingEconomy("cod_sell", 4, 1, 30, TimeUnit.MINUTES, 0.06, 0.2);
 	private static final FluctuatingEconomy SALMON_ECO = new FixedFluctuatingEconomy("salmon_sell", 4.5, 1, 30, TimeUnit.MINUTES, 0.06, 0.2);
 	private static final List<AbstractArticle<Food>> ARTICLES =

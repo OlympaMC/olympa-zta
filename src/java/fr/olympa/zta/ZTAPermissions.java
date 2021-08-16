@@ -5,8 +5,7 @@ import fr.olympa.api.common.permission.OlympaSpigotPermission;
 
 public class ZTAPermissions{
 
-	public static final OlympaSpigotPermission GROUP_SURVIVANT = new OlympaSpigotPermission(OlympaGroup.RESP,
-			new OlympaGroup[] { OlympaGroup.ZTA_SURVIVANT, OlympaGroup.ZTA_RODEUR, OlympaGroup.ZTA_SAUVEUR, OlympaGroup.ZTA_HEROS, OlympaGroup.ZTA_LEGENDE });
+	public static final OlympaSpigotPermission GROUP_SURVIVANT = new OlympaSpigotPermission(OlympaGroup.RESP, new OlympaGroup[] { OlympaGroup.ZTA_SURVIVANT, OlympaGroup.ZTA_RODEUR, OlympaGroup.ZTA_SAUVEUR, OlympaGroup.ZTA_HEROS, OlympaGroup.ZTA_LEGENDE });
 	public static final OlympaSpigotPermission GROUP_RODEUR = new OlympaSpigotPermission(OlympaGroup.RESP, new OlympaGroup[] { OlympaGroup.ZTA_RODEUR, OlympaGroup.ZTA_SAUVEUR, OlympaGroup.ZTA_HEROS, OlympaGroup.ZTA_LEGENDE });
 	public static final OlympaSpigotPermission GROUP_SAUVEUR = new OlympaSpigotPermission(OlympaGroup.RESP, new OlympaGroup[] { OlympaGroup.ZTA_SAUVEUR, OlympaGroup.ZTA_HEROS, OlympaGroup.ZTA_LEGENDE });
 	public static final OlympaSpigotPermission GROUP_HEROS = new OlympaSpigotPermission(OlympaGroup.RESP, new OlympaGroup[] { OlympaGroup.ZTA_HEROS, OlympaGroup.ZTA_LEGENDE });

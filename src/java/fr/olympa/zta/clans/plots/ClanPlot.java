@@ -34,6 +34,7 @@ import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.ClanZTA;
 import fr.olympa.zta.glass.GlassSmashFlag;
+import fr.olympa.zta.weapons.guns.GunFlag;
 
 public class ClanPlot {
 
@@ -50,7 +51,7 @@ public class ClanPlot {
 	private final int id;
 	private final TrackedRegion region;
 	private final Location sign;
-	private final Location spawn;
+	private Location spawn;
 	private int price;
 	private String priceFormatted;
 
@@ -68,7 +69,11 @@ public class ClanPlot {
 		this.spawn = spawn;
 		setPrice(price, false);
 		
-		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, new ClanPlotFlag(), new GlassSmashFlag(true), new DamageFlag(true, DamageCause.ENTITY_ATTACK, DamageCause.PROJECTILE));
+		this.region = OlympaCore.getInstance().getRegionManager().registerRegion(region, "clanPlot" + id, EventPriority.HIGH, 
+				new ClanPlotFlag(),
+				new GlassSmashFlag(true),
+				new DamageFlag(true, DamageCause.ENTITY_ATTACK, DamageCause.PROJECTILE),
+				new GunFlag(true, false));
 	}
 
 	public ClanZTA getClan() {
@@ -129,6 +134,13 @@ public class ClanPlot {
 		return spawn;
 	}
 
+	public void setSpawn(Location spawn, boolean update) {
+		this.spawn = spawn;
+		if (update) {
+			manager.columnSpawn.updateAsync(this, SpigotUtils.convertLocationToString(spawn), null, null);
+		}
+	}
+	
 	public long getNextPayment() {
 		return nextPayment;
 	}
