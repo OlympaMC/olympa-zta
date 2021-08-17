@@ -75,7 +75,6 @@ import fr.olympa.api.spigot.scoreboard.tab.TabManager;
 import fr.olympa.api.spigot.trades.TradesManager;
 import fr.olympa.api.spigot.utils.CustomDayDuration;
 import fr.olympa.api.spigot.utils.KillManager;
-import fr.olympa.api.spigot.utils.SitManager;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
@@ -298,7 +297,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				public boolean canSit(Player p) {
 					return super.canSit(p) && !combat.isInCombat(p);
 				}
-			}, this);*/ 
+			}, this);*/
 			if (beautyQuestsLink != null)
 				pluginManager.registerEvents(beautyQuestsLink, this);
 
@@ -481,11 +480,11 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			try {
 				Location first = getConfig().getLocation("scoreHolograms.first");
 				Location second = getConfig().getLocation("scoreHolograms.second");
-				
+
 				rankingKillPlayer = new KillPlayerRanking(first);
 				rankingKillZombie = new KillZombieRanking(first);
 				new HologramCycler(this, Arrays.asList(rankingKillPlayer.getHologram(), rankingKillZombie.getHologram()), 200).start();
-				
+
 				rankingLootChest = new LootChestRanking(second);
 				rankingMoney = new MoneyRanking(second);
 				rankingMoneyClan = new ClanMoneyRanking(second);
@@ -494,7 +493,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 				e.printStackTrace();
 				sendMessage("§cUne erreur est survenue lors du chargment des tableaux de scores.");
 			}
-			
+
 			checkForTrait(BankTrait.class, "bank", getConfig().getIntegerList("bank"));
 			checkForTrait(AuctionsTrait.class, "auctions", getConfig().getIntegerList("auctions"));
 			checkForTrait(CivilBlockShop.class, "blockshopcivil", getConfig().getIntegerList("blockShopCivil"));
@@ -536,7 +535,8 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			else if (!npc.hasTrait(trait))
 				npc.addTrait(trait);
 		});
-		training.hashCode();
+		if (training != null)
+			training.hashCode();
 	}
 
 	@EventHandler
