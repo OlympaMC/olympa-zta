@@ -272,13 +272,13 @@ public class ClanPlot {
 		
 		@Override
 		protected void handleOtherBlock(PlayerInteractEvent event) {
-			handleCancellable(event, null, clan != null && OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
+			handleCancellable(event, event.getPlayer(), clan != null && OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan);
 		}
 		
 		@Override
 		protected void handleInventoryBlock(PlayerInteractEvent event) {
 			if (clan == null || (OlympaPlayerZTA.get(event.getPlayer()).getClan() != clan)) {
-				handleCancellable(event, null, true);
+				handleCancellable(event, event.getPlayer(), true);
 				return;
 			}
 			if (CONTAINER_MATERIALS_ALLOWED.contains(event.getClickedBlock().getType())) {
@@ -291,8 +291,8 @@ public class ClanPlot {
 						ex.printStackTrace();
 					}
 				});
-				handleCancellable(event, null, false);
-			}else handleCancellable(event, null, true);
+				handleCancellable(event, event.getPlayer(), false);
+			}else handleCancellable(event, event.getPlayer(), true);
 		}
 		
 	}

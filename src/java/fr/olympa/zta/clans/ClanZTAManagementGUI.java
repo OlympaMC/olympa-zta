@@ -9,6 +9,7 @@ import fr.olympa.api.spigot.clans.ClanPlayerInterface;
 import fr.olympa.api.spigot.clans.ClansManager;
 import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
 import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -16,6 +17,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
 import fr.olympa.zta.clans.plots.ClanPlot;
 import fr.olympa.zta.primes.PrimesGUI;
+import fr.skytasul.quests.gui.misc.ConfirmGUI;
 
 public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerDataZTA> {
 
@@ -40,6 +42,8 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 			plotLore = new String[] { "§8> §oLoyer : §l" + plot.getPriceFormatted(), "§8> §oDate d'expiration : §l" + plot.getExpirationDate(), "", "§e§lClique pour t'y téléporter" };
 		}
 		inv.setItem(1, ItemUtils.item(Material.STONE, "§6Parcelle du clan", plotLore));
+		if (isChief && plot != null)
+			inv.setItem(2, ItemUtils.item(Material.ACACIA_BUTTON, "§cRésilier sa parcelle", SpigotUtils.wrapAndAlign("Libère la parcelle précédemment louée pour un nouveau locataire. Les coffres ne sont pas vidés et l'argent donné n'est pas remboursé.", 35).toArray(String[]::new)));
 		
 		int maxSize = ((ClansManagerZTA) manager).getMaxSize();
 		if (clan.getMaxSize() < maxSize) {
@@ -52,6 +56,7 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+		plot = clan.getCachedPlot();
 		if (slot == 1) {
 			if (plot != null) {
 				OlympaPlayerZTA oplayer = (OlympaPlayerZTA) player;
@@ -64,6 +69,13 @@ public class ClanZTAManagementGUI extends ClanManagementGUI<ClanZTA, ClanPlayerD
 				}
 			}
 			return true;
+		}else if (slot == 2 && isChief) {
+			new ConfirmGUI(() -> {
+				plot.setClan(null, true);
+				clan.broadcast("Le chef du clan a résilié votre parcelle.");
+				refreshInventory();
+				create(p);
+			}, () -> create(p), "§7Veux-tu résilier ta parcelle ?", "§cCette action sera définitive.");
 		}
 		return super.onClick(p, current, slot, click);
 	}

@@ -2,6 +2,9 @@ package fr.olympa.zta.weapons.skins;
 
 import java.util.Arrays;
 
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.zta.ZTAPermissions;
+
 public enum Skin {
 	
 	NORMAL(
@@ -29,6 +32,11 @@ public enum Skin {
 	
 	public static Skin getFromId(int id) {
 		return Arrays.stream(values()).filter(x -> x.getId() == id).findAny().orElse(NORMAL);
+	}
+	
+	public static Skin getAvailable(OlympaPlayer player) {
+		if (ZTAPermissions.GROUP_SURVIVANT.hasPermission(player)) return GOLD;
+		return NORMAL;
 	}
 	
 }

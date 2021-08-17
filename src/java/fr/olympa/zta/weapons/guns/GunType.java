@@ -721,6 +721,17 @@ public enum GunType implements ItemStackable {
 				"§7§o   (clic droit)");
 	}
 	
+	/*
+	@Override
+	public ItemStack getSkinItem(Skin skin) {
+		return ItemUtils.customModelData(demoItem, skin.getId() * 2 + 1);
+	}
+	
+	@Override
+	public void setSkin(Skin skin, ItemStack item) {
+		throw new UnsupportedOperationException();
+	}*/
+	
 	public static ChatColor getTierColor(int tier) {
 		if (tier == 1) return ChatColor.GREEN;
 		if (tier == 2) return ChatColor.AQUA;

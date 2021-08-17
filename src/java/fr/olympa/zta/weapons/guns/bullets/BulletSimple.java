@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.LlamaSpit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -67,6 +68,7 @@ public class BulletSimple extends Bullet{
 		}else if (e.getHitBlock() != null) {
 			if (!OlympaZTA.getInstance().glass.hit(e.getHitBlock())) e.getEntity().getWorld().spawnParticle(Particle.BLOCK_CRACK, e.getHitBlock().getLocation().add(0, 0.5, 0), 3, e.getHitBlock().getBlockData());
 		}
+		if (e.getEntity() instanceof LlamaSpit) e.getEntity().remove(); // llamaspit transperce les entités
 	}
 	
 	public boolean isHeadShot(Projectile proj, LivingEntity entity) {
