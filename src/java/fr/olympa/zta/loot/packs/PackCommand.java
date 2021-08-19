@@ -18,7 +18,6 @@ public class PackCommand extends OlympaCommand {
 	
 	public PackCommand(Plugin plugin) {
 		super(plugin, "packs", "Donne des packs au joueur.", ZTAPermissions.PACKS_COMMAND);
-		
 		minArg = 2;
 		addArgs(true, "JOUEUR", "PACK");
 	}
