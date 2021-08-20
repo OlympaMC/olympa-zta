@@ -44,6 +44,7 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 public class LootChestsManager implements Listener {
 
 	public static final NamespacedKey LOOTCHEST = new NamespacedKey(OlympaZTA.getInstance(), "loot_chest_id");
+	protected static Random random = new Random();
 	
 	private SQLTable<LootChest> table;
 	
@@ -55,7 +56,6 @@ public class LootChestsManager implements Listener {
 	public SQLColumn<LootChest> columnLootType = new SQLColumn<LootChest>("loot_type", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable();
 
 	public final Map<Integer, LootChest> chests = new HashMap<>();
-	private Random random = new Random();
 	
 	public List<Location> tmpAllowed = new ArrayList<>();
 

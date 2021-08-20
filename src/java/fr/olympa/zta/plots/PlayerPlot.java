@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -162,7 +163,7 @@ public class PlayerPlot {
 
 			if (level == 1) {
 				Schematic schematic = OlympaZTA.getInstance().plotsManager.getFirstBuildSchematic();
-				Random random = new Random();
+				Random random = ThreadLocalRandom.current();
 				int x = random.nextInt(sizePerLevel[level - 1] - schematic.width);
 				int z = random.nextInt(sizePerLevel[level - 1] - schematic.length);
 				schematic.paste(loc.toLocation().add(min + x, 1, min + z), true);

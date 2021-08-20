@@ -1,7 +1,5 @@
 package fr.olympa.zta.loot.chests;
 
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -35,8 +33,6 @@ public class LootChest extends RandomizedInventory {
 	private int waitMin = 6 * 60000, waitMax = 10 * 60000; // 60'000ticks = 1min
 	private long nextOpen = 0;
 
-	private Random random = new Random();
-
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
 
@@ -54,7 +50,7 @@ public class LootChest extends RandomizedInventory {
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
 			OlympaPlayerZTA.get(p).openedChests.increment();
-			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
+			nextOpen = time + Utils.getRandomAmount(LootChestsManager.random, waitMin, waitMax);
 			fillInventory(p);
 		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
 		

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -31,7 +31,6 @@ import fr.olympa.zta.weapons.guns.GunType;
 public abstract class RandomizedInventory extends OlympaGUI {
 
 	private Map<Integer, Loot> currentLoots = new HashMap<>();
-	private Random random = new Random();
 	
 	public RandomizedInventory(String name, InventoryType type) {
 		super(name, type);
@@ -44,6 +43,7 @@ public abstract class RandomizedInventory extends OlympaGUI {
 	protected void fillInventory(@Nullable Player player) {
 		clearInventory();
 		LootContext context = new LootContext(player);
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (LootCreator creator : getLootPicker().pickMulti(random, context)) {
 			int slot;
 			do {
