@@ -49,7 +49,7 @@ public class MobsCommand extends ComplexCommand {
 	
 	@Cmd (player = true)
 	public void addScoreboardTracker(CommandContext cmd) {
-		OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(getOlympaPlayer()).addLine(mobTracker);
+		OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(getOlympaPlayer()).addLines(mobTracker);
 	}
 
 	@Cmd (player = true, args = { "MOBTYPE", "INTEGER" }, min = 0, syntax = "[type] [quantité]")

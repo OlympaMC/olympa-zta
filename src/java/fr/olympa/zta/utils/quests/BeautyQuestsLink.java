@@ -12,8 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.lines.TimerLine;
 import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
@@ -115,7 +115,7 @@ public class BeautyQuestsLink implements Listener {
 			Scoreboard<OlympaPlayerZTA> scoreboard = OlympaZTA.getInstance().scoreboards.getPlayerScoreboard(player);
 			if (scoreboard == null) return;
 			
-			scoreboard.addLine(line);
+			scoreboard.addLines(line);
 		}else {
 			if (!scoreboards.containsKey(p)) return;
 			scoreboards.remove(p);

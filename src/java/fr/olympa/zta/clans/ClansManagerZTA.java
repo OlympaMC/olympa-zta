@@ -124,9 +124,9 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	public void addLines(Scoreboard<OlympaPlayerZTA> scoreboard) {
-		scoreboard.addLine(FixedLine.EMPTY_LINE);
-		scoreboard.addLine(header);
-		scoreboard.addLine(players);
+		scoreboard.addLines(FixedLine.EMPTY_LINE);
+		scoreboard.addLines(header);
+		scoreboard.addLines(players);
 	}
 	
 	public void updateBoardParameter(OlympaPlayerZTA player, ClanBoardSetting setting) {
