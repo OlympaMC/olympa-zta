@@ -104,7 +104,7 @@ public class ParachuteModule extends ComplexCommand implements ModuleApi<OlympaZ
 	public void onEntityDeath(EntityDeathEvent e) {
 		if (e.getEntityType() != EntityType.CHICKEN) return;
 		for (Parachuting para : players.values()) {
-			if (para.chicken.getEntityId() == e.getEntity().getEntityId()) {
+			if (para.chicken != null && para.chicken.getEntityId() == e.getEntity().getEntityId()) {
 				para.forceDisable = true;
 				para.disable();
 				para.p.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cTon parachute s'est fait toucher !"));

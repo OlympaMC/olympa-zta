@@ -41,6 +41,7 @@ import fr.olympa.api.spigot.region.tracking.flags.ItemPickupFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.region.tracking.flags.PlayerBlocksFlag;
+import fr.olympa.api.spigot.region.tracking.flags.RedstoneFlag;
 import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
@@ -56,7 +57,7 @@ public class PlayerPlotsManager {
 	private final OlympaStatement setPlotLevel = new OlympaStatement("UPDATE " + tableName + " SET `level` = ? WHERE `id` = ?");
 	private final OlympaStatement setPlotChests = new OlympaStatement("UPDATE " + tableName + " SET `chests` = ? WHERE `id` = ?");
 	private final OlympaStatement getPlotPlayers = new OlympaStatement("SELECT `player_id` FROM " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " WHERE `plot` = ?");
-	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " SET `plot` = NULL WHERE `player_id` = ?");
+	private final OlympaStatement removeOfflinePlayerPlot = new OlympaStatement("UPDATE " + AccountProviderAPI.getter().getPluginPlayerTable().getName() + " SET `plot` = '-1' WHERE `player_id` = ?");
 	private final OlympaStatement loadPlot = new OlympaStatement("SELECT `owner`, `level`, `chests` FROM " + tableName + " WHERE `id` = ?");
 
 	protected Map<OlympaPlayerZTA, ObservableList<PlayerPlot>> invitations = new HashMap<>();
@@ -89,7 +90,13 @@ public class PlayerPlotsManager {
 		worldCrea.setFullTime(10000);
 		worldCrea.setDifficulty(Difficulty.PEACEFUL);
 
-		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(new ItemDurabilityFlag(true), new DamageFlag(true), new GameModeFlag(GameMode.SURVIVAL), new PhysicsFlag(false), new PlayerBlocksFlag(true) {
+		OlympaCore.getInstance().getRegionManager().getWorldRegion(worldCrea).registerFlags(
+				new ItemDurabilityFlag(true),
+				new DamageFlag(true),
+				new GameModeFlag(GameMode.SURVIVAL),
+				new PhysicsFlag(false),
+				new RedstoneFlag(true),
+				new PlayerBlocksFlag(true) {
 			@Override
 			public <T extends Event & Cancellable> void blockEvent(T event, Player p, Block block) {
 				event.setCancelled(PlayerPlotsManager.this.blockEvent(p, event, block));

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -57,6 +58,7 @@ public class MobsListener implements Listener {
 			.build(0, 2, 20.0);
 
 	public static boolean removeEntities = false;
+	public static boolean removeChickens = true;
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
@@ -86,13 +88,15 @@ public class MobsListener implements Listener {
 	
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent e) {
-		if (!removeEntities) return;
+		if (!removeEntities && !removeChickens) return;
 		int removed = 0;
 		for (Entity entity : e.getChunk().getEntities()) {
-			if (entity.getType() == EntityType.ZOMBIE) {
+			if (entity.getType() == EntityType.CHICKEN) {
+				entity.remove();
+			}else if (removeEntities && entity.getType() == EntityType.ZOMBIE) {
 				entity.remove();
 				removed++;
-			}else if (entity instanceof Item item) {
+			}else if (removeEntities && entity instanceof Item item) {
 				if (item.getPickupDelay() < 100) {
 					item.remove();
 					removed++;
@@ -130,6 +134,17 @@ public class MobsListener implements Listener {
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
 		OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> OlympaZTA.getInstance().gunRegistry.itemRemove(e.getEntity().getItemStack()));
+	}
+	
+	@EventHandler
+	public void onMobSpawn(CreatureSpawnEvent e) {
+		switch (e.getSpawnReason()) {
+		case BUILD_IRONGOLEM, BUILD_SNOWMAN, BUILD_WITHER, DISPENSE_EGG, EGG, ENDER_PEARL, NETHER_PORTAL, SPAWNER_EGG:
+			e.setCancelled(true);
+			break;
+		default:
+			break;
+		}
 	}
 	
 	class ZombieLootContext extends LootContext {

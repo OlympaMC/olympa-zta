@@ -28,10 +28,10 @@ public class BankExchangeGUI extends OlympaGUI {
 		this.player = player;
 		this.player.getGameMoney().observe("bank_gui", this::updateMoney);
 
-		ItemUtils.skull(item -> {
-			inv.setItem(0, item);
-			updateMoney();
-		}, "§e§lMa monnaie", player.getName());
+		inv.setItem(0, ItemUtils.item(Material.PLAYER_HEAD, "§e§lMa monnaie"));
+		updateMoney();
+		ItemStack moneyItem = inv.getItem(0);
+		ItemUtils.skull(moneyItem::setItemMeta, moneyItem, player.getName());
 
 		inv.setItem(2, add);
 		inv.setItem(4, remove);
