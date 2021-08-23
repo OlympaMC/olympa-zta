@@ -8,7 +8,7 @@ public abstract class AmbianceScenario {
 	protected float volume;
 	protected float pitch;
 	
-	public AmbianceScenario(float volume, float pitch) {
+	protected AmbianceScenario(float volume, float pitch) {
 		this.volume = volume;
 		this.pitch = pitch;
 	}

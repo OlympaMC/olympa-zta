@@ -37,7 +37,7 @@ import fr.skytasul.quests.utils.Utils;
 public class BeautyQuestsLink implements Listener {
 	
 	private Map<Player, Integer> scoreboards = new HashMap<>();
-	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<Scoreboard<OlympaPlayerZTA>>(scoreboard -> {
+	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<>(scoreboard -> {
 		Player player = (Player) scoreboard.getOlympaPlayer().getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		List<Quest> started = QuestsAPI.getQuestsStarteds(acc, true);

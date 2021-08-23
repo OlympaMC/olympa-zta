@@ -100,10 +100,10 @@ public class MobsListener implements Listener {
 				if (item.getPickupDelay() < 100) {
 					item.remove();
 					removed++;
-				}else System.out.println("ITEM NOT PICKUP");
+				}else System.err.println("ITEM NOT PICKUP");
 			}
 		}
-		if (removed > 0) System.out.println("Suppression de " + removed + " entités");
+		if (removed > 0) OlympaZTA.getInstance().sendMessage("§cSuppression de %d entités illégales.", removed);
 	}
 	
 	@EventHandler (priority = EventPriority.HIGHEST)
