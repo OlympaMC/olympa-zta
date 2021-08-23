@@ -159,8 +159,10 @@ public class ClanPlot {
 				paymentExpiration = new BukkitRunnable() {
 					@Override
 					public void run() {
-						clan.broadcast("Vous n'avez pas renouvelé le paiement, votre parcelle est donc arrivée à expiration.");
-						clan.setResetExpirationTime();
+						if (clan != null) {
+							clan.broadcast("Vous n'avez pas renouvelé le paiement, votre parcelle est donc arrivée à expiration.");
+							clan.setResetExpirationTime();
+						}else OlympaZTA.getInstance().sendMessage("§cPaiement expiré pour la parcelle %d, mais aucun clan.", id);
 						setClan(null, true);
 						updateSign();
 					}
