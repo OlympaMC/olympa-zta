@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -24,6 +25,7 @@ import fr.olympa.api.common.randomized.RandomizedPickerBase.Conditioned;
 import fr.olympa.api.common.randomized.RandomizedPickerBuilder;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.loot.RandomizedInventory.LootContext;
@@ -59,53 +61,50 @@ public class MobsListener implements Listener {
 
 	public static boolean removeEntities = false;
 	public static boolean removeChickens = true;
-	
+
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
 		LivingEntity entity = e.getEntity();
-		
+
 		if (entity.getKiller() != null && !CitizensAPI.getNPCRegistry().isNPC(entity.getKiller())) {
 			OlympaPlayerZTA killer = OlympaPlayerZTA.get(entity.getKiller());
-			if (entity instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(entity)) {
+			if (entity instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(entity))
 				killer.killedPlayers.increment();
-			}else {
+			else {
 				if (!entity.hasMetadata("ztaZombieType")) return;
 				Zombies zombie = (Zombies) entity.getMetadata("ztaZombieType").get(0).value();
 				if (zombie.isLooting()) {
 					killer.killedZombies.increment();
 					ZombieLootContext context = new ZombieLootContext(entity.getKiller(), zombie);
-					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current(), context)) {
+					for (LootCreator creator : zombieLoots.pickMulti(ThreadLocalRandom.current(), context))
 						e.getDrops().add(creator.create(ThreadLocalRandom.current(), context).getItem());
-					}
 					return;
 				}
 			}
 		}
 		if (entity.hasMetadata("player")) return;
-		
+
 		e.getDrops().clear();
 	}
-	
+
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent e) {
 		if (!removeEntities && !removeChickens) return;
 		int removed = 0;
-		for (Entity entity : e.getChunk().getEntities()) {
-			if (entity.getType() == EntityType.CHICKEN) {
+		for (Entity entity : e.getChunk().getEntities())
+			if (entity.getType() == EntityType.CHICKEN)
 				entity.remove();
-			}else if (removeEntities && entity.getType() == EntityType.ZOMBIE) {
+			else if (removeEntities && entity.getType() == EntityType.ZOMBIE) {
 				entity.remove();
 				removed++;
-			}else if (removeEntities && entity instanceof Item item) {
+			}else if (removeEntities && entity instanceof Item item)
 				if (item.getPickupDelay() < 100) {
 					item.remove();
 					removed++;
 				}else System.out.println("ITEM NOT PICKUP");
-			}
-		}
 		if (removed > 0) System.out.println("Suppression de " + removed + " entités");
 	}
-	
+
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onDamage(EntityDamageEvent e) {
 		if (e.isCancelled()) return;
@@ -118,24 +117,22 @@ public class MobsListener implements Listener {
 				}
 			}
 			e.setDamage(e.getDamage() / 1.5);
-		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
+		}else if (e.getCause() == DamageCause.ENTITY_EXPLOSION)
 			if (e.getEntity() instanceof Item) {
 				e.setCancelled(true);
 				return;
 			}/*else if (e.getEntity() instanceof Player) {
 				e.setDamage(e.getDamage() / 2);
 			}*/
-		}
-		if (e.getEntity() instanceof Item) {
+		if (e.getEntity() instanceof Item)
 			OlympaZTA.getInstance().gunRegistry.ifGun(((Item) e.getEntity()).getItemStack(), OlympaZTA.getInstance().gunRegistry::removeObject);
-		}
 	}
 
 	@EventHandler
 	public void onItemRemove(ItemDespawnEvent e) {
 		OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> OlympaZTA.getInstance().gunRegistry.itemRemove(e.getEntity().getItemStack()));
 	}
-	
+
 	@EventHandler
 	public void onMobSpawn(CreatureSpawnEvent e) {
 		switch (e.getSpawnReason()) {
@@ -146,50 +143,56 @@ public class MobsListener implements Listener {
 			break;
 		}
 	}
-	
+
+	@EventHandler
+	public void onEntityBreed(EntityBreedEvent e) {
+		if (e.getBreeder() != null && e.getBreeder() instanceof Player player && ZTAPermissions.BREED_ENTITY.hasPermission(player.getUniqueId()))
+			return;
+		e.setCancelled(true);
+	}
+
 	class ZombieLootContext extends LootContext {
-		
+
 		private Zombies zombie;
-		
+
 		public ZombieLootContext(@Nullable Player player, Zombies zombie) {
 			super(player);
 			this.zombie = zombie;
 		}
-		
+
 		public Zombies getZombie() {
 			return zombie;
 		}
-		
+
 	}
-	
+
 	class ZombieTypeConditioned implements Conditioned<LootCreator, ZombieLootContext> {
-		
+
 		private LootCreator creator;
 		private Zombies[] zombies;
-		
+
 		public ZombieTypeConditioned(LootCreator creator, Zombies... zombies) {
 			this.creator = creator;
 			this.zombies = zombies;
 		}
-		
+
 		@Override
 		public LootCreator getObject() {
 			return creator;
 		}
-		
+
 		@Override
 		public boolean isValid(ZombieLootContext context) {
-			for (Zombies zombie : zombies) {
+			for (Zombies zombie : zombies)
 				if (zombie == context.zombie) return true;
-			}
 			return false;
 		}
-		
+
 		@Override
 		public boolean isValidWithNoContext() {
 			return true;
 		}
-		
+
 	}
-	
+
 }

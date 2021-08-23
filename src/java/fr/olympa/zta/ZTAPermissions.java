@@ -46,4 +46,6 @@ public class ZTAPermissions{
 
 	public static final OlympaSpigotPermission HUB_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 
+	public static final OlympaSpigotPermission BREED_ENTITY = new OlympaSpigotPermission(OlympaGroup.RESP_GAMES);
+
 }
