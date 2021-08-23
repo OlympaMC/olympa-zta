@@ -66,6 +66,7 @@ public class AccessoriesGUI extends OlympaGUI{
 	
 	@Override
 	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) { // clic avec quelque chose dans la main
+		if (current == null) return true;
 		AccessoryType accessoryType = AccessoryType.getFromSlot(slot);
 		if (accessoryType == null) return true; // si c'est pas un slot d'accessoire : cancel
 		if (current.getType() == Material.RED_STAINED_GLASS_PANE) return true; // si le slot est indisponible : cancel

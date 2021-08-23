@@ -27,10 +27,6 @@ import fr.olympa.zta.OlympaZTA;
 
 public class GlassSmashManager implements Listener {
 	
-	/*private Cache<Location, BlockData> blocks = CacheBuilder.newBuilder().expireAfterWrite(20, TimeUnit.SECONDS).removalListener((RemovalNotification<Location, BlockData> notif) -> {
-		Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> notif.getKey().getBlock().setBlockData(notif.getValue()));
-	}).build();*/
-	
 	private ReentrantLock lock = new ReentrantLock();
 	private Map<Location, SimpleEntry<BlockData, Integer>> blocks = new HashMap<>();
 	
@@ -77,8 +73,7 @@ public class GlassSmashManager implements Listener {
 			if (flag == null || flag.isProtectedByDefault()) return false;
 			BlockData blockData = block.getBlockData();
 			lock.lock();
-			//blocks.put(location, blockData);
-			blocks.put(location, new SimpleEntry<BlockData, Integer>(blockData, 20));
+			blocks.put(location, new SimpleEntry<>(blockData, 20));
 			lock.unlock();
 			location = location.clone().add(0.5, 0.5, 0.5);
 			block.setType(Material.AIR, false);
