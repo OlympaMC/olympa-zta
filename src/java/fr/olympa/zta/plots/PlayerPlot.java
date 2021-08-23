@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -248,7 +249,8 @@ public class PlayerPlot {
 		if (oplayer.getPlot() != this) return true;
 		
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			if (e.getClickedBlock().getType() == Material.CHEST) {
+			Material type = e.getClickedBlock().getType();
+			if (type == Material.CHEST) {
 				if (owner != oplayer.getId()) {
 					Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Tu ne peux pas ouvrir le coffre du propriétaire. Utilise les coffres piégés pour les invités.");
 					return true;
@@ -262,6 +264,8 @@ public class PlayerPlot {
 						ex.printStackTrace();
 					}
 				});
+			}else if (type != Material.TRAPPED_CHEST && PlayerBlockInteractFlag.INVENTORY_BLOCK.contains(type)) {
+				return true;
 			}
 		}
 		return false;
