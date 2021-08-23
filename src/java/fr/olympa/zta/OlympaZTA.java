@@ -142,6 +142,7 @@ import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance;
 import fr.olympa.zta.weapons.guns.minigun.MinigunsManager;
+import fr.olympa.zta.weapons.skins.SkinsTrait;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -502,6 +503,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			checkForTrait(QuestItemShop.class, "questitemshop", getConfig().getIntegerList("questItemShop"));
 			checkForTrait(FoodBuyingShop.class, "foodshop", getConfig().getIntegerList("foodBuyingShop"));
 			checkForTrait(GunShop.class, "gunShop", getConfig().getIntegerList("gunShop"));
+			checkForTrait(SkinsTrait.class, "skins", getConfig().getIntegerList("skinsNPC"));
 			if (primes != null)
 				checkForTrait(BountyTrait.class, "bountyMan", getConfig().getIntegerList("bountyMan"));
 
@@ -559,6 +561,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			if (food != null)
 				item.setItemStack(food.get(originalItem.getAmount()));
 		}
+	}
+	
+	@Override
+	public void onBeforeStop() {
+		super.onBeforeStop();
+		if (combat != null)
+			combat.unload();
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class SkinsTrait extends HologramTrait {
 	@EventHandler
 	public void onNPCRightClick(NPCRightClickEvent e) {
 		if (e.getNPC() != npc) return;
-		new SkinsItemsGUI().create(e.getClicker());
+		new SkinGUI().create(e.getClicker());
 	}
 	
 }

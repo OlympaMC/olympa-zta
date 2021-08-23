@@ -6,6 +6,8 @@ public interface Skinable {
 	
 	public ItemStack getSkinItem(Skin skin);
 	
+	public Skin getSkinOfItem(ItemStack item);
+	
 	public void setSkin(Skin skin, ItemStack item);
 	
 }

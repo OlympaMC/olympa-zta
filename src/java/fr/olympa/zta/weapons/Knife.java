@@ -104,6 +104,11 @@ public enum Knife implements Weapon, ItemStackable, Skinable {
 	}
 	
 	@Override
+	public Skin getSkinOfItem(ItemStack item) {
+		return Skin.getFromId(item.getItemMeta().getCustomModelData() - 1);
+	}
+	
+	@Override
 	public void setSkin(Skin skin, ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.setCustomModelData(skin.getId() + 1);

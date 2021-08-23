@@ -177,6 +177,11 @@ public class Gun implements Weapon, Skinable {
 	}
 	
 	@Override
+	public Skin getSkinOfItem(ItemStack item) {
+		return skin;
+	}
+	
+	@Override
 	public void setSkin(Skin skin, ItemStack item) {
 		this.skin = skin;
 		updateItemCustomModel(item);
