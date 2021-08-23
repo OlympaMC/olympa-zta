@@ -46,7 +46,7 @@ public enum ArmorType {
 
 	private static Map<Material, Entry<ArmorType, ArmorSlot>> MATERIALS_MAP;
 	public static NamespacedKey VERSION_KEY;
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
 	
 	private ArmorType(String name, String type, String helmet, String chestplate, String leggings, String boots, boolean unbreakable) {
 		this(name, type, helmet, chestplate, leggings, boots, unbreakable, null, 0);

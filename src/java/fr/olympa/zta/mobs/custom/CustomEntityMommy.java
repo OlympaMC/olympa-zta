@@ -130,7 +130,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 		if (nbttagcompound.hasKey("PlayerInventory")) {
 			NBTTagList nbtList = nbttagcompound.getList("PlayerInventory", NBT.TAG_COMPOUND);
 			contents = nbtList.stream().map(x -> ItemStack.a((NBTTagCompound) x)).toArray(ItemStack[]::new);
-			System.out.println("Loaded " + contents.length + " contents from NBT");
+			if (contents.length != 0) OlympaZTA.getInstance().sendMessage("%d contenus chargés depuis les tags NBT d'un zombie.", contents.length);
 		}
 		
 		if (nbttagcompound.hasKey("PlayerDead")) setPlayer(nbttagcompound.getString("PlayerDead"));

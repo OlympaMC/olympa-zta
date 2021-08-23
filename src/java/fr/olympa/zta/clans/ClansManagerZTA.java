@@ -17,6 +17,7 @@ import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.spigot.clans.ClanPlayerInterface;
 import fr.olympa.api.spigot.clans.ClansManager;
 import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
+import fr.olympa.api.spigot.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.spigot.lines.FixedLine;
 import fr.olympa.api.spigot.lines.TimerLine;
@@ -131,6 +132,19 @@ public class ClansManagerZTA extends ClansManager<ClanZTA, ClanPlayerDataZTA> {
 	
 	public void updateBoardParameter(OlympaPlayerZTA player, ClanBoardSetting setting) {
 		if (setting == ClanBoardSetting.NEVER || setting == ClanBoardSetting.ONLINE_FIVE) OlympaZTA.getInstance().scoreboards.refresh(player);
+	}
+	
+	@EventHandler
+	public void onGroup(AsyncOlympaPlayerChangeGroupEvent e) {
+		OlympaPlayerZTA p = e.getOlympaPlayer();
+		ClanZTA clan = p.getClan();
+		if (clan != null && clan.getChief().getId() == p.getId()) {
+			int maxSize = getMaxSize(p);
+			if (maxSize > clan.getMaxSize()) {
+				clan.setMaxSize(maxSize);
+				OlympaZTA.getInstance().sendMessage("Mise à jour de la taille du clan %s de %s : %d membres.", clan.getNameAndTag(), p.getName(), maxSize);
+			}
+		}
 	}
 	
 }
