@@ -1,6 +1,7 @@
 package fr.olympa.zta.weapons.guns;
 
 import org.bukkit.Bukkit;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -15,6 +16,10 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 
+/**
+ * TODO
+ * Autoriser le shift clic
+ */
 public class AccessoriesGUI extends OlympaGUI{
 	
 	public static final NamespacedKey ACCESSORY_KEY = new NamespacedKey(OlympaZTA.getInstance(), "accessory");
@@ -46,6 +51,11 @@ public class AccessoriesGUI extends OlympaGUI{
 	@Override
 	public boolean onClose(Player p) {
 		ItemUtils.setRawLore(editedItem, gun.getLore(true));
+		return true;
+	}
+
+	@Override
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromInv) { // désactive le shift clic
 		return true;
 	}
 	
@@ -101,4 +111,8 @@ public class AccessoriesGUI extends OlympaGUI{
 		return false; // laisse le joueur swapper les items
 	}
 	
+//	@Override
+//	public boolean noRightClick() {
+//		return true;
+//	}
 }

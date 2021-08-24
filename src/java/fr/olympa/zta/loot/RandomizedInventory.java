@@ -100,6 +100,11 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		if (click != ClickType.RIGHT || current.getAmount() == 1) currentLoots.remove(slot);
 		return false;
 	}
+
+	@Override
+	public boolean noDoubleClick() {
+		return true;
+	}
 	
 	public static class LootContext extends ConditionalContext<LootCreator> {
 		
