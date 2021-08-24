@@ -12,7 +12,10 @@ public enum Skin {
 			"normal"),
 	GOLD(
 			1,
-			"doré");
+			"doré"),
+	INCOMING(
+			-1,
+			"soon...");
 
 	private int id;
 	private String name;

@@ -27,10 +27,7 @@ public class SkinGUI extends OlympaGUI {
 	private static final Map<Integer, Skin> SKINS_SLOT = ImmutableMap.<Integer, Skin>builder()
 			.put(28, Skin.NORMAL)
 			.put(30, Skin.GOLD)
-			.put(31, null)
-			.put(32, null)
-			.put(33, null)
-			.put(34, null)
+			.put(31, Skin.INCOMING).put(32, Skin.INCOMING).put(33, Skin.INCOMING).put(34, Skin.INCOMING)
 			.build();
 	
 	private Skinable skinable;
@@ -59,7 +56,7 @@ public class SkinGUI extends OlympaGUI {
 			for (Entry<Integer, Skin> skinEntry : SKINS_SLOT.entrySet()) {
 				ItemStack slotItem;
 				Skin slotSkin = skinEntry.getValue();
-				if (slotSkin == null) {
+				if (slotSkin == Skin.INCOMING) {
 					slotItem = ITEM_SKIN_UNAVAILABLE;
 				}else {
 					slotItem = skinable.getSkinItem(slotSkin);
