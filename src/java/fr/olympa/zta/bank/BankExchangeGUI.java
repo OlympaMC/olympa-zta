@@ -97,5 +97,10 @@ public class BankExchangeGUI extends OlympaGUI {
 		player.getGameMoney().unobserve("bank_gui");
 		return true;
 	}
+	
+	@Override
+	public boolean noDoubleClick() {
+		return false;
+	}
 
 }
