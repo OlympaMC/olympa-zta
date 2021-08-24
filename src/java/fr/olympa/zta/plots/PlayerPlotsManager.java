@@ -114,8 +114,7 @@ public class PlayerPlotsManager {
 		}, new FishFlag(false) {
 			@Override
 			public void fishEvent(PlayerFishEvent event) {
-				if (event.getState() == State.CAUGHT_FISH && event.getCaught() instanceof Item) {
-					Item item = (Item) event.getCaught();
+				if (event.getState() == State.CAUGHT_FISH && event.getCaught() instanceof Item item) {
 					Food food = ThreadLocalRandom.current().nextDouble() < 0.4 ? Food.COOKED_SALMON : Food.COOKED_COD;
 					item.setItemStack(food.getOriginalItem());
 				}

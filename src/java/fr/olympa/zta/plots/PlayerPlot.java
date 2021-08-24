@@ -263,7 +263,7 @@ public class PlayerPlot {
 						ex.printStackTrace();
 					}
 				});
-			}else if (ClanPlot.CONTAINER_MATERIALS.contains(type)) {
+			}else if (!ClanPlot.CONTAINER_MATERIALS.contains(type)) {
 				return true;
 			}
 		}
