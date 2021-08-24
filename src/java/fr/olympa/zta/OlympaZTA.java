@@ -514,9 +514,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_OTHER.setMinGroup(OlympaGroup.MOD);
 			OlympaAPIPermissionsSpigot.INVSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
 			OlympaAPIPermissionsSpigot.ECSEE_COMMAND_INTERACT.setMinGroup(OlympaGroup.MOD);
-			OlympaCommand ecvsee = OlympaCommand.getCmd("ecvsee");
-			if (ecvsee != null)
-				ecvsee.unregister();
+			OlympaCommand enderchest = OlympaCommand.getCmd("enderchest");
+			if (enderchest != null)
+				enderchest.unregister();
 		}catch (Throwable ex) {
 			ex.printStackTrace();
 			sendMessage("§4Une erreur est survenue lors du chargement du plugin. Le serveur ne peut être lancé sans risque.");
