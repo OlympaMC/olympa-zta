@@ -106,6 +106,11 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		return true;
 	}
 	
+	@Override
+	public boolean noDragClick() {
+		return false;
+	}
+	
 	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
 		return isFromPlayerInv;
 	}

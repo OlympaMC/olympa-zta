@@ -94,10 +94,15 @@ public class BankExchangeGUI extends OlympaGUI {
 		}
 		return true;
 	}
+	
+	@Override
+	public boolean noDragClick() {
+		return false;
+	}
 
 	@Override
 	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
-		return super.onMoveItem(p, moved, isFromPlayerInv, slot);
+		return isFromPlayerInv;
 	}
 	
 	@Override
