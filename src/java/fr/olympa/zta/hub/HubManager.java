@@ -80,7 +80,7 @@ public class HubManager implements Listener {
 	}
 
 	public void teleport(Player p) {
-		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au spawn."), () -> DynmapLink.ifEnabled(link -> link.setPlayerVisiblity(p, false)));
+		OlympaZTA.getInstance().teleportationManager.teleport(p, getSpawnpoint(), Prefix.DEFAULT_GOOD.formatMessage("Tu as été téléporté au spawn."));
 	}
 
 	public void startRandomTeleport(Player p) {
@@ -115,7 +115,6 @@ public class HubManager implements Listener {
 					Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
 						p.teleport(lc.add(0.5, 2, 0.5));
 						inRandomTP.remove(p);
-						DynmapLink.ifEnabled(link -> link.setPlayerVisiblity(p, true));
 					}); // le joueur est téléporté de manière synchrone
 					return;
 				}
