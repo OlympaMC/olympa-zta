@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
 
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.zta.itemstackable.ItemStackable;
@@ -232,16 +233,20 @@ public enum Accessory implements ItemStackable {
 			return slot;
 		}
 		
-		public ItemStack getAvailableItemSlot(){
+		protected ItemStack getAvailableItemSlot(){
 			return available;
 		}
 		
-		public ItemStack getUnavailableItemSlot(){
+		protected ItemStack getUnavailableItemSlot(){
 			return unavailable;
 		}
 		
 		public boolean isEnabled(Gun gun){
 			return gun.getType().getAllowedAccessories().contains(this);
+		}
+		
+		public ItemStack getItemSlot(Gun gun) {
+			return isEnabled(gun) ? available : unavailable;
 		}
 		
 		public Accessory get(Gun gun) {
