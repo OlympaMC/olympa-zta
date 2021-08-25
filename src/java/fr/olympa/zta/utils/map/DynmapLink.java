@@ -68,7 +68,7 @@ public class DynmapLink {
 
 	public void setPlayerVisiblity(Player p, boolean visibility) {
 		OlympaPlayerZTA player = OlympaPlayerZTA.get(p);
-		api.setPlayerVisiblity(p, visibility && !player.isHidden() && p.getWorld().getTime() < CustomDayDuration.NIGHT_TIME && p.getGameMode() != GameMode.SPECTATOR);
+		api.setPlayerVisiblity(p, visibility && !player.isHidden() && p.getWorld().getTime() < CustomDayDuration.NIGHT_TIME && p.getGameMode() != GameMode.SPECTATOR && !player.isVanish());
 	}
 
 	public void showMobArea(Region region, SpawnType spawn) {

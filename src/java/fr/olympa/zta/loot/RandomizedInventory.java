@@ -106,6 +106,10 @@ public abstract class RandomizedInventory extends OlympaGUI {
 		return true;
 	}
 	
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
+		return isFromPlayerInv;
+	}
+	
 	public static class LootContext extends ConditionalContext<LootCreator> {
 		
 		private final @Nullable Player player;

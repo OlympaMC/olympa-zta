@@ -113,7 +113,7 @@ public class WeaponsListener implements Listener {
 			Weapon previous = getWeapon(item);
 			if (previous != null) previous.itemNoLongerHeld(p, item);
 			Weapon next = getWeapon(cursor);
-			if (next != null) next.itemHeld(p, cursor, previous);
+			if (next != null && p.getInventory().getHeldItemSlot() == e.getSlot()) next.itemHeld(p, cursor, previous); // add check for inv slot
 		}
 	}
 

@@ -517,6 +517,9 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			OlympaCommand enderchest = OlympaCommand.getCmd("enderchest");
 			if (enderchest != null)
 				enderchest.unregister();
+			OlympaCore.getInstance().getVanishApi().registerHandler("zta_dynmap", (p, olympaPlayer, isVanish) -> {
+				DynmapLink.ifEnabled(link -> link.setPlayerVisiblity(p, isVanish));
+			});
 		}catch (Throwable ex) {
 			ex.printStackTrace();
 			sendMessage("§4Une erreur est survenue lors du chargement du plugin. Le serveur ne peut être lancé sans risque.");

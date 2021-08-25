@@ -5,6 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.gui.OlympaGUI;
@@ -54,21 +55,23 @@ public class BankExchangeGUI extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 2 || slot == 4) {
 			int toChange = 0;
-			if (click.isRightClick()) {
-				toChange = 10;
-			}else if (click.isLeftClick()) {
-				toChange = 1;
-			}else if (click == ClickType.MIDDLE) {
-				toChange = 100;
+			if (click.isShiftClick()) {
+				amount = PhysicalMoney.getPlayerMoney(p);
+			} else {
+				if (click.isRightClick()) {
+					toChange = 10;
+				}else if (click.isLeftClick()) {
+					toChange = 1;
+				}else if (click == ClickType.MIDDLE) {
+					toChange = 100;
+				}
+				if (slot == 2) {
+					amount += toChange;
+				}else {
+					amount -= toChange;
+					if (amount < 0) amount = 0;
+				}
 			}
-
-			if (slot == 2) {
-				amount += toChange;
-			}else {
-				amount -= toChange;
-				if (amount < 0) amount = 0;
-			}
-
 			updateCounter();
 		}else if (slot == 7) {
 			if (amount == 0) return true;
@@ -93,14 +96,18 @@ public class BankExchangeGUI extends OlympaGUI {
 	}
 
 	@Override
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
+		return super.onMoveItem(p, moved, isFromPlayerInv, slot);
+	}
+	
+	@Override
 	public boolean onClose(Player p) {
 		player.getGameMoney().unobserve("bank_gui");
 		return true;
 	}
 	
 	@Override
-	public boolean noDoubleClick() {
+	public boolean noMiddleClick() {
 		return false;
 	}
-
 }
