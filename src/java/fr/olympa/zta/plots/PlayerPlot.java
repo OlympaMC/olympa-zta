@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.spigot.utils.Schematic;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -263,7 +264,7 @@ public class PlayerPlot {
 						ex.printStackTrace();
 					}
 				});
-			}else if (!ClanPlot.CONTAINER_MATERIALS.contains(type)) {
+			}else if (PlayerBlockInteractFlag.INVENTORY_BLOCK.contains(type) && !ClanPlot.CONTAINER_MATERIALS.contains(type)) {
 				return true;
 			}
 		}
