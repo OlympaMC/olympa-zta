@@ -1,6 +1,7 @@
 package fr.olympa.zta.clans.plots;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -148,20 +149,19 @@ public class ClanPlotsCommand extends ComplexCommand {
 		sendSuccess("La parcelle #%d a été vidée de %d inventaires.", plot.getID(), clear);
 	}
 	
-	@Cmd (hide = true, permissionName = "CLAN_PLOTS_MANAGE_COMMAND", description = "DEV - mettre à jour les parcelles en BDD")
-	public void updateDBRegions(CommandContext cmd) {
-		int i = 0;
-		for (ClanPlot plot : manager.getPlots().values()) {
-			try {
-				plot.setRegion(plot.getTrackedRegion().getRegion());
-				i++;
-			}catch (SQLException | IOException e) {
-				e.printStackTrace();
-				sendError(e);
-			}
-			i++;
+	@Cmd (args = "PLOT", permissionName = "CLAN_PLOTS_MANAGE_COMMAND", description = "DEV - mettre à jour la parcelle depuis la BDD")
+	public void updateDBRegion(CommandContext cmd) {
+		try {
+			ClanPlot plot = cmd.getArgument(0);
+			ResultSet resultSet = manager.columnID.selectBasic(plot.getID(), manager.columnRegion.getName());
+			if (resultSet.next()) {
+				plot.getTrackedRegion().updateRegion(SpigotUtils.deserialize(resultSet.getBytes("region")));
+				sendSuccess("Mise à jour de la région effectuée.");
+			}else sendError("Impossible de trouver la région en BDD.");
+		}catch (SQLException | IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			sendError(e);
 		}
-		sendSuccess("%d régions ont été mises à jour.", i);
 	}
 	
 	@Cmd (player = true, args = "PLOT", min = 1, syntax = "<plot ID>", description = "Se téléporter à une parcelle")
