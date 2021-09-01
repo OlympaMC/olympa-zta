@@ -5,6 +5,7 @@ import java.util.Map;
 
 import fr.olympa.api.common.observable.AbstractObservable;
 import fr.olympa.core.spigot.OlympaCore;
+import fr.olympa.zta.OlympaZTA;
 
 public class PlayerPacks extends AbstractObservable {
 	
@@ -40,7 +41,14 @@ public class PlayerPacks extends AbstractObservable {
 	
 	public void loadFromString(String string) {
 		if (string == null) return;
-		this.packs = OlympaCore.getInstance().getGson().fromJson(string, Map.class);
+		Map<String, Integer> map = OlympaCore.getInstance().getGson().fromJson(string, Map.class);
+		map.forEach((key, value) -> {
+			try {
+				packs.put(PackType.valueOf(key), value);
+			}catch (IllegalArgumentException ex) {
+				OlympaZTA.getInstance().sendMessage("§cImpossible de trouver le pack %s.", key);
+			}
+		});
 	}
 	
 }
