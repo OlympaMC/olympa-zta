@@ -41,10 +41,11 @@ public class PlayerPacks extends AbstractObservable {
 	
 	public void loadFromString(String string) {
 		if (string == null) return;
-		Map<String, Integer> map = OlympaCore.getInstance().getGson().fromJson(string, Map.class);
+		packs.clear();
+		Map<String, Long> map = OlympaCore.getInstance().getGson().fromJson(string, Map.class);
 		map.forEach((key, value) -> {
 			try {
-				packs.put(PackType.valueOf(key), value);
+				packs.put(PackType.valueOf(key), value.intValue());
 			}catch (IllegalArgumentException ex) {
 				OlympaZTA.getInstance().sendMessage("§cImpossible de trouver le pack %s.", key);
 			}
