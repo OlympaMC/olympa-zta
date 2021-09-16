@@ -31,6 +31,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.utils.Prefix;
@@ -114,6 +115,24 @@ public class WeaponsListener implements Listener {
 			if (previous != null) previous.itemNoLongerHeld(p, item);
 			Weapon next = getWeapon(cursor);
 			if (next != null && p.getInventory().getHeldItemSlot() == e.getSlot()) next.itemHeld(p, cursor, previous); // add check for inv slot
+
+			int slotOnHand = p.getInventory().getHeldItemSlot();
+			ItemStack itemStackOnHand = p.getInventory().getItemInMainHand();
+			if ((e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT) && itemStackOnHand.getType() == Material.AIR) {
+				for (int i = 0; 8 > i && i <= slotOnHand; i++) {
+					ItemStack itemStackOnHotBar = p.getInventory().getItem(slotOnHand);
+					if (itemStackOnHotBar.getType() == Material.AIR) {
+						if (slotOnHand == i) {
+							OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
+								gun.itemHeld(p, item, gun);
+							});
+							break;
+						} else if (i < slotOnHand) {
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -147,17 +166,14 @@ public class WeaponsListener implements Listener {
 
 	@EventHandler
 	public void onPickup(EntityPickupItemEvent e) {
-		if (e.getEntity() instanceof Player) {
-			Player p = (Player) e.getEntity();
-			if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
-				ItemStack item = e.getItem().getItemStack();
-				int prevAmount = p.getInventory().getItemInMainHand().getAmount();
-				Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
-					ItemStack mainHand = p.getInventory().getItemInMainHand();
-					if (mainHand.getAmount() != prevAmount && mainHand.isSimilar(item))
-						checkHeld(p, item, true);
-				});
-			}
+		if (e.getEntity() instanceof Player p && p.getInventory().getItemInMainHand().getType() == Material.AIR) {
+			ItemStack item = e.getItem().getItemStack();
+			int prevAmount = p.getInventory().getItemInMainHand().getAmount();
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> {
+				ItemStack mainHand = p.getInventory().getItemInMainHand();
+				if (mainHand.getAmount() != prevAmount && mainHand.isSimilar(item))
+					checkHeld(p, item, true);
+			});
 		}
 	}
 
