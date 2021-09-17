@@ -98,29 +98,34 @@ public class WeaponsListener implements Listener {
 		if (weapon != null) weapon.onInteract(e);
 	}
 	
-	public boolean checkIfHeld2(Player p, ItemStack item, Weapon gun, int slot, int slotOnHand) {
+	public boolean checkItemHotBar(Player p, ItemStack gunItem, Weapon gun, int slot, int slotOnHand) {
 		ItemStack itemStackOnHotBar = p.getInventory().getItem(slot);
+		if (itemStackOnHotBar != null && itemStackOnHotBar.getMaxStackSize() > itemStackOnHotBar.getAmount() && itemStackOnHotBar.isSimilar(gunItem)) {
+			return false;
+		}
 		if (itemStackOnHotBar == null) {
 			if (slot == slotOnHand)
-				gun.itemHeld(p, item, gun);
+				gun.itemHeld(p, gunItem, gun);
 			return true;
 		}
 		return false;
 	}
 
-	public void checkIfHeld(Player p, ClickType click, ItemStack item, Weapon gun, int slot, boolean isPlayerInv) {
-		if (item == null || gun == null)
-			return;
+	public void checkIfHeld(Player p, ClickType click, ItemStack gunItem, Weapon gun, int clickedSlot, boolean isPlayerInv) {
 		int slotOnHand = p.getInventory().getHeldItemSlot();
 		ItemStack itemStackOnHand = p.getInventory().getItemInMainHand();
-		if ((click == ClickType.SHIFT_LEFT || click == ClickType.SHIFT_RIGHT) && itemStackOnHand.getType() == Material.AIR && isPlayerInv ? slot > 8 : true) {
-			if (isPlayerInv) {
-				for (int i = 0; 8 > i && slotOnHand >= i; i++) {
-					checkIfHeld2(p, itemStackOnHand, gun, slot, slotOnHand);
+		if ((click == ClickType.SHIFT_LEFT || click == ClickType.SHIFT_RIGHT) && itemStackOnHand.getType() == Material.AIR) {
+			if (!isPlayerInv) {
+				for (int i = 8; 0 <= i && slotOnHand <= i; i--) {
+					if (checkItemHotBar(p, gunItem, gun, i, slotOnHand)) {
+						break;
+					}
 				}
-			} else {
-				for (int i = 8; 0 < i && slotOnHand < i; i--) {
-					checkIfHeld2(p, itemStackOnHand, gun, slot, slotOnHand);
+			} else if (clickedSlot > 8) {
+				for (int i = 0; 8 > i && slotOnHand >= i; i++) {
+					if (checkItemHotBar(p, gunItem, gun, i, slotOnHand)) {
+						break;
+					}
 				}
 			}
 		}
@@ -134,7 +139,8 @@ public class WeaponsListener implements Listener {
 		@Nullable
 		Weapon previous = getWeapon(item);
 		boolean isClickOnGuiInventory = e.getClickedInventory() != e.getWhoClicked().getInventory();
-		checkIfHeld(p, e.getClick(), item, previous, e.getSlot(), !isClickOnGuiInventory);
+		if (item != null && previous != null && !e.isCancelled())
+			checkIfHeld(p, e.getClick(), item, previous, e.getSlot(), !isClickOnGuiInventory);
 		if (isClickOnGuiInventory) return;
 		ItemStack cursor = e.getCursor();
 		if (e.getClick() == ClickType.RIGHT && item != null) {
