@@ -119,17 +119,11 @@ public class WeaponsListener implements Listener {
 			int slotOnHand = p.getInventory().getHeldItemSlot();
 			ItemStack itemStackOnHand = p.getInventory().getItemInMainHand();
 			if ((e.getClick() == ClickType.SHIFT_LEFT || e.getClick() == ClickType.SHIFT_RIGHT) && itemStackOnHand.getType() == Material.AIR) {
-				for (int i = 0; 8 > i && i <= slotOnHand; i++) {
+				for (int i = 0; 8 > i && slotOnHand >= i; i++) {
 					ItemStack itemStackOnHotBar = p.getInventory().getItem(slotOnHand);
-					if (itemStackOnHotBar.getType() == Material.AIR) {
-						if (slotOnHand == i) {
-							OlympaZTA.getInstance().gunRegistry.ifGun(item, gun -> {
-								gun.itemHeld(p, item, gun);
-							});
-							break;
-						} else if (i < slotOnHand) {
-							break;
-						}
+					if (itemStackOnHotBar == null && slotOnHand == i) {
+						previous.itemHeld(p, item, previous);
+						break;
 					}
 				}
 			}
