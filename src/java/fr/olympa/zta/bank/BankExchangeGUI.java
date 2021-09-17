@@ -15,8 +15,10 @@ import fr.olympa.zta.OlympaPlayerZTA;
 
 public class BankExchangeGUI extends OlympaGUI {
 
-	private static ItemStack add = ItemUtils.item(Material.GREEN_STAINED_GLASS_PANE, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic gauche : §7Augmenter de 1", "§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100");
-	private static ItemStack remove = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic gauche : §7Baisser de 1", "§8§l> Clic droit : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100");
+	private static ItemStack add = ItemUtils.item(Material.GREEN_STAINED_GLASS_PANE, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic gauche : §7Augmenter de 1",
+		"§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100", "§8§l> Shift Clic : §7Augmente au maximum");
+	private static ItemStack remove = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic gauche : §7Baisser de 1",
+		"§8§l> Clic droit : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100", "§8§l> Shift Clic : §7Enlève tous l'argent de la transaction");
 	private static ItemStack transfer = ItemUtils.item(Material.PRISMARINE_CRYSTALS, 1, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
 	private static ItemStack withdraw = ItemUtils.item(Material.NAUTILUS_SHELL, 1, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
 
@@ -55,18 +57,24 @@ public class BankExchangeGUI extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 2 || slot == 4) {
 			int toChange = 0;
+			int maxMoney = PhysicalMoney.getPlayerMoney(p);
 			if (click.isShiftClick()) {
-				amount = PhysicalMoney.getPlayerMoney(p);
+				if (slot == 2) {
+					amount = maxMoney;
+				} else {
+					amount = 0;
+				}
 			} else {
 				if (click.isRightClick()) {
 					toChange = 10;
-				}else if (click.isLeftClick()) {
+				} else if (click.isLeftClick()) {
 					toChange = 1;
-				}else if (click == ClickType.MIDDLE) {
+				} else if (click == ClickType.MIDDLE) {
 					toChange = 100;
 				}
 				if (slot == 2) {
 					amount += toChange;
+					if (maxMoney > 0) maxMoney = amount;
 				}else {
 					amount -= toChange;
 					if (amount < 0) amount = 0;
