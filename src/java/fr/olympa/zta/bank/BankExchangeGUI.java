@@ -16,7 +16,7 @@ import fr.olympa.zta.OlympaPlayerZTA;
 public class BankExchangeGUI extends OlympaGUI {
 
 	private static ItemStack add = ItemUtils.item(Material.GREEN_STAINED_GLASS_PANE, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic gauche : §7Augmenter de 1",
-		"§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100", "§8§l> Shift Clic : §7Augmente au maximum");
+		"§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100", "§8§l> Shift Clic : §7Choisis le montant maximum dans ton inventaire");
 	private static ItemStack remove = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic gauche : §7Baisser de 1",
 		"§8§l> Clic droit : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100", "§8§l> Shift Clic : §7Enlève tous l'argent de la transaction");
 	private static ItemStack transfer = ItemUtils.item(Material.PRISMARINE_CRYSTALS, 1, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
@@ -74,7 +74,6 @@ public class BankExchangeGUI extends OlympaGUI {
 				}
 				if (slot == 2) {
 					amount += toChange;
-					if (maxMoney > 0) maxMoney = amount;
 				}else {
 					amount -= toChange;
 					if (amount < 0) amount = 0;
