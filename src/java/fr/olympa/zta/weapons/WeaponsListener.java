@@ -23,6 +23,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -98,14 +99,16 @@ public class WeaponsListener implements Listener {
 		if (weapon != null) weapon.onInteract(e);
 	}
 	
-	public boolean checkItemHotBar(Player p, ItemStack gunItem, Weapon gun, int slot, int slotOnHand) {
-		ItemStack itemStackOnHotBar = p.getInventory().getItem(slot);
+	public boolean checkItemHotBar(Player p, ItemStack gunItem, Weapon gun, int hotBarSlot, int slotOnHand) {
+//		System.out.println("DEBUG hotBarSlot " + hotBarSlot + " slotOnHand " + slotOnHand);
+		ItemStack itemStackOnHotBar = p.getInventory().getItem(hotBarSlot);
 		if (itemStackOnHotBar != null && itemStackOnHotBar.getMaxStackSize() > itemStackOnHotBar.getAmount() && itemStackOnHotBar.isSimilar(gunItem)) {
 			return false;
 		}
+//		System.out.println("DEBUG hotBarSlot " + hotBarSlot + " slotOnHand " + slotOnHand + " - 2");
 		if (itemStackOnHotBar == null) {
-			if (slot == slotOnHand)
-				gun.itemHeld(p, gunItem, gun);
+			if (hotBarSlot == slotOnHand)
+				gun.itemHeld(p, gunItem, null);
 			return true;
 		}
 		return false;
@@ -117,12 +120,14 @@ public class WeaponsListener implements Listener {
 		if ((click == ClickType.SHIFT_LEFT || click == ClickType.SHIFT_RIGHT) && itemStackOnHand.getType() == Material.AIR) {
 			if (!isPlayerInv) {
 				for (int i = 8; 0 <= i && slotOnHand <= i; i--) {
+//					System.out.println("DEBUG !isPlayerInv SLOT " + clickedSlot + " slotOnHand " + slotOnHand+ " i " + i);
 					if (checkItemHotBar(p, gunItem, gun, i, slotOnHand)) {
 						break;
 					}
 				}
-			} else if (clickedSlot > 8) {
-				for (int i = 0; 8 > i && slotOnHand >= i; i++) {
+			} else if (clickedSlot > 8) { // Bug when shift-clic from inv (not hotbar) to gui
+				for (int i = 0; 8 >= i && slotOnHand >= i; i++) {
+//					System.out.println("DEBUG CLICKED > 8 SLOT " + clickedSlot + " slotOnHand " + slotOnHand + " i " + i);
 					if (checkItemHotBar(p, gunItem, gun, i, slotOnHand)) {
 						break;
 					}
