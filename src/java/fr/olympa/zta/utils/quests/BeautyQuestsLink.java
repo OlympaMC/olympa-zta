@@ -1,5 +1,6 @@
 package fr.olympa.zta.utils.quests;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ import fr.skytasul.quests.utils.Utils;
 
 public class BeautyQuestsLink implements Listener {
 	
-	private Map<Player, Integer> scoreboards = new HashMap<>();
+	private Map<Player, Integer> scoreboards = Collections.synchronizedMap(new HashMap<>());
 	private TimerLine<Scoreboard<OlympaPlayerZTA>> line = new TimerLine<>(scoreboard -> {
 		Player player = (Player) scoreboard.getOlympaPlayer().getPlayer();
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
