@@ -99,6 +99,7 @@ import fr.olympa.zta.loot.crates.CratesManager;
 import fr.olympa.zta.loot.creators.FoodCreator.Food;
 import fr.olympa.zta.loot.packs.PackBlock;
 import fr.olympa.zta.loot.packs.PackCommand;
+import fr.olympa.zta.loot.pickers.PickersManager;
 import fr.olympa.zta.mobs.MobSpawning;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType;
 import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
@@ -143,6 +144,7 @@ import fr.olympa.zta.weapons.guns.GunType;
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance;
 import fr.olympa.zta.weapons.guns.minigun.MinigunsManager;
 import fr.olympa.zta.weapons.skins.SkinsTrait;
+
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -186,6 +188,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 	public GlassSmashManager glass;
 	public CustomDayDuration customDay;
 	public FluctuatingEconomiesManager economies;
+	public PickersManager pickers;
 
 	public ResourcePackCommand resourcePackCommand;
 
@@ -409,6 +412,13 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement du module de tracking des kills.");
+			}
+			
+			try {
+				pickers = new PickersManager();
+			}catch (Exception ex) {
+				ex.printStackTrace();
+				getLogger().severe("Une erreur est survenue lors du chargement du module de pickers random.");
 			}
 
 			soundAmbiance = new SoundAmbiance();
