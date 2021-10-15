@@ -260,7 +260,7 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 
 			OlympaGroup.PLAYER.setRuntimePermission("dynmap.*", false);
 			OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
-			OlympaGroup.GAMEMASTER.setRuntimePermission("beautyquests.*");
+			OlympaGroup.GAMEDESIGNER.setRuntimePermission("beautyquests.*");
 
 			hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
 			teleportationManager = new TeleportationManagerZTA(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
