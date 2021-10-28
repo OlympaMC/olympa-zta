@@ -1,8 +1,13 @@
 package fr.olympa.zta.loot.pickers.serial;
 
-import fr.olympa.api.common.observable.Observable;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public interface SerializablePicked extends Observable {
+public interface SerializablePicked/* extends Observable*/ {
+	
+	public ItemStack getItemStack();
+	
+	public void edit(Player p, Runnable callback);
 	
 	public SerializableType getSerialType();
 	

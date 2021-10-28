@@ -39,11 +39,12 @@ import fr.olympa.zta.loot.creators.QuestItemCreator;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.weapons.guns.Accessory;
 import fr.olympa.zta.weapons.guns.AmmoType;
+
 import net.citizensnpcs.api.CitizensAPI;
 
 public class MobsListener implements Listener {
 
-	private ConditionalMultiPicker<LootCreator, ZombieLootContext> zombieLoots = RandomizedPickerBuilder.<LootCreator, ZombieLootContext>newConditionalBuilder()
+	private ConditionalMultiPicker<LootCreator, ZombieLootContext> zombieLoots = OlympaZTA.getInstance().pickers.registerPicker(RandomizedPickerBuilder.<LootCreator, ZombieLootContext>newConditionalBuilder()
 			.add(22, new AmmoCreator(3, 4))
 			.add(40, new MoneyCreator(PhysicalMoney.BANKNOTE_1, 1, 4))
 			.add(15, new FoodCreator(Food.BAKED_POTATO, 2, 4))
@@ -57,7 +58,7 @@ public class MobsListener implements Listener {
 			.add(2, new ZombieTypeConditioned(new QuestItemCreator(QuestItem.CARTE_MERE), Zombies.SPEED))
 			.add(1, new ZombieTypeConditioned(new ItemStackableCreator(Accessory.CANNON_SILENT), Zombies.TANK))
 			.add(1, new ZombieTypeConditioned(new ItemStackableCreator(Accessory.SCOPE_LIGHT), Zombies.SPEED))
-			.build(0, 2, 20.0);
+			.build(0, 2, 20.0), "zombieLoots", LootCreator.class, ZombieLootContext.class);
 
 	public static boolean removeEntities = false;
 	public static boolean removeChickens = true;

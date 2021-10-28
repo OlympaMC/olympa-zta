@@ -6,12 +6,14 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedMultiPicker;
-import fr.olympa.api.common.randomized.RandomizedPickerBuilder;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.itemstackable.Artifacts;
+import fr.olympa.zta.loot.RandomizedInventory;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 import fr.olympa.zta.loot.creators.AmmoCreator;
 import fr.olympa.zta.loot.creators.ArmorCreator;
 import fr.olympa.zta.loot.creators.FoodCreator;
@@ -30,7 +32,7 @@ public enum PackType {
 			2000,
 			0,
 			"basique du militaire",
-			RandomizedPickerBuilder.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 				.addAlways(new AmmoCreator(AmmoType.HEAVY, 20, 30, true))
 				.addAlways(new FoodCreator(Food.COOKED_BEEF, 10, 15))
 				.add(7, new ItemStackableCreator(GunType.P22))
@@ -42,7 +44,7 @@ public enum PackType {
 			1000,
 			0,
 			"de munitions",
-			RandomizedPickerBuilder.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.addAlways(new AmmoCreator(32, 64))
 			.addAlways(new AmmoCreator(AmmoType.HEAVY, 64, 64, true))
 			.addAlways(new AmmoCreator(AmmoType.LIGHT, 64, 64, true))
@@ -58,7 +60,7 @@ public enum PackType {
 			5000,
 			0,
 			"d'accessoires",
-			RandomizedPickerBuilder.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.addAlways(new AmmoCreator(10, 15))
 			.add(8, new ItemStackableCreator(Accessory.CANNON_CAC))
 			.add(8, new ItemStackableCreator(Accessory.CANNON_DAMAGE))
@@ -75,7 +77,7 @@ public enum PackType {
 			20000,
 			0,
 			"arme rare",
-			RandomizedPickerBuilder.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.add(20, new FoodCreator(Food.GOLDEN_APPLE, 10, 10))
 			.add(15, new ItemStackableCreator(GunType.DRAGUNOV))
 			.add(20, new ItemStackableCreator(GunType.SDMR))
@@ -86,7 +88,7 @@ public enum PackType {
 			0,
 			6.49,
 			"épique",
-			RandomizedPickerBuilder.<LootCreator>newBuilder()
+			RandomizedInventory.newBuilder()
 			.add(10, new FoodCreator(Food.GOLDEN_APPLE, 10, 10))
 			.add(15, new ItemStackableCreator(GunType.STONER))
 			.add(15, new ItemStackableCreator(GunType.BARRETT))
@@ -101,16 +103,16 @@ public enum PackType {
 	private int price;
 	private double priceReal;
 	private String name;
-	private RandomizedMultiPicker<LootCreator> picker;
+	private ConditionalMultiPicker<LootCreator, LootContext> picker;
 
 	private ItemStack item;
 	
-	private PackType(int slot, int price, double priceReal, String name, RandomizedMultiPicker<LootCreator> picker) {
+	private PackType(int slot, int price, double priceReal, String name, ConditionalMultiPicker<LootCreator, LootContext> picker) {
 		this.price = price;
 		this.slot = slot;
 		this.priceReal = priceReal;
 		this.name = name;
-		this.picker = picker;
+		this.picker = OlympaZTA.getInstance().pickers.registerPicker(picker, "packs/" + name(), LootCreator.class, LootContext.class);
 		List<String> lootsDescription = new ArrayList<>();
 		lootsDescription.add("");
 		lootsDescription.add("§7§nContient :");
@@ -147,7 +149,7 @@ public enum PackType {
 		return item;
 	}
 	
-	public RandomizedMultiPicker<LootCreator> getPicker() {
+	public ConditionalMultiPicker<LootCreator, LootContext> getPicker() {
 		return picker;
 	}
 	

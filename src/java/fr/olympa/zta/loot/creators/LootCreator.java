@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
-public interface LootCreator {
+public interface LootCreator /*extends SerializablePicked*/ {
 
 	public abstract Loot create(Random random, @Nullable LootContext context);
 	

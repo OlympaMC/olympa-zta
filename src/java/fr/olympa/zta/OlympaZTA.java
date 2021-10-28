@@ -248,6 +248,12 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			}catch (Exception ex) {
 				throw new RuntimeException("Registry failed to load", ex);
 			}
+			
+			try {
+				pickers = new PickersManager();
+			}catch (Exception ex) {
+				throw new RuntimeException("Une erreur est survenue lors du chargement du module de pickers random.");
+			}
 
 			GunType.values();
 			Knife.values();
@@ -262,10 +268,10 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			AmmoType.values();
 
 			OlympaGroup.PLAYER.setRuntimePermission("dynmap.*", false);
-			OlympaGroup.ASSISTANT.setRuntimePermission("citizens.*");
-			OlympaGroup.GAMEMASTER.setRuntimePermission("beautyquests.*");
+			OlympaGroup.GAMEDESIGNER.setRuntimePermission("citizens.*");
+			OlympaGroup.GAMEDESIGNER.setRuntimePermission("beautyquests.*");
 
-			hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).collect(Collectors.toList()));
+			hub = new HubManager(getConfig().getSerializable("hub", Region.class), getConfig().getLocation("spawn"), getConfig().getList("spawnRegionTypes").stream().map(x -> SpawnType.valueOf((String) x)).toList());
 			teleportationManager = new TeleportationManagerZTA(this, ZTAPermissions.BYPASS_TELEPORT_WAIT_COMMAND);
 
 			PluginManager pluginManager = getServer().getPluginManager();
@@ -412,13 +418,6 @@ public class OlympaZTA extends OlympaAPIPlugin implements Listener {
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				getLogger().severe("Une erreur est survenue lors du chargement du module de tracking des kills.");
-			}
-			
-			try {
-				pickers = new PickersManager();
-			}catch (Exception ex) {
-				ex.printStackTrace();
-				getLogger().severe("Une erreur est survenue lors du chargement du module de pickers random.");
 			}
 
 			soundAmbiance = new SoundAmbiance();

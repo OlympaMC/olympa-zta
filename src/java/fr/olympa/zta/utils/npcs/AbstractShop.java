@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.economy.fluctuating.FluctuatingEconomy;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.lines.AbstractLine;
@@ -24,6 +24,7 @@ import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
+
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 
 public abstract class AbstractShop<T> extends HologramTrait {
@@ -56,13 +57,13 @@ public abstract class AbstractShop<T> extends HologramTrait {
 	
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent e) {
-		if (e.getNPC() == super.npc) new ShopGUI().create(e.getClicker());
+		if (e.getNPC() == super.npc) new ShopView().toGUI(shopName, Math.min(6, Math.max((int) Math.ceil(articles.size() / 9D), 3))).create(e.getClicker());
 	}
 
-	class ShopGUI extends PagedGUI<AbstractArticle<T>> {
+	class ShopView extends PagedView<AbstractArticle<T>> {
 		
-		public ShopGUI() {
-			super(shopName, color, articles, Math.min(6, Math.max((int) Math.ceil(articles.size() / 9D), 3)));
+		public ShopView() {
+			super(color, articles);
 		}
 
 		@Override

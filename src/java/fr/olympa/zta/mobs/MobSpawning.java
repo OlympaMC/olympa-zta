@@ -47,6 +47,7 @@ import fr.olympa.zta.mobs.custom.Mobs;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import fr.olympa.zta.utils.map.DynmapLink;
 import fr.olympa.zta.utils.map.DynmapZoneConfig;
+
 import net.md_5.bungee.api.ChatMessageType;
 import net.minecraft.server.v1_16_R3.Entity;
 
@@ -410,6 +411,12 @@ public class MobSpawning implements Runnable {
 			this.dynmap = dynmap;
 			this.lootchests = lootchests;
 
+			OlympaZTA.getInstance().pickers.registerPicker(
+					spawning.zombiePicker(),
+					"zombies/" + name(),
+					Zombies.class,
+					MobSpawningContext.class);
+			
 			minDistanceSquared = spawning.minDistance() * spawning.minDistance();
 			minPlayerDistanceSquared = spawning.minPlayerDistance() * spawning.minPlayerDistance();
 
