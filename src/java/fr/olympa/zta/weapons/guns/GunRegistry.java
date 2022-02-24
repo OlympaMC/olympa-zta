@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -21,15 +22,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.weapons.ArmorType;
+import fr.olympa.zta.weapons.ArmorType.ArmorSlot;
 
 public class GunRegistry {
 	
 	public static final NamespacedKey GUN_KEY = new NamespacedKey(OlympaZTA.getInstance(), "gunRegistry");
 	
-	public final String TABLE_NAME = "`zta_guns`";
+	public final String TABLE_NAME = OlympaZTA.getInstance().getServerNameID() + "_guns";
 
 	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + TABLE_NAME + " (`type`) VALUES (?)", true);
 	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + TABLE_NAME + " WHERE (`id` = ?)");
@@ -41,7 +44,8 @@ public class GunRegistry {
 			+ "`secondary_mode` = ?, "
 			+ "`scope_id` = ?, "
 			+ "`cannon_id` = ?, "
-			+ "`stock_id` = ? "
+			+ "`stock_id` = ?, "
+			+ "`skin` = ? "
 			+ "WHERE (`id` = ?)");
 	
 	public final Map<Integer, Gun> registry = new ConcurrentHashMap<>(200);
@@ -50,7 +54,7 @@ public class GunRegistry {
 	private final BukkitTask evictingTask;
 	public long nextEviction = 0;
 	
-	public GunRegistry(Class<? extends Gun>... classes) throws Exception {
+	public GunRegistry() throws Exception {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
 				"  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT," +
@@ -62,31 +66,36 @@ public class GunRegistry {
 				"  `scope_id` INT(10) DEFAULT -1," +
 				"  `cannon_id` INT(10) DEFAULT -1," +
 				"  `stock_id` INT(10) DEFAULT -1," +
+				"  `skin` INT UNSIGNED DEFAULT 0," +
 				"  PRIMARY KEY (`id`))");
 		statement.close();
 		
 		int period = 20 * 60 * 5;
 		evictingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(OlympaZTA.getInstance(), () -> {
 			nextEviction = System.currentTimeMillis() + period * 50;
-			synchronized (toEvict) {
-				int evictedAmount = 0;
-				for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
-					Integer idToEvict = iterator.next();
-					Gun evicted = registry.remove(idToEvict);
-					if (evicted != null) {
-						try (PreparedStatement pstatement = updateStatement.createStatement()) {
-							evicted.updateDatas(pstatement);
-							updateStatement.executeUpdate(pstatement);
-						}catch (SQLException e) {
-							e.printStackTrace();
-						}
-					}
-					iterator.remove();
-					evictedAmount++;
-				}
-				if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
-			}
+			startEviction();
 		}, 0, period);
+	}
+	
+	public synchronized void startEviction() {
+		synchronized (toEvict) {
+			int evictedAmount = 0;
+			for (Iterator<Integer> iterator = toEvict.iterator(); iterator.hasNext();) {
+				Integer idToEvict = iterator.next();
+				Gun evicted = registry.remove(idToEvict);
+				if (evicted != null) {
+					try (PreparedStatement pstatement = updateStatement.createStatement()) {
+						evicted.updateDatas(pstatement);
+						updateStatement.executeUpdate(pstatement);
+					}catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				iterator.remove();
+				evictedAmount++;
+			}
+			if (evictedAmount != 0) OlympaZTA.getInstance().sendMessage("§6%d §eobjets déchargés.", evictedAmount);
+		}
 	}
 	
 	public boolean removeObject(Gun object) {
@@ -99,6 +108,22 @@ public class GunRegistry {
 			
 			OlympaZTA.getInstance().sendMessage("Objet §6%s (%d) §esupprimé du registre.", object.getType().getName(), object.getID());
 			return true;
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean removeObject(int id) {
+		Gun gun = registry.get(id);
+		if (gun != null) {
+			removeObject(gun);
+			return true;
+		}
+		try (PreparedStatement statement = removeStatement.createStatement()) {
+			statement.setInt(1, id);
+			removeStatement.executeUpdate(statement);
+			OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -130,9 +155,7 @@ public class GunRegistry {
 		if (!im.hasLore()) return null;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		if (id != -1) return registry.get(id);
-		
-		return null;
+		return id != -1 ? registry.get(id) : null;
 	}
 	
 	public void ifGun(ItemStack item, Consumer<Gun> consumer) {
@@ -147,23 +170,10 @@ public class GunRegistry {
 		if (!im.hasLore()) return;
 		
 		int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, -1);
-		if (id != -1) {
-			Gun gun = registry.get(id);
-			if (gun != null) {
-				removeObject(gun);
-			}else {
-				try (PreparedStatement statement = removeStatement.createStatement()) {
-					statement.setInt(1, id);
-					removeStatement.executeUpdate(statement);
-					OlympaZTA.getInstance().sendMessage("Objet déchargé §6%d §esupprimé du registre.", id);
-				}catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		if (id != -1) removeObject(id);
 	}
 	
-	public Gun createGun(GunType type) throws SQLException {
+	public synchronized Gun createGun(GunType type) throws SQLException {
 		try (PreparedStatement statement = createStatement.createStatement()) {
 			statement.setString(1, type.name());
 			createStatement.executeUpdate(statement);
@@ -178,15 +188,26 @@ public class GunRegistry {
 	}
 	
 	public int loadFromItems(ItemStack[] items) throws SQLException {
-		if (items == null) return 0;
+		if (items == null || items.length == 0) return 0;
 		synchronized (toEvict) {
 			Set<Integer> ids = new HashSet<>();
 			for (ItemStack item : items) {
 				if (item == null) continue;
 				if (!item.hasItemMeta()) continue;
 				ItemMeta im = item.getItemMeta();
+				if (im.getPersistentDataContainer().isEmpty()) {
+					Entry<ArmorType, ArmorSlot> armor = ArmorType.getArmor(item.getType());
+					if (armor != null) item.setItemMeta(armor.getKey().getImmutable(armor.getValue()).getItemMeta());
+					continue;
+				}
+				Entry<ArmorType, ArmorSlot> armor = ArmorType.getArmor(item.getType());
+				if (armor != null) {
+					int version = im.getPersistentDataContainer().getOrDefault(ArmorType.VERSION_KEY, PersistentDataType.INTEGER, 0);
+					if (version != ArmorType.VERSION) item.setItemMeta(armor.getKey().getImmutable(armor.getValue()).getItemMeta());
+					continue;
+				}
 				int id = im.getPersistentDataContainer().getOrDefault(GUN_KEY, PersistentDataType.INTEGER, 0);
-				if (id == 0 && im.hasLore()) {
+				/*if (id == 0 && im.hasLore()) {
 					for (String s : im.getLore()) {
 						int index = s.indexOf("[I");
 						if (index != -1) {
@@ -197,7 +218,7 @@ public class GunRegistry {
 							break;
 						}
 					}
-				}
+				}*/
 				if (id != 0) {
 					if (registry.containsKey(id)) {
 						toEvict.remove((Object) id);

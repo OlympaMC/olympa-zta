@@ -5,8 +5,8 @@ import java.util.Objects;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.lines.AbstractLine;
 import fr.olympa.core.spigot.OlympaCore;
 import net.citizensnpcs.api.event.NPCTeleportEvent;
 import net.citizensnpcs.api.npc.NPC;
@@ -26,7 +26,7 @@ public abstract class HologramTrait extends Trait {
 	}
 	
 	private Location getHologramLocation(Location npcLocation) {
-		return npcLocation.add(0, npc.getEntity().getHeight() + (Boolean.valueOf(Objects.toString(npc.data().get(NPC.NAMEPLATE_VISIBLE_METADATA))) ? 0.2 : 0), 0);
+		return npcLocation.add(0, npc.getEntity().getHeight() + (Boolean.valueOf(Objects.toString(npc.data().get(NPC.NAMEPLATE_VISIBLE_METADATA))) ? 0.32 : 0), 0);
 	}
 	
 	protected abstract AbstractLine<HologramLine>[] getLines();

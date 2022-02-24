@@ -3,7 +3,6 @@ package fr.olympa.zta.weapons.guns.ambiance;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
@@ -23,7 +22,7 @@ public class ZombieHordeScenario extends AmbianceScenario {
 	@Override
 	public void run(Player p) {
 		if (zombieMoaning) {
-			p.playSound(p.getLocation(), ZTASound.ZOMBIE_AMBIENT.getFarSound(), SoundCategory.AMBIENT, volume, pitch);
+			playSound(p, ZTASound.ZOMBIE_AMBIENT.getFarSound());
 		}
 	}
 	

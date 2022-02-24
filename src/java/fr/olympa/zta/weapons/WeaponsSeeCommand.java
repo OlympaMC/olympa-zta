@@ -1,22 +1,24 @@
-package fr.olympa.zta.utils;
+package fr.olympa.zta.weapons;
 
 import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.zta.OlympaZTA;
+import fr.olympa.zta.ZTAPermissions;
 
-public class DynmapCommand extends OlympaCommand {
+public class WeaponsSeeCommand extends OlympaCommand {
 	
-	public DynmapCommand() {
-		super(OlympaZTA.getInstance(), "map", "carte");
+	public WeaponsSeeCommand() {
+		super(OlympaZTA.getInstance(), "armes", "Commande pour voir les armes.", ZTAPermissions.WEAPONS_COMMAND);
+		setAllowConsole(false);
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		sendSuccess("La carte virtuelle est accessible à l'adresse §l§nwww.olympa.fr:8124§a !");
+		new WeaponsGiveView(false).toGUI().create(player);
 		return false;
 	}
 	

@@ -1,58 +1,71 @@
 package fr.olympa.zta.mobs.custom;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.mobs.custom.Mobs.Zombies;
 import net.minecraft.server.v1_16_R3.AttributeProvider;
 import net.minecraft.server.v1_16_R3.DamageSource;
-import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.GenericAttributes;
 import net.minecraft.server.v1_16_R3.ItemStack;
-import net.minecraft.server.v1_16_R3.MinecraftServer;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import net.minecraft.server.v1_16_R3.NBTTagList;
-import net.minecraft.server.v1_16_R3.PathfinderGoal;
 import net.minecraft.server.v1_16_R3.World;
 
 public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	
-	public final int MOMMY_DIE_TICKS = 6000;
+	public final int MOMMY_DIE_TICKS = 7 * 60 * 20;
 	
 	private int dieTime = MOMMY_DIE_TICKS;
-	private int lastTick = MinecraftServer.currentTick;
+	//private int lastTick = MinecraftServer.currentTick;
 	
+	private String player;
 	private ItemStack[] contents;
+	private boolean contentsLoaded = false;
 	
 	public CustomEntityMommy(EntityTypes<CustomEntityMommy> type, World world) {
 		super(type, world);
-		setZombieType(Zombies.COMMON);
+		setZombieType(Zombies.COMMON, true);
 	}
 	
 	public static AttributeProvider.Builder getAttributeBuilder() {
-		return CustomEntityZombie.getAttributeBuilder().a(GenericAttributes.MOVEMENT_SPEED, 0.32).a(GenericAttributes.ATTACK_DAMAGE, 9).a(GenericAttributes.ARMOR, 4);
+		return CustomEntityZombie.getAttributeBuilder().a(GenericAttributes.MAX_HEALTH, 40).a(GenericAttributes.MOVEMENT_SPEED, 0.32).a(GenericAttributes.ATTACK_DAMAGE, 9).a(GenericAttributes.ARMOR, 2.4);
 	}
 	
 	public void setContents(org.bukkit.inventory.ItemStack[] bukkitItems) {
 		contents = Arrays.stream(bukkitItems).filter(x -> x != null).map(CraftItemStack::asNMSCopy).toArray(ItemStack[]::new);
+		contentsLoaded = true;
+	}
+	
+	public void setPlayer(String player) {
+		this.player = player;
+		getBukkitEntity().setMetadata("player", new FixedMetadataValue(OlympaZTA.getInstance(), player));
 	}
 	
 	@Override
-	protected void initTargetGoals() {
-		this.targetSelector.a(2, (PathfinderGoal) new PathfinderGoalFixedDistanceTargetHuman((EntityCreature) this, 1, 20, true, false));
+	protected int getTargetChance() {
+		return 1;
+	}
+	
+	@Override
+	protected int getTargetDistance() {
+		return 20;
 	}
 	
 	@Override
 	public void tick() {
 		super.tick();
 		if (!killed) {
-			int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
+			/*int elapsedTicks = MinecraftServer.currentTick - this.lastTick; TROP DE RISQUE DE PERTE DE STUFF
 			this.lastTick = MinecraftServer.currentTick;
-			dieTime -= elapsedTicks;
+			dieTime -= elapsedTicks;*/
+			dieTime--;
 			if (dieTime < 0) this.killEntity();
 		}
 	}
@@ -61,6 +74,16 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 	protected void dropDeathLoot(DamageSource damagesource, int i, boolean flag) {
 		if (contents != null) {
 			OlympaZTA.getInstance().sendMessage("%d items droppés depuis un zombie momifié.", contents.length);
+			if (!contentsLoaded) {
+				OlympaZTA.getInstance().getTask().runTaskAsynchronously(() -> {
+					try {
+						OlympaZTA.getInstance().gunRegistry.loadFromItems(Arrays.stream(contents).map(CraftItemStack::asCraftMirror).toArray(org.bukkit.inventory.ItemStack[]::new));
+					}catch (SQLException e) {
+						OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors du chargement des armes sur un zombie.");
+						e.printStackTrace();
+					}
+				});
+			}
 			for (ItemStack item : contents) {
 				a(item);
 			}
@@ -96,6 +119,7 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 			}
 		}
 		nbttagcompound.set("PlayerInventory", nbtList);
+		if (player != null) nbttagcompound.setString("PlayerDead", player);
 	}
 	
 	@Override
@@ -106,8 +130,10 @@ public class CustomEntityMommy extends CustomEntityZombie { // ! it's a husk !
 		if (nbttagcompound.hasKey("PlayerInventory")) {
 			NBTTagList nbtList = nbttagcompound.getList("PlayerInventory", NBT.TAG_COMPOUND);
 			contents = nbtList.stream().map(x -> ItemStack.a((NBTTagCompound) x)).toArray(ItemStack[]::new);
-			System.out.println("Loaded " + contents.length + " contents from NBT");
+			if (contents.length != 0) OlympaZTA.getInstance().sendMessage("%d contenus chargés depuis les tags NBT d'un zombie.", contents.length);
 		}
+		
+		if (nbttagcompound.hasKey("PlayerDead")) setPlayer(nbttagcompound.getString("PlayerDead"));
 	}
 	
 }

@@ -1,8 +1,5 @@
 package fr.olympa.zta.loot.chests;
 
-import java.util.List;
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -15,6 +12,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -22,7 +20,7 @@ import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.loot.RandomizedInventory;
 import fr.olympa.zta.loot.chests.type.LootChestType;
 import fr.olympa.zta.loot.creators.LootCreator;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 
@@ -32,10 +30,8 @@ public class LootChest extends RandomizedInventory {
 
 	private Location location;
 	private LootChestType type;
-	private int waitMin = 6 * 60000, waitMax = 8 * 60000; // 60'000ticks = 1min
+	private int waitMin = 6 * 60000, waitMax = 10 * 60000; // 60'000ticks = 1min
 	private long nextOpen = 0;
-
-	private Random random = new Random();
 
 	private BlockPosition nmsPosition;
 	private Block nmsBlock;
@@ -54,8 +50,8 @@ public class LootChest extends RandomizedInventory {
 		long time = System.currentTimeMillis();
 		if (time > nextOpen) {
 			OlympaPlayerZTA.get(p).openedChests.increment();
-			nextOpen = time + Utils.getRandomAmount(random, waitMin, waitMax);
-			fillInventory();
+			nextOpen = time + Utils.getRandomAmount(LootChestsManager.random, waitMin, waitMax);
+			fillInventory(p);
 		}else Prefix.DEFAULT.sendMessage(p, "§oCe coffre a déjà été ouvert récemment...");
 		
 		super.create(p);
@@ -86,7 +82,7 @@ public class LootChest extends RandomizedInventory {
 	public void unregister(Chest chest) {
 		chest.getPersistentDataContainer().remove(LootChestsManager.LOOTCHEST);
 		chest.update();
-		DynmapLink.hideChest(this);
+		DynmapLink.ifEnabled(link -> link.hideChest(this));
 	}
 
 	public void resetTimer() {
@@ -104,7 +100,7 @@ public class LootChest extends RandomizedInventory {
 
 	public void setLootType(LootChestType type, boolean update) {
 		this.type = type;
-		DynmapLink.showChest(this);
+		DynmapLink.ifEnabled(link -> link.showChest(this));
 		clearInventory();
 		inv = Bukkit.createInventory(this, 27, "Coffre " + type.getName());
 		if (update) OlympaZTA.getInstance().lootChestsManager.columnLootType.updateAsync(this, type.getName(), null, null);
@@ -118,25 +114,14 @@ public class LootChest extends RandomizedInventory {
 		return location;
 	}
 
-	public int getMinItems() {
-		return 2;
-	}
-
-	public int getMaxItems() {
-		return 4;
-	}
-
-	public List<LootCreator> getObjectList() {
-		return type.getCreatorsSimple();
-	}
-
-	public List<LootCreator> getAlwaysObjectList() {
-		return type.getCreatorsAlways();
-	}
-
 	@Override
 	public Inventory getInventory() {
 		return inv;
+	}
+	
+	@Override
+	protected ConditionalMultiPicker<LootCreator, LootContext> getLootPicker() {
+		return type.getPicker();
 	}
 
 }

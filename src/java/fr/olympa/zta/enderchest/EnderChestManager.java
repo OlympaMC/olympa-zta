@@ -21,20 +21,20 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import fr.olympa.api.enderchest.EnderChestCommand;
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.lines.CyclingLine;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.sql.statement.OlympaStatement;
-import fr.olympa.api.sql.statement.StatementType;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.common.sql.statement.OlympaStatement;
+import fr.olympa.api.common.sql.statement.StatementType;
+import fr.olympa.api.spigot.enderchest.EnderChestCommand;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.lines.CyclingLine;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
-import fr.olympa.zta.utils.DynmapLink;
+import fr.olympa.zta.utils.map.DynmapLink;
 
 public class EnderChestManager implements Listener {
 	
-	private static final String TABLE_NAME = "`zta_enderchests`";
+	private static final String TABLE_NAME = OlympaZTA.getInstance().getServerNameID() + "_enderchests";
 	
 	private Map<Location, Hologram> enderchests = new HashMap<>();
 	private EnderChestCommand command;
@@ -58,7 +58,7 @@ public class EnderChestManager implements Listener {
 		resultSet.close();
 		statement.close();
 		
-		command = new EnderChestCommand(OlympaZTA.getInstance(), ZTAPermissions.ENDERCHEST_COMMAND, ZTAPermissions.ENDERCHEST_COMMAND_OTHER);
+		command = new EnderChestCommand(OlympaZTA.getInstance(), ZTAPermissions.GROUP_SAUVEUR, ZTAPermissions.ENDERCHEST_COMMAND_OTHER);
 		command.register();
 		
 		OlympaZTA.getInstance().sendMessage("§6%d §eEnderChests chargés", enderchests.size());
@@ -66,7 +66,7 @@ public class EnderChestManager implements Listener {
 	
 	public void addEnderChest(Location location, boolean database) {
 		enderchests.put(location, OlympaCore.getInstance().getHologramsManager().createHologram(location.add(0.5, 1, 0.5), false, true, new CyclingLine<>(CyclingLine.getAnim("EnderChest", "§b§l", "§3§l"), 2, 3 * 10)));
-		DynmapLink.showEnderChest(location);
+		DynmapLink.ifEnabled(link -> link.showEnderChest(location));
 		if (database) {
 			try (PreparedStatement statement = insertStatement.createStatement()) {
 				statement.setString(1, location.getWorld().getName());
@@ -84,7 +84,7 @@ public class EnderChestManager implements Listener {
 		Hologram hologram = enderchests.remove(location);
 		if (hologram == null) return;
 		hologram.remove();
-		DynmapLink.hideEnderChest(location);
+		DynmapLink.ifEnabled(link -> link.hideEnderChest(location));
 		try (PreparedStatement statement = deleteStatement.createStatement()) {
 			statement.setString(1, location.getWorld().getName());
 			statement.setInt(2, location.getBlockX());
@@ -102,7 +102,7 @@ public class EnderChestManager implements Listener {
 		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 			Player p = e.getPlayer();
 			e.setCancelled(true);
-			command.getEnderChestGUI(AccountProvider.get(p.getUniqueId())).create(p);
+			command.getEnderChestGUI(AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 			p.playSound(e.getClickedBlock().getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
 		}
 	}

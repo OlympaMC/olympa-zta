@@ -7,13 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.zta.weapons.guns.AmmoType;
 
-public class WeaponsAmmosGUI extends PagedGUI<AmmoType> {
+public class WeaponsAmmosView extends PagedView<AmmoType> {
 	
-	public WeaponsAmmosGUI() {
-		super("Give de munitions", DyeColor.LIGHT_BLUE, Arrays.asList(AmmoType.values()), 2);
+	public WeaponsAmmosView() {
+		super(DyeColor.LIGHT_BLUE, Arrays.asList(AmmoType.values()));
 	}
 	
 	@Override
@@ -24,6 +25,10 @@ public class WeaponsAmmosGUI extends PagedGUI<AmmoType> {
 	@Override
 	public void click(AmmoType existing, Player p, ClickType click) {
 		p.getInventory().addItem(existing.getAmmo(10, true));
+	}
+	
+	public OlympaGUI toGUI() {
+		return super.toGUI("Give de munitions", 2);
 	}
 	
 }

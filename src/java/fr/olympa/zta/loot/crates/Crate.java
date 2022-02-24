@@ -1,7 +1,5 @@
 package fr.olympa.zta.loot.crates;
 
-import java.util.List;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,11 +12,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.holograms.Hologram;
-import fr.olympa.api.holograms.Hologram.HologramLine;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.lines.BlinkingLine;
-import fr.olympa.api.lines.DynamicLine;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
+import fr.olympa.api.spigot.holograms.Hologram;
+import fr.olympa.api.spigot.holograms.Hologram.HologramLine;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.lines.BlinkingLine;
+import fr.olympa.api.spigot.lines.DynamicLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -37,11 +36,12 @@ public class Crate extends RandomizedInventory {
 	private BukkitTask task, unloadTask;
 	private Hologram hologram;
 	private DynamicLine<HologramLine> timerLine = new DynamicLine<>(x -> {
-		return diff > 0 ? ("§7En approche... " + diff) : ("§7§nDébloquée !" + (ItemUtils.getInventoryContentsLength(inv) == 0 ? "§7§l [vide]" : ""));
+		if (diff > 0) return "§7En approche... " + diff;
+		return "§7§nDébloquée !" + (ItemUtils.getInventoryContentsLength(inv) == 0 ? "§7§l [vide]" : "");
 	});
 	
 	public Crate(Location location, CrateType type) {
-		super("Caisse d'équipement", 3);
+		super("Caisse d'équipement " + type.getName(), 3);
 		this.location = location;
 		this.type = type;
 	}
@@ -76,7 +76,7 @@ public class Crate extends RandomizedInventory {
 				location.getWorld().spawnParticle(Particle.SMOKE_LARGE, location, 30 - diff, 0.8, 0, 0.8, 0.01);
 				if (diff < 15) location.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, location, 15 - diff, 0.8, 0, 0.8, 0.01);
 			}
-			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.3f, 1);
+			location.getWorld().playSound(block.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 2f, 1);
 			if (block.getRelative(BlockFace.DOWN).getType() != Material.AIR) { // touché le sol
 				task.cancel();
 				task = null;
@@ -85,7 +85,8 @@ public class Crate extends RandomizedInventory {
 					OlympaZTA.getInstance().crates.unloadCrate(this);
 				}, 5 * 60 * 20);
 				location.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.5f, 0.1f);
-				super.fillInventory();
+				location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+				super.fillInventory(null);
 			}
 			timerLine.updateGlobal();
 			/*if (diff < 20) {
@@ -126,23 +127,8 @@ public class Crate extends RandomizedInventory {
 	}
 	
 	@Override
-	public int getMinItems() {
-		return 6;
-	}
-	
-	@Override
-	public int getMaxItems() {
-		return 8;
-	}
-	
-	@Override
-	public List<LootCreator> getObjectList() {
-		return type.getCreatorsSimple();
-	}
-	
-	@Override
-	public List<LootCreator> getAlwaysObjectList() {
-		return type.getCreatorsAlways();
+	protected ConditionalMultiPicker<LootCreator, LootContext> getLootPicker() {
+		return type.getPicker();
 	}
 	
 }

@@ -18,23 +18,29 @@ import fr.olympa.zta.weapons.guns.Gun;
 
 public abstract class Bullet{
 	
-	private static final Random random = new Random();
+	protected static final Random random = new Random();
 	
 	private final FixedMetadataValue metadata = new FixedMetadataValue(OlympaZTA.getInstance(), this);
-	protected final Gun gun;
+	
+	protected final float speed;
+	protected final float spread;
 	
 	public Bullet(Gun gun){
-		this.gun = gun;
+		this.speed = gun.bulletSpeed.getValue();
+		this.spread = gun.bulletSpread.getValue();
 	}
 	
-	public void launchProjectile(Player p){
-		float speed = gun.bulletSpeed.getValue();
-		Vector velocity = p.getLocation().getDirection().multiply(speed);
+	public Bullet(float speed, float spread) {
+		this.speed = speed;
+		this.spread = spread;
+	}
+	
+	public void launchProjectile(Player p, Vector direction) {
+		Vector velocity = direction.multiply(speed);
 
-		float bulletSpread = gun.bulletSpread.getValue();
-		if (bulletSpread != 0) {
-			float bulletSpreadHalf = bulletSpread / 2;
-			velocity.add(new Vector(random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf, random.nextFloat() * bulletSpread - bulletSpreadHalf));
+		if (spread != 0) {
+			float bulletSpreadHalf = spread / 2;
+			velocity.add(new Vector(random.nextFloat() * spread - bulletSpreadHalf, random.nextFloat() * spread - bulletSpreadHalf, random.nextFloat() * spread - bulletSpreadHalf));
 		}
 
 		boolean highVelocity = speed >= 4.5;
@@ -53,7 +59,7 @@ public abstract class Bullet{
 						if (projectile.getTicksLived() == previousTicksLived) return;
 						previousTicksLived = projectile.getTicksLived();
 						Vector velocity = projectile.getVelocity();
-						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), velocity.normalize().length(), null, true);
+						world.spawnParticle(Particle.SMOKE_LARGE, projectile.getLocation(), 0, velocity.getX(), velocity.getY(), velocity.getZ(), /*velocity.normalize().length()*/ 1, null, true);
 					}else cancel();
 				}
 			}.runTaskTimerAsynchronously(OlympaZTA.getInstance(), 0, 4);

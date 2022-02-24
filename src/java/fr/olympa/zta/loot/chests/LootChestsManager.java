@@ -3,8 +3,10 @@ package fr.olympa.zta.loot.chests;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -30,9 +32,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.region.tracking.TrackedRegion;
-import fr.olympa.api.sql.SQLColumn;
-import fr.olympa.api.sql.SQLTable;
+import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.common.sql.SQLTable;
+import fr.olympa.api.spigot.region.tracking.TrackedRegion;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import fr.olympa.zta.OlympaZTA;
@@ -42,11 +44,7 @@ import fr.olympa.zta.mobs.MobSpawning.SpawnType.SpawningFlag;
 public class LootChestsManager implements Listener {
 
 	public static final NamespacedKey LOOTCHEST = new NamespacedKey(OlympaZTA.getInstance(), "loot_chest_id");
-
-	/*private final String tableName = "`zta_lootchests`";
-	private final OlympaStatement createStatement = new OlympaStatement("INSERT INTO " + tableName + " (`world`, `x`, `y`, `z`, `loot_type`) VALUES (?, ?, ?, ?, ?)", true);
-	private final OlympaStatement removeStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
-	private final OlympaStatement updateLootStatement = new OlympaStatement("UPDATE " + tableName + " SET `loot_type` = ? WHERE (`id` = ?)");*/
+	protected static Random random = new Random();
 	
 	private SQLTable<LootChest> table;
 	
@@ -58,17 +56,18 @@ public class LootChestsManager implements Listener {
 	public SQLColumn<LootChest> columnLootType = new SQLColumn<LootChest>("loot_type", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable();
 
 	public final Map<Integer, LootChest> chests = new HashMap<>();
-	private Random random = new Random();
+	
+	public List<Location> tmpAllowed = new ArrayList<>();
 
 	public LootChestsManager() throws SQLException {
-		table = new SQLTable<>("zta_lootchests",
+		table = new SQLTable<>(OlympaZTA.getInstance().getServerNameID() + "_lootchests",
 				Arrays.asList(columnID, columnWorld, columnX, columnY, columnZ, columnLootType),
-				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type"))));
+				resultSet -> new LootChest(resultSet.getInt("id"), new Location(Bukkit.getWorld(resultSet.getString("world")), resultSet.getInt("x"), resultSet.getInt("y"), resultSet.getInt("z")), LootChestType.valueOf(resultSet.getString("loot_type").toUpperCase())));
 		table.createOrAlter();
 
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaZTA.getInstance(), () -> {
 			try {
-				chests.putAll(table.selectAll().stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
+				chests.putAll(table.selectAll(null).stream().collect(Collectors.toMap(LootChest::getID, x -> x)));
 				OlympaZTA.getInstance().sendMessage("§e%d§7 coffres de loot chargés !", chests.size());
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -135,14 +134,14 @@ public class LootChestsManager implements Listener {
 		LootChest chest = chests.remove(id);
 		if (chest == null) throw new IllegalArgumentException("No lootchest with id " + id);
 		table.delete(chest);
-		chest.unregister((Chest) chest.getLocation().getBlock().getState());
+		if (chest.getLocation().getBlock().getState() instanceof Chest state) chest.unregister(state);
 	}
 
 	public LootChestType pickRandomChestType(Location location) {
 		for (TrackedRegion region : OlympaCore.getInstance().getRegionManager().getApplicableRegions(location)) {
 			SpawningFlag flag = region.getFlag(SpawningFlag.class);
 			if (flag == null) continue;
-			return flag.type.getLootChests().pick(random).get(0).getType();
+			return flag.type.getLootChests().pickOne(random);
 		}
 		return null;
 	}
@@ -159,7 +158,20 @@ public class LootChestsManager implements Listener {
 			if (chest == null) return;
 
 			e.setCancelled(true);
-			chest.click(player);
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> chest.click(player));
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onInteractHighest(PlayerInteractEvent e) {
+		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		if (e.getHand() != EquipmentSlot.HAND) return;
+		
+		Block block = e.getClickedBlock();
+		if (block.getType() == Material.CHEST) {
+			if (tmpAllowed.contains(block.getLocation())) {
+				e.setCancelled(false);
+			}
 		}
 	}
 	
@@ -171,8 +183,12 @@ public class LootChestsManager implements Listener {
 		if (chest.getPersistentDataContainer().has(LOOTCHEST, PersistentDataType.INTEGER)) {
 			Integer id = chest.getPersistentDataContainer().get(LOOTCHEST, PersistentDataType.INTEGER);
 			try {
-				removeLootChest(id);
-				Prefix.INFO.sendMessage(e.getPlayer(), "Tu as supprimé le coffre de loot %d.", id);
+				if (chests.containsKey(id)) {
+					removeLootChest(id);
+					Prefix.INFO.sendMessage(e.getPlayer(), "Tu as supprimé le coffre de loot %d.", id);
+				}else {
+					Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Le coffre portait l'ID %d qui n'existe plus dans la base de donnée.", id);
+				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
 				Prefix.ERROR.sendMessage(e.getPlayer(), "Une erreur est survenue lors de la suppresion du coffre de loot %d.", id);
@@ -184,12 +200,13 @@ public class LootChestsManager implements Listener {
 	public void onBlockPlace(BlockPlaceEvent e) {
 		if (e.isCancelled()) return;
 		if (e.getBlock().getWorld() != OlympaZTA.getInstance().mobSpawning.world) return;
-		if (e.getBlock().getType() != Material.CHEST) return;
+		if (e.getBlock().getType() != Material.CHEST && e.getBlock().getType() != Material.TRAPPED_CHEST) return;
 		Chest chest = (Chest) e.getBlock().getState();
 		if (getLootChest(chest) != null) return;
 		try {
 			Location loc = chest.getLocation();
 			LootChestType type = pickRandomChestType(loc);
+			if (type == null) return;
 			LootChest lootchest = createLootChest(loc, type);
 			Prefix.DEFAULT_GOOD.sendMessage(e.getPlayer(), "Le coffre de loot a été créé ! ID: " + lootchest.getID() + ", type: " + type.getName());
 		}catch (SQLException ex) {

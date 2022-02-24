@@ -6,31 +6,42 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
-import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
+import fr.olympa.zta.itemstackable.QuestItem;
 import fr.olympa.zta.utils.npcs.AbstractShop.AbstractBuyingShop;
 
 public class QuestItemShop extends AbstractBuyingShop<QuestItem> {
 	
-	private static final List<Article<QuestItem>> ARTICLES = Arrays.asList(new Article<>(QuestItem.DECHET, 15));
+	private static final List<AbstractArticle<QuestItem>> ARTICLES = Arrays.asList(
+			new Article<>(QuestItem.DECHET, 7),
+			new Article<>(QuestItem.AMAS, 10),
+			new Article<>(QuestItem.PILE, 40),
+			new Article<>(QuestItem.CARTE_MERE, 45)
+			);
 	
 	public QuestItemShop() {
 		super("questitemshop", "Rachat de pièeces", "Pièces détachées", DyeColor.MAGENTA, ARTICLES);
 	}
 	
 	@Override
-	protected boolean take(QuestItem object, Player p) {
-		if (SpigotUtils.containsItems(p.getInventory(), object.getOriginalItem(), 1)) {
-			SpigotUtils.removeItems(p.getInventory(), object.getOriginalItem(), 1);
-			return true;
+	protected int take(QuestItem object, Player p, boolean shift) {
+		PlayerInventory inv = p.getInventory();
+		if (shift) {
+			int amount = Math.min(object.getItemAmount(inv), 64);
+			if (amount > 0) object.removeItems(inv, amount);
+			return amount;
 		}
-		return false;
+		if (object.containsAmount(inv, 1)) {
+			object.removeItems(inv, 1);
+			return 1;
+		}
+		return 0;
 	}
 	
 	@Override
 	public ItemStack getItemStack(QuestItem object) {
-		return object.getOriginalItem().toMutableStack();
+		return object.createItem();
 	}
 	
 }

@@ -2,10 +2,11 @@ package fr.olympa.zta.loot.crates;
 
 import java.util.stream.Collectors;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
@@ -29,7 +30,7 @@ public class CratesCommand extends ComplexCommand {
 	public void list(CommandContext cmd) {
 		sendSuccess("Liste des caisses sur le monde:\n%s", crates.getRunning()
 				.stream()
-				.map(x -> "§d" + SpigotUtils.convertLocationToHumanString(x.getLocation()) + "§5, de type §d" + x.getType().name() + "§5, a atterri: §d" + x.hasLanded())
+				.map(x -> "§7➤ §d" + SpigotUtils.convertLocationToHumanString(x.getLocation()) + "§5, de type §d" + x.getType().name() + "§5, a atterri: §d" + x.hasLanded() + "§5, vide: §d" + (ItemUtils.getInventoryContentsLength(x.getInventory()) == 0))
 				.collect(Collectors.joining("\n")));
 	}
 	

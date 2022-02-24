@@ -5,20 +5,22 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.gui.OlympaGUI;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
-import fr.olympa.zta.utils.PhysicalMoney;
 
 public class BankExchangeGUI extends OlympaGUI {
 
-	private static ItemStack add = ItemUtils.item(Material.GREEN_WOOL, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic droit : §7Augmenter de 1", "§8§l> Clic gauche : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100");
-	private static ItemStack remove = ItemUtils.item(Material.RED_WOOL, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic droit : §7Baisser de 1", "§8§l> Clic gauche : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100");
-	private static ItemStack transfer = ItemUtils.item(Material.REDSTONE, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
-	private static ItemStack withdraw = ItemUtils.item(Material.BRICK, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
+	private static ItemStack add = ItemUtils.item(Material.GREEN_STAINED_GLASS_PANE, "§a↑ Augmenter le montant de la transaction", "§8§l> Clic gauche : §7Augmenter de 1",
+		"§8§l> Clic droit : §7Augmenter de 10", "§8§l> Clic central : §7Augmenter de 100", "§8§l> Shift Clic : §7Choisis le montant maximum dans ton inventaire");
+	private static ItemStack remove = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c↓ Diminuer le montant de la transaction", "§8§l> Clic gauche : §7Baisser de 1",
+		"§8§l> Clic droit : §7Baisser de 10", "§8§l> Clic central : §7Baisser de 100", "§8§l> Shift Clic : §7Enlève tous l'argent de la transaction");
+	private static ItemStack transfer = ItemUtils.item(Material.PRISMARINE_CRYSTALS, 1, "§bDéposer sur son compte en banque", "§8> §oTransfère les billets de votre", " §8§o inventaire à votre compte");
+	private static ItemStack withdraw = ItemUtils.item(Material.NAUTILUS_SHELL, 1, "§bRetirer de mon compte", "§8> §oDonne de l'argent de votre", "§8§o compte sous forme de billets");
 
 	private OlympaPlayerZTA player;
 
@@ -29,10 +31,10 @@ public class BankExchangeGUI extends OlympaGUI {
 		this.player = player;
 		this.player.getGameMoney().observe("bank_gui", this::updateMoney);
 
-		ItemUtils.skull(item -> {
-			inv.setItem(0, item);
-			updateMoney();
-		}, "§e§lMa monnaie", player.getName());
+		inv.setItem(0, ItemUtils.item(Material.PLAYER_HEAD, "§e§lMa monnaie"));
+		updateMoney();
+		ItemStack moneyItem = inv.getItem(0);
+		ItemUtils.skull(moneyItem::setItemMeta, moneyItem, player.getName());
 
 		inv.setItem(2, add);
 		inv.setItem(4, remove);
@@ -48,28 +50,35 @@ public class BankExchangeGUI extends OlympaGUI {
 	}
 
 	private void updateMoney() {
-		ItemUtils.lore(inv.getItem(0), "§8> Compte bancaire : §7§l" + player.getGameMoney().getFormatted(), "§8> Mon porte-feuille : §7§l" + PhysicalMoney.getPlayerMoney(player.getPlayer()) + OlympaMoney.OMEGA);
+		ItemUtils.lore(inv.getItem(0), "§8> Compte bancaire : §7§l" + player.getGameMoney().getFormatted(), "§8> Mon porte-feuille : §7§l" + PhysicalMoney.getPlayerMoney((Player) player.getPlayer()) + OlympaMoney.OMEGA);
 	}
 
 	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == 2 || slot == 4) {
 			int toChange = 0;
-			if (click.isRightClick()) {
-				toChange = 1;
-			}else if (click.isLeftClick()) {
-				toChange = 10;
-			}else if (click == ClickType.MIDDLE) {
-				toChange = 100;
+			int maxMoney = PhysicalMoney.getPlayerMoney(p);
+			if (click.isShiftClick()) {
+				if (slot == 2) {
+					amount = maxMoney;
+				} else {
+					amount = 0;
+				}
+			} else {
+				if (click.isRightClick()) {
+					toChange = 10;
+				} else if (click.isLeftClick()) {
+					toChange = 1;
+				} else if (click == ClickType.MIDDLE) {
+					toChange = 100;
+				}
+				if (slot == 2) {
+					amount += toChange;
+				}else {
+					amount -= toChange;
+					if (amount < 0) amount = 0;
+				}
 			}
-
-			if (slot == 2) {
-				amount += toChange;
-			}else {
-				amount -= toChange;
-				if (amount < 0) amount = 0;
-			}
-
 			updateCounter();
 		}else if (slot == 7) {
 			if (amount == 0) return true;
@@ -85,18 +94,32 @@ public class BankExchangeGUI extends OlympaGUI {
 			int money = (int) player.getGameMoney().get();
 			int amount = this.amount;
 			if (money < amount) amount = money;
-			PhysicalMoney.give(p, amount);
 			player.getGameMoney().withdraw(amount);
+			PhysicalMoney.give(p, amount);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as retiré %s de ton compte en banque.", OlympaMoney.format(amount));
 			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 		}
 		return true;
 	}
+	
+	@Override
+	public boolean noDragClick() {
+		return false;
+	}
 
+	@Override
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
+		return isFromPlayerInv;
+	}
+	
 	@Override
 	public boolean onClose(Player p) {
 		player.getGameMoney().unobserve("bank_gui");
 		return true;
 	}
-
+	
+	@Override
+	public boolean noMiddleClick() {
+		return false;
+	}
 }

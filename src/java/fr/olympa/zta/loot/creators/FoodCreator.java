@@ -5,33 +5,29 @@ import java.util.Random;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ImmutableItemStack;
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.item.ImmutableItemStack;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.zta.loot.RandomizedInventory.LootContext;
 
 public class FoodCreator implements LootCreator {
 
 	private Food type;
-	private double chance;
 	private int min;
 	private int max;
 
-	public FoodCreator(double chance, Food type) {
-		this(chance, type, 1, 1);
+	public FoodCreator(Food type) {
+		this(type, 1, 1);
 	}
 
-	public FoodCreator(double chance, Food type, int min, int max) {
+	public FoodCreator(Food type, int min, int max) {
 		this.type = type;
-		this.chance = chance;
 		this.min = min;
 		this.max = max;
 	}
 
-	public double getChance() {
-		return chance;
-	}
-
-	public Loot create(Random random) {
+	@Override
+	public Loot create(Random random, LootContext context) {
 		return new Loot(type.get(Utils.getRandomAmount(random, min, max)));
 	}
 	
@@ -50,17 +46,28 @@ public class FoodCreator implements LootCreator {
 		MUSHROOM_STEW("Soupe"),
 		GOLDEN_CARROT("Carotte dorée"),
 		GOLDEN_APPLE("Pomme d'or"),
+		APPLE("Pomme"),
 		COOKIE("Cookie"),
 		COOKED_PORKCHOP("Viande de porc cuite"),
-		COOKED_SALMON("Saumon cuit");
-
+		COOKED_SALMON("Saumon cuit"),
+		DRIED_KELP(
+				"Biscuit militaire",
+				1),
+		;
+		
 		private Material type;
 		private String name;
+		private int customModelData;
 		
 		private final ImmutableItemStack item;
 
 		private Food(String name) {
+			this(name, 0);
+		}
+		
+		private Food(String name, int customModelData) {
 			this.name = name;
+			this.customModelData = customModelData;
 			this.type = Material.valueOf(name());
 			
 			item = new ImmutableItemStack(get(1));
@@ -71,7 +78,7 @@ public class FoodCreator implements LootCreator {
 		}
 
 		public ItemStack get(int amount) {
-			ItemStack item = ItemUtils.item(type, "§a" + name);
+			ItemStack item = ItemUtils.item(type, customModelData == 0 ? null : customModelData, "§a" + name);
 			item.setAmount(amount);
 			return item;
 		}

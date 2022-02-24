@@ -5,14 +5,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
@@ -34,15 +38,23 @@ import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.weapons.Weapon;
 import fr.olympa.zta.weapons.guns.Accessory.AccessoryType;
 import fr.olympa.zta.weapons.guns.bullets.Bullet;
+import fr.olympa.zta.weapons.skins.Skin;
+import fr.olympa.zta.weapons.skins.Skinable;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Gun implements Weapon {
+public class Gun implements Weapon, Skinable {
 
+	public static final List<ChatColor> TIERS = Arrays.asList(ChatColor.GREEN, ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.YELLOW, ChatColor.GOLD);
+	public static final UUID ZOOM_UUID = UUID.fromString("8a1c6742-3f54-44c2-ac6f-90fa7491ebef");
+	
 	private static DecimalFormat timeFormat = new DecimalFormat("#0.0");
 
-	private final int id;
-	private final GunType type;
+	protected final int id;
+	protected final GunType type;
+	
+	protected Skin skin = Skin.NORMAL;
 	
 	protected int beforeTrainingAmmos = -1;
 	
@@ -112,7 +124,8 @@ public class Gun implements Weapon {
 		ItemStack item = new ItemStack(type.getMaterial());
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());
-		meta.getPersistentDataContainer().set(GunRegistry.GUN_KEY, PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(getKey(), PersistentDataType.INTEGER, getID());
+		meta.getPersistentDataContainer().set(type.getKey(), PersistentDataType.BYTE, (byte) 0);
 		meta.setCustomModelData(1);
 		meta.setLore(getLore(accessories));
 		item.setItemMeta(meta);
@@ -121,15 +134,25 @@ public class Gun implements Weapon {
 	}
 
 	public void updateItemName(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setDisplayName("§e" + (!type.hasSecondaryMode() ? "" : secondaryMode ? "◁▶ " : "◀▷ ") + type.getName() + " [" + ammos + "/" + (int) maxAmmos.getValue() + "] " + (ready ? "●" : "○") + (reloading == null ? "" : " recharge"));
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public void updateItemCustomModel(ItemStack item) {
-		ItemMeta im = item.getItemMeta();
-		im.setCustomModelData(zoomed ? 2 : 1);
-		item.setItemMeta(im);
+		try {
+			ItemMeta im = item.getItemMeta();
+			im.setCustomModelData(skin.getId() * 2 + (zoomed ? 2 : 1));
+			item.setItemMeta(im);
+		}catch (Exception ex) {
+			OlympaZTA.getInstance().sendMessage("§cUne erreur est survenue lors de la mise à jour d'un item d'arme.");
+			ex.printStackTrace();
+		}
 	}
 
 	public List<String> getLore(boolean accessories) {
@@ -140,6 +163,31 @@ public class Gun implements Weapon {
 		return lore;
 	}
 
+	public NamespacedKey getKey() {
+		return GunRegistry.GUN_KEY;
+	}
+	
+	@Override
+	public ItemStack getSkinItem(Skin skin) {
+		Skin oldSkin = this.skin;
+		this.skin = skin;
+		ItemStack item = createItemStack(false);
+		this.skin = oldSkin;
+		return item;
+	}
+	
+	@Override
+	public Skin getSkinOfItem(ItemStack item) {
+		return skin;
+	}
+	
+	@Override
+	public void setSkin(Skin skin, ItemStack item) {
+		this.skin = skin;
+		updateItemCustomModel(item);
+	}
+	
+	@Override
 	public void onEntityHit(EntityDamageByEntityEvent e) {
 		Player damager = (Player) e.getDamager();
 		if (damageCaC == 0) {
@@ -156,16 +204,21 @@ public class Gun implements Weapon {
 		p.setCooldown(item.getType(), 0);
 		if (type.hasHeldEffect()) p.addPotionEffect(type.getHeldEffect());
 		int readyTime = -1;
-		if (previous instanceof Gun) {
-			Gun prev = (Gun) previous;
-			if (!prev.ready) {
-				readyTime = (int) Math.min(prev.fireRate.getValue(), fireRate.getValue());
-			}
+		float thisPotential = fireRate.getValue();
+		if (thisPotential <= 0) {
+			if (ammos == 0) return;
+			thisPotential = chargeTime.getValue();
 		}
-		if (readyTime == -1 && !ready) readyTime = (int) fireRate.getValue();
+		if (previous instanceof Gun prev && !prev.ready) {
+			float prevPotential = prev.fireRate.getValue();
+			if (prevPotential <= 0) prevPotential = prev.chargeTime.getValue();
+			readyTime = (int) Math.min(prevPotential, thisPotential);
+		}
+		if (readyTime == -1 && !ready) readyTime = (int) thisPotential;
 		if (readyTime != -1) {
 			ready = false;
 			updateItemName(item);
+			setCooldown(p, readyTime);
 			task = new BukkitRunnable() {
 				@Override
 				public void run() {
@@ -181,6 +234,10 @@ public class Gun implements Weapon {
 		}
 	}
 
+	private void setCooldown(Player p, int readyTime) {
+		if (readyTime > 5) p.setCooldown(type.getMaterial(), readyTime);
+	}
+
 	@Override
 	public void itemNoLongerHeld(Player p, ItemStack item) {
 		if (zoomed) toggleZoom(p, item);
@@ -192,14 +249,17 @@ public class Gun implements Weapon {
 		}
 	}
 
-	public boolean drop(Player p, ItemStack item) {
-		reload(p, item);
-		return true;
+	public void drop(Player p, ItemStack item) {
+		if (Bukkit.isPrimaryThread()) {
+			reload(p, item);
+		}else
+			Bukkit.getScheduler().runTask(OlympaZTA.getInstance(), () -> reload(p, item));
 	}
 
 	private BukkitTask task;
 	private long lastClick;
 
+	@Override
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		ItemStack item = e.getItem();
@@ -218,6 +278,7 @@ public class Gun implements Weapon {
 			}else if (ready && isFireEnabled(p) && task == null) {
 				if (getCurrentMode() == GunMode.BLAST) {
 					ready = false;
+					int rate = (int) (fireRate.getValue() / 2);
 					task = new BukkitRunnable() {
 						byte left = 3;
 						@Override
@@ -228,6 +289,7 @@ public class Gun implements Weapon {
 								if (ammos == 0) {
 									cancel();
 								}
+								if (left == 0) p.setCooldown(type.getMaterial(), rate * 3);
 							}else if (left == -4) {
 								setReady(p, item);
 								cancel();
@@ -238,13 +300,14 @@ public class Gun implements Weapon {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (int) (fireRate.getValue() / 2L));
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}else if (fireRate.getValue() == -1) {
 					ready = false;
 					fire(p);
 					updateItemName(item);
 				}else {
 					ready = false;
+					int rate = (int) fireRate.getValue();
 					task = new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -255,6 +318,7 @@ public class Gun implements Weapon {
 							}
 							if (System.currentTimeMillis() - lastClick < 210) {
 								fire(p);
+								setCooldown(p, rate);
 								updateItemName(item);
 							}else {
 								setReady(p, item);
@@ -262,14 +326,15 @@ public class Gun implements Weapon {
 							}
 						}
 
+						@Override
 						public synchronized void cancel() throws IllegalStateException {
 							super.cancel();
 							task = null;
 						}
-					}.runTaskTimer(OlympaZTA.getInstance(), 0, (long) fireRate.getValue());
+					}.runTaskTimer(OlympaZTA.getInstance(), 0, rate);
 				}
 			}
-		}else 	if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
+		}else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) { // clic gauche : tir
 			if (reloading == null) secondaryClick(p, item);
 		}
 	}
@@ -311,7 +376,7 @@ public class Gun implements Weapon {
 	private void fire(Player p) {
 		Bullet bullet = type.createBullet(this, (customDamagePlayer == 0 ? type.getPlayerDamage() : customDamagePlayer) + damageAdded, (customDamageEntity == 0 ? type.getEntityDamage() : customDamageEntity) + damageAdded);
 		for (int i = 0; i < type.getFiredBullets(); i++) {
-			bullet.launchProjectile(p);
+			bullet.launchProjectile(p, p.getLocation().getDirection());
 		}
 		
 		float knockback = this.knockback.getValue();
@@ -346,24 +411,24 @@ public class Gun implements Weapon {
 		showAmmos(p);
 	}
 	
-	private boolean shouldTakeItems(Player p) {
+	protected boolean shouldTakeItems(Player p) {
 		GunFlag gunFlag = getGunFlag(p);
 		return p.getGameMode() != GameMode.CREATIVE && (gunFlag == null || !gunFlag.isFreeAmmos());
 	}
 
-	private void reload(Player p, ItemStack item) {
-		if (reloading != null) return;
+	private boolean reload(Player p, ItemStack item) {
+		if (reloading != null) return false;
 		if (zoomed) toggleZoom(p, item);
 
 		int max = (int) maxAmmos.getValue();
-		if (max <= ammos) return;
+		if (max <= ammos) return false;
 
 		int toCharge;
 		int availableAmmos = shouldTakeItems(p) ? type.getAmmoType().getAmmos(p) : Integer.MAX_VALUE;
 		if (availableAmmos == 0) {
 			playOutOfAmmosSound(p.getLocation());
 			showAmmos(p);
-			return;
+			return false;
 		}
 		if (type.isOneByOneCharge()) {
 			toCharge = 1;
@@ -380,23 +445,25 @@ public class Gun implements Weapon {
 			@Override
 			public void run() {
 				if (time == 0) {
-					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : max;
+					ammos = shouldTakeItems(p) ? Math.min(ammos + type.getAmmoType().removeAmmos(p, toCharge) * type.getAmmoType().getAmmosPerItem(), max) : Math.min(max, ammos + (type.isOneByOneCharge() ? 1 : max));
 					if (ammos != 0) ready = true;
 					playChargeCompleteSound(p.getLocation());
 
 					if (type.isOneByOneCharge() && maxAmmos.getValue() > ammos) {
 						reloading.cancel();
 						reloading = null;
-						reload(p, item); // relancer une charge
-					}else {
-						cancelReload(p, item);
+						if (!reload(p, item)) { // relancer une charge
+							updateItemName(item); // update si plus assez de munitions = recharge terminée
+						}
+						return;
 					}
+					cancelReload(p, item);
 					return;
 				}
 				StringBuilder status = new StringBuilder("§bRechargement... ");
 				boolean changed = false;
 				for (int i = 0; i < animationMax; i++) {
-					if (i >= current && !changed) {
+					if (!changed && i >= current) {
 						status.append("§c");
 						changed = true;
 					}
@@ -411,13 +478,19 @@ public class Gun implements Weapon {
 
 		updateItemName(item);
 		playChargeSound(p.getLocation());
+		return true;
 	}
 
 	private void toggleZoom(Player p, ItemStack item) {
+		AttributeInstance attribute = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
 		if (zoomed) {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(getZoomModifier().getBukkitModifier());
+			attribute.removeModifier(getZoomModifier().getBukkitModifier());
 		}else {
-			p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addModifier(getZoomModifier().getBukkitModifier());
+			try {
+				attribute.addModifier(getZoomModifier().getBukkitModifier());
+			}catch (IllegalArgumentException ex) {
+				OlympaZTA.getInstance().sendMessage("§cZoom déjà appliqué sur un gun.");
+			}
 		}
 		zoomed = !zoomed;
 		if (scope != null) scope.zoomToggled(p, zoomed);
@@ -451,11 +524,11 @@ public class Gun implements Weapon {
 		return i;
 	}
 	
-	public void setAccessory(Accessory accessory) {
-		setAccessory(accessory.getType(), accessory);
+	public boolean setAccessory(Accessory accessory) {
+		return setAccessory(accessory.getType(), accessory);
 	}
 
-	public void setAccessory(AccessoryType type, Accessory accessory) {
+	public boolean setAccessory(AccessoryType type, Accessory accessory) {
 		Accessory old = null;
 		switch (type) {
 		case SCOPE:
@@ -473,6 +546,7 @@ public class Gun implements Weapon {
 		}
 		if (old != null) old.remove(this);
 		if (accessory != null) accessory.apply(this);
+		return old != null;
 	}
 
 	/**
@@ -512,7 +586,7 @@ public class Gun implements Weapon {
 	 * @param lc location où est jouée le son
 	 */
 	public void playOutOfAmmosSound(Location lc) {
-		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1, 1);
+		lc.getWorld().playSound(lc, Sound.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 0.8f, 1);
 	}
 
 	public synchronized void updateDatas(PreparedStatement statement) throws SQLException {
@@ -524,6 +598,7 @@ public class Gun implements Weapon {
 		statement.setInt(i++, scope == null ? -1 : scope.ordinal());
 		statement.setInt(i++, cannon == null ? -1 : cannon.ordinal());
 		statement.setInt(i++, stock == null ? -1 : stock.ordinal());
+		statement.setInt(i++, skin.getId());
 		statement.setInt(i++, getID());
 	}
 	
@@ -538,6 +613,7 @@ public class Gun implements Weapon {
 		if (scopeType != -1) setAccessory(Accessory.values()[scopeType]);
 		if (cannonType != -1) setAccessory(Accessory.values()[cannonType]);
 		if (stockType != -1) setAccessory(Accessory.values()[stockType]);
+		skin = Skin.getFromId(set.getInt("skin"));
 	}
 	
 	public enum GunAction {

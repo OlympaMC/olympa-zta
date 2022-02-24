@@ -1,4 +1,4 @@
-package fr.olympa.zta.utils;
+package fr.olympa.zta.bank;
 
 import java.util.StringJoiner;
 
@@ -11,18 +11,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.zta.OlympaZTA;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class PhysicalMoney {
 
-	private static final NamespacedKey BANKNOTE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "banknote");
+	public static final NamespacedKey BANKNOTE_KEY = new NamespacedKey(OlympaZTA.getInstance(), "banknote");
 	
-	public static final ItemStack BANKNOTE_1 = createBanknote(Material.BRICK, 1);
-	public static final ItemStack BANKNOTE_10 = createBanknote(Material.NETHER_BRICK, 10);
+	public static final ItemStack BANKNOTE_1 = createBanknote(Material.NAUTILUS_SHELL, 1);
+	public static final ItemStack BANKNOTE_10 = createBanknote(Material.HEART_OF_THE_SEA, 10);
 	public static final ItemStack BANKNOTE_100 = createBanknote(Material.PHANTOM_MEMBRANE, 100);
 	
 	private static ItemStack createBanknote(Material material, int money) {
@@ -30,6 +30,7 @@ public class PhysicalMoney {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§eBillet de §6§l" + money + "§6" + OlympaMoney.OMEGA);
 		meta.getPersistentDataContainer().set(BANKNOTE_KEY, PersistentDataType.INTEGER, money);
+		meta.setCustomModelData(1);
 		item.setItemMeta(meta);
 		return item;
 	}

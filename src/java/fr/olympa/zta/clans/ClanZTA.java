@@ -1,10 +1,12 @@
 package fr.olympa.zta.clans;
 
-import fr.olympa.api.clans.Clan;
-import fr.olympa.api.clans.ClanPlayerInterface;
-import fr.olympa.api.clans.ClansManager;
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
+import org.bukkit.entity.Player;
+
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.spigot.clans.Clan;
+import fr.olympa.api.spigot.clans.ClanPlayerInterface;
+import fr.olympa.api.spigot.clans.ClansManager;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.clans.plots.ClanPlayerDataZTA;
@@ -20,15 +22,17 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	
 	private ClanPlot cachedPlot;
 
-	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, long plotExpirationReset) {
-		super(manager, id, name, chief, maxSize, money, created);
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created, long plotExpirationReset) {
+		super(manager, id, name, tag, chief, maxSize, money, created);
 		this.plotExpirationReset = plotExpirationReset;
+		if (OlympaZTA.getInstance().rankingMoneyClan != null) getMoney().observe("ranking", () -> OlympaZTA.getInstance().rankingMoneyClan.handleNewScore(getName(), null, getMoney().get()));
 	}
 
-	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
-		super(manager, id, name, chief, maxSize);
+	public ClanZTA(ClansManager<ClanZTA, ClanPlayerDataZTA> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
+		super(manager, id, name, tag, chief, maxSize);
 	}
 	
+	@Override
 	public ClansManagerZTA getClansManager() {
 		return super.getClansManager();
 	}
@@ -49,7 +53,7 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	}
 	
 	public void setResetExpirationTime() {
-		this.plotExpirationReset = System.currentTimeMillis() + 7 * 24 * 3600 * 1000; // 1 semaine d'avertissement pour expiration
+		this.plotExpirationReset = System.currentTimeMillis() + 30 * 24 * 3600 * 1000; // 1 mois d'avertissement pour expiration
 		updateResetExpiration();
 	}
 	
@@ -61,7 +65,7 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 	protected void removedOnlinePlayer(ClanPlayerInterface<ClanZTA, ClanPlayerDataZTA> oplayer) {
 		super.removedOnlinePlayer(oplayer);
 		
-		OlympaZTA.getInstance().scoreboards.create((OlympaPlayerZTA) oplayer);
+		OlympaZTA.getInstance().scoreboards.refresh((OlympaPlayerZTA) oplayer);
 	}
 
 	@Override
@@ -79,12 +83,12 @@ public class ClanZTA extends Clan<ClanZTA, ClanPlayerDataZTA> {
 						BaseComponent lastCompo = components[components.length - 1];
 						lastCompo.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§eClique ici pour ne plus afficher ce message.")));
 						lastCompo.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/clans dismissExpirationMessage"));
-						member.getPlayer().spigot().sendMessage(components);
+						((Player) member.getPlayer()).sendMessage(components);
 					}else resetExpirationTime();
 				}
 			}else {
 				if (cachedPlot.getNextPayment() - System.currentTimeMillis() < ClanPlot.PAYMENT_DURATION_MILLIS) {
-					member.getPlayer().sendMessage(format("La parcelle du clan n'a pas été payée cette semaine. Celle-ci risque d'expirer par défaut de paiement."));
+					((Player) member.getPlayer()).sendMessage(format("La parcelle du clan n'a pas été payée cette semaine. Celle-ci risque d'expirer par défaut de paiement."));
 				}
 			}
 		}

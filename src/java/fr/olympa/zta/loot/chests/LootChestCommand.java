@@ -8,9 +8,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.loot.chests.type.LootChestType;
@@ -20,9 +20,24 @@ public class LootChestCommand extends ComplexCommand {
 	private LootChestsManager manager;
 
 	public LootChestCommand(LootChestsManager manager) {
-		super(OlympaZTA.getInstance(), "lootchest", "Permet de configurer des coffres de loot", ZTAPermissions.LOOT_CHEST_COMMAND);
+		super(OlympaZTA.getInstance(), "lootchest", "Permet de configurer des coffres de loot.", ZTAPermissions.LOOT_CHEST_COMMAND);
 		this.manager = manager;
 		super.addArgumentParser("CHESTTYPE", LootChestType.class);
+	}
+	
+	@Cmd (player = true)
+	public void allowTemp(CommandContext cmd) {
+		Chest chestBlock = getTargetChest(getPlayer());
+		if (chestBlock == null) return;
+		
+		manager.tmpAllowed.add(chestBlock.getLocation());
+		sendSuccess("Le coffre est accessible jusqu'au prochain redémarrage.");
+		
+		LootChest chest = manager.getLootChest(chestBlock);
+		if (chest != null) {
+			manager.chests.remove(chest.getID());
+			sendInfo("Ce coffre était un coffre de loot, il est temporairement désactivé.");
+		}
 	}
 	
 	@Cmd (player = true, args = "CHESTTYPE", syntax = "[type de coffre]")
@@ -72,6 +87,10 @@ public class LootChestCommand extends ComplexCommand {
 
 	@Cmd
 	public void clearAllChests(CommandContext cmd) {
+		if (cmd.getArgumentsLength() == 0 || !cmd.<String>getArgument(0).equals("confirm")) {
+			sendError("ATTENTION - cette commande est irréversible - vous devez exécuter /lootchest clearAllChests confirm.");
+			return;
+		}
 		int removed = 0;
 		int errors = 0;
 		for (Integer chest : new ArrayList<>(OlympaZTA.getInstance().lootChestsManager.chests.keySet())) {
@@ -104,48 +123,47 @@ public class LootChestCommand extends ComplexCommand {
 		sendSuccess("Le compte à rebours de ce coffre a été mis à 0.");
 	}
 
-	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %]")
+	@Cmd (min = 4, args = { "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER" }, syntax = "<xMin> <zMin> <xMax> <zMax> [init %%]")
 	public void globalScan(CommandContext cmd) {
-		try {
-			new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
-		}catch (IllegalArgumentException ex) {
-			sendError("Il n'y a pas de zone avec le nom %s.", cmd.getArgument(0));
-		}
+		new Scan().start(sender, cmd.getArgument(0), cmd.getArgument(1), cmd.getArgument(2), cmd.getArgument(3), cmd.getArgument(4, 0));
 	}
 
-	@Cmd (args = "HARD|MEDIUM|EASY|SAFE")
+	@Cmd (player = true)
 	public void randomize(CommandContext cmd) {
-		if (cmd.getArgumentsLength() == 0) {
-			if (player == null) {
-				sendIncorrectSyntax();
-				return;
-			}
-			LootChest chest = getTargetLootChest(getPlayer());
-			if (chest == null) return;
-			LootChestType type = manager.pickRandomChestType(chest.getLocation());
-			chest.setLootType(type, true);
-			sendSuccess("Le coffre est devenu un coffre %s.", type.getName());
-		}else {
-			for (LootChest lootChest : manager.chests.values()) {
-				lootChest.setLootType(manager.pickRandomChestType(lootChest.getLocation()), true);
-			}
-			sendSuccess("Les %d coffres de loot ont été randomisé.", manager.chests.size());
+		LootChest chest = getTargetLootChest(getPlayer());
+		if (chest == null) return;
+		LootChestType type = manager.pickRandomChestType(chest.getLocation());
+		chest.setLootType(type, true);
+		sendSuccess("Le coffre est devenu un coffre %s.", type.getName());
+	}
+	
+	@Cmd
+	public void randomizeAll(CommandContext cmd) {
+		for (LootChest lootChest : manager.chests.values()) {
+			lootChest.setLootType(manager.pickRandomChestType(lootChest.getLocation()), true);
 		}
+		sendSuccess("Les %d coffres de loot ont été randomisé.", manager.chests.size());
 	}
 
 	@Cmd
 	public void validateAll(CommandContext cmd) {
 		sendInfo("Début de l'opération...");
 		int missing = 0;
+		int emptied = 0;
 		int removed = 0;
 		for (LootChest lootChest : new ArrayList<>(manager.chests.values())) {
 			Block block = lootChest.getLocation().getBlock();
 			if (block.getType() == Material.CHEST) {
 				Chest chest = (Chest) block.getState();
+				boolean update = !chest.getInventory().isEmpty();
+				if (update) {
+					chest.getInventory().clear();
+					emptied++;
+				}
 				if (manager.getLootChest(chest) == null) {
 					lootChest.register(chest);
 					missing++;
-				}
+				}else if (update) chest.update();
 			}else {
 				try {
 					manager.removeLootChest(lootChest.getID());
@@ -155,7 +173,7 @@ public class LootChestCommand extends ComplexCommand {
 				}
 			}
 		}
-		sendSuccess("%d coffres corrigés, %d coffres supprimés.", missing, removed);
+		sendSuccess("%d coffres corrigés, %d coffres vidés, %d coffres supprimés.", missing, emptied, removed);
 	}
 
 	private Chest getTargetChest(Player p) {

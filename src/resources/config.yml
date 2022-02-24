@@ -1,86 +1,92 @@
+serverIndex: -1
+
+resourcePack:
+  url: https://drive.google.com/uc?export=download&id=10VKRoKaCvwDrbW9VOLsDZLm4L9DTOfve
+  hash: 6FCB86784E06A2B54C4B55B53D54A26F276F9077
+
 mobRegions:
   HARD:
-  - ==: fr.olympa.api.region.shapes.Polygon
+  - ==: fr.olympa.api.spigot.region.shapes.Polygon
     world: "world"
     minY: 0
     maxY: 256
-    points: ["-181|-283", "-96|-282", "-94|-667", "-45|-668", "27|-756", "159|-754", "185|-753", "260|-736", "298|-736", "365|-687", "365|-228", "880|-227", "880|-205", "877|-183", "871|-177", "871|-126", "871|-86", "871|-74", "875|74", "636|74", "634|102", "634|213", "664|213", "664|309", "686|316", "689|358", "658|357", "634|357", "634|369", "562|369", "562|417", "599|417", "599|538", "480|536", "464|536", "442|549", "382|549", "371|556", "346|573", "346|597", "346|633", "406|639", "411|644", "411|652", "406|657", "346|801", "311|806", "302|806", "289|801", "160|801", "44|710", "-28|710", "-39|710", "-121|584", "-152|501", "-180|501"]
+    points: ["-181|-283", "-96|-282", "-94|-667", "-45|-668", "27|-756", "159|-754", "185|-753", "260|-736", "298|-736", "365|-687", "365|-228", "634|64", "634|102", "634|213", "664|213", "664|309", "686|316", "689|358", "658|357", "634|357", "634|369", "562|369", "562|417", "599|417", "599|538", "480|536", "464|536", "442|549", "382|549", "371|556", "346|573", "346|597", "346|633", "406|639", "411|644", "411|652", "406|657", "346|801", "311|806", "302|806", "289|801", "160|801", "44|710", "-28|710", "-39|710", "-121|584", "-152|501", "-180|501"]
   MEDIUM:
-  - ==: fr.olympa.api.region.shapes.Polygon
+  - ==: fr.olympa.api.spigot.region.shapes.Polygon
     world: "world"
     minY: 0
     maxY: 256
     points: ["-1503|-578", "-1519|461", "-948|461", "-948|498", "-831|498", "-831|536", "-718|536", "-718|581", "-699|581", "-699|767", "-811|879", "-811|1143", "-685|1143", "-685|1107", "-475|1107", "-474|501", "-475|501", "-355|501", "-355|590", "-373|590", "-373|725", "-355|727", "-355|807", "-282|807", "-282|501", "-227|501", "-226|807", "-153|807", "-153|584", "-153|501", "-180|501", "-181|-283", "-200|-283", "-200|-248", "-358|-248", "-359|-308", "-359|-398", "-395|-398", "-395|-578"]
   EASY:
-  - ==: fr.olympa.api.region.shapes.Polygon
+  - ==: fr.olympa.api.spigot.region.shapes.Polygon
     world: "world"
     minY: 0
     maxY: 256
-    points: ["365|-690", "402|-690", "454|-690", "505|-810", "1820|-810", "1900|-1074", "2200|-1074", "2200|-76", "1943|-76", "1943|527", "1579|527", "1579|1150", "1150|1150", "746|648", "746|478", "746|240", "664|240", "664|212", "635|212", "635|102", "637|73", "875|73", "871|-177", "879|-184", "880|-205", "881|-227", "881|-228", "365|-228"]
+    points: ["365|-690", "402|-690", "454|-690", "505|-810", "1820|-810", "1900|-1074", "2200|-1074", "2200|-76", "1943|-76", "1943|527", "1579|527", "1579|1150", "1150|1150", "746|648", "746|478", "746|240", "664|240", "664|212", "635|212", "635|64", "365|-228"]
   SAFE:
-  - ==: fr.olympa.api.region.shapes.Polygon
+  - ==: fr.olympa.api.spigot.region.shapes.Polygon
     world: "world"
     minY: 0
     maxY: 256
-    points: ["-171|-284", "-165|-752", "-152|-752", "-152|-840", "-137|-840", "-134|-846", "-130|-847", "-126|-848", "-122|-849", "-118|-850", "-114|-851", "-110|-852", "-106|-853", "-102|-854", "-98|-855", "-94|-856", "-90|-857", "-86|-858", "-82|-859", "-78|-860", "-74|-861", "-70|-862", "-66|-863", "-62|-864", "-58|-865", "-54|-866", "-50|-867", "-46|-868", "-42|-869", "-38|-870", "-34|-871", "-30|-872", "-26|-873", "-22|-874", "-18|-875", "-14|-876", "-10|-877", "-8|-878", "-8|-955", "51|-955", "52|-954", "56|-954", "57|-955", "94|-955", "94|-944", "125|-944", "125|-955", "158|-955", "159|-755", "185|-756", "185|-893", "358|-890", "562|-890", "662|-1059", "714|-1457", "714|-1846", "687|-1841", "362|-1841", "362|-2233", "-648|-2233", "-648|-1841", "-1075|-1841", "-1075|-1064", "-891|-1064", "-891|-828", "-907|-828", "-912|-719", "-860|-717", "-661|-717", "-661|-578", "-635|-578", "-635|-717", "-203|-717", "-203|-284"]
+    points: ["-171|-284", "-165|-752", "-152|-752", "-152|-840", "-137|-840", "-134|-846", "-130|-847", "-126|-848", "-122|-849", "-118|-850", "-114|-851", "-110|-852", "-106|-853", "-102|-854", "-98|-855", "-94|-856", "-90|-857", "-86|-858", "-82|-859", "-78|-860", "-74|-861", "-70|-862", "-66|-863", "-62|-864", "-58|-865", "-54|-866", "-50|-867", "-46|-868", "-42|-869", "-38|-870", "-34|-871", "-30|-872", "-26|-873", "-22|-874", "-18|-875", "-14|-876", "-10|-877", "-8|-878", "-8|-955", "51|-955", "52|-954", "56|-954", "57|-955", "94|-955", "94|-944", "125|-944", "125|-955", "158|-955", "159|-755", "185|-756", "185|-890", "562|-890", "662|-1059", "714|-1457", "714|-1846", "687|-1841", "-203|-1841", "-203|-1606", "-458|-1606", "-650|-1414", "-1075|-1414", "-1075|-1064", "-891|-1064", "-891|-828", "-907|-828", "-912|-719", "-860|-717", "-661|-717", "-661|-578", "-635|-578", "-635|-717", "-203|-717", "-203|-284"]
 
 safeRegions:
-  fraternite1:
+  milice1:
     region:
-      ==: fr.olympa.api.region.shapes.Polygon
+      ==: fr.olympa.api.spigot.region.shapes.Polygon
       world: "world"
       minY: 0
       maxY: 256
       points: ["1778|-228", "1778|-319", "1470|-319", "1470|-174", "1534|-174", "1534|-187", "1537|-188", "1557|-179", "1557|-163", "1565|-163", "1570|-160", "1577|-160", "1582|-156", "1582|-74", "1716|-74", "1716|-115", "1726|-126", "1726|-198", "1732|-206", "1735|-207"]
-    title: "Zone de la Fraternité"
-  fraternite2:
+    title: "Zone de la Milice"
+  milice2:
     region:
-      ==: fr.olympa.api.region.shapes.Polygon
+      ==: fr.olympa.api.spigot.region.shapes.Polygon
       world: "world"
       minY: 0
       maxY: 256
       points: ["-486|-764", "-486|-758", "-635|-709", "-661|-709", "-908|-724", "-905|-818", "-890|-1086", "-497|-1034"]
-    title: "Zone de la Fraternité"
-  fraternite3:
+    title: "Zone de la Milice"
+  milice3:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: -28
       zMin: 636
       xMax: 48
       zMax: 710
-    title: "Zone de la Fraternité"
-  corporation1:
+    title: "Zone de la Milice"
+  capitole1:
     region:
-      ==: fr.olympa.api.region.shapes.Cylinder
+      ==: fr.olympa.api.spigot.region.shapes.Cylinder
       world: "world"
       centerX: 196
       centerZ: -1287
       radius: 95
       minY: 0
       maxY: 256
-    title: "Zone de la Corporation"
-  corporation2:
+    title: "Zone du Capitole"
+  capitole2:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: 189
       zMin: -274
       xMax: 279
       zMax: -229
-    title: "Zone de la Corporation"
-  corporation3:
+    title: "Zone du Capitole"
+  capitole3:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: -609
       zMin: -68
       xMax: -443
       zMax: 33
-    title: "Zone de la Corporation"
+    title: "Zone du Capitole"
   neutral1:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: 324
       zMin: 125
@@ -89,7 +95,7 @@ safeRegions:
     title: "Zone neutre"
   neutral2:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: -84
       zMin: -473
@@ -98,7 +104,7 @@ safeRegions:
     title: "Zone neutre"
   neutral3:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: 1343
       zMin: 734
@@ -107,7 +113,7 @@ safeRegions:
     title: "Zone neutre"
   neutral4:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: -414
       zMin: 143
@@ -116,7 +122,7 @@ safeRegions:
     title: "Zone neutre"
   neutral5:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: -903
       zMin: -1326
@@ -125,7 +131,7 @@ safeRegions:
     title: "Zone neutre"
   neutral6:
     region:
-      ==: fr.olympa.api.region.shapes.ExpandedCuboid
+      ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
       world: "world"
       xMin: 275
       zMin: -202
@@ -134,7 +140,7 @@ safeRegions:
     title: "Zone neutre"
 
 hub:
-  ==: fr.olympa.api.region.shapes.ExpandedCuboid
+  ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
   world: "world"
   xMin: 5400
   zMin: 5300
@@ -153,14 +159,14 @@ training:
   - "world 5606.5 12 5589.5 90 0"
   exitLocation: world 5615 12 5599 111 0
   playersRegion:
-    ==: fr.olympa.api.region.shapes.ExpandedCuboid
+    ==: fr.olympa.api.spigot.region.shapes.ExpandedCuboid
     world: "world"
     xMin: 5604
     zMin: 5587
     xMax: 5609
     zMax: 5601
   mobsRegion:
-    ==: fr.olympa.api.region.shapes.Cuboid
+    ==: fr.olympa.api.spigot.region.shapes.Cuboid
     world: "world"
     xMin: 5580
     yMin: 12
@@ -175,13 +181,23 @@ waitingRoom: world 5609.5 24 5629.5
 
 spawn: world 5632.5 5.0 5632.5 180 0
 
-spawnRegionTypes: [SAFE, EASY]
+spawnRegionTypes: [SAFE, EASY, MEDIUM]
 
 firstBuildSchem: "tente.schem"
 
 packBlocks:
 - "world 5631 13 5591"
 - "world 5629 13 5587"
+
+scoreHolograms:
+  first: "world 5641.1 12.8 5631.5"
+  second: "world 5623.9 12.8 5631.5"
+
+tyrolienne:
+  from: "world 5634 15 5500"
+  to: "world 5634 15 5577"
+
+clanPlotsBook: "world 5622 12 5581"
 
 bank: [0, 1]
 auctions: [6]
@@ -191,3 +207,6 @@ blockShopFraternite: [4]
 blockShopCorporation: [5]
 questItemShop: [8]
 foodBuyingShop: [9]
+gunShop: [77]
+bountyMan: [67]
+skinsNPC: []

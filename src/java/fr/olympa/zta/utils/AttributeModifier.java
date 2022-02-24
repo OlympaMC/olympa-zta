@@ -1,7 +1,10 @@
 package fr.olympa.zta.utils;
 
+import java.util.UUID;
+
 public class AttributeModifier{
 	
+	private final UUID uuid;
 	private final String name;
 	private final Operation operation;
 	private final float amount;
@@ -9,6 +12,11 @@ public class AttributeModifier{
 	private org.bukkit.attribute.AttributeModifier bukkit = null;
 	
 	public AttributeModifier(String name, Operation operation, float amount){
+		this(UUID.randomUUID(), name, operation, amount);
+	}
+	
+	public AttributeModifier(UUID uuid, String name, Operation operation, float amount) {
+		this.uuid = uuid;
 		this.name = name;
 		this.operation = operation;
 		this.amount = amount;
@@ -30,21 +38,17 @@ public class AttributeModifier{
 		ADD_NUMBER, ADD_MULTIPLICATOR, MULTIPLY_VALUE;
 		
 		public org.bukkit.attribute.AttributeModifier.Operation getBukkitOperation() {
-			switch (this) {
-			case ADD_MULTIPLICATOR:
-				return org.bukkit.attribute.AttributeModifier.Operation.ADD_SCALAR;
-			case ADD_NUMBER:
-				return org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER;
-			case MULTIPLY_VALUE:
-				return org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1;
-			default:
-				return null;
-			}
+			return switch (this) {
+			case ADD_MULTIPLICATOR -> org.bukkit.attribute.AttributeModifier.Operation.ADD_SCALAR;
+			case ADD_NUMBER -> org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER;
+			case MULTIPLY_VALUE -> org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+			default -> throw new IllegalArgumentException("Unexpected value: " + this);
+			};
 		}
 	}
 	
 	public org.bukkit.attribute.AttributeModifier getBukkitModifier() {
-		if (bukkit == null) bukkit = new org.bukkit.attribute.AttributeModifier(name, amount, operation.getBukkitOperation());
+		if (bukkit == null) bukkit = new org.bukkit.attribute.AttributeModifier(uuid, name, amount, operation.getBukkitOperation());
 		return bukkit;
 	}
 	

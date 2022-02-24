@@ -1,7 +1,8 @@
 name: OlympaZTA
-version: 0.1
-api-version: 1.15
+version: '@plugin_version@'
+api-version: 1.16
 depend: [OlympaCore, Citizens]
-softdepend: [dynmap, BeautyQuests]
+softdepend: [dynmap, BeautyQuests, Sentinel]
 authors: [SkytAsul]
 main: fr.olympa.zta.OlympaZTA
+website: https://gitlab.com/olympa/olympazta

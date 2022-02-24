@@ -1,6 +1,5 @@
 package fr.olympa.zta.weapons.guns.ambiance;
 
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import fr.olympa.zta.weapons.guns.ambiance.SoundAmbiance.ZTASound;
@@ -15,7 +14,7 @@ public class ExplosionScenario extends AmbianceScenario {
 	
 	@Override
 	public void run(Player p) {
-		p.playSound(p.getLocation(), ZTASound.EXPLOSION_CIVIL.getSound(), SoundCategory.AMBIENT, volume + 0.08f, pitch);
+		playSound(p, ZTASound.EXPLOSION_CIVIL.getSound(), 0.08f, 0);
 	}
 	
 	@Override

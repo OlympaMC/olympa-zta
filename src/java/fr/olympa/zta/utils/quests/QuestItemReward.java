@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.spigot.SpigotUtils;
-import fr.olympa.zta.loot.creators.QuestItemCreator.QuestItem;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.api.spigot.utils.SpigotUtils;
+import fr.olympa.zta.itemstackable.QuestItem;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.editors.TextEditor;
@@ -57,7 +57,7 @@ public class QuestItemReward extends AbstractReward {
 			
 			@Override
 			public ItemStack getItemStack(QuestItem object) {
-				return object.getOriginalItem();
+				return object.getDemoItem();
 			}
 			
 			@Override

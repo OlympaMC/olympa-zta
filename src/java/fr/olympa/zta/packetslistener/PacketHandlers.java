@@ -1,6 +1,6 @@
 package fr.olympa.zta.packetslistener;
 
-import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
+import io.netty.util.AttributeKey;
 
 public enum PacketHandlers {
 	
@@ -16,6 +17,8 @@ public enum PacketHandlers {
 	ITEM_DROP(new DropHandler()),
 	BED_MESSAGE(new BedMessageHandler())
 	;
+	
+	public static final AttributeKey<Player> PLAYER_KEY = AttributeKey.valueOf("player" + UUID.randomUUID().toString().substring(0, 6));
 	
 	private ChannelHandler handler;
 	private String handlerName;
@@ -27,8 +30,9 @@ public enum PacketHandlers {
 	
 	public void addPlayer(Player p) {
 		try {
-			ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
-			pipeline.addBefore("packet_handler", handlerName, handler);
+			Channel channel = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel;
+			channel.attr(PLAYER_KEY).set(p);
+			channel.pipeline().addBefore("packet_handler", handlerName, handler);
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -45,9 +49,9 @@ public enum PacketHandlers {
 	
 	public static Player retrievePlayerFromChannel(Channel channel) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (((CraftPlayer) p).getHandle().playerConnection.networkManager.channel == channel) return p;
+			if (channel.equals(((CraftPlayer) p).getHandle().playerConnection.networkManager.channel)) return p;
 		}
-		throw new NoSuchElementException("No player found for specified channel.");
+		return null;
 	}
 	
 }

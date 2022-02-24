@@ -11,16 +11,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.editor.TextEditor;
-import fr.olympa.api.editor.parsers.OlympaPlayerParser;
-import fr.olympa.api.gui.OlympaGUI;
-import fr.olympa.api.gui.templates.PagedGUI;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.player.OlympaPlayerInformations;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.observable.ObservableList;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
+import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.economy.OlympaMoney;
+import fr.olympa.api.spigot.editor.TextEditor;
+import fr.olympa.api.spigot.editor.parsers.OlympaPlayerParser;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
+import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
@@ -40,8 +40,8 @@ public class PlayerPlotGUI extends OlympaGUI {
 	public PlayerPlotGUI(OlympaPlayerZTA player) {
 		super("Tom Hook", InventoryType.DISPENSER);
 		this.player = player;
-		this.plot = player.getPlot();
-		this.isChief = plot == null ? false : plot.getOwner() == player.getId();
+		plot = player.getPlot();
+		isChief = plot != null && plot.getOwner() == player.getId();
 
 		setState();
 	}
@@ -50,38 +50,42 @@ public class PlayerPlotGUI extends OlympaGUI {
 		inv.clear();
 		Material color = Material.CYAN_STAINED_GLASS_PANE;
 		if (manage) {
-			if (plot.getLevel() < PlayerPlot.moneyRequiredPerLevel.length) {
+			if (plot.getLevel() < PlayerPlot.moneyRequiredPerLevel.length)
 				inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§eMonter de niveau", "§8> §o" + OlympaMoney.format(PlayerPlot.moneyRequiredPerLevel[plot.getLevel()]) + " nécessaires"));
-			}else inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§c§mMonter de niveau", "§8> §o vous avez atteint le niveau maximal"));
+			else
+				inv.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§c§mMonter de niveau", "§8> §o vous avez atteint le niveau maximal"));
 			inv.setItem(1, ItemUtils.item(Material.PAPER, "§eInviter un joueur"));
 			inv.setItem(2, ItemUtils.item(Material.FILLED_MAP, "§cÉjecter des joueurs"));
 			inv.setItem(4, ItemUtils.item(Material.ARROW, "§a← Revenir au menu"));
 			color = Material.MAGENTA_STAINED_GLASS_PANE;
-		}else {
+		} else {
 			ItemStack center = null;
 			if (plot == null) {
 				if (player.plotFind != null) {
 					color = Material.RED_STAINED_GLASS_PANE;
 					center = ItemUtils.item(Material.REDSTONE, "§aNous préparons ta parcelle...");
 					startProgress();
-				}else center = ItemUtils.item(Material.STONE
-						, "§e§lClic gauche : §eAcheter ma parcelle", "§8> §o" + OlympaMoney.format(PlayerPlot.moneyRequiredPerLevel[0]) + " nécessaires", "§e§lClic droit : §eVoir mes invitations", "§8> §o" + manager.getInvitations(player).size() + " invitations");
-			}else {
+				} else
+					center = ItemUtils.item(Material.STONE, "§e§lClic gauche : §eAcheter ma parcelle", "§8> §o" + OlympaMoney.format(PlayerPlot.moneyRequiredPerLevel[0]) + " nécessaires", "§e§lClic droit : §eVoir mes invitations",
+							"§8> §o" + manager.getInvitations(player).size() + " invitations");
+			} else {
 				color = Material.LIME_STAINED_GLASS_PANE;
 				center = ItemUtils.item(Material.DIAMOND, "§e§lClic gauche : §eMe téléporter", "§8> §oVous transporte à votre parcelle");
-				if (isChief) {
+				if (isChief)
 					ItemUtils.loreAdd(center, "§e§lClic droit : §eGérer ma parcelle", "§8> §oMonter de niveau, inviter ou exclure des joueurs");
-				}
 			}
 			inv.setItem(4, center);
 		}
-		for (int i = 0; i < 9; i++) if (inv.getItem(i) == null) inv.setItem(i, ItemUtils.item(color, "§a"));
+		for (int i = 0; i < 9; i++)
+			if (inv.getItem(i) == null)
+				inv.setItem(i, ItemUtils.item(color, "§a"));
 	}
 
 	private void startProgress() {
 		progress = new BukkitRunnable() {
 			int animState = -1;
 			int attemps = 30;
+
 			@Override
 			public void run() {
 				if (attemps <= 0 && player.plotFind == null) {
@@ -92,8 +96,10 @@ public class PlayerPlotGUI extends OlympaGUI {
 					setState();
 					return;
 				}
-				if (animState != -1) inv.getItem(ANIMATION_SLOTS_ORDER[animState]).setType(Material.RED_STAINED_GLASS_PANE);
-				if (++animState == ANIMATION_SLOTS_ORDER.length) animState = 0;
+				if (animState != -1)
+					inv.getItem(ANIMATION_SLOTS_ORDER[animState]).setType(Material.RED_STAINED_GLASS_PANE);
+				if (++animState == ANIMATION_SLOTS_ORDER.length)
+					animState = 0;
 				inv.getItem(ANIMATION_SLOTS_ORDER[animState]).setType(Material.LIME_STAINED_GLASS_PANE);
 				attemps--;
 			}
@@ -110,66 +116,78 @@ public class PlayerPlotGUI extends OlympaGUI {
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Ta parcelle a monté de niveau !");
 					manage = false;
 					setState();
-				}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour monter ta parcelle de niveau (%s).", OlympaMoney.format(money));
-			}else if (slot == 1) {
+				} else
+					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour monter ta parcelle de niveau (%s).", OlympaMoney.format(money));
+			} else if (slot == 1) {
 				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur que tu souhaites inviter.");
 				new TextEditor<>(p, (target) -> {
-					if (target == player) {
+					if (target == player)
 						Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas t'inviter toi-même...");
-					}else {
-						manager.invite(target, plot);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
-						Prefix.DEFAULT_GOOD.sendMessage(target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle !");
+					else {
+						if (target.getPlot() != null) {
+							Prefix.DEFAULT_BAD.sendMessage(p, "%s est déjà dans un plot...", target.getName());
+						}else {
+							manager.invite(target, plot);
+							Prefix.DEFAULT_GOOD.sendMessage(p, "Tu viens d'inviter " + target.getName() + " a rejoindre ta parcelle !");
+							Prefix.DEFAULT_GOOD.sendMessage((Player) target.getPlayer(), p.getName() + " t'as invité à rejoindre sa parcelle ! Va voir Tom Hook à la Banque (/spawn) pour accepter l'invitation.");
+						}
 					}
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
-			}else if (slot == 2) {
-				new PlotGuestsGUI(plot).create(p);
-			}else if (slot == 4) {
+			} else if (slot == 2)
+				new PlotGuestsView(plot).toGUI("Liste des invités", 3).create(p);
+			else if (slot == 4) {
 				manage = false;
 				setState();
 			}
 			return true;
 		}
 
-		if (slot != 4) return true;
-		if (plot == null && progress == null) {
+		if (slot != 4)
+			return true;
+		if (progress != null)
+			return true;
+		if (plot == null) {
 			if (click.isLeftClick()) {
 				int money = PlayerPlot.moneyRequiredPerLevel[0];
 				if (player.getGameMoney().withdraw(money)) {
 					manager.initSearch(player);
 					setState();
-				}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour acheter une parcelle (%s).", OlympaMoney.format(money));
-			}else if (click.isRightClick()) {
-				new PlotInvitationsGUI(manager.getInvitations(player)).create(p);
-			}
-		}else {
-			if (click.isLeftClick() || !isChief) {
-				p.closeInventory();
-				p.teleport(plot.getSpawnLocation());
-			}else if (click.isRightClick()) {
-				manage = true;
-				setState();
-			}
+				} else
+					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour acheter une parcelle (%s).", OlympaMoney.format(money));
+			} else if (click.isRightClick())
+				new PlotInvitationsView(manager.getInvitations(player)).toGUI("Liste des invitations", 3).create(p);
+		} else if (click.isLeftClick() || !isChief) {
+			p.closeInventory();
+			p.teleport(plot.getSpawnLocation());
+		} else if (click.isRightClick()) {
+			manage = true;
+			setState();
 		}
 		return true;
 	}
 
 	@Override
 	public boolean onClose(Player p) {
-		if (progress != null) progress.cancel();
+		if (progress != null)
+			progress.cancel();
 		return true;
 	}
 
-	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
-		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
-			super("Liste des invitations", DyeColor.CYAN, objects, 3);
-			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+	private final class PlotInvitationsView extends PagedView<PlayerPlot> {
+		private PlotInvitationsView(ObservableList<PlayerPlot> objects) {
+			super(DyeColor.CYAN, objects);
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			right.setItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
 		public ItemStack getItemStack(PlayerPlot object) {
-			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProvider.getPlayerInformations(object.getOwner()).getName());
+			return ItemUtils.item(Material.STONE_BRICKS, "§eParcelle de §l" + AccountProviderAPI.getter().getPlayerInformations(object.getOwner()).getName());
 		}
 
 		@Override
@@ -187,10 +205,15 @@ public class PlayerPlotGUI extends OlympaGUI {
 		}
 	}
 
-	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
-		private PlotGuestsGUI(PlayerPlot plot) {
-			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProvider.getPlayerInformations(x)).collect(Collectors.toList()), 3);
-			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+	private class PlotGuestsView extends PagedView<OlympaPlayerInformations> {
+		private PlotGuestsView(PlayerPlot plot) {
+			super(DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProviderAPI.getter().getPlayerInformations(x)).collect(Collectors.toList()));
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			right.setItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override

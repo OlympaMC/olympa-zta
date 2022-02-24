@@ -2,7 +2,7 @@ package fr.olympa.zta.weapons.guns;
 
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.region.tracking.flags.AbstractProtectionFlag;
+import fr.olympa.api.spigot.region.tracking.flags.AbstractProtectionFlag;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;

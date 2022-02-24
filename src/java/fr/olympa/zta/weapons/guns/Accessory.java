@@ -4,29 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
 
-import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.spigot.item.ItemUtils;
+import fr.olympa.zta.itemstackable.ItemStackable;
+import fr.olympa.zta.itemstackable.ItemStackableManager;
 import fr.olympa.zta.utils.AttributeModifier;
 import fr.olympa.zta.utils.AttributeModifier.Operation;
-import fr.olympa.zta.weapons.ItemStackable;
 
 public enum Accessory implements ItemStackable {
 
-	CANNON_CAC(AccessoryType.CANNON, Material.GLOWSTONE_DUST, "Baïonnette", "augmente les dégâts au corps-à-corps (+4)"){
+	CANNON_CAC(AccessoryType.CANNON, Material.GLOWSTONE_DUST, "Baïonnette", "augmente les dégâts au corps-à-corps (+3)"){
 		@Override
 		public void apply(Gun gun) {
-			gun.damageCaC += 4;
+			gun.damageCaC += 3;
 		}
 		
 		@Override
 		public void remove(Gun gun) {
-			gun.damageCaC -= 4;
+			gun.damageCaC -= 3;
 		}
 	},
 	CANNON_DAMAGE(AccessoryType.CANNON, Material.SUGAR, "Canon V2", "augmente le dégât des balles (+1)"){
@@ -41,8 +44,12 @@ public enum Accessory implements ItemStackable {
 			gun.damageAdded -= 1;
 		}
 	},
-	CANNON_POWER(AccessoryType.CANNON, Material.GUNPOWDER, "Canon lourd", "augmente la vitesse des balles"){
-		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.2f);
+	CANNON_POWER(
+			AccessoryType.CANNON,
+			Material.GUNPOWDER,
+			"Canon lourd",
+			"augmente la portée des balles"){
+		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 1.35f);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -55,7 +62,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	CANNON_SILENT(AccessoryType.CANNON, Material.REDSTONE, "Silencieux", "réduit le volume de la détonation"){
-		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.25f);
+		private final AttributeModifier modifier = new AttributeModifier("cannon", Operation.MULTIPLY_VALUE, 0.22f);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -84,7 +91,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	SCOPE_LIGHT(AccessoryType.SCOPE, Material.BRICK, "Mire V2", "dispose d'un zoom faible", "donne la vision nocturne"){
-		private final AttributeModifier zoomModifier = new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -1);
+		private final AttributeModifier zoomModifier = new AttributeModifier(Gun.ZOOM_UUID, "zoom", Operation.ADD_MULTIPLICATOR, -1);
 		private final PotionEffect effect = new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 0);
 		
 		@Override
@@ -105,7 +112,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	SCOPE_STRONG(AccessoryType.SCOPE, Material.NETHER_BRICK, "Lunette x3", "dispose d'un zoom puissant"){
-		private final AttributeModifier zoomModifier = new AttributeModifier("zoom", Operation.ADD_MULTIPLICATOR, -3);
+		private final AttributeModifier zoomModifier = new AttributeModifier(Gun.ZOOM_UUID, "zoom", Operation.ADD_MULTIPLICATOR, -3);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -131,7 +138,7 @@ public enum Accessory implements ItemStackable {
 		}
 	},
 	STOCK_STRONG(AccessoryType.STOCK, Material.BIRCH_FENCE_GATE, "Crosse lourde", "réduit la dispersion des balles"){
-		private final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.8f);
+		private final AttributeModifier modifier = new AttributeModifier("stock", Operation.MULTIPLY_VALUE, 0.65f);
 		
 		@Override
 		public void apply(Gun gun) {
@@ -148,12 +155,14 @@ public enum Accessory implements ItemStackable {
 	private final AccessoryType type;
 	private final String name;
 	
+	private final NamespacedKey key;
 	private final ItemStack item;
 	
 	private Accessory(AccessoryType type, Material material, String name, String... effects) {
 		this.type = type;
 		this.name = name;
 		
+		key = ItemStackableManager.register(this);
 		item = new ItemStack(material);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§a" + name);
@@ -166,6 +175,7 @@ public enum Accessory implements ItemStackable {
 		meta.setLore(lore);
 		meta.setCustomModelData(1);
 		meta.getPersistentDataContainer().set(AccessoriesGUI.ACCESSORY_KEY, PersistentDataType.INTEGER, ordinal());
+		meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		item.setItemMeta(meta);
 	}
 	
@@ -176,6 +186,16 @@ public enum Accessory implements ItemStackable {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public String getId() {
+		return name();
+	}
+	
+	@Override
+	public NamespacedKey getKey() {
+		return key;
 	}
 	
 	@Override
@@ -213,16 +233,20 @@ public enum Accessory implements ItemStackable {
 			return slot;
 		}
 		
-		public ItemStack getAvailableItemSlot(){
+		protected ItemStack getAvailableItemSlot(){
 			return available;
 		}
 		
-		public ItemStack getUnavailableItemSlot(){
+		protected ItemStack getUnavailableItemSlot(){
 			return unavailable;
 		}
 		
 		public boolean isEnabled(Gun gun){
 			return gun.getType().getAllowedAccessories().contains(this);
+		}
+		
+		public ItemStack getItemSlot(Gun gun) {
+			return isEnabled(gun) ? available : unavailable;
 		}
 		
 		public Accessory get(Gun gun) {

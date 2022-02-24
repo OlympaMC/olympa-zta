@@ -1,16 +1,23 @@
 package fr.olympa.zta.weapons;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 
+import org.bukkit.DyeColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.common.command.complex.ArgumentParser;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.spigot.command.ComplexCommand;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.utils.Attribute;
@@ -19,32 +26,59 @@ import fr.olympa.zta.weapons.guns.AmmoType;
 import fr.olympa.zta.weapons.guns.Gun;
 import fr.olympa.zta.weapons.guns.GunRegistry;
 import fr.olympa.zta.weapons.guns.GunType;
+import fr.olympa.zta.weapons.guns.PersistentGun;
+import fr.olympa.zta.weapons.skins.Skin;
+import fr.olympa.zta.weapons.skins.Skinable;
 
 public class WeaponsCommand extends ComplexCommand {
 
 	private DateFormat evictionFormat = new SimpleDateFormat("HH:mm:ss");
 
 	public WeaponsCommand() {
-		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes", ZTAPermissions.WEAPONS_COMMAND, "armes");
-		addArgumentParser(
-				"GUN",
-				sender -> Collections.EMPTY_LIST,
+		super(OlympaZTA.getInstance(), "weapons", "Commande pour les armes.", ZTAPermissions.WEAPONS_MANAGE_COMMAND);
+		addArgumentParser("GUN", new ArgumentParser<>(
+				(sender, arg) -> Collections.emptyList(),
 				x -> OlympaZTA.getInstance().gunRegistry.getGun(Integer.parseInt(x)),
-				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre.");
+				x -> "L'objet avec l'ID " + x + " est introuvable dans le registre."));
 	}
 
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		if (player != null) {
-			new WeaponsGiveGUI().create(player);
+			new WeaponsGiveView(true).toGUI().create(player);
 			return true;
 		}else return false;
+	}
+	
+	@Cmd (player = true, min = 1, args = "INTEGER")
+	public void skin(CommandContext cmd) {
+		ItemStack item = getPlayer().getInventory().getItemInMainHand();
+		if (WeaponsListener.getWeapon(item) instanceof Skinable skinable) {
+			skinable.setSkin(Skin.getFromId(cmd.getArgument(0)), item);
+		}else sendError("Tu ne tiens pas d'arme skinable dans ta main.");
+	}
+	
+	@Cmd (player = true)
+	public void givePersistent(CommandContext cmd) {
+		new PagedView<GunType>(DyeColor.ORANGE, Arrays.asList(GunType.values())) {
+			
+			@Override
+			public ItemStack getItemStack(GunType object) {
+				return object.getDemoItem();
+			}
+			
+			@Override
+			public void click(GunType existing, Player p, ClickType clickType) {
+				p.getInventory().addItem(PersistentGun.create(existing).createItemStack());
+			}
+
+		}.toGUI("Liste des armes", 3).create(getPlayer());
 	}
 
 	@Cmd (player = true, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "[type de munition] [quantité] [vide ?]")
 	public void giveAmmo(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			new WeaponsAmmosGUI().create(player);
+			new WeaponsAmmosView().toGUI().create(player);
 		}else {
 			try {
 				boolean empty = cmd.getArgument(2, false);
@@ -139,6 +173,11 @@ public class WeaponsCommand extends ComplexCommand {
 		}
 	}
 
+	@Cmd
+	public void forceEviction(CommandContext cmd) {
+		OlympaZTA.getInstance().gunRegistry.startEviction();
+	}
+	
 	@Cmd (player = true, min = 1, syntax = "<id>", args = "GUN")
 	public void gunItem(CommandContext cmd) {
 		Gun gun = cmd.getArgument(0);
@@ -153,5 +192,35 @@ public class WeaponsCommand extends ComplexCommand {
 			sendSuccess("L'objet a été correctement supprimé du registre.");
 		}else sendError("Il y a eu un problème lors de la suppression de l'objet.");
 	}
+	
+	@Cmd (min = 1, syntax = "<id>", args = "GUN")
+	public void gunInfo(CommandContext cmd) {
+		Gun gun = cmd.getArgument(0);
+		sendInfo("Arme %d de type %s, avec %f dommages ajoutés et %f dégâts de CaC. Zoom modifier: %b. Scope/cannon/stock: %s/%s/%s", gun.getID(), gun.getType().getName(), gun.damageAdded, gun.damageCaC, gun.zoomModifier == null, gun.scope, gun.cannon, gun.stock);
+	}
 
+	@Cmd (args = "PLAYERS")
+	public void gunsLoad(CommandContext cmd) {
+		Player target;
+		if (cmd.getArgumentsLength() == 0) {
+			target = getPlayer();
+			if (target == null) {
+				sendIncorrectSyntax();
+				return;
+			}
+		}else target = cmd.getArgument(0);
+		
+		try {
+			sendSuccess("§2%d §aguns chargés depuis l'inventaire de §2%s§a.", OlympaZTA.getInstance().gunRegistry.loadFromItems(target.getInventory().getContents()), target.getName());
+		}catch (SQLException e) {
+			e.printStackTrace();
+			sendError(e);
+		}
+	}
+	
+	@Cmd (player = true)
+	public void removeItems(CommandContext cmd) {
+		new ItemRemoveGUI().create(player);
+	}
+	
 }
