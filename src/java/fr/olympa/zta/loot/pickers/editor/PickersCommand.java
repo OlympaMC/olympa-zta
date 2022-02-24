@@ -1,4 +1,4 @@
-package fr.olympa.zta.weapons;
+package fr.olympa.zta.loot.pickers.editor;
 
 import java.util.List;
 
@@ -9,17 +9,17 @@ import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 
-public class WeaponsSeeCommand extends OlympaCommand {
+public class PickersCommand extends OlympaCommand {
 	
-	public WeaponsSeeCommand() {
-		super(OlympaZTA.getInstance(), "armes", "Commande pour voir les armes.", ZTAPermissions.WEAPONS_COMMAND);
+	public PickersCommand() {
+		super(OlympaZTA.getInstance(), "pickers", "Ouvre l'éditeur de pickers.", ZTAPermissions.PICKERS_COMMAND);
 		setAllowConsole(false);
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		new WeaponsGiveView(false).toGUI().create(player);
-		return false;
+		new PickersListGUI().toGUI().create(player);
+		return true;
 	}
 	
 	@Override

@@ -26,6 +26,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
+
 import net.citizensnpcs.api.CitizensAPI;
 
 public class PrimesManager implements Listener {
@@ -75,7 +76,7 @@ public class PrimesManager implements Listener {
 	}
 	
 	public void openPrimesGUI(Player p) {
-		new PrimesGUI(OlympaPlayerZTA.get(p), primes).create(p);
+		new PrimesGUI(OlympaPlayerZTA.get(p), primes).toGUI().create(p);
 	}
 	
 	public void addPrime(OlympaPlayerZTA buyer, OlympaPlayerZTA target, double bounty) throws SQLException {

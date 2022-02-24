@@ -2,6 +2,7 @@ package fr.olympa.zta.loot.chests.type;
 
 import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
 import fr.olympa.api.common.randomized.RandomizedPickerBuilder;
+import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.bank.PhysicalMoney;
 import fr.olympa.zta.itemstackable.Artifacts;
 import fr.olympa.zta.itemstackable.QuestItem;
@@ -36,7 +37,7 @@ public enum LootChestType {
 			.add(16.6, new FoodCreator(Food.BAKED_POTATO, 2, 4))
 			.add(0.004, new ItemStackableCreator(Artifacts.BOOTS))
 			.add(0.004, new ItemStackableCreator(Artifacts.PARACHUTE))
-			.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.3, 1).add(0.4, 2).add(0.3, 3).build())),
+					.build(RandomizedPickerBuilder.<Integer>newBuilder().add(0.3, 1).add(0.4, 2).add(0.3, 3).build())),
 	SAFE(
 			"de zone sécurisée",
 			RandomizedInventory.newBuilder()
@@ -98,6 +99,7 @@ public enum LootChestType {
 	private LootChestType(String name, ConditionalMultiPicker<LootCreator, LootContext> picker) {
 		this.name = name;
 		this.picker = picker;
+		OlympaZTA.getInstance().pickers.registerPicker(picker, "chests/" + name(), LootCreator.class, LootContext.class);
 	}
 	
 	public String getName() {

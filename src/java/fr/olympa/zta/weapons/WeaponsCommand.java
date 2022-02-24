@@ -17,7 +17,7 @@ import fr.olympa.api.common.command.complex.ArgumentParser;
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.spigot.command.ComplexCommand;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.zta.OlympaZTA;
 import fr.olympa.zta.ZTAPermissions;
 import fr.olympa.zta.utils.Attribute;
@@ -45,7 +45,7 @@ public class WeaponsCommand extends ComplexCommand {
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		if (player != null) {
-			new WeaponsGiveGUI(true).create(player);
+			new WeaponsGiveView(true).toGUI().create(player);
 			return true;
 		}else return false;
 	}
@@ -60,7 +60,7 @@ public class WeaponsCommand extends ComplexCommand {
 	
 	@Cmd (player = true)
 	public void givePersistent(CommandContext cmd) {
-		new PagedGUI<GunType>("Liste des armes", DyeColor.ORANGE, Arrays.asList(GunType.values()), 3) {
+		new PagedView<GunType>(DyeColor.ORANGE, Arrays.asList(GunType.values())) {
 			
 			@Override
 			public ItemStack getItemStack(GunType object) {
@@ -72,13 +72,13 @@ public class WeaponsCommand extends ComplexCommand {
 				p.getInventory().addItem(PersistentGun.create(existing).createItemStack());
 			}
 
-		}.create(getPlayer());
+		}.toGUI("Liste des armes", 3).create(getPlayer());
 	}
 
 	@Cmd (player = true, args = { "light|heavy|handworked|cartridge|powder", "INTEGER", "BOOLEAN" }, syntax = "[type de munition] [quantité] [vide ?]")
 	public void giveAmmo(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			new WeaponsAmmosGUI().create(player);
+			new WeaponsAmmosView().toGUI().create(player);
 		}else {
 			try {
 				boolean empty = cmd.getArgument(2, false);

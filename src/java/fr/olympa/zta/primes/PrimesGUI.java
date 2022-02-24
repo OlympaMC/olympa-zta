@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,7 +19,8 @@ import fr.olympa.api.spigot.editor.TextEditor;
 import fr.olympa.api.spigot.editor.parsers.MoneyAmountParser;
 import fr.olympa.api.spigot.editor.parsers.PlayerParser;
 import fr.olympa.api.spigot.gui.Inventories;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
@@ -26,7 +28,7 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.zta.OlympaPlayerZTA;
 import fr.olympa.zta.OlympaZTA;
 
-public class PrimesGUI extends PagedGUI<Prime> {
+public class PrimesGUI extends PagedView<Prime> {
 	
 	public static final NumberFormat numberFormat = new DecimalFormat("0");
 	private static final ItemStack primeItem, primeUnavailableItem;
@@ -56,19 +58,22 @@ public class PrimesGUI extends PagedGUI<Prime> {
 	private boolean canStart;
 	
 	protected PrimesGUI(OlympaPlayerZTA player, List<Prime> bounties) {
-		super("Primes", DyeColor.RED, bounties, 5, false);
+		super(DyeColor.RED, bounties);
 		this.player = player;
 		
-		setItems();
-		
 		canStart = bounties.stream().noneMatch(x -> x.getBuyer().getId() == player.getId());
-		setBarItem(2, canStart ? primeItem : primeUnavailableItem);
 	}
 	
 	@Override
-	protected void setItem(int mainSlot, Prime object) {
-		int slot = setMainItem(mainSlot, getItemStack(object));
-		ItemStack item = inv.getItem(slot);
+	public void init() {
+		super.init();
+		right.setItem(2, canStart ? primeItem : primeUnavailableItem);
+	}
+	
+	@Override
+	protected void setObjectItem(int mainSlot, Prime object) {
+		left.setItem(mainSlot, getItemStack(object));
+		ItemStack item = left.getItem(mainSlot);
 		ItemUtils.skull(item::setItemMeta, item, object.getTarget().getName());
 	}
 	
@@ -93,7 +98,7 @@ public class PrimesGUI extends PagedGUI<Prime> {
 				
 				itemChanged();
 				canStart = true;
-				setBarItem(2, primeItem);
+				right.setItem(2, primeItem);
 			}, null);
 		}
 	}
@@ -102,6 +107,7 @@ public class PrimesGUI extends PagedGUI<Prime> {
 	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
 		if (canStart && barSlot == 2) {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Écris le nom du joueur sur lequel mettre ta prime.");
+			Inventory inv = p.getOpenInventory().getTopInventory();
 			new TextEditor<>(p, target -> {
 				if (target == p) {
 					Prefix.BAD.sendMessage(p, "Tu ne vas pas mettre ta propre tête à prix...");
@@ -132,6 +138,10 @@ public class PrimesGUI extends PagedGUI<Prime> {
 			}, () -> p.openInventory(inv), false, PlayerParser.PLAYER_PARSER).enterOrLeave();
 		}
 		return true;
+	}
+	
+	public OlympaGUI toGUI() {
+		return super.toGUI("Primes", 5);
 	}
 	
 }

@@ -18,7 +18,7 @@ import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.editor.TextEditor;
 import fr.olympa.api.spigot.editor.parsers.OlympaPlayerParser;
 import fr.olympa.api.spigot.gui.OlympaGUI;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.zta.OlympaPlayerZTA;
@@ -135,7 +135,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 					create(p);
 				}, () -> create(p), false, OlympaPlayerParser.<OlympaPlayerZTA>parser()).enterOrLeave();
 			} else if (slot == 2)
-				new PlotGuestsGUI(plot).create(p);
+				new PlotGuestsView(plot).toGUI("Liste des invités", 3).create(p);
 			else if (slot == 4) {
 				manage = false;
 				setState();
@@ -156,7 +156,7 @@ public class PlayerPlotGUI extends OlympaGUI {
 				} else
 					Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne disposes pas de l'argent requis pour acheter une parcelle (%s).", OlympaMoney.format(money));
 			} else if (click.isRightClick())
-				new PlotInvitationsGUI(manager.getInvitations(player)).create(p);
+				new PlotInvitationsView(manager.getInvitations(player)).toGUI("Liste des invitations", 3).create(p);
 		} else if (click.isLeftClick() || !isChief) {
 			p.closeInventory();
 			p.teleport(plot.getSpawnLocation());
@@ -174,10 +174,15 @@ public class PlayerPlotGUI extends OlympaGUI {
 		return true;
 	}
 
-	private final class PlotInvitationsGUI extends PagedGUI<PlayerPlot> {
-		private PlotInvitationsGUI(ObservableList<PlayerPlot> objects) {
-			super("Liste des invitations", DyeColor.CYAN, objects, 3);
-			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+	private final class PlotInvitationsView extends PagedView<PlayerPlot> {
+		private PlotInvitationsView(ObservableList<PlayerPlot> objects) {
+			super(DyeColor.CYAN, objects);
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			right.setItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
@@ -200,10 +205,15 @@ public class PlayerPlotGUI extends OlympaGUI {
 		}
 	}
 
-	private class PlotGuestsGUI extends PagedGUI<OlympaPlayerInformations> {
-		private PlotGuestsGUI(PlayerPlot plot) {
-			super("Liste des invités", DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProviderAPI.getter().getPlayerInformations(x)).collect(Collectors.toList()), 3);
-			setBarItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
+	private class PlotGuestsView extends PagedView<OlympaPlayerInformations> {
+		private PlotGuestsView(PlayerPlot plot) {
+			super(DyeColor.MAGENTA, plot.getPlayers().stream().filter(x -> x != plot.getOwner()).map(x -> AccountProviderAPI.getter().getPlayerInformations(x)).collect(Collectors.toList()));
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			right.setItem(1, ItemUtils.item(Material.DIAMOND, "§a← Revenir au menu"));
 		}
 
 		@Override
